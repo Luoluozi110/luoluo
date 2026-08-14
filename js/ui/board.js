@@ -122,7 +122,7 @@ export class BoardView {
     const w = this.root.clientWidth, h = this.root.clientHeight;
     // 平面模式：整盘铺满可视区（留 ~5% 边距），不再做俯视纵向压缩
     const s = Math.min(w / (span * 1.05), h / (span * 1.05));
-    this.bscale = Math.max(0.55, Math.min(1.1, s));  // 下限 0.55：手机端默认放大，字体更清晰（可拖动/双指缩放看全盘）
+    this.bscale = Math.max(0.4, Math.min(1.1, s));   // 下限 0.4：手机端默认适度放大（不过大），字体可辨，可拖动/双指缩放看全盘
     this.view.zoom = 1; this.view.panX = 0; this.view.panY = 0;
     this.applyView();
   }
@@ -141,7 +141,7 @@ export class BoardView {
     const span = (GRID + PAD * 2) * UNIT;
     const w = this.root.clientWidth, h = this.root.clientHeight;
     const s = Math.min(w / (span * 1.05), h / (span * 1.05));
-    this.bscale = Math.max(0.55, Math.min(1.1, s));  // 下限 0.55：手机端默认放大，字体更清晰（可拖动/双指缩放看全盘）
+    this.bscale = Math.max(0.4, Math.min(1.1, s));   // 下限 0.4：手机端默认适度放大（不过大），字体可辨，可拖动/双指缩放看全盘
     this.applyView();
   }
 
@@ -194,8 +194,9 @@ export class BoardView {
         this.applyView();
       } else if (this._pointers.size === 2 && this._pinch) {
         const p = [...this._pointers.values()];
-        const z = this._pinch.zoom * (dist(p[0], p[1]) / this._pinch.dist);
-        this.view.zoom = clamp(z, 0.4, 1.8);
+        // 双指缩放：1.3 倍灵敏度 + 上限 2.8（原 1:1 / 1.8），力度更足，可放大看清格内文字
+        const z = this._pinch.zoom * (dist(p[0], p[1]) / this._pinch.dist) * 1.3;
+        this.view.zoom = clamp(z, 0.4, 2.8);
         this.applyView();
       }
     });
