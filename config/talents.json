@@ -204,5 +204,75 @@
     "kind": "passive",
     "text": "《晋书·左思传》：洛阳为之纸贵。一篇既出，士林争传——每获得一枚新文心，灵感 +2。",
     "effect": { "type": "insp_on_talent", "value": 2 }
+  },
+  {
+    "id": "T020",
+    "name": "诗骨嶙峋",
+    "kind": "passive",
+    "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。诗乃风骨所寄，以诗出战，格调天然高出一筹——得分常驻 +6%。",
+    "effect": { "type": "style_pct", "style": "shi", "value": 0.06 }
+  },
+  {
+    "id": "T021",
+    "name": "咏物通灵",
+    "kind": "passive",
+    "text": "「体物之工，穷情写貌。」咏物一题，体察入微，形神兼备——出战「咏物」题材时得分 +8%。",
+    "effect": { "type": "theme_pct", "theme": "yongwu", "value": 0.08 }
+  },
+  {
+    "id": "T022",
+    "name": "一鼓作气",
+    "kind": "passive",
+    "text": "《左传·庄公十年》：夫战，勇气也。一鼓作气，再而衰，三而竭。气势连捷的收益 ×1.4，越连捷越凌厉。",
+    "effect": { "type": "streak_mult", "value": 0.4 }
+  },
+  {
+    "id": "T023",
+    "name": "退笔成冢",
+    "kind": "passive",
+    "text": "智永居永欣寺三十年，临书不退，笔头委积，埋之为冢——积学既深，虽江郎才尽亦有余勇。每场结算后灵感补足至 10，不致骤然封笔。",
+    "effect": { "type": "insp_floor", "value": 10 }
+  },
+  {
+    "id": "T024",
+    "name": "六六大顺",
+    "kind": "passive",
+    "text": "「六」者，顺也。灵感骰若掷出六点，灵思沛然，本场得分 ×1.3。",
+    "effect": { "type": "lucky_six", "mult": 1.3 }
+  },
+  {
+    "id": "T025",
+    "name": "破釜沉舟",
+    "kind": "passive",
+    "text": "《史记·项羽本纪》：皆沉船，破釜甑，烧庐舍，持三日粮，以示士卒必死，无一还心。灵感 ≤12 的绝境中，背水一战，本场得分 +12%。",
+    "effect": { "type": "comeback", "value": 0.12, "threshold": 12 }
+  },
+  {
+    "id": "T026",
+    "name": "学富五车",
+    "kind": "passive",
+    "text": "《庄子·天下》：惠施多方，其书五车。腹笥越厚，下笔越雄——每拥有 3 枚文心，六维算分属性临时 +4%。",
+    "effect": { "type": "armory_pct", "step": 3, "value": 0.04 }
+  },
+  {
+    "id": "T027",
+    "name": "转益多师",
+    "kind": "passive",
+    "text": "杜甫《戏为六绝句》：转益多师是汝师。败于名家而有所悟，平局亦能取法——「败中有得」「平分秋色」的补偿属性额外 +1。",
+    "effect": { "type": "study_bonus", "value": 1 }
+  },
+  {
+    "id": "T028",
+    "name": "金殿对策",
+    "kind": "passive",
+    "text": "殿试策问，临轩而试。金殿之上从容奏对——殿试每场开场，灵感 +3。",
+    "effect": { "type": "palace_insp", "value": 3 }
+  },
+  {
+    "id": "T029",
+    "name": "胸有成竹",
+    "kind": "passive",
+    "text": "苏轼《文与可画筼筜谷偃竹记》：故画竹必先得成竹于胸中。谋定后动，临阵不慌——获得此文心时，灵感 +6。",
+    "effect": { "type": "start_insp", "value": 6 }
   }
 ]

@@ -107,12 +107,22 @@ export class Game {
   /** 计入天象百分比的战斗用属性 */
   effectiveAttrs() {
     const a = { ...this.s.attrs };
+    let pct = 0;
     for (const sk of this.s.sky) {
       const ef = sk.card.effect || {};
       if (ef.type === 'attr_pct' && a[ef.attr] != null) {
-        a[ef.attr] = Math.round(a[ef.attr] * (1 + Number(ef.value || 0)));
+        pct += Number(ef.value) || 0;
       }
     }
+    // 文心「学富五车」：每拥有 step 枚文心，算分属性临时 +value%（收藏越多越强，但靠 diminish 收敛）
+    const ownedCount = (this.s.passive ? this.s.passive.length : 0) + (this.s.active ? this.s.active.length : 0);
+    for (const t of [...(this.s.passive || []), ...(this.s.active || [])]) {
+      const ef = t.effect || {};
+      if (ef.type === 'armory_pct' && Number(ef.step) > 0) {
+        pct += Math.floor(ownedCount / Number(ef.step)) * (Number(ef.value) || 0);
+      }
+    }
+    if (pct) for (const k of R.ATTR_KEYS) if (a[k] != null) a[k] = Math.max(0, Math.round(a[k] * (1 + pct)));
     return a;
   }
 
@@ -240,6 +250,7 @@ export class Game {
       this.push(`获得文心「${talent.name}」`);
     }
     this.applyTalentFlat(talent);
+    this.applyTalentInstant(talent);
     s.events.talents++;
 
     // 文心「洛阳纸贵」：每获得一枚新文心，灵感 +2（含替换所得）
@@ -266,6 +277,11 @@ export class Game {
 
   applyTalentFlat(t) {
     if (t.effect && t.effect.type === 'attr_flat' && t.effect.attrs) this.addAttrs(t.effect.attrs, { raw: true });
+  }
+  /** 获得时一次性触发的效果（如「胸有成竹」开局灵感 +N），不随替换回滚 */
+  applyTalentInstant(t) {
+    const ef = t.effect || {};
+    if (ef.type === 'start_insp') this.addInspiration(Number(ef.value) || 0, `文心·${t.name}`);
   }
   revokeTalentFlat(t) {
     if (t.effect && t.effect.type === 'attr_flat' && t.effect.attrs) {
@@ -628,6 +644,15 @@ export class Game {
       })(),
       zeitgeist: this.s.zeitgeist || null,
       synergies: this.s.synergies || [],
+      // 气势连捷倍率（文心「一鼓作气」等）：拥有 streak_mult 时相乘，进入本场前算好，UI 与结算一致
+      streakMult: (() => {
+        let m = 1;
+        for (const t of [...(this.s.passive || []), ...(this.s.active || [])]) {
+          const ef = t.effect || {};
+          if (ef.type === 'streak_mult') m *= (1 + (Number(ef.value) || 0));
+        }
+        return m;
+      })(),
       isPalace: !!opts.isPalace,
       playerAttrs: this.effectiveAttrs(),
       lianUnlocked: this.lianUnlocked,
@@ -650,7 +675,7 @@ export class Game {
       starsOf(manner) { return R.affinityStars(this.affinityOf(manner)); },
       tierOf(manner) { return R.affinityTierLabel(this.affinityOf(manner)); },
       // 进入本场前的气势连捷加成（依赖连捷状态，单独展示，不并入 affinityOf 以免重复计）。
-      momentumPre(manner) { return R.momentumPct(g.s.affStreak, manner, af); },
+      momentumPre(manner) { return R.momentumPct(g.s.affStreak, manner, af) * (this.streakMult || 1); },
       canUseStyle(style) {
         if (style !== 'lian') return true;
         return g.lianUnlocked;
@@ -708,8 +733,8 @@ export class Game {
     if (zgT) pct.push({ source: 'zeitgeist', label: `风潮·热点${session.themeName}`, value: zgT });
     if (zgM) pct.push({ source: 'zeitgeist', label: `风潮·得势${af.mannerNames[manner]}`, value: zgM });
 
-    // 气势连捷：进入本场前已累积的同风格连胜加成
-    const mom = R.momentumPct(s.affStreak, manner, af);
+    // 气势连捷：进入本场前已累积的同风格连胜加成（含文心「一鼓作气」倍率）
+    const mom = R.momentumPct(s.affStreak, manner, af) * (session.streakMult || 1);
     if (mom !== 0) pct.push({ source: 'momentum', label: `气势连捷·${s.affStreak.n}连`, value: mom });
 
     for (const t of s.passive) {
@@ -719,6 +744,17 @@ export class Game {
       if (ef.type === 'palace_pct' && session.isPalace) {
         pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
       }
+      // —— 以下为「创意文心」新增效果 ——
+      if (ef.type === 'style_pct' && (ef.style === style || ef.style === 'any')) {
+        pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
+      }
+      if (ef.type === 'theme_pct' && ef.theme === session.theme) {
+        pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
+      }
+      if (ef.type === 'comeback' && s.inspiration <= (Number(ef.threshold) || 12)) {
+        pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
+      }
+      if (ef.type === 'lucky_six' && dice === 6) critMult = Math.max(critMult, Number(ef.mult) || 1);
     }
     for (const t of session.usedActive) {
       const ef = t.effect || {};
@@ -727,6 +763,17 @@ export class Game {
       if (ef.type === 'dice_plus') dicePlus += Number(ef.value) || 0;
       if (ef.type === 'crit') { if (this.rand() < (Number(ef.chance) || 0)) critMult = Math.max(critMult, Number(ef.mult) || 1); }
       if (ef.type === 'copy_affinity') session._copyAffinity = true;
+      // —— 主动文心亦可触发创意效果 ——
+      if (ef.type === 'style_pct' && (ef.style === style || ef.style === 'any')) {
+        pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
+      }
+      if (ef.type === 'theme_pct' && ef.theme === session.theme) {
+        pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
+      }
+      if (ef.type === 'comeback' && s.inspiration <= (Number(ef.threshold) || 12)) {
+        pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
+      }
+      if (ef.type === 'lucky_six' && dice === 6) critMult = Math.max(critMult, Number(ef.mult) || 1);
     }
 
     // 文心羁绊：拥有特定组合即激活的联动加成（实时按当前持有重算，无持久状态）
@@ -858,6 +905,17 @@ export class Game {
       }
     }
 
+    // 文心「退笔成冢」：每场结算后灵感托底至下限（仅补足，不削弱惩罚，避免封笔螺旋）
+    let floor = 0;
+    for (const t of s.passive) {
+      const ef = t.effect || {};
+      if (ef.type === 'insp_floor') floor = Math.max(floor, Number(ef.value) || 0);
+    }
+    if (floor > 0 && s.inspiration < floor) {
+      s.inspiration = Math.min(this.s.inspirationMax, floor);
+      this.push(`文心托底：「${session.npc.fullName || session.npc.name}」一役后灵感补足至 ${floor}`);
+    }
+
     this.ui.onState(s);
   }
 
@@ -874,6 +932,13 @@ export class Game {
       const key = k === 'style' ? style : k;
       if (key) delta[key] = (delta[key] || 0) + Number(v);
     }
+    // 文心「转益多师」：败中有得 / 平局补偿的属性额外 +value（落在同一门上）
+    let extra = 0;
+    for (const t of (this.s.passive || [])) {
+      const ef = t.effect || {};
+      if (ef.type === 'study_bonus') extra += Number(ef.value) || 0;
+    }
+    if (extra) for (const k of Object.keys(delta)) delta[k] += extra;
     const got = this.addAttrs(delta);
     if (Object.keys(got).length) this.ui.toast(label);
   }
@@ -938,6 +1003,11 @@ export class Game {
         this.ui.toast('灵感枯竭，余下场次弃权记负');
         s.battle.loss += (n - i); s.battle.streak = 0; s.palaceDone += (n - i);
         break;
+      }
+      // 文心「金殿对策」：殿试每场开场灵感 +value
+      for (const t of (s.passive || [])) {
+        const ef = t.effect || {};
+        if (ef.type === 'palace_insp') this.addInspiration(Number(ef.value) || 0, `文心·${t.name}`);
       }
       await this.doBattle({
         npc: palaceFoes[i], theme: themes[i], isPalace: true,
