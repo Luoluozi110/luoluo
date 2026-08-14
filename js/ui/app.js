@@ -59,11 +59,9 @@ async function boot() {
   // 配乐：待机/标题界面 BGM（首次交互后真正起播）
   setScene('idle');
 
-  board = new BoardView(cfg, $('#scene'));
-  hud = new Hud($('#hud'));
-
-  // 云端自动同步：部署级 cloud.json 或本机覆盖提供的地址，拉取后合并进 cfg。
-  // 这样所有玩家在启动时即自动用上编辑器发布的最新配置，无需手动载入。
+  // 云端自动同步必须发生在 BoardView / Modals / BattleStage 创建之前。
+  // 旧顺序先创建 BoardView 再拉云端：cfg 虽被覆盖，但 BoardView 仍持有旧 board，
+  // 因而地图编辑器的名称/图标/格子效果不会反映到画面。
   try {
     cloudConfigUrl = localStorage.getItem('feihua_cloud_config_url') || (await loadCloudUrl()) || '';
     if (cloudConfigUrl) {
@@ -71,10 +69,13 @@ async function boot() {
       if (proj) {
         cfg = applyProjectOverride(cfg, proj);
         cloudConfigActive = true;
-        hud.toast('已从云端同步最新配置');
       }
     }
   } catch (_) { /* 云端不可用不阻断启动 */ }
+
+  board = new BoardView(cfg, $('#scene'));
+  hud = new Hud($('#hud'));
+  if (cloudConfigActive) hud.toast('已从云端同步最新配置');
   modals = new Modals($('#modalLayer'), cfg);
   battle = new BattleStage($('#battleStage'), cfg);
   schoolEl = $('#schoolScreen');
@@ -172,6 +173,13 @@ function buildSchoolScreen() {
   const src = Object.entries(configSource).map(([k, v]) => `${k}←${v}`).join('　');
   const store = Album.loadStore();
   const canContinue = hasRun();
+  // 续玩存档摘要：槽位（手动/自动）+ 回合 + 时间
+  const contRun = canContinue
+    ? (listRuns().filter(r => !r.over).find(r => r.manual) || listRuns().filter(r => !r.over)[0])
+    : null;
+  const contInfo = contRun
+    ? `${contRun.manual ? '手动存档' : '自动存档'} · 第 ${contRun.turn} 回合 · ${contRun.savedAt ? new Date(contRun.savedAt).toLocaleTimeString('zh-CN', { hour12: false }) : ''}`
+    : '检测到未完成的存档，可从中断处续玩';
 
   // 图鉴阁入口：展示已邂逅对手数（跨局累计）
   const npcs = cfg.npcs || [];
@@ -184,7 +192,7 @@ function buildSchoolScreen() {
       <div class="title-ink" style="font-size:40px;text-align:center">選 擇 流 派</div>
       <div class="subtitle" style="text-align:center;margin-top:6px">五子各有所长，落子无悔，且赴科场。</div>
       ${canContinue ? `<div style="text-align:center;margin:10px 0 4px"><button class="btn btn-primary" data-continue style="font-size:18px;padding:12px 30px;letter-spacing:.12em">▶ 继续上局</button>
-        <div style="font-size:12px;color:var(--mo-3);margin-top:6px">检测到未完成的存档，可从中断处续玩</div></div>` : ''}
+        <div style="font-size:12px;color:var(--mo-3);margin-top:6px">${contInfo}</div></div>` : ''}
       <div class="school-grid">${cards}</div>
       <div class="school-actions" style="text-align:center;margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
         <button class="btn btn-ink" data-album>传世名篇（已解锁 ${store.unlocked.length}/${(cfg.album || []).length}）</button>
@@ -368,7 +376,8 @@ function showMenu() {
         <button class="btn btn-ink menu-item" data-close>关闭</button>
       </div>
       <div style="font-size:12px;color:var(--mo-3);text-align:center;margin-top:12px;letter-spacing:.05em;line-height:1.7">
-        进度自动保存在本机浏览器（localStorage）。<br/>关闭页面后，可从「主菜单 · 继续上局」恢复。
+        每回合结束自动存档；「保存当前进度」另存为手动档，不被覆盖。<br/>
+        关闭页面后，可从「主菜单 · 继续上局」恢复（读取时手动档优先）。
       </div>
     </div>`;
   const ov = modals.open(html, 'gameMenu');
@@ -471,8 +480,8 @@ function openCustomConfig() {
     try { obj = JSON.parse(ta.value); }
     catch (err) { setMsg('JSON 解析失败：' + err.message, true); return; }
     const proj = (obj && typeof obj === 'object') ? obj : null;
-    const keys = ['questions', 'events', 'talents', 'npcs', 'affinity'].filter(k => proj && proj[k] !== undefined);
-    if (!keys.length) { setMsg('文件中未找到 questions / events / talents / npcs / affinity 任一键。', true); return; }
+    const keys = ['questions', 'events', 'talents', 'npcs', 'affinity', 'synergies', 'board'].filter(k => proj && proj[k] !== undefined);
+    if (!keys.length) { setMsg('文件中未找到 questions / events / talents / npcs / affinity / synergies / board 任一键。', true); return; }
     try { cfg = applyProjectOverride(cfg, proj); }
     catch (err) { setMsg('合并失败：' + err.message, true); return; }
     localStorage.setItem('feihua_custom_config', JSON.stringify(proj));

@@ -402,6 +402,11 @@ export class Game {
       case 'mingjing': await this.doScenic(cell); break;
       default: break;
     }
+    // 地图编辑器可为任意格子配置额外落地效果，与类型默认效果叠加
+    if (cell.effect && Object.keys(cell.effect).length) {
+      this.push(`「${cell.name}」触发额外效果`);
+      await this.applyEffect(cell.effect);
+    }
   }
 
   async doPing(cell) {

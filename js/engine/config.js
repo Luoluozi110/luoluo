@@ -63,7 +63,7 @@ export async function loadCloudUrl() {
 export function applyProjectOverride(baseCfg, project) {
   if (!project || typeof project !== 'object') return baseCfg;
   const next = Object.assign({}, baseCfg);
-  for (const key of ['questions', 'events', 'talents', 'npcs', 'affinity', 'synergies']) {
+  for (const key of ['questions', 'events', 'talents', 'npcs', 'affinity', 'synergies', 'board']) {
     if (project[key] !== undefined && project[key] !== null) next[key] = project[key];
   }
   return normalize(next);
@@ -85,7 +85,10 @@ function normalize(cfg) {
     br.id = bid;
     br.cells.forEach((cid, i) => {
       const d = declared.get(cid) || {};
+      const base = { ...d };
+      delete base.id; delete base.branch; delete base.branchIndex; delete base.ring;
       byId.set(cid, {
+        ...base,
         id: cid,
         type: d.type || BRANCH_TYPES[i] || 'ping',
         name: d.name || `${br.landmark}·${i + 1}`,

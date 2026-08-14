@@ -110,7 +110,7 @@ export class BoardView {
     el.style.top = p.y + 'px';
     const big = cell.type === 'start' || cell.type === 'landmark';
     if (big) { el.style.left = (p.x - 4) + 'px'; el.style.top = (p.y - 4) + 'px'; }   // 50px 大格相对 42px 格位居中
-    el.innerHTML = `<div class="glyph">${glyph(cell.type)}</div><div class="cname">${cell.name}</div>`;
+    el.innerHTML = `<div class="glyph">${glyph(cell.icon || cell.type)}</div><div class="cname">${cell.name}</div>`;
     el.title = `${cell.id}｜${cell.name}`;
     board.appendChild(el);
     this.coords.set(cell.id, p);
