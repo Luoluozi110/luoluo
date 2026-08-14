@@ -9,5 +9,6 @@
   "battleLoseExtraLate": -3,
   "quizWrong": -1,
   "quizCorrectInsp": 1,
-  "lowWarning": 5
+  "lowWarning": 5,
+  "eventCellCost": -1
 }

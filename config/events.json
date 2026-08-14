@@ -87,7 +87,7 @@
           "attrs": {
             "si": 3
           },
-          "inspiration": -4
+          "inspiration": -5
         }
       },
       {
@@ -96,7 +96,7 @@
           "attrs": {
             "bi": 4
           },
-          "inspiration": -6
+          "inspiration": -7
         }
       }
     ]
@@ -124,7 +124,7 @@
           "attrs": {
             "bi": 2
           },
-          "inspiration": 0
+          "inspiration": -3
         }
       }
     ]
@@ -153,7 +153,7 @@
       "attrs": {
         "xue": 4
       },
-      "inspiration": -4
+      "inspiration": -5
     }
   },
   {
@@ -205,7 +205,7 @@
         "text": "熄灯就寝，明日再来",
         "effect": {
           "attrs": {},
-          "inspiration": 2
+          "inspiration": 0
         }
       }
     ]
@@ -251,7 +251,7 @@
           "attrs": {
             "si": 3
           },
-          "inspiration": -4
+          "inspiration": -5
         }
       },
       {
@@ -298,7 +298,7 @@
       "attrs": {
         "xue": 2
       },
-      "inspiration": -3
+      "inspiration": -5
     }
   },
   {
@@ -328,7 +328,7 @@
             "xue": 2,
             "si": 1
           },
-          "inspiration": 1
+          "inspiration": -3
         }
       },
       {
@@ -337,7 +337,7 @@
           "attrs": {
             "xue": 1
           },
-          "inspiration": 0
+          "inspiration": -2
         }
       }
     ]
@@ -355,7 +355,7 @@
           "attrs": {
             "si": 2
           },
-          "inspiration": -3
+          "inspiration": -4
         }
       },
       {
@@ -377,7 +377,7 @@
       "attrs": {
         "lian": 2
       },
-      "inspiration": 1
+      "inspiration": -4
     }
   },
   {
@@ -390,7 +390,7 @@
       "attrs": {
         "xue": 2
       },
-      "inspiration": -4
+      "inspiration": -6
     }
   },
   {
@@ -431,7 +431,7 @@
             "shi": 2,
             "si": 1
           },
-          "inspiration": -2
+          "inspiration": -3
         }
       },
       {
@@ -458,7 +458,7 @@
           "attrs": {
             "shi": 3
           },
-          "inspiration": -3
+          "inspiration": -4
         }
       },
       {
@@ -482,7 +482,7 @@
       "attrs": {
         "xue": 2
       },
-      "inspiration": 0
+      "inspiration": -4
     }
   },
   {
@@ -582,7 +582,7 @@
           "attrs": {
             "bi": 3
           },
-          "inspiration": -5
+          "inspiration": -6
         }
       },
       {
@@ -618,7 +618,7 @@
         "xue": 2,
         "bi": 1
       },
-      "inspiration": -3
+      "inspiration": -5
     }
   },
   {
@@ -634,7 +634,7 @@
           "attrs": {
             "si": 2
           },
-          "inspiration": 1
+          "inspiration": -3
         }
       },
       {
@@ -671,7 +671,7 @@
       "attrs": {
         "ci": 2
       },
-      "inspiration": -2
+      "inspiration": -4
     }
   },
   {
@@ -684,7 +684,7 @@
       "attrs": {
         "bi": 3
       },
-      "inspiration": -3
+      "inspiration": -5
     }
   },
   {

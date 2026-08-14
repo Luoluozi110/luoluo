@@ -461,6 +461,9 @@ export class Game {
     if (ev.rarity === 'rare') s.events.rare++;
     if (ev.rarity === 'legend') s.events.legend++;
 
+    // 「奇遇耗神」：参与奇遇先耗一份心神（每格落地扣一次，替代已回退的逐格「行路耗神」；调参见 inspiration.json）
+    if (this.cfg.inspiration.eventCellCost) this.addInspiration(this.cfg.inspiration.eventCellCost, '奇遇耗神');
+
     const choiceIdx = await this.ui.showEvent(ev);
 
     if (ev.kind === 'choice') {
