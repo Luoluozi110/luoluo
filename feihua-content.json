@@ -2703,18 +2703,18 @@
           "title": "国子监祭酒",
           "style": "bi",
           "attrs": {
-            "shi": 16,
-            "ci": 16,
-            "lian": 15,
+            "shi": 19,
+            "ci": 19,
+            "lian": 20,
             "bi": 35,
-            "xue": 16,
-            "si": 17
+            "xue": 21,
+            "si": 19
           }
         },
         {
           "name": "康尔玉",
-          "title": "联胜有继",
-          "style": "ci",
+          "title": "联圣有继",
+          "style": "lian",
           "attrs": {
             "shi": 16,
             "ci": 18,
