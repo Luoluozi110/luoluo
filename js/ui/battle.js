@@ -89,7 +89,7 @@ export class BattleStage {
       `文体：${STYLE_NAMES[style]}　风格：${session.mannerNames[manner]}`;
 
     /* ⑤ 掷灵感骰 */
-    const dice = await this.rollDice(panel);
+    const dice = await this.rollDice(panel, session);
 
     /* ⑥ 算分对决（决策已毕，撤去倒计时） */
     const slot = el.querySelector('#btTimerSlot');
@@ -176,27 +176,65 @@ export class BattleStage {
     });
   }
 
-  rollDice(panel) {
+  rollDice(panel, session) {
     return new Promise(resolve => {
-      let done = false, stop = () => {};
+      let done = false;
+      let timerStop = null;
+      const dm = BATTLE_COEF.diceMult;
+      const pips = [];                                  // 已掷出的灵感骰点数（可叠加）
+      const hasFixed = () => session.usedActive.some(t => (t.effect || {}).type === 'fixed_dice');
+      const stopTimer = () => { if (timerStop) { timerStop(); timerStop = null; } };
+      const armTimer = (onExpire) => { stopTimer(); timerStop = this.startTimer(panel, onExpire, this.seconds); };
+
+      const finish = () => { if (done) return; done = true; stopTimer(); resolve(pips); };
+
       const doRoll = async (auto) => {
-        if (done) return; done = true; stop();
+        if (done || pips.length > 0) return;
         const n = 1 + Math.floor(Math.random() * 6);
+        pips.push(n);
         play('dice');
-        sting('dice');        // 论战掷骰动画配乐
+        sting('dice');
         panel.innerHTML = `<div class="ph">⑤ 掷灵感骰${auto ? '　<span style="font-size:12px;color:var(--mo-3)">时限已到，代掷</span>' : ''}</div>
-          <div style="text-align:center"><div style="display:inline-block;font-size:62px;letter-spacing:.1em;color:var(--zhu)"
-            class="pop-in">${'一二三四五六'[n - 1]}</div>
+          <div style="text-align:center"><div style="display:inline-block;font-size:62px;letter-spacing:.1em;color:var(--zhu)" class="pop-in">${'一二三四五六'[n - 1]}</div>
           <div style="font-size:14px;color:var(--mo-3)">掷出 ${n} 点</div></div>`;
         await sleep(760);
-        resolve(n);
+        if (done) return;
+        renderExtra();
+        armTimer(() => finish());                       // 进入追加阶段：再给一整段时限，超时自动结算
       };
-      const dm = BATTLE_COEF.diceMult;
-      panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">1d6 × ${dm} = 临场发挥（${dm}～${dm * 6} 分）　·　限时 ${this.seconds} 秒</span></div>
+
+      const renderExtra = () => {
+        const total = pips.reduce((a, b) => a + b, 0);
+        const score = total * dm;
+        const canExtra = !hasFixed() && session.inspiration >= 3;
+        const pipHtml = pips.map(n => `<span class="dice-pip">${'①②③④⑤⑥'[n - 1]}</span>`).join('');
+        panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → 临场发挥 ${score} 分${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
+          <div class="dice-pips">${pipHtml}</div>
+          <div class="pick-row">
+            ${canExtra
+              ? `<button class="pick" id="btExtra"><div class="pn">➕ 多掷一枚</div><div class="pv">灵感 −3（可叠加）</div></button>`
+              : `<button class="pick" disabled><div class="pn">${hasFixed() ? '固定骰·不可叠' : '灵感不足'}</div></button>`}
+            <button class="pick" id="btConfirm"><div class="pn">确定得分</div><div class="pv">以 ${pips.length} 枚结算</div></button>
+          </div>`;
+        if (canExtra) panel.querySelector('#btExtra').addEventListener('click', () => addExtra());
+        panel.querySelector('#btConfirm').addEventListener('click', () => finish());
+      };
+
+      const addExtra = () => {
+        if (done || session.inspiration < 3 || hasFixed()) return;
+        session.spendInspiration(3, '追加灵感骰');
+        const n = 1 + Math.floor(Math.random() * 6);
+        pips.push(n);
+        play('dice'); sting('dice');
+        renderExtra();
+        armTimer(() => finish());
+      };
+
+      panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">1d6 × ${dm}（${dm}～${dm * 6} 分）；消耗 3 点灵感可多掷一枚，能持续叠加　·　限时 ${this.seconds} 秒</span></div>
         <div class="pick-row"><button class="pick" id="btRoll" style="min-width:180px"><div class="pn">掷 骰</div>
         <div class="pv">听天由命，也听人事</div></button></div>`;
       panel.querySelector('#btRoll').addEventListener('click', () => doRoll(false));
-      stop = this.startTimer(panel, () => doRoll(true));
+      armTimer(() => doRoll(true));
     });
   }
 

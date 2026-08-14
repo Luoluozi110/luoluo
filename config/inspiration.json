@@ -1,6 +1,6 @@
 {
-  "initial": 20,
-  "max": 30,
+  "initial": 28,
+  "max": 48,
   "pingCell": 1,
   "branchEnterCost": 4,
   "battleCost": -2,

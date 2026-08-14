@@ -431,6 +431,15 @@
 .pick:disabled .pv { color: var(--zhu); }
 .pick .home { display: inline-block; font-size: 11px; color: #fff; background: var(--taohua-deep); border-radius: 6px; padding: 1px 6px; margin-top: 4px; }
 .pick .mom { font-size: 11px; color: var(--jin); margin-top: 3px; }
+/* 多枚灵感骰：已掷骰子点数展示 */
+.dice-pips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 6px 0 2px; }
+.dice-pip {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 8px; font-size: 19px; line-height: 1;
+  background: rgba(255,255,255,.7); border: 2px solid rgba(150,124,80,.5); color: var(--zhu);
+  animation: pip-pop .22s var(--ease-back);
+}
+@keyframes pip-pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .active-talents { display: flex; gap: 8px; margin-top: 11px; flex-wrap: wrap; align-items: center; }
 .active-talents .lb { font-size: 12px; color: var(--mo-3); letter-spacing: .12em; }
 .at-btn {

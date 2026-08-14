@@ -694,6 +694,14 @@ export class Game {
         this.inspiration = s.inspiration;
         return true;
       },
+      /** 创作时消耗灵感多掷一枚灵感骰：扣灵感并同步快照，供 UI 判断可否继续叠加 */
+      spendInspiration(n, reason) {
+        if (s.inspiration < n) return false;
+        g.addInspiration(-n, reason);
+        this.inspiration = s.inspiration;
+        if (g.ui && g.ui.onState) g.ui.onState(s);
+        return true;
+      },
       /** 结算：返回双方明细 */
       resolve(style, manner, dice) {
         return g.resolveBattle(session, style, manner, dice);
@@ -705,6 +713,12 @@ export class Game {
   resolveBattle(session, style, manner, dice) {
     const s = this.s;
     const af = this.cfg.affinity;
+
+    // 多枚灵感骰支持：dice 可为点数数组（每枚一枚），也可仍是单数字向后兼容。
+    // 总点数 = 各枚求和，与「灵感骰 = 点数 × diceMult」公式自洽；lucky_six 取「任一枚为 6」。
+    const dicePips = Array.isArray(dice) ? dice.slice() : [Number(dice) || 1];
+    const totalPips = dicePips.reduce((a, b) => a + (Number(b) || 0), 0) || 1;
+    const hasSix = dicePips.includes(6);
 
     /* ---- 玩家侧修正 ---- */
     const pct = [], flat = [];
@@ -754,7 +768,7 @@ export class Game {
       if (ef.type === 'comeback' && s.inspiration <= (Number(ef.threshold) || 12)) {
         pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
       }
-      if (ef.type === 'lucky_six' && dice === 6) critMult = Math.max(critMult, Number(ef.mult) || 1);
+      if (ef.type === 'lucky_six' && hasSix) critMult = Math.max(critMult, Number(ef.mult) || 1);
     }
     for (const t of session.usedActive) {
       const ef = t.effect || {};
@@ -773,7 +787,7 @@ export class Game {
       if (ef.type === 'comeback' && s.inspiration <= (Number(ef.threshold) || 12)) {
         pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
       }
-      if (ef.type === 'lucky_six' && dice === 6) critMult = Math.max(critMult, Number(ef.mult) || 1);
+      if (ef.type === 'lucky_six' && hasSix) critMult = Math.max(critMult, Number(ef.mult) || 1);
     }
 
     // 文心羁绊：拥有特定组合即激活的联动加成（实时按当前持有重算，无持久状态）
@@ -801,7 +815,7 @@ export class Game {
     }
 
     const selfCalc = R.battleScore({
-      attrs: session.playerAttrs, style, dice, dicePlus, diceMult, diceFixed, critMult,
+      attrs: session.playerAttrs, style, dice: totalPips, dicePlus, diceMult, diceFixed, critMult,
       pctMods: pct, flatMods: flat
     });
     const oppCalc = R.battleScore({
@@ -814,7 +828,7 @@ export class Game {
       && R.expectedScore(npcAttrs, npcStyle) > R.expectedScore(session.playerAttrs, style);
 
     return {
-      style, manner, dice, selfCalc,
+      style, manner, dice: totalPips, dicePips, selfCalc,
       npcStyle, npcManner, npcDice, oppCalc,
       npcMannerName: af.mannerNames[npcManner], result, upset
     };

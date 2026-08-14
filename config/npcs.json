@@ -2,71 +2,414 @@
   {
     "id": "tongsheng",
     "tier": "童生级",
-    "range": [0, 0.25],
+    "range": [
+      0,
+      0.25
+    ],
     "desc": "乡试圈前半登场。刚进学的蒙童，字还写不周正，专为送你一点信心。各有所偏，遇到偏科的同窗最好用所长击之。",
     "npcs": [
-      { "name": "周小满", "title": "蒙学童子", "style": "shi", "attrs": { "shi": 8, "ci": 4, "lian": 3, "bi": 4, "xue": 4, "si": 3 } },
-      { "name": "陈砚秋", "title": "村塾学子", "style": "ci", "attrs": { "shi": 4, "ci": 8, "lian": 3, "bi": 4, "xue": 3, "si": 4 } },
-      { "name": "吴双儿", "title": "启蒙幼童", "style": "lian", "attrs": { "shi": 4, "ci": 3, "lian": 8, "bi": 3, "xue": 4, "si": 4 } },
-      { "name": "孙阿牛", "title": "私塾蒙童", "style": "bi", "attrs": { "shi": 4, "ci": 4, "lian": 3, "bi": 8, "xue": 3, "si": 4 } },
-      { "name": "钱小乙", "title": "初学蒙生", "style": "xue", "attrs": { "shi": 4, "ci": 3, "lian": 4, "bi": 4, "xue": 8, "si": 3 } },
-      { "name": "李墨童", "title": "开蒙学童", "style": "si", "attrs": { "shi": 3, "ci": 4, "lian": 4, "bi": 4, "xue": 3, "si": 8 } }
+      {
+        "name": "周小满",
+        "title": "蒙学童子",
+        "style": "shi",
+        "attrs": {
+          "shi": 9,
+          "ci": 4,
+          "lian": 3,
+          "bi": 4,
+          "xue": 4,
+          "si": 3
+        }
+      },
+      {
+        "name": "陈砚秋",
+        "title": "村塾学子",
+        "style": "ci",
+        "attrs": {
+          "shi": 4,
+          "ci": 9,
+          "lian": 3,
+          "bi": 4,
+          "xue": 3,
+          "si": 4
+        }
+      },
+      {
+        "name": "吴双儿",
+        "title": "启蒙幼童",
+        "style": "lian",
+        "attrs": {
+          "shi": 4,
+          "ci": 3,
+          "lian": 9,
+          "bi": 3,
+          "xue": 4,
+          "si": 4
+        }
+      },
+      {
+        "name": "孙阿牛",
+        "title": "私塾蒙童",
+        "style": "bi",
+        "attrs": {
+          "shi": 4,
+          "ci": 4,
+          "lian": 3,
+          "bi": 9,
+          "xue": 3,
+          "si": 4
+        }
+      },
+      {
+        "name": "钱小乙",
+        "title": "初学蒙生",
+        "style": "xue",
+        "attrs": {
+          "shi": 4,
+          "ci": 3,
+          "lian": 4,
+          "bi": 4,
+          "xue": 9,
+          "si": 3
+        }
+      },
+      {
+        "name": "李墨童",
+        "title": "开蒙学童",
+        "style": "si",
+        "attrs": {
+          "shi": 3,
+          "ci": 4,
+          "lian": 4,
+          "bi": 4,
+          "xue": 3,
+          "si": 9
+        }
+      }
     ]
   },
   {
     "id": "xiucai",
     "tier": "秀才级",
-    "range": [0.25, 0.5],
+    "range": [
+      0.25,
+      0.5
+    ],
     "desc": "乡试圈后半登场。已入庠序的秀才，有来有回，赢下靠的是稳。六人各擅一体，摸清谁偏哪门再出手。",
     "npcs": [
-      { "name": "张秀才", "title": "庠序生员", "style": "shi", "attrs": { "shi": 13, "ci": 7, "lian": 5, "bi": 7, "xue": 6, "si": 6 } },
-      { "name": "黄明远", "title": "县学秀才", "style": "ci", "attrs": { "shi": 6, "ci": 13, "lian": 5, "bi": 6, "xue": 7, "si": 7 } },
-      { "name": "林清斋", "title": "儒学生员", "style": "lian", "attrs": { "shi": 6, "ci": 7, "lian": 13, "bi": 6, "xue": 6, "si": 6 } },
-      { "name": "赵文彬", "title": "府学秀才", "style": "bi", "attrs": { "shi": 6, "ci": 6, "lian": 5, "bi": 13, "xue": 7, "si": 7 } },
-      { "name": "郑书玉", "title": "廪膳生员", "style": "xue", "attrs": { "shi": 7, "ci": 6, "lian": 6, "bi": 6, "xue": 13, "si": 6 } },
-      { "name": "王翰生", "title": "邑庠秀才", "style": "si", "attrs": { "shi": 6, "ci": 7, "lian": 6, "bi": 6, "xue": 6, "si": 13 } }
+      {
+        "name": "张秀才",
+        "title": "庠序生员",
+        "style": "shi",
+        "attrs": {
+          "shi": 14,
+          "ci": 8,
+          "lian": 5,
+          "bi": 8,
+          "xue": 6,
+          "si": 6
+        }
+      },
+      {
+        "name": "黄明远",
+        "title": "县学秀才",
+        "style": "ci",
+        "attrs": {
+          "shi": 6,
+          "ci": 14,
+          "lian": 5,
+          "bi": 6,
+          "xue": 8,
+          "si": 8
+        }
+      },
+      {
+        "name": "林清斋",
+        "title": "儒学生员",
+        "style": "lian",
+        "attrs": {
+          "shi": 6,
+          "ci": 8,
+          "lian": 14,
+          "bi": 6,
+          "xue": 6,
+          "si": 6
+        }
+      },
+      {
+        "name": "赵文彬",
+        "title": "府学秀才",
+        "style": "bi",
+        "attrs": {
+          "shi": 6,
+          "ci": 6,
+          "lian": 5,
+          "bi": 14,
+          "xue": 8,
+          "si": 8
+        }
+      },
+      {
+        "name": "郑书玉",
+        "title": "廪膳生员",
+        "style": "xue",
+        "attrs": {
+          "shi": 8,
+          "ci": 6,
+          "lian": 6,
+          "bi": 6,
+          "xue": 14,
+          "si": 6
+        }
+      },
+      {
+        "name": "王翰生",
+        "title": "邑庠秀才",
+        "style": "si",
+        "attrs": {
+          "shi": 6,
+          "ci": 8,
+          "lian": 6,
+          "bi": 6,
+          "xue": 6,
+          "si": 14
+        }
+      }
     ]
   },
   {
     "id": "juren",
     "tier": "举人级",
-    "range": [0.5, 0.75],
+    "range": [
+      0.5,
+      0.75
+    ],
     "desc": "会试圈前半登场。乡试解元之流，若 Build 尚未成型，会被压着打。每人独精一门，专克对应短板。",
     "npcs": [
-      { "name": "范解元", "title": "乡试解元", "style": "shi", "attrs": { "shi": 22, "ci": 11, "lian": 9, "bi": 11, "xue": 10, "si": 9 } },
-      { "name": "苏明哲", "title": "公车举人", "style": "ci", "attrs": { "shi": 10, "ci": 22, "lian": 9, "bi": 10, "xue": 11, "si": 10 } },
-      { "name": "陆云亭", "title": "鹿鸣宴客", "style": "lian", "attrs": { "shi": 10, "ci": 11, "lian": 22, "bi": 9, "xue": 10, "si": 10 } },
-      { "name": "韩世昌", "title": "乙榜举人", "style": "bi", "attrs": { "shi": 10, "ci": 10, "lian": 9, "bi": 22, "xue": 11, "si": 10 } },
-      { "name": "唐季卿", "title": "孝廉举人", "style": "xue", "attrs": { "shi": 11, "ci": 10, "lian": 10, "bi": 10, "xue": 22, "si": 9 } },
-      { "name": "白文渊", "title": "秋闱中式", "style": "si", "attrs": { "shi": 10, "ci": 11, "lian": 10, "bi": 10, "xue": 9, "si": 22 } }
+      {
+        "name": "范解元",
+        "title": "乡试解元",
+        "style": "shi",
+        "attrs": {
+          "shi": 24,
+          "ci": 12,
+          "lian": 10,
+          "bi": 12,
+          "xue": 11,
+          "si": 10
+        }
+      },
+      {
+        "name": "苏明哲",
+        "title": "公车举人",
+        "style": "ci",
+        "attrs": {
+          "shi": 11,
+          "ci": 24,
+          "lian": 10,
+          "bi": 11,
+          "xue": 12,
+          "si": 11
+        }
+      },
+      {
+        "name": "陆云亭",
+        "title": "鹿鸣宴客",
+        "style": "lian",
+        "attrs": {
+          "shi": 11,
+          "ci": 12,
+          "lian": 24,
+          "bi": 10,
+          "xue": 11,
+          "si": 11
+        }
+      },
+      {
+        "name": "韩世昌",
+        "title": "乙榜举人",
+        "style": "bi",
+        "attrs": {
+          "shi": 11,
+          "ci": 11,
+          "lian": 10,
+          "bi": 24,
+          "xue": 12,
+          "si": 11
+        }
+      },
+      {
+        "name": "唐季卿",
+        "title": "孝廉举人",
+        "style": "xue",
+        "attrs": {
+          "shi": 12,
+          "ci": 11,
+          "lian": 11,
+          "bi": 11,
+          "xue": 24,
+          "si": 10
+        }
+      },
+      {
+        "name": "白文渊",
+        "title": "秋闱中式",
+        "style": "si",
+        "attrs": {
+          "shi": 11,
+          "ci": 12,
+          "lian": 11,
+          "bi": 11,
+          "xue": 10,
+          "si": 24
+        }
+      }
     ]
   },
   {
     "id": "jinshi",
     "tier": "进士级",
-    "range": [0.75, 1.0],
+    "range": [
+      0.75,
+      1
+    ],
     "desc": "会试圈后半登场。已登进士第的老手，认真选文体、算相性才能赢。各踞一科，遇偏科强者宜避其锋。",
     "npcs": [
-      { "name": "欧阳翰", "title": "殿前进士", "style": "shi", "attrs": { "shi": 27, "ci": 13, "lian": 12, "bi": 13, "xue": 13, "si": 14 } },
-      { "name": "司马文", "title": "同进士出身", "style": "ci", "attrs": { "shi": 14, "ci": 27, "lian": 12, "bi": 13, "xue": 13, "si": 13 } },
-      { "name": "上官明", "title": "进士及第", "style": "lian", "attrs": { "shi": 13, "ci": 13, "lian": 27, "bi": 12, "xue": 13, "si": 14 } },
-      { "name": "夏侯瑾", "title": "翰林庶吉士", "style": "bi", "attrs": { "shi": 13, "ci": 13, "lian": 12, "bi": 27, "xue": 13, "si": 14 } },
-      { "name": "慕容玉", "title": "赐进士出身", "style": "xue", "attrs": { "shi": 14, "ci": 13, "lian": 13, "bi": 12, "xue": 27, "si": 13 } },
-      { "name": "宇文渊", "title": "甲科进士", "style": "si", "attrs": { "shi": 13, "ci": 14, "lian": 13, "bi": 12, "xue": 13, "si": 27 } }
+      {
+        "name": "欧阳翰",
+        "title": "殿前进士",
+        "style": "shi",
+        "attrs": {
+          "shi": 29,
+          "ci": 14,
+          "lian": 13,
+          "bi": 14,
+          "xue": 14,
+          "si": 15
+        }
+      },
+      {
+        "name": "司马文",
+        "title": "同进士出身",
+        "style": "ci",
+        "attrs": {
+          "shi": 15,
+          "ci": 29,
+          "lian": 13,
+          "bi": 14,
+          "xue": 14,
+          "si": 14
+        }
+      },
+      {
+        "name": "上官明",
+        "title": "进士及第",
+        "style": "lian",
+        "attrs": {
+          "shi": 14,
+          "ci": 14,
+          "lian": 29,
+          "bi": 13,
+          "xue": 14,
+          "si": 15
+        }
+      },
+      {
+        "name": "夏侯瑾",
+        "title": "翰林庶吉士",
+        "style": "bi",
+        "attrs": {
+          "shi": 14,
+          "ci": 14,
+          "lian": 13,
+          "bi": 29,
+          "xue": 14,
+          "si": 15
+        }
+      },
+      {
+        "name": "慕容玉",
+        "title": "赐进士出身",
+        "style": "xue",
+        "attrs": {
+          "shi": 15,
+          "ci": 14,
+          "lian": 14,
+          "bi": 13,
+          "xue": 29,
+          "si": 14
+        }
+      },
+      {
+        "name": "宇文渊",
+        "title": "甲科进士",
+        "style": "si",
+        "attrs": {
+          "shi": 14,
+          "ci": 15,
+          "lian": 14,
+          "bi": 13,
+          "xue": 14,
+          "si": 29
+        }
+      }
     ]
   },
   {
     "id": "zhukaoguan",
     "tier": "主考官",
-    "range": [1.0, 1.0],
+    "range": [
+      1,
+      1
+    ],
     "desc": "殿试三场的终极大考。题材固定为咏物、送别、怀古各一场，三场全胜可得「金榜题名」。三位考官各偏诗、词、笔。",
     "isFinal": true,
     "battles": 3,
-    "themes": ["yongwu", "songbie", "huaigu"],
+    "themes": [
+      "yongwu",
+      "songbie",
+      "huaigu"
+    ],
     "npcs": [
-      { "name": "王侍郎", "title": "礼部侍郎", "style": "shi", "attrs": { "shi": 35, "ci": 16, "lian": 15, "bi": 16, "xue": 16, "si": 17 } },
-      { "name": "李学士", "title": "翰林学士", "style": "ci", "attrs": { "shi": 17, "ci": 35, "lian": 15, "bi": 16, "xue": 16, "si": 16 } },
-      { "name": "赵大儒", "title": "国子监祭酒", "style": "bi", "attrs": { "shi": 16, "ci": 16, "lian": 15, "bi": 35, "xue": 16, "si": 17 } }
+      {
+        "name": "王侍郎",
+        "title": "礼部侍郎",
+        "style": "shi",
+        "attrs": {
+          "shi": 38,
+          "ci": 17,
+          "lian": 16,
+          "bi": 17,
+          "xue": 17,
+          "si": 18
+        }
+      },
+      {
+        "name": "李学士",
+        "title": "翰林学士",
+        "style": "ci",
+        "attrs": {
+          "shi": 18,
+          "ci": 38,
+          "lian": 16,
+          "bi": 17,
+          "xue": 17,
+          "si": 17
+        }
+      },
+      {
+        "name": "赵大儒",
+        "title": "国子监祭酒",
+        "style": "bi",
+        "attrs": {
+          "shi": 17,
+          "ci": 17,
+          "lian": 16,
+          "bi": 38,
+          "xue": 17,
+          "si": 18
+        }
+      }
     ]
   }
 ]
