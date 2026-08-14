@@ -20,13 +20,7 @@ export function mainCoord(id) {
   return { col: n, row: id - 60, season: 'winter', edge: '归舟之路' };
 }
 
-// 平面模式：支线从主环「向内」朝桃花岛中心延伸（方向指向棋盘几何中心）
-const BRANCH_DIR = {
-  shanshui: { dc: 0, dr: -1 },   // 12 在底边 → 向中心（上）延伸
-  shuyuan: { dc: 1, dr: 0 },     // 27 在左边 → 向中心（右）延伸
-  yuyuan: { dc: 0, dr: 1 },      // 42 在顶边 → 向中心（下）延伸
-  biansai: { dc: -1, dr: 0 }     // 57 在右边 → 向中心（左）延伸
-};
+// 平面模式主环：四边对应春/夏/秋/冬，由 mainCoord 统一映射，无支线。
 
 export class BoardView {
   constructor(cfg, root) {
@@ -86,48 +80,10 @@ export class BoardView {
     ttl.innerHTML = `<div class="big">桃花島</div><div class="sm">詩詞楹聯飛花棋</div>`;
     board.appendChild(ttl);
 
-    // 支线连线
-    for (const [bid, br] of Object.entries(cfg.board.branches)) {
-      const gate = cfg.board.gateOf[bid];
-      const g = mainCoord(gate);
-      const d = BRANCH_DIR[bid] || { dc: 0, dr: 1 };
-      const a = this.px(g.col, g.row), b = this.px(g.col + d.dc * 5, g.row + d.dr * 5);
-      const link = document.createElement('div');
-      link.className = 'branch-link' + (d.dc === 0 ? ' vert' : '');
-      const x1 = Math.min(a.x, b.x), y1 = Math.min(a.y, b.y);
-      Object.assign(link.style, {
-        left: x1 + CELL / 2 - (d.dc === 0 ? 2 : 0) + 'px',
-        top: y1 + CELL / 2 - (d.dr === 0 ? 2 : 0) + 'px',
-        width: (d.dc === 0 ? 4 : Math.abs(b.x - a.x)) + 'px',
-        height: (d.dr === 0 ? 4 : Math.abs(b.y - a.y)) + 'px'
-      });
-      board.appendChild(link);
-    }
-
     // 主环格子
     for (const cell of cfg.board.mainRing) {
       const c = mainCoord(cell.id);
       this.addCell(board, cell, c.col, c.row, c.season);
-    }
-    // 支线格子
-    for (const [bid, br] of Object.entries(cfg.board.branches)) {
-      const gate = cfg.board.gateOf[bid];
-      const g = mainCoord(gate);
-      const d = BRANCH_DIR[bid] || { dc: 0, dr: 1 };
-      br.cells.forEach((cid, i) => {
-        const cell = cfg.board.cellById.get(cid);
-        this.addCell(board, cell, g.col + d.dc * (i + 1), g.row + d.dr * (i + 1), null, true);
-        if (cell.type === 'landmark') {
-          const p = this.px(g.col + d.dc * (i + 1), g.row + d.dr * (i + 1));
-          const lm = document.createElement('div');
-          lm.className = 'landmark-3d';
-          lm.style.left = (p.x - 11) + 'px';
-          lm.style.top = (p.y - 10) + 'px';
-          lm.style.transform = 'translateZ(2px)';
-          lm.innerHTML = LANDMARK_ART[bid] || '';
-          board.appendChild(lm);
-        }
-      });
     }
 
     // 棋子
@@ -284,10 +240,6 @@ export class BoardView {
   }
 
   cellIdOf(state) {
-    if (state.track === 'branch') {
-      const br = this.cfg.board.branches[state.branchId];
-      return br.cells[Math.max(0, state.branchIndex)];
-    }
     return state.pos;
   }
 
@@ -320,13 +272,7 @@ export class BoardView {
     this.cellEls.forEach(e => e.classList.remove('hint'));
     const ring = this.cfg.board.ringSize;
     for (let i = 1; i <= 6; i++) {
-      let id;
-      if (state.track === 'branch') {
-        const br = this.cfg.board.branches[state.branchId];
-        id = br.cells[Math.min(br.cells.length - 1, state.branchIndex + i)];
-      } else {
-        id = (state.pos + i) % ring;
-      }
+      const id = (state.pos + i) % ring;
       const el = this.cellEls.get(id);
       if (el) el.classList.add('hint');
     }

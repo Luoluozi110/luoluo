@@ -278,63 +278,63 @@
     {
       "id": "tongsheng",
       "name": "童生",
-      "min": 0,
-      "max": 2269,
+      "min": 1,
+      "max": 2133,
       "reward": ""
     },
     {
       "id": "xiucai",
       "name": "秀才",
-      "min": 2270,
-      "max": 2560,
+      "min": 2134,
+      "max": 2406,
       "reward": "「书生」头像框"
     },
     {
       "id": "juren",
       "name": "举人",
-      "min": 2561,
-      "max": 3025,
+      "min": 2407,
+      "max": 2844,
       "reward": "名篇残卷系统"
     },
     {
       "id": "jinshi",
       "name": "进士",
-      "min": 3026,
-      "max": 3200,
+      "min": 2845,
+      "max": 3008,
       "reward": "困难模式"
     },
     {
       "id": "tanhua",
       "name": "探花",
-      "min": 3201,
-      "max": 3258,
+      "min": 3009,
+      "max": 3063,
       "reward": "「探花」主题皮肤"
     },
     {
       "id": "bangyan",
       "name": "榜眼",
-      "min": 3259,
-      "max": 3374,
+      "min": 3064,
+      "max": 3172,
       "reward": "自定义开局"
     },
     {
       "id": "zhuangyuan",
       "name": "状元",
-      "min": 3376,
-      "max": 3491,
+      "min": 3173,
+      "max": 3282,
       "reward": "「状元」入场动画"
     },
     {
       "id": "hanlin",
       "name": "翰林",
-      "min": 3492,
-      "max": 3607,
+      "min": 3283,
+      "max": 3391,
       "reward": "全部天赋预览"
     },
     {
       "id": "wenzong",
       "name": "文宗",
-      "min": 3608,
+      "min": 3392,
       "max": null,
       "reward": "「文宗」称号与特效"
     }

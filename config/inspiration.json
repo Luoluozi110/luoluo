@@ -2,7 +2,7 @@
   "initial": 28,
   "max": 48,
   "pingCell": 1,
-  "branchEnterCost": 4,
+  "scenicCost": 8,
   "battleCost": -2,
   "battleCostLate": -2,
   "battleLoseExtra": -2,

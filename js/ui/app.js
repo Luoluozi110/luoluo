@@ -254,8 +254,7 @@ function makeUi() {
     showQuizResult: (q, ans, ok) => modals.showQuizResult(q, ans, ok),
     showEvent: ev => modals.showEvent(ev),
     showSky: c => modals.showSky(c),
-    askBranch: (br, cell) => modals.askBranch(br, cell),
-    showLandmark: (br, g) => modals.showLandmark(br, g),
+    askScenic: (cell, cost, curInsp) => modals.askScenic(cell, cost, curInsp),
     runBattle: async sess => {
       setScene('battle');     // 挥毫论战：切 combat 配乐
       setTension(0.7);

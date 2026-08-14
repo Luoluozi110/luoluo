@@ -94,6 +94,14 @@ export const CELL_GLYPH = {
     <path d="M12 20V13" class="ta-brown ta-3"/>
     <path d="M12 13L6 6.5M12 13l6-6.5" class="ta-brown ta-3"/>
     <path d="M6 6.5l.4 3.4M6 6.5l3.4-.4M18 6.5l-.4 3.4M18 6.5l-3.4-.4" class="ta-brown ta-2"/>`),
+  // 名胜格：楼阁（访胜抽签）
+  mingjing: glyphCell(`
+    <path d="M3.5 12l8.5-5 8.5 5z" fill="#b23a2e" class="ta-zhu ta-2"/>
+    <path d="M5.5 12l6.5-3.8 6.5 3.8z" fill="#e6c98f" class="ta-brown ta-1"/>
+    <rect x="7.5" y="12" width="9" height="6" rx="1" fill="#f0dcb4" class="ta-brown ta-2"/>
+    <rect x="9.4" y="13.6" width="1.8" height="4.4" fill="#8d5a2a"/>
+    <rect x="13" y="13.6" width="1.8" height="4.4" fill="#8d5a2a"/>
+    <rect x="4.6" y="18" width="14.8" height="2" rx="1" fill="#b23a2e" class="ta-zhu ta-1"/>`),
   // 起点：书铺
   start: glyphCell(`
     <path d="M3.5 11L12 4.5 20.5 11" class="ta-brown ta-3" fill="#e5b657"/>

@@ -122,6 +122,7 @@
 .cell.t-sky    { box-shadow: 0 5px 0 rgba(30,50,110,.3), 0 8px 12px rgba(0,0,0,.28), inset 0 0 0 2px rgba(76,102,168,.5); }
 .cell.t-quiz   { box-shadow: 0 5px 0 rgba(90,70,30,.3),  0 8px 12px rgba(0,0,0,.28), inset 0 0 0 2px rgba(201,151,31,.45); }
 .cell.t-branch_gate { background: linear-gradient(165deg, #f7dcc4, #e0b58c); border-color: #b98b5c; }
+.cell.t-mingjing { box-shadow: 0 5px 0 rgba(140,50,80,.3), 0 8px 12px rgba(0,0,0,.28), inset 0 0 0 2px rgba(178,58,46,.5); }
 .cell.t-landmark {
   background: linear-gradient(165deg, #ffd9e6, #f3a1bd);
   width: 50px; height: 50px; border-color: var(--taohua-deep);

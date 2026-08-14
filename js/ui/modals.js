@@ -214,25 +214,20 @@ export class Modals {
     });
   }
 
-  /* ---------------------------------------------------- 岔路选择 */
-  askBranch(br, cell, cost = 4, curInsp = Infinity) {
+  /* ---------------------------------------------------- 名胜格·访胜抽签 */
+  askScenic(cell, cost = 8, curInsp = Infinity) {
     return new Promise(resolve => {
-      // 名胜奖励与支线长度均取自配置，不硬编码
-      const gain = (this.cfg.attrs || {}).branchLandmarkGain ?? 5;
-      const len = (br.cells || []).length || 5;
-      const canEnter = curInsp >= cost;
+      const canDraw = curInsp >= cost;
       const ov = this.open(`
         <div class="modal scroll-frame paper branch-modal">
-          <div class="bimg">${LANDMARK_ART[br.id] || ''}</div>
           <div class="mtitle" style="justify-content:center"><h2>${esc(cell.name)}</h2></div>
           <hr class="hr-ink"/>
-          <div style="font-size:17px;line-height:1.8">前方岔路可入「${esc(br.landmark)}」支线，${len} 格之后即达名胜。</div>
-          <div class="rewards">抵达名胜：${ATTR_NAMES[br.themeAttr]} +${gain}，并获文心一枚</div>
-          <div class="warn">代价：绕路耗时，走完后回到主环 ${br.returnAfter + 1} 号格</div>
-          <div class="warn" style="color:#b23a2e">踏入支线需消耗灵感 ${cost} 点${canEnter ? '' : '（当前灵感不足）'}</div>
+          <div style="font-size:17px;line-height:1.9">驻足名胜，可焚香祈愿、抽签问文心。</div>
+          <div class="rewards">消耗灵感 ${cost} 点，随机抽取一枚尚未拥有的文心</div>
+          <div class="warn" style="color:#b23a2e">${canDraw ? '抽签后灵感将减少，请斟酌' : '当前灵感不足，无法抽签'}</div>
           <div class="btn-row">
-            <button class="btn btn-primary" data-go="1" ${canEnter ? '' : 'disabled style="opacity:.45;cursor:not-allowed"'}>踏上支线</button>
-            <button class="btn btn-ink" data-go="0">继续主路</button>
+            <button class="btn btn-primary" data-go="1" ${canDraw ? '' : 'disabled style="opacity:.45;cursor:not-allowed"'}>抽签访胜</button>
+            <button class="btn btn-ink" data-go="0">径直离开</button>
           </div>
         </div>`);
       ov.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => {
@@ -254,21 +249,6 @@ export class Modals {
       </div>`);
     play('sky');
     sting('sky');            // 天象切换配乐：羽音清钟
-    await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', r));
-    this.close(ov);
-  }
-
-  /* ---------------------------------------------------- 名胜领奖 */
-  async showLandmark(br, gain) {
-    const ov = this.open(`
-      <div class="modal scroll-frame paper branch-modal">
-        <div class="bimg" style="width:120px;height:120px">${LANDMARK_ART[br.id] || ''}</div>
-        <div class="mtitle" style="justify-content:center"><h2>抵达 ${esc(br.landmark)}</h2></div>
-        <hr class="hr-ink"/>
-        <div class="rewards" style="font-size:20px">${ATTR_NAMES[br.themeAttr]} +${gain}　并获文心一枚</div>
-        <div class="warn">领赏之后，自岔路口下一格重返主路</div>
-        <div class="btn-row"><button class="btn btn-primary" data-ok>受之无愧</button></div>
-      </div>`);
     await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', r));
     this.close(ov);
   }

@@ -39,7 +39,6 @@ export class Game {
       inspiration: cfg.inspiration.initial,
       inspirationMax: cfg.inspiration.max,
       passive: [], active: [],
-      tendencies: {},
       track: 'main', pos: 0, branchId: null, branchIndex: -1,
       lap: 1, turn: 0, phase: 'lap1',
       sky: [], nextBattlePct: 0,
@@ -290,38 +289,16 @@ export class Game {
   }
 
   /**
-   * 倾向门槛：文心带 unlock.tendency 时，需玩家已累积到对应数量的倾向标签才入池。
-   * 无 unlock 字段的文心不受影响。
+   * 抽一枚玩家尚未持有的文心（图鉴专属文心不参与随机掉落）。
    */
-  tendencyOk(t) {
-    const u = t.unlock;
-    if (!u || !u.tendency) return true;
-    return (this.s.tendencies[u.tendency] || 0) >= (Number(u.count) || 1);
-  }
-
-  /** 抽一枚玩家尚未持有的文心（受倾向门槛约束；图鉴专属文心不参与随机掉落） */
   randomTalent(kind) {
     const have = new Set([...this.s.passive, ...this.s.active].map(t => t.id));
     const pool = this.cfg.talents.filter(t =>
       !have.has(t.id)
       && (!kind || t.kind === kind)
-      && t.source !== 'album'
-      && this.tendencyOk(t));
+      && t.source !== 'album');
     if (!pool.length) return null;
     return pool[Math.floor(this.rand() * pool.length)];
-  }
-
-  /** 记录一枚倾向标签 */
-  addTendency(tag) {
-    if (!tag) return;
-    const s = this.s;
-    s.tendencies[tag] = (s.tendencies[tag] || 0) + 1;
-    const opened = this.cfg.talents.filter(t =>
-      t.unlock && t.unlock.tendency === tag
-      && (Number(t.unlock.count) || 1) === s.tendencies[tag]);
-    this.ui.toast(opened.length
-      ? `倾向「${tag}」×${s.tendencies[tag]}——文心「${opened.map(t => t.name).join('、')}」已入囊中之选`
-      : `获得倾向标签「${tag}」×${s.tendencies[tag]}`);
   }
 
   /** 当前已激活的文心羁绊：拥有 members 全部 id 即激活（战斗时实时重算，无持久状态需回滚）。 */
@@ -402,8 +379,7 @@ export class Game {
       case 'event': await this.doEvent(cell); break;
       case 'battle': await this.doBattleCell(cell); break;
       case 'sky': await this.doSky(cell); break;
-      case 'branch_gate': await this.doGate(cell); break;
-      case 'landmark': await this.doLandmark(cell); break;
+      case 'mingjing': await this.doScenic(cell); break;
       default: break;
     }
   }
@@ -451,7 +427,6 @@ export class Game {
         const gain = (this.cfg.attrs.quizCorrectGain ?? 2) + (sky ? Number(sky.card.effect.value || 1) : 0);
         this.addAttrs({ [key]: gain });
         this.push(`答对「${q.id}」，${R.ATTR_NAMES[key]} +${gain}`);
-        this.addTendency(q.tendency);          // 答对才认这一票倾向
         this.addInspiration(this.cfg.inspiration.quizCorrectInsp ?? 0, '答对'); // 核心技能↔燃料闭环
       } else {
         this.addInspiration(this.cfg.inspiration.quizWrong ?? -2, ans.timedOut ? '超时' : '答错');
@@ -459,12 +434,11 @@ export class Game {
       }
       await this.ui.showQuizResult(q, ans, ok);
     } else {
-      // 抉择题无对错，但「超时未选」不算作出抉择——不给属性/倾向奖励，并照扣灵感
+      // 抉择题无对错，但「超时未选」不算作出抉择——不给属性奖励，并照扣灵感
       if (!ans.timedOut && ans.index >= 0) {
         s.quiz.right++;
         const opt = q.options[ans.index];
         if (opt && opt.attr) this.addAttrs({ [opt.attr]: this.cfg.attrs.quizCorrectGain ?? 2 });
-        if (opt) this.addTendency(opt.tendency);
         this.addInspiration(this.cfg.inspiration.quizCorrectInsp ?? 0, '抉择');
         await this.ui.showQuizResult(q, ans, true);
       } else {
@@ -551,51 +525,21 @@ export class Game {
     this.ui.onState(this.s);
   }
 
-  /* ------------------------------------------------------ 岔路格 */
-  async doGate(cell) {
-    const bid = cell.branch || this.cfg.board.branchGates[String(cell.id)];
-    const br = this.cfg.board.branches[bid];
-    if (!br) return;
-    const cost = this.cfg.inspiration.branchEnterCost ?? 4;
-    const go = await this.ui.askBranch(br, cell, cost, this.s.inspiration);
-    if (go) {
-      if (this.s.inspiration < cost) {
-        this.ui.toast('灵感不足，无法踏入支线');
-        return;
-      }
-      this.addInspiration(-cost, '踏入支线');
-      this.s.track = 'branch';
-      this.s.branchId = bid;
-      this.s.branchIndex = -1;
-      this.ui.toast(`踏上「${br.landmark}」支线，灵感 -${cost}`);
-      this.push(`进入支线 ${br.landmark}`);
-    } else {
-      this.ui.toast('继续主路，直取功名');
-    }
-  }
-
-  /* ------------------------------------------------------ 名胜终点 */
-  async doLandmark(cell) {
-    const br = this.cfg.board.branches[cell.branch];
-    const gain = this.cfg.attrs.branchLandmarkGain ?? 5;
-    this.addAttrs({ [br.themeAttr]: gain });
-    await this.ui.showLandmark(br, gain);
+  /* ------------------------------------------------------ 名胜格 */
+  // 停留时，可消耗灵感随机抽取一枚文心（玩家可选：抽 / 不抽）。
+  async doScenic(cell) {
+    const cost = this.cfg.inspiration.scenicCost ?? 8;
+    const go = await this.ui.askScenic(cell, cost, this.s.inspiration);
+    if (!go) { this.ui.toast(`${cell.name}——览胜片刻，继续前行`); return; }
+    if (this.s.inspiration < cost) { this.ui.toast('灵感不足，无缘访胜抽签'); return; }
+    this.addInspiration(-cost, '访胜抽签');
     const t = this.randomTalent();
-    if (t) await this.grantTalent(t);
-    /* 回主环：岔路格 + branchReturnAdvance 格（默认 1）。
-     * Round 3 F2：支线原本要多走 ~1.7 回合才回到 gate+1，四条支线把全程从 34 推到 38。
-     * 名胜「近道」让支线只花掉走支线的回合、不再倒扣主环进度。
-     *
-     * 近道一律不跨越主环起点：起点是 lap++ 与「进入会试圈 / 殿试」的唯一判定点，
-     * 直接把 pos 取模写过去会静默吞掉一圈（岔路 57 + 近道 3 → pos 0，多跑 60 格）。 */
-    const gate = this.cfg.board.gateOf[br.id] ?? cell.id;
-    const adv = Math.max(1, Number(this.cfg.board.branchReturnAdvance) || 1);
-    this.s.track = 'main';
-    this.s.branchId = null;
-    this.s.branchIndex = -1;
-    this.s.pos = Math.min(gate + adv, this.cfg.board.ringSize - 1);
-    await this.ui.movePiece(this.s);
-    this.ui.toast(`领赏毕，返回主环 ${this.currentCell().name}`);
+    if (t) {
+      await this.grantTalent(t);
+      this.push(`于${cell.name}访胜，灵感 -${cost}，得文心「${t.name}」`);
+    } else {
+      this.ui.toast('胸中已藏尽天下文心，再无可抽');
+    }
   }
 
   /* ====================================================== 战斗 */

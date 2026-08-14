@@ -1,6 +1,5 @@
 {
   "laps": 2,
-  "branchReturnAdvance": 6,
   "sides": [
     {
       "id": "xiangshi",
@@ -72,8 +71,8 @@
     },
     {
       "id": 6,
-      "type": "ze",
-      "name": "悬腕台"
+      "type": "sky",
+      "name": "星矅崖"
     },
     {
       "id": 7,
@@ -102,9 +101,8 @@
     },
     {
       "id": 12,
-      "type": "branch_gate",
-      "name": "山水岔口",
-      "branch": "shanshui"
+      "type": "mingjing",
+      "name": "桃花源"
     },
     {
       "id": 13,
@@ -133,8 +131,8 @@
     },
     {
       "id": 18,
-      "type": "ping",
-      "name": "竹韵桥"
+      "type": "sky",
+      "name": "云津渡"
     },
     {
       "id": 19,
@@ -178,9 +176,8 @@
     },
     {
       "id": 27,
-      "type": "branch_gate",
-      "name": "书院岔口",
-      "branch": "shuyuan"
+      "type": "mingjing",
+      "name": "白鹿洞"
     },
     {
       "id": 28,
@@ -214,8 +211,8 @@
     },
     {
       "id": 34,
-      "type": "ping",
-      "name": "杏园路"
+      "type": "sky",
+      "name": "月华津"
     },
     {
       "id": 35,
@@ -254,9 +251,8 @@
     },
     {
       "id": 42,
-      "type": "branch_gate",
-      "name": "御苑岔口",
-      "branch": "yuyuan"
+      "type": "mingjing",
+      "name": "御花园"
     },
     {
       "id": 43,
@@ -305,8 +301,8 @@
     },
     {
       "id": 52,
-      "type": "ping",
-      "name": "白鸥汀"
+      "type": "sky",
+      "name": "风露台"
     },
     {
       "id": 53,
@@ -395,9 +391,8 @@
     },
     {
       "id": 70,
-      "type": "branch_gate",
-      "name": "边塞岔口",
-      "branch": "biansai"
+      "type": "mingjing",
+      "name": "玉门关"
     },
     {
       "id": 71,
@@ -426,8 +421,8 @@
     },
     {
       "id": 76,
-      "type": "ping",
-      "name": "烟波阔"
+      "type": "sky",
+      "name": "霄汉亭"
     },
     {
       "id": 77,
@@ -443,284 +438,6 @@
       "id": 79,
       "type": "event",
       "name": "沧溟志"
-    }
-  ],
-  "branchGates": {
-    "12": "shanshui",
-    "27": "shuyuan",
-    "42": "yuyuan",
-    "70": "biansai"
-  },
-  "branches": {
-    "shanshui": {
-      "cells": [
-        120,
-        121,
-        122,
-        123,
-        124,
-        125,
-        126,
-        127,
-        128,
-        129
-      ],
-      "themeAttr": "shi",
-      "landmark": "桃花源",
-      "returnAfter": 12
-    },
-    "shuyuan": {
-      "cells": [
-        130,
-        131,
-        132,
-        133,
-        134,
-        135,
-        136,
-        137,
-        138,
-        139
-      ],
-      "themeAttr": "xue",
-      "landmark": "白鹿洞",
-      "returnAfter": 27
-    },
-    "yuyuan": {
-      "cells": [
-        140,
-        141,
-        142,
-        143,
-        144,
-        145,
-        146,
-        147,
-        148,
-        149
-      ],
-      "themeAttr": "ci",
-      "landmark": "御花园",
-      "returnAfter": 42
-    },
-    "biansai": {
-      "cells": [
-        150,
-        151,
-        152,
-        153,
-        154,
-        155,
-        156,
-        157,
-        158,
-        159
-      ],
-      "themeAttr": "lian",
-      "landmark": "玉门关",
-      "returnAfter": 70
-    }
-  },
-  "branchCells": [
-    {
-      "id": 120,
-      "type": "ping",
-      "name": "溪云初起"
-    },
-    {
-      "id": 121,
-      "type": "quiz",
-      "name": "问津处"
-    },
-    {
-      "id": 122,
-      "type": "event",
-      "name": "落英缤纷"
-    },
-    {
-      "id": 123,
-      "type": "battle",
-      "name": "武陵渔郎"
-    },
-    {
-      "id": 124,
-      "type": "ping",
-      "name": "渔樵闲话"
-    },
-    {
-      "id": 125,
-      "type": "quiz",
-      "name": "桃源问字"
-    },
-    {
-      "id": 126,
-      "type": "event",
-      "name": "桑竹垂荫"
-    },
-    {
-      "id": 127,
-      "type": "battle",
-      "name": "避秦鼓枻"
-    },
-    {
-      "id": 128,
-      "type": "ping",
-      "name": "鸡犬相闻"
-    },
-    {
-      "id": 129,
-      "type": "landmark",
-      "name": "桃花源"
-    },
-    {
-      "id": 130,
-      "type": "ping",
-      "name": "讲经坪"
-    },
-    {
-      "id": 131,
-      "type": "quiz",
-      "name": "白鹿问难"
-    },
-    {
-      "id": 132,
-      "type": "event",
-      "name": "古碑残拓"
-    },
-    {
-      "id": 133,
-      "type": "battle",
-      "name": "鹅湖之会"
-    },
-    {
-      "id": 134,
-      "type": "ping",
-      "name": "弦歌不辍"
-    },
-    {
-      "id": 135,
-      "type": "quiz",
-      "name": "鹿洞书声"
-    },
-    {
-      "id": 136,
-      "type": "event",
-      "name": "石室藏经"
-    },
-    {
-      "id": 137,
-      "type": "battle",
-      "name": "朱陆之辩"
-    },
-    {
-      "id": 138,
-      "type": "ping",
-      "name": "泮水清风"
-    },
-    {
-      "id": 139,
-      "type": "landmark",
-      "name": "白鹿洞"
-    },
-    {
-      "id": 140,
-      "type": "ping",
-      "name": "曲径回廊"
-    },
-    {
-      "id": 141,
-      "type": "quiz",
-      "name": "沉香亭北"
-    },
-    {
-      "id": 142,
-      "type": "event",
-      "name": "太液芙蓉"
-    },
-    {
-      "id": 143,
-      "type": "battle",
-      "name": "清平调"
-    },
-    {
-      "id": 144,
-      "type": "ping",
-      "name": "小殿风微"
-    },
-    {
-      "id": 145,
-      "type": "quiz",
-      "name": "霓裳一曲"
-    },
-    {
-      "id": 146,
-      "type": "event",
-      "name": "海棠春睡"
-    },
-    {
-      "id": 147,
-      "type": "battle",
-      "name": "谪仙斗酒"
-    },
-    {
-      "id": 148,
-      "type": "ping",
-      "name": "玉砌雕栏"
-    },
-    {
-      "id": 149,
-      "type": "landmark",
-      "name": "御花园"
-    },
-    {
-      "id": 150,
-      "type": "ping",
-      "name": "黄沙道"
-    },
-    {
-      "id": 151,
-      "type": "quiz",
-      "name": "阳关三叠"
-    },
-    {
-      "id": 152,
-      "type": "event",
-      "name": "胡笳夜"
-    },
-    {
-      "id": 153,
-      "type": "battle",
-      "name": "燕然勒石"
-    },
-    {
-      "id": 154,
-      "type": "ping",
-      "name": "孤烟落日"
-    },
-    {
-      "id": 155,
-      "type": "quiz",
-      "name": "羌笛杨柳"
-    },
-    {
-      "id": 156,
-      "type": "event",
-      "name": "烽燧传书"
-    },
-    {
-      "id": 157,
-      "type": "battle",
-      "name": "龙城飞将"
-    },
-    {
-      "id": 158,
-      "type": "ping",
-      "name": "春风不度"
-    },
-    {
-      "id": 159,
-      "type": "landmark",
-      "name": "玉门关"
     }
   ]
 }
