@@ -6,27 +6,56 @@
       "key": "wencai",
       "name": "文采分",
       "formula": "min(shi+ci+lian, 51) * 12 + max(0, shi+ci+lian-51) * 6",
-      "coeff": { "shi": 12, "ci": 12, "lian": 12, "soft": 51, "softRate": 0.5 },
+      "coeff": {
+        "shi": 12,
+        "ci": 12,
+        "lian": 12,
+        "soft": 51,
+        "softRate": 0.5
+      },
       "bonuses": [
         {
           "id": "sanjuejunheng",
           "name": "三绝均衡",
           "desc": "诗力、词力、联力均 ≥24",
-          "cond": { "type": "all_min", "attrs": ["shi", "ci", "lian"], "value": 24 },
+          "cond": {
+            "type": "all_min",
+            "attrs": [
+              "shi",
+              "ci",
+              "lian"
+            ],
+            "value": 24
+          },
           "score": 100
         },
         {
           "id": "yizhiduxiu",
           "name": "一枝独秀",
           "desc": "最高创作力 > 另两项之和",
-          "cond": { "type": "max_gt_sum_others", "attrs": ["shi", "ci", "lian"] },
+          "cond": {
+            "type": "max_gt_sum_others",
+            "attrs": [
+              "shi",
+              "ci",
+              "lian"
+            ]
+          },
           "score": 50
         },
         {
           "id": "pobi",
           "name": "破壁",
           "desc": "任一创作力 ≥22",
-          "cond": { "type": "any_min", "attrs": ["shi", "ci", "lian"], "value": 22 },
+          "cond": {
+            "type": "any_min",
+            "attrs": [
+              "shi",
+              "ci",
+              "lian"
+            ],
+            "value": 22
+          },
           "score": 120
         }
       ]
@@ -35,20 +64,42 @@
       "key": "gongli",
       "name": "功力分",
       "formula": "min(bi+xue+si, 39) * 10 + max(0, bi+xue+si-39) * 5",
-      "coeff": { "bi": 10, "xue": 10, "si": 10, "soft": 39, "softRate": 0.5 },
+      "coeff": {
+        "bi": 10,
+        "xue": 10,
+        "si": 10,
+        "soft": 39,
+        "softRate": 0.5
+      },
       "bonuses": [
         {
           "id": "genjishenhou",
           "name": "根基深厚",
           "desc": "笔力、学力、思力三项极差 ≤3",
-          "cond": { "type": "range_max", "attrs": ["bi", "xue", "si"], "value": 3 },
+          "cond": {
+            "type": "range_max",
+            "attrs": [
+              "bi",
+              "xue",
+              "si"
+            ],
+            "value": 3
+          },
           "score": 80
         },
         {
           "id": "pianfeng",
           "name": "偏锋",
           "desc": "笔力/学力/思力任一项 ≥16",
-          "cond": { "type": "any_min", "attrs": ["bi", "xue", "si"], "value": 16 },
+          "cond": {
+            "type": "any_min",
+            "attrs": [
+              "bi",
+              "xue",
+              "si"
+            ],
+            "value": 16
+          },
           "score": 150
         }
       ]
@@ -57,13 +108,29 @@
       "key": "zhanji",
       "name": "战绩分",
       "formula": "min(win,3)*40 + max(0,win-3)*20 + draw*20 + lose*(-10) + min(maxStreak,2)*20 + upset*10",
-      "coeff": { "win": 40, "winFull": 3, "draw": 20, "lose": -10, "maxStreak": 20, "maxStreakCap": 2, "upset": 10 },
+      "coeff": {
+        "win": 40,
+        "winFull": 3,
+        "draw": 20,
+        "lose": -10,
+        "maxStreak": 20,
+        "maxStreakCap": 2,
+        "upset": 10
+      },
       "bonuses": [
         {
           "id": "santijiesheng",
           "name": "三体皆胜",
           "desc": "诗、词、联三种文体各取胜 ≥2 场",
-          "cond": { "type": "each_style_win_min", "styles": ["shi", "ci", "lian"], "value": 2 },
+          "cond": {
+            "type": "each_style_win_min",
+            "styles": [
+              "shi",
+              "ci",
+              "lian"
+            ],
+            "value": 2
+          },
           "score": 100
         }
       ]
@@ -72,7 +139,13 @@
       "key": "qiyu",
       "name": "奇遇分",
       "formula": "eventCount*10 + rareCount*30 + legendCount*80 + talentCount*45 + itemCount*20",
-      "coeff": { "eventCount": 10, "rareCount": 30, "legendCount": 80, "talentCount": 45, "itemCount": 20 },
+      "coeff": {
+        "eventCount": 10,
+        "rareCount": 30,
+        "legendCount": 80,
+        "talentCount": 45,
+        "itemCount": 20
+      },
       "bonuses": []
     },
     {
@@ -85,28 +158,63 @@
           "id": "shixian",
           "name": "诗仙",
           "desc": "诗力 > 词力+联力 且 诗力 ≥30 且 用诗取胜 ≥3 场",
-          "cond": { "type": "school_master", "attr": "shi", "others": ["ci", "lian"], "attrMin": 30, "winMin": 3 },
+          "cond": {
+            "type": "school_master",
+            "attr": "shi",
+            "others": [
+              "ci",
+              "lian"
+            ],
+            "attrMin": 30,
+            "winMin": 3
+          },
           "score": 210
         },
         {
           "id": "cizong",
           "name": "词宗",
           "desc": "词力 > 诗力+联力 且 词力 ≥30 且 用词取胜 ≥3 场",
-          "cond": { "type": "school_master", "attr": "ci", "others": ["shi", "lian"], "attrMin": 30, "winMin": 3 },
+          "cond": {
+            "type": "school_master",
+            "attr": "ci",
+            "others": [
+              "shi",
+              "lian"
+            ],
+            "attrMin": 30,
+            "winMin": 3
+          },
           "score": 210
         },
         {
           "id": "liansheng",
           "name": "联圣",
           "desc": "联力 > 诗力+词力 且 联力 ≥30 且 用联取胜 ≥3 场",
-          "cond": { "type": "school_master", "attr": "lian", "others": ["shi", "ci"], "attrMin": 30, "winMin": 3 },
+          "cond": {
+            "type": "school_master",
+            "attr": "lian",
+            "others": [
+              "shi",
+              "ci"
+            ],
+            "attrMin": 30,
+            "winMin": 3
+          },
           "score": 210
         },
         {
           "id": "sanjue",
           "name": "三绝",
           "desc": "诗、词、联三力均 ≥14",
-          "cond": { "type": "all_min", "attrs": ["shi", "ci", "lian"], "value": 14 },
+          "cond": {
+            "type": "all_min",
+            "attrs": [
+              "shi",
+              "ci",
+              "lian"
+            ],
+            "value": 14
+          },
           "score": 180
         }
       ]
@@ -115,21 +223,31 @@
       "key": "yuanman",
       "name": "圆满分",
       "formula": "arrive*250 + inspirationLeft*15 + 速度加成 + 殿试三连胜*75",
-      "coeff": { "arrive": 250, "inspirationLeft": 15 },
+      "coeff": {
+        "arrive": 250,
+        "inspirationLeft": 15
+      },
       "bonuses": [
         {
           "id": "jiecai",
           "name": "捷才",
-          "desc": "≤38 回合抵达终点",
-          "cond": { "type": "turns_max", "value": 38 },
+          "desc": "≤54 回合抵达终点",
+          "cond": {
+            "type": "turns_max",
+            "value": 54
+          },
           "score": 150,
           "exclusiveGroup": "speed"
         },
         {
           "id": "congrong",
           "name": "从容",
-          "desc": "≤40 回合抵达终点，且剩余灵感 ≥5",
-          "cond": { "type": "turns_max_with_inspiration", "value": 40, "inspirationMin": 5 },
+          "desc": "≤56 回合抵达终点，且剩余灵感 ≥5",
+          "cond": {
+            "type": "turns_max_with_inspiration",
+            "value": 56,
+            "inspirationMin": 5
+          },
           "score": 100,
           "exclusiveGroup": "speed"
         },
@@ -137,26 +255,89 @@
           "id": "jinbangtiming",
           "name": "金榜题名",
           "desc": "殿试三场全胜",
-          "cond": { "type": "final_sweep", "value": 3 },
+          "cond": {
+            "type": "final_sweep",
+            "value": 3
+          },
           "score": 75
         }
       ],
       "specialRules": [
-        { "id": "fengbi", "desc": "封笔结局：圆满分记 0，其余五维照常结算" },
-        { "id": "turnLimit", "desc": "回合上限 60 强制结束且未到达终点：圆满分 = 剩余灵感 × 15，无抵达分" }
+        {
+          "id": "fengbi",
+          "desc": "封笔结局：圆满分记 0，其余五维照常结算"
+        },
+        {
+          "id": "turnLimit",
+          "desc": "回合上限 84 强制结束且未到达终点：圆满分 = 剩余灵感 × 15，无抵达分"
+        }
       ]
     }
   ],
   "grades": [
-    { "id": "tongsheng", "name": "童生", "min": 0, "max": 1949, "reward": "" },
-    { "id": "xiucai", "name": "秀才", "min": 1950, "max": 2199, "reward": "「书生」头像框" },
-    { "id": "juren", "name": "举人", "min": 2200, "max": 2599, "reward": "名篇残卷系统" },
-    { "id": "jinshi", "name": "进士", "min": 2600, "max": 2749, "reward": "困难模式" },
-    { "id": "tanhua", "name": "探花", "min": 2750, "max": 2799, "reward": "「探花」主题皮肤" },
-    { "id": "bangyan", "name": "榜眼", "min": 2800, "max": 2899, "reward": "自定义开局" },
-    { "id": "zhuangyuan", "name": "状元", "min": 2900, "max": 2999, "reward": "「状元」入场动画" },
-    { "id": "hanlin", "name": "翰林", "min": 3000, "max": 3099, "reward": "全部天赋预览" },
-    { "id": "wenzong", "name": "文宗", "min": 3100, "max": null, "reward": "「文宗」称号与特效" }
+    {
+      "id": "tongsheng",
+      "name": "童生",
+      "min": 0,
+      "max": 2269,
+      "reward": ""
+    },
+    {
+      "id": "xiucai",
+      "name": "秀才",
+      "min": 2270,
+      "max": 2560,
+      "reward": "「书生」头像框"
+    },
+    {
+      "id": "juren",
+      "name": "举人",
+      "min": 2561,
+      "max": 3025,
+      "reward": "名篇残卷系统"
+    },
+    {
+      "id": "jinshi",
+      "name": "进士",
+      "min": 3026,
+      "max": 3200,
+      "reward": "困难模式"
+    },
+    {
+      "id": "tanhua",
+      "name": "探花",
+      "min": 3201,
+      "max": 3258,
+      "reward": "「探花」主题皮肤"
+    },
+    {
+      "id": "bangyan",
+      "name": "榜眼",
+      "min": 3259,
+      "max": 3374,
+      "reward": "自定义开局"
+    },
+    {
+      "id": "zhuangyuan",
+      "name": "状元",
+      "min": 3376,
+      "max": 3491,
+      "reward": "「状元」入场动画"
+    },
+    {
+      "id": "hanlin",
+      "name": "翰林",
+      "min": 3492,
+      "max": 3607,
+      "reward": "全部天赋预览"
+    },
+    {
+      "id": "wenzong",
+      "name": "文宗",
+      "min": 3608,
+      "max": null,
+      "reward": "「文宗」称号与特效"
+    }
   ],
   "comments": {
     "wencai": "文采最高：锦心绣口，落笔成章",

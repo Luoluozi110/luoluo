@@ -9,10 +9,11 @@
  *                    ├─ arp    古琴拨弦琶音（对局/论战）
  *                    ├─ pulse  木质节拍（对局轻点 / 论战加密）
  *                    ├─ bell   编钟清音（待机/菜单/结算点缀）
- *                    └─ drone  低音长鸣（论战张力推动）
+ *                    ├─ drone  低音长鸣（论战张力推动）
+ *                    └─ mel    古风旋律（待机主题：笛主旋律 + 古琴低音陪衬）
  *
  * 设计基准（同 audio.js 第 6 章「水墨 / 宋代美学」）：五声音阶（宫商角徵羽 = C D E G A）
- * 为音高骨架，古琴拨弦、编钟叩击、木质节拍均以振荡器 + 噪声 + 包络合成。
+ * 为音高骨架，古琴拨弦、编钟叩击、笛管均以振荡器 + 噪声 + 包络合成。
  *
  * 振幅规划（最终到扬声器 ≈ 音符峰值 × 层增益 × MUSIC_GAIN × MASTER_GAIN）：
  *   配乐床峰值约 0.05–0.10，可闻但低于强 SFX（≈0.1–0.13），互不掩盖；强 SFX 触发时再 duck 到 35%。
@@ -20,6 +21,8 @@
  * 自适应维度：
  *   scene  —— 界面/场景（idle 待机标题 / menu 装配 / board 对局 / battle 论战 / result 结算）
  *   tension—— 论战紧张度 0..1（提高琶音密度、开启低音 drone、轻微加速）
+ *   stage  —— 科考阶段 0..4（童生→秀才→举人→进士→主考官）；以「五声调式内移调」实现：
+ *             每升一阶，主音上移一个五度音级（宫→商→角→徵→羽），变调始终在调内、绝不跑调。
  * 所有场景切换走 1.2s 线性淡入淡出，绝不硬切；采用前瞻调度器（lookahead scheduler）
  * 逐拍合成，避免 GC 抖动与爆音。浏览器 autoplay 策略：首次用户交互后才真正起播。
  */
@@ -44,28 +47,65 @@ const P = {
   yuLo: 220.00    // A3
 };
 
+/** 旋律基音（宫，C5） */
+const BASE = P.gong;
+
+/**
+ * 阶段 → 五声调式内移调的半音偏移（宫→商→角→徵→羽，主音逐级上移一个五度音级）。
+ * 变调始终落在五声音阶内，听感和谐、绝不跑调。
+ */
+const STAGE_SEMI = [0, 2, 4, 7, 9];
+
 /**
  * 场景 → 各层目标增益（0 即该层静默）。
- * arp / pulse / drone 还会被 tension 在运行时再缩放。
+ * arp / pulse / drone 还会被 tension 在运行时再缩放；mel 仅待机/菜单/结算点缀。
  */
 const SCENE = {
-  idle:   { bpm: 56, pad: 0.45, arp: 0.00, pulse: 0.00, bell: 0.40, drone: 0.00 }, // 待机标题
-  menu:   { bpm: 60, pad: 0.40, arp: 0.18, pulse: 0.00, bell: 0.30, drone: 0.00 }, // 装配名篇
-  board:  { bpm: 66, pad: 0.40, arp: 0.28, pulse: 0.22, bell: 0.00, drone: 0.00 }, // 对局行进
-  battle: { bpm: 92, pad: 0.36, arp: 0.36, pulse: 0.34, bell: 0.00, drone: 0.30 }, // 挥毫论战
-  result: { bpm: 60, pad: 0.42, arp: 0.00, pulse: 0.00, bell: 0.32, drone: 0.00 }  // 科场结算
+  idle:   { bpm: 56, pad: 0.42, arp: 0.00, pulse: 0.00, bell: 0.18, drone: 0.00, mel: 0.50 }, // 待机标题（古风主题）
+  menu:   { bpm: 60, pad: 0.40, arp: 0.16, pulse: 0.00, bell: 0.22, drone: 0.00, mel: 0.16 }, // 装配名篇
+  board:  { bpm: 66, pad: 0.38, arp: 0.26, pulse: 0.20, bell: 0.00, drone: 0.00, mel: 0.00 }, // 对局行进
+  battle: { bpm: 92, pad: 0.34, arp: 0.34, pulse: 0.32, bell: 0.00, drone: 0.28, mel: 0.00 }, // 挥毫论战
+  result: { bpm: 60, pad: 0.40, arp: 0.00, pulse: 0.00, bell: 0.26, drone: 0.00, mel: 0.22 }  // 科场结算
 };
 
 /** 四小节和声进行（宫 → 徵 → 商 → 羽），每小节一个根音 */
 const ROOTS = [P.gong, P.zhi, P.shang, P.yu];
 
+/* ------------------------------------------------- 古风待机旋律（宫调式） */
+
+/**
+ * 待机主题旋律：四小节（32 个八分音符），宫调式，可无缝循环（起讫皆落宫音）。
+ * 每项 {deg, oct, len}：deg = 五声音阶级数(0宫/2商/4角/7徵/9羽)，oct = 八度偏移，len = 占几拍(八分音符)。
+ */
+const MELODY = [
+  { deg: 0, oct: 0, len: 2 }, { deg: 2, oct: 0, len: 1 }, { deg: 4, oct: 0, len: 1 }, { deg: 7, oct: 0, len: 2 }, { deg: 9, oct: 0, len: 2 }, // 小节1
+  { deg: 9, oct: 0, len: 2 }, { deg: 7, oct: 0, len: 2 }, { deg: 4, oct: 0, len: 2 }, { deg: 0, oct: 0, len: 2 },                             // 小节2
+  { deg: 2, oct: 0, len: 2 }, { deg: 4, oct: 0, len: 2 }, { deg: 7, oct: 0, len: 1 }, { deg: 9, oct: 0, len: 1 }, { deg: 0, oct: 1, len: 2 }, // 小节3（推向高宫）
+  { deg: 9, oct: 0, len: 2 }, { deg: 7, oct: 0, len: 2 }, { deg: 2, oct: 0, len: 2 }, { deg: 0, oct: 0, len: 2 }                              // 小节4（归于宫）
+];
+
+/** 把旋律展开成 32 步网格（每步 = {deg,oct,len} 或 null），供调度器按拍查表 */
+const MEL_GRID = (() => {
+  const g = new Array(32).fill(null);
+  let step = 0;
+  for (const n of MELODY) { g[step] = { deg: n.deg, oct: n.oct, len: n.len }; step += n.len; }
+  return g;
+})();
+
+/** 每小节首音（用于古琴低音陪衬，比主旋律低一个八度） */
+const BAR_LEAD = [
+  { deg: 0, oct: 0 }, { deg: 9, oct: 0 }, { deg: 2, oct: 0 }, { deg: 9, oct: 0 }
+];
+
 /* ------------------------------------------------------------ 状态 */
 
 let bus = null;            // musicBus 节点
-let layers = null;         // {pad,arp,pulse,bell,drone} 各层增益节点
+let layers = null;         // {pad,arp,pulse,bell,drone,mel} 各层增益节点
 let started = false;
 let scene = 'idle';
 let tension = 0;
+let stage = 0;
+let stageSemi = 0;         // 当前阶段对应的移调半音数
 let timer = null;
 let nextTime = 0;
 let step = 0;
@@ -73,6 +113,9 @@ const LOOK = 0.12;         // 前瞻窗口（秒）
 const TICK = 25;           // 调度器轮询间隔（毫秒）
 const STEPS_PER_BAR = 8;   // 每小节八分音符数
 const BARS = 4;            // 进行长度（小节）
+
+/** 阶段移调：把频率按当前 stage 偏移（五声调式内，和谐） */
+function tf(f) { return f * Math.pow(2, stageSemi / 12); }
 
 /* ------------------------------------------------------------ 创建/起播 */
 
@@ -84,7 +127,7 @@ function ensure() {
   bus = getMusicBus();
   if (!bus) return false;
   layers = {};
-  for (const k of ['pad', 'arp', 'pulse', 'bell', 'drone']) {
+  for (const k of ['pad', 'arp', 'pulse', 'bell', 'drone', 'mel']) {
     const g = ctx.createGain();
     g.gain.value = 0;
     g.connect(bus);
@@ -117,6 +160,20 @@ export function setScene(name) {
 /** 设置论战紧张度 0..1（影响琶音密度 / 低音 drone / 速度） */
 export function setTension(v) { tension = Math.max(0, Math.min(1, v)); }
 
+/**
+ * 设置科考阶段 0..4（童生→秀才→举人→进士→主考官）。
+ * 通过「五声调式内移调」改变全曲调高：每升一阶主音上移一个五度音级（宫→商→角→徵→羽）。
+ * 下次落拍即生效，调式内和谐过渡。
+ */
+export function setStage(level) {
+  level = Math.max(0, Math.min(STAGE_SEMI.length - 1, level | 0));
+  stage = level;
+  stageSemi = STAGE_SEMI[level];
+}
+
+/** 返回当前阶段（供 UI/调试） */
+export function getStage() { return stage; }
+
 /** 停止配乐（保留场景状态，可随时 setScene 重启） */
 export function stopMusic() {
   if (timer) { clearInterval(timer); timer = null; }
@@ -142,6 +199,7 @@ function applyScene(immediate) {
   ramp(layers.pulse, s.pulse * (0.5 + 0.5 * tension));
   ramp(layers.bell, s.bell);
   ramp(layers.drone, s.drone * tension);
+  ramp(layers.mel, s.mel);
 }
 
 /* ------------------------------------------------- 调度器 */
@@ -171,21 +229,34 @@ function scheduleStep(step, time) {
   const spb = 60 / bpm / 2;             // 八分音符秒数
   const barLen = spb * STEPS_PER_BAR;
 
-  const root = ROOTS[bar];
+  const root = tf(ROOTS[bar]);
   const chord = [root, root * 1.5, root * 2]; // 纯五度叠置，避讳不协和的二度
 
   if (g.pad > 0.002) padChord(chord, time, barLen * 0.98, 0.09, layers.pad);
-  if (g.drone > 0.002) droneNote(P.gongLo, time, barLen * 0.98, 0.22, layers.drone);
+  if (g.drone > 0.002) droneNote(tf(P.gongLo), time, barLen * 0.98, 0.22, layers.drone);
   // 待机/菜单：每两小节一次清钟
-  if (g.bell > 0.002 && bib === 0 && bar % 2 === 0) bellNote(P.yuLo * 2, time, 0.5, layers.bell);
+  if (g.bell > 0.002 && bib === 0 && bar % 2 === 0) bellNote(tf(P.yuLo * 2), time, 0.5, layers.bell);
   // 对局/论战：八分音符偶数拍古琴拨弦
   if (g.arp > 0.002 && bib % 2 === 0) {
-    const seq = [P.gong, P.shang, P.zhi, P.yu, P.zhi, P.shang];
+    const seq = [P.gong, P.shang, P.zhi, P.yu, P.zhi, P.shang].map(tf);
     pluckNote(seq[(step >> 1) % seq.length], time, 0.5, layers.arp);
   }
   // 木质节拍：四分音符（0、4 拍）；论战紧张时 2、6 拍加密
   if (g.pulse > 0.002 && (bib === 0 || bib === 4 || (tension > 0.5 && (bib === 2 || bib === 6)))) {
     woodTick(time, 0.5, layers.pulse);
+  }
+  // 古风待机旋律（笛主旋律 + 古琴低音陪衬），仅 mel 层激活时发声
+  if (g.mel > 0.002) {
+    const m = MEL_GRID[step];
+    if (m) {
+      const f = BASE * Math.pow(2, (m.deg + stageSemi) / 12 + m.oct);
+      fluteNote(f, time, spb * m.len * 0.96, 0.5, layers.mel);
+    }
+    if (bib === 0) { // 小节首拍：古琴低音陪衬（比主旋律低八度）
+      const bl = BAR_LEAD[bar];
+      const bf = BASE * Math.pow(2, (bl.deg + stageSemi) / 12 + (bl.oct - 1));
+      pluckNote(bf, time, 0.32, layers.mel);
+    }
   }
 }
 
@@ -253,6 +324,34 @@ function woodTick(time, peak, dest) {
   src.start(time); src.stop(time + 0.08);
 }
 
+/**
+ * 笛/箫主旋律音（flute）：基频正弦 + 轻微颤音 LFO + 二次泛音（增笛膜感），
+ * 柔和起音、长尾收音，peak 为该音标称峰值。
+ */
+function fluteNote(freq, time, dur, peak, dest) {
+  const ctx = getAudioContext();
+  const o = ctx.createOscillator();
+  o.type = 'sine'; o.frequency.value = freq;
+  const vib = ctx.createOscillator();          // 颤音 LFO
+  vib.type = 'sine'; vib.frequency.value = 5.2;
+  const vibGain = ctx.createGain(); vibGain.gain.value = freq * 0.012;
+  vib.connect(vibGain); vibGain.connect(o.frequency);
+
+  const o2 = ctx.createOscillator();           // 二次泛音，增笛膜感
+  o2.type = 'triangle'; o2.frequency.value = freq * 2;
+  const g2 = ctx.createGain(); g2.gain.value = 0.28;
+
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, time);
+  g.gain.exponentialRampToValueAtTime(peak, time + 0.05);
+  g.gain.exponentialRampToValueAtTime(peak * 0.7, time + Math.min(dur * 0.6, 0.45));
+  g.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+
+  o.connect(g); o2.connect(g2); g2.connect(g); g.connect(dest);
+  o.start(time); o2.start(time); vib.start(time);
+  o.stop(time + dur + 0.05); o2.stop(time + dur + 0.05); vib.stop(time + dur + 0.05);
+}
+
 /* ------------------------------------------ 动画短旋律（sting） */
 
 /**
@@ -266,21 +365,21 @@ export function sting(name) {
   const t = ctx.currentTime + 0.01;
   const B = bus;
   if (name === 'dice') {
-    [P.gong, P.shang, P.zhi].forEach((f, i) => pluckNote(f, t + i * 0.06, 0.4, B));
+    [P.gong, P.shang, P.zhi].map(tf).forEach((f, i) => pluckNote(f, t + i * 0.06, 0.4, B));
   } else if (name === 'reveal') {
-    bellNote(P.zhi, t, 0.4, B);
-    pluckNote(P.gong, t + 0.08, 0.35, B);
+    bellNote(tf(P.zhi), t, 0.4, B);
+    pluckNote(tf(P.gong), t + 0.08, 0.35, B);
   } else if (name === 'win') {
-    [P.gong, P.shang, P.jue, P.zhi, P.yu].forEach((f, i) => pluckNote(f, t + i * 0.07, 0.4, B));
-    bellNote(P.gongHi, t + 0.4, 0.4, B);
+    [P.gong, P.shang, P.jue, P.zhi, P.yu].map(tf).forEach((f, i) => pluckNote(f, t + i * 0.07, 0.4, B));
+    bellNote(tf(P.gongHi), t + 0.4, 0.4, B);
   } else if (name === 'lose') {
-    [P.zhi, P.jue, P.shang, P.gongLo].forEach((f, i) => pluckNote(f, t + i * 0.09, 0.38, B));
+    [P.zhi, P.jue, P.shang, P.gongLo].map(tf).forEach((f, i) => pluckNote(f, t + i * 0.09, 0.38, B));
   } else if (name === 'unlock') {
-    bellNote(P.zhi, t, 0.45, B);
-    pluckNote(P.gongHi, t + 0.12, 0.4, B);
+    bellNote(tf(P.zhi), t, 0.45, B);
+    pluckNote(tf(P.gongHi), t + 0.12, 0.4, B);
   } else if (name === 'sky') {
-    bellNote(P.yu, t, 0.4, B);
-    pluckNote(P.shang, t + 0.06, 0.32, B);
+    bellNote(tf(P.yu), t, 0.4, B);
+    pluckNote(tf(P.shang), t + 0.06, 0.32, B);
   }
 }
 

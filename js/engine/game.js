@@ -8,7 +8,7 @@ import * as Codex from './codex.js';
 
 export const PASSIVE_MAX = 8;
 export const ACTIVE_MAX = 4;
-export const TURN_LIMIT = 60;
+export const TURN_LIMIT = 84;
 
 export class Game {
   constructor(cfg, ui, rand = Math.random) {

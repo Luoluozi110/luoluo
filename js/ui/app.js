@@ -17,7 +17,7 @@ import { ATTR_NAMES } from '../engine/rules.js';
 import * as Album from '../engine/album.js';
 import * as Codex from '../engine/codex.js';
 import { initAudio } from './audio.js';
-import { setScene, setTension } from './music.js';
+import { setScene, setTension, setStage } from './music.js';
 import { saveRun, loadRun, hasRun, clearRun, deserializeRun } from '../engine/save.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -98,11 +98,27 @@ async function boot() {
   openSchoolScreen();
 }
 
+/* ---------------------------------------------------- 阶段 → 配乐移调 */
+
+/**
+ * 把游戏进度(0..1)映射为科考阶段 0..4，驱动配乐「五声调式内移调」。
+ * 阈值与 config/npcs.json 的 tier.range 对齐：童生[0,0.25)→0，秀才[0.25,0.5)→1，
+ * 举人[0.5,0.75)→2，进士[0.75,1)→3，主考官(殿试,=1)→4。
+ */
+function stageFromProgress(p) {
+  if (p >= 1) return 4;
+  if (p >= 0.75) return 3;
+  if (p >= 0.5) return 2;
+  if (p >= 0.25) return 1;
+  return 0;
+}
+
 /* ---------------------------------------------------- 选流派屏 */
 function openSchoolScreen() {
   maybeResyncCloud();   // 返回主菜单时静默重新拉取云端配置（若已开启）
   showMenuButton(false);
   setScene('idle');            // 返回待机/标题界面：恢复待机配乐
+  setStage(game ? stageFromProgress(game.progress()) : 0); // 待机主题按当前所处阶段移调
   clearRunIfFinished();
   buildSchoolScreen();
   resultEl.classList.remove('on');
@@ -209,6 +225,7 @@ function startGame(schoolId, loadout, playerName) {
   showMenuButton(true);
   setScene('board');          // 进入对局：行进配乐
   setTension(0);
+  setStage(stageFromProgress(game.progress())); // 按当前科考阶段移调（宫→商→角→徵→羽）
   saveRun(game); // 开局即存，关闭后可从「继续上局」恢复
   hud.toast('手机端可拖动棋盘平移、双指缩放；随时点右上角菜单存档');
   enableRoll();
@@ -245,6 +262,7 @@ function makeUi() {
       const out = await battle.run(sess);
       setScene('board');      // 战后回到对局配乐
       setTension(0);
+      setStage(stageFromProgress(game.progress())); // 战后阶段可能已进阶，重新移调
       return out;
     },
     showPalaceIntro: () => modals.showPalaceIntro(),

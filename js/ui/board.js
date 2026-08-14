@@ -5,7 +5,7 @@ import { play } from './audio.js';
 import { sting } from './music.js';
 
 const UNIT = 46;        // 单元格间距
-const GRID = 16;        // 主环 16×16 外圈 = 60 格
+const GRID = 21;        // 主环 21×21 外圈 = 4×(21-1) = 80 格（扩图：原 16×16=60 格，周长 +33%）
 const PAD = 3;          // 外扩单位（仅作浮岛边框留白；支线改为向内延伸）
 const CELL = 42;
 
@@ -13,11 +13,11 @@ export const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 /** 主环 id → 网格坐标（底边→左边→顶边→右边，对应春/夏/秋/冬） */
 export function mainCoord(id) {
-  const n = GRID - 1;                       // 15
-  if (id < 15) return { col: n - id, row: n, season: 'spring', edge: '乡试之路' };
-  if (id < 30) return { col: 0, row: n - (id - 15), season: 'summer', edge: '会试之路' };
-  if (id < 45) return { col: id - 30, row: 0, season: 'autumn', edge: '殿试之路' };
-  return { col: n, row: id - 45, season: 'winter', edge: '归舟之路' };
+  const n = GRID - 1;                       // 20
+  if (id < 20) return { col: n - id, row: n, season: 'spring', edge: '乡试之路' };
+  if (id < 40) return { col: 0, row: n - (id - 20), season: 'summer', edge: '会试之路' };
+  if (id < 60) return { col: id - 40, row: 0, season: 'autumn', edge: '殿试之路' };
+  return { col: n, row: id - 60, season: 'winter', edge: '归舟之路' };
 }
 
 // 平面模式：支线从主环「向内」朝桃花岛中心延伸（方向指向棋盘几何中心）
