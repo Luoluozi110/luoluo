@@ -4,10 +4,10 @@ import { getBudget } from './quality.js';
 import { play } from './audio.js';
 import { sting } from './music.js';
 
-const UNIT = 46;        // 单元格间距
+const UNIT = 50;        // 单元格间距（格子放大 42→48 需更大间距）
 const GRID = 21;        // 主环 21×21 外圈 = 4×(21-1) = 80 格（扩图：原 16×16=60 格，周长 +33%）
-const PAD = 3;          // 外扩单位（仅作浮岛边框留白；支线改为向内延伸）
-const CELL = 42;
+const PAD = 2;          // 外扩单位（收紧外留白，外环向中心收，为内部空白让位）
+const CELL = 48;        // 格子边长（视觉放大 +13%，格内字体同步放大）
 
 export const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -66,16 +66,16 @@ export class BoardView {
     const inner = document.createElement('div');
     inner.className = 'island-inner';
     Object.assign(inner.style, {
-      left: (PAD + 1.4) * UNIT + 'px', top: (PAD + 1.4) * UNIT + 'px',
-      width: (GRID - 2.8) * UNIT + 'px', height: (GRID - 2.8) * UNIT + 'px'
+      left: (PAD + 2.3) * UNIT + 'px', top: (PAD + 2.3) * UNIT + 'px',
+      width: (GRID - 4.6) * UNIT + 'px', height: (GRID - 4.6) * UNIT + 'px'
     });
     board.appendChild(inner);
 
     const ttl = document.createElement('div');
     ttl.className = 'island-title';
     Object.assign(ttl.style, {
-      left: (PAD + 1.4) * UNIT + 'px', top: (PAD + 1.4) * UNIT + 'px',
-      width: (GRID - 2.8) * UNIT + 'px', height: (GRID - 2.8) * UNIT + 'px'
+      left: (PAD + 2.3) * UNIT + 'px', top: (PAD + 2.3) * UNIT + 'px',
+      width: (GRID - 4.6) * UNIT + 'px', height: (GRID - 4.6) * UNIT + 'px'
     });
     ttl.innerHTML = `<div class="big">桃花島</div><div class="sm">詩詞楹聯飛花棋</div>`;
     board.appendChild(ttl);
@@ -109,7 +109,7 @@ export class BoardView {
     el.style.left = p.x + 'px';
     el.style.top = p.y + 'px';
     const big = cell.type === 'start' || cell.type === 'landmark';
-    if (big) { el.style.left = (p.x - 4) + 'px'; el.style.top = (p.y - 4) + 'px'; }
+    if (big) { el.style.left = (p.x - 3) + 'px'; el.style.top = (p.y - 3) + 'px'; }   // 54px 大格相对 48px 格位居中
     el.innerHTML = `<div class="glyph">${glyph(cell.type)}</div><div class="cname">${cell.name}</div>`;
     el.title = `${cell.id}｜${cell.name}`;
     board.appendChild(el);

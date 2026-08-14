@@ -89,25 +89,25 @@
   pointer-events: none;
 }
 .island-title .big {
-  font-size: 62px; letter-spacing: .3em; color: rgba(70,56,40,.19);
+  font-size: 55px; letter-spacing: .3em; color: rgba(70,56,40,.19);
   text-indent: .3em;
 }
-.island-title .sm { font-size: 19px; letter-spacing: .5em; color: rgba(70,56,40,.16); text-indent: .5em; }
+.island-title .sm { font-size: 17px; letter-spacing: .5em; color: rgba(70,56,40,.16); text-indent: .5em; }
 
 /* ------------------------------------------------------------ 格子 */
 .cell {
   position: absolute;
-  width: 42px; height: 42px;
-  border-radius: 7px;
+  width: 48px; height: 48px;
+  border-radius: 8px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  font-size: 9px; line-height: 1.15; color: rgba(46,38,28,.82);
+  font-size: 10.5px; line-height: 1.15; color: rgba(46,38,28,.82);
   text-align: center; letter-spacing: .02em;
   box-shadow: 0 5px 0 rgba(0,0,0,.22), 0 8px 12px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.55);
   border: 1px solid rgba(90,72,48,.28);
   transition: transform .25s var(--ease-back), box-shadow .25s, filter .25s;
 }
-.cell .cname { font-size: 9px; opacity: .85; max-width: 40px; overflow: hidden; }
-.cell .glyph { width: 17px; height: 17px; margin-bottom: 1px; }
+.cell .cname { font-size: 10px; opacity: .85; max-width: 46px; overflow: hidden; }
+.cell .glyph { width: 19px; height: 19px; margin-bottom: 1px; }
 
 /* 四季边 */
 .cell.season-spring { background: linear-gradient(165deg, #e6f2dc, #c6e0b4); }
@@ -117,7 +117,7 @@
 .cell.branch-cell   { background: linear-gradient(165deg, #fbe4ec, #f2c0d1); }
 
 /* 类型点缀 */
-.cell.t-start  { background: linear-gradient(165deg, #ffe9a8, #eec55c); border-color: #c39a2e; width: 50px; height: 50px; }
+.cell.t-start  { background: linear-gradient(165deg, #ffe9a8, #eec55c); border-color: #c39a2e; width: 54px; height: 54px; }
 .cell.t-battle { box-shadow: 0 5px 0 rgba(120,30,24,.3), 0 8px 12px rgba(0,0,0,.28), inset 0 0 0 2px rgba(178,58,46,.5); }
 .cell.t-sky    { box-shadow: 0 5px 0 rgba(30,50,110,.3), 0 8px 12px rgba(0,0,0,.28), inset 0 0 0 2px rgba(76,102,168,.5); }
 .cell.t-quiz   { box-shadow: 0 5px 0 rgba(90,70,30,.3),  0 8px 12px rgba(0,0,0,.28), inset 0 0 0 2px rgba(201,151,31,.45); }
@@ -125,7 +125,7 @@
 .cell.t-mingjing { box-shadow: 0 5px 0 rgba(140,50,80,.3), 0 8px 12px rgba(0,0,0,.28), inset 0 0 0 2px rgba(178,58,46,.5); }
 .cell.t-landmark {
   background: linear-gradient(165deg, #ffd9e6, #f3a1bd);
-  width: 50px; height: 50px; border-color: var(--taohua-deep);
+  width: 54px; height: 54px; border-color: var(--taohua-deep);
   box-shadow: 0 6px 0 rgba(140,50,80,.32), 0 12px 18px rgba(0,0,0,.3), inset 0 0 0 2px rgba(255,255,255,.5);
 }
 
