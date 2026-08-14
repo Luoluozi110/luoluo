@@ -4,10 +4,10 @@ import { getBudget } from './quality.js';
 import { play } from './audio.js';
 import { sting } from './music.js';
 
-const UNIT = 50;        // 单元格间距（格子放大 42→48 需更大间距）
+const UNIT = 54;        // 单元格间距（格子放大 48→52 需更大间距）
 const GRID = 21;        // 主环 21×21 外圈 = 4×(21-1) = 80 格（扩图：原 16×16=60 格，周长 +33%）
-const PAD = 2;          // 外扩单位（收紧外留白，外环向中心收，为内部空白让位）
-const CELL = 48;        // 格子边长（视觉放大 +13%，格内字体同步放大）
+const PAD = 1.5;        // 外扩单位（外留白进一步让位给格子，外环更靠外）
+const CELL = 52;        // 格子边长（视觉再放大，格内字体/图标同步放大）
 
 export const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -66,16 +66,16 @@ export class BoardView {
     const inner = document.createElement('div');
     inner.className = 'island-inner';
     Object.assign(inner.style, {
-      left: (PAD + 2.3) * UNIT + 'px', top: (PAD + 2.3) * UNIT + 'px',
-      width: (GRID - 4.6) * UNIT + 'px', height: (GRID - 4.6) * UNIT + 'px'
+      left: (PAD + 2.8) * UNIT + 'px', top: (PAD + 2.8) * UNIT + 'px',
+      width: (GRID - 5.6) * UNIT + 'px', height: (GRID - 5.6) * UNIT + 'px'
     });
     board.appendChild(inner);
 
     const ttl = document.createElement('div');
     ttl.className = 'island-title';
     Object.assign(ttl.style, {
-      left: (PAD + 2.3) * UNIT + 'px', top: (PAD + 2.3) * UNIT + 'px',
-      width: (GRID - 4.6) * UNIT + 'px', height: (GRID - 4.6) * UNIT + 'px'
+      left: (PAD + 2.8) * UNIT + 'px', top: (PAD + 2.8) * UNIT + 'px',
+      width: (GRID - 5.6) * UNIT + 'px', height: (GRID - 5.6) * UNIT + 'px'
     });
     ttl.innerHTML = `<div class="big">桃花島</div><div class="sm">詩詞楹聯飛花棋</div>`;
     board.appendChild(ttl);
@@ -122,7 +122,7 @@ export class BoardView {
     const w = this.root.clientWidth, h = this.root.clientHeight;
     // 平面模式：整盘铺满可视区（留 ~5% 边距），不再做俯视纵向压缩
     const s = Math.min(w / (span * 1.05), h / (span * 1.05));
-    this.bscale = Math.max(0.3, Math.min(1.1, s));
+    this.bscale = Math.max(0.55, Math.min(1.1, s));  // 下限 0.55：手机端默认放大，字体更清晰（可拖动/双指缩放看全盘）
     this.view.zoom = 1; this.view.panX = 0; this.view.panY = 0;
     this.applyView();
   }
@@ -141,7 +141,7 @@ export class BoardView {
     const span = (GRID + PAD * 2) * UNIT;
     const w = this.root.clientWidth, h = this.root.clientHeight;
     const s = Math.min(w / (span * 1.05), h / (span * 1.05));
-    this.bscale = Math.max(0.3, Math.min(1.1, s));
+    this.bscale = Math.max(0.55, Math.min(1.1, s));  // 下限 0.55：手机端默认放大，字体更清晰（可拖动/双指缩放看全盘）
     this.applyView();
   }
 
