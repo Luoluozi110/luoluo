@@ -495,9 +495,13 @@
 }
 
 /* ==================================================== 选流派 */
-#schoolScreen { position: absolute; inset: 0; z-index: 80; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px; overflow: auto; padding: 20px; }
+#schoolScreen { position: absolute; inset: 0; z-index: 80; display: none; flex-direction: column; align-items: center; justify-content: flex-start; gap: 18px; overflow: auto; padding: 20px; }
 #schoolScreen.on { display: flex; }
 #schoolScreen .hdr { text-align: center; }
+/* 卷轴内容在屏幕内垂直居中，超高时从顶部开始可滚动——
+   避免 justify-content:center + overflow 的「顶部溢出被裁切」bug
+   （手机端内容超高时第一个流派「诗仙流」被顶出滚动区、点不到）。 */
+.school-inner { margin-top: auto; margin-bottom: auto; }
 .school-grid { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; max-width: 1100px; }
 .school-card {
   width: 195px; border-radius: 14px; padding: 18px 16px; cursor: pointer;
