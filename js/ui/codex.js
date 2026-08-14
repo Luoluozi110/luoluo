@@ -139,7 +139,8 @@ export class CodexUI {
   _album(store) {
     const ab = this.cfg.album || [];
     if (!ab.length) return `<div class="cx-empty">尚无名篇数据</div>`;
-    return ab.map(card => {
+    // 横排三列图鉴（cols-3，窄屏降两列/单列，见 ui.css）
+    return `<div class="album-grid cols-3">` + ab.map(card => {
       const got = store.unlocked.includes(card.id);
       if (got) {
         return `<div class="album-card unlocked">
@@ -157,7 +158,7 @@ export class CodexUI {
         <div class="ac-cond">${esc(Album.conditionText(card, store.stats))}</div>
         <div class="ac-prog"><i style="width:${pct}%"></i></div>
       </div>`;
-    }).join('');
+    }).join('') + `</div>`;
   }
 
   /* ================================================ 文心 */

@@ -58,7 +58,7 @@ export class Hud {
       <div id="attrPanel" class="panel paper">
         <div class="ph"><span class="ph-left"><span class="pc-ico">❖</span><b>六维才学</b></span><span class="ph-right">
           <span id="phaseTag">乡试圈</span><span id="pnameTag" class="pname"></span>
-          <button class="pc-toggle" id="attrToggle" type="button" aria-label="收起或展开六维面板" aria-expanded="true"><span class="chev">▾</span></button>
+          <button class="pc-toggle" id="attrToggle" type="button" aria-label="收起或展开六维面板" aria-expanded="true"><svg class="chev" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 5.75 8 10.25 12.5 5.75"/></svg></button>
         </span></div>
         <div class="pc-body" id="attrBody"><div class="pc-inner">
           <div class="radar-box">
@@ -71,7 +71,7 @@ export class Hud {
       <div id="inspBar" class="panel paper">
         <div class="ih"><span class="ih-left"><span class="pc-ico">✒</span><span>灵感</span></span><b id="inspNum">—</b><span>/ <span id="inspMax">—</span></span>
           <span class="insp-warn">墨将尽，慎之！</span>
-          <button class="pc-toggle" id="inspToggle" type="button" aria-label="收起或展开灵感条" aria-expanded="true"><span class="chev">▾</span></button>
+          <button class="pc-toggle" id="inspToggle" type="button" aria-label="收起或展开灵感条" aria-expanded="true"><svg class="chev" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 5.75 8 10.25 12.5 5.75"/></svg></button>
         </div>
         <div class="pc-body" id="inspBody"><div class="pc-inner">
           <div class="brush">
@@ -86,7 +86,7 @@ export class Hud {
       <div id="talentBar" class="panel paper">
         <div class="th"><span class="th-left"><span class="pc-ico">✶</span><span>文心</span></span><span class="th-right">
           <i id="talCount">0/${PASSIVE_MAX} · 0/${ACTIVE_MAX}</i>
-          <button class="pc-toggle" id="talentToggle" type="button" aria-label="收起或展开文心面板" aria-expanded="true"><span class="chev">▾</span></button>
+          <button class="pc-toggle" id="talentToggle" type="button" aria-label="收起或展开文心面板" aria-expanded="true"><svg class="chev" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 5.75 8 10.25 12.5 5.75"/></svg></button>
         </span></div>
         <div class="pc-body" id="talentBody"><div class="pc-inner">
           <div class="slot-grid" id="passiveSlots"></div>
@@ -232,12 +232,6 @@ export class Hud {
   _saveCollapse() {
     try { localStorage.setItem('feihua_panel_collapsed', JSON.stringify(this._collapse)); } catch (_) {}
   }
-  /** 收起朝上 ▴、展开朝下 ▾，箭头方向即含义，一目了然 */
-  _setChev(toggle, collapsed) {
-    if (!toggle) return;
-    const c = toggle.querySelector('.chev');
-    if (c) c.textContent = collapsed ? '▴' : '▾';
-  }
   _applyCollapse() {
     const a = !!this._collapse.attr, t = !!this._collapse.talent, i = !!this._collapse.insp;
     this.el.attrPanel.classList.toggle('collapsed', a);
@@ -246,9 +240,7 @@ export class Hud {
     if (this.el.attrToggle) this.el.attrToggle.setAttribute('aria-expanded', String(!a));
     if (this.el.talentToggle) this.el.talentToggle.setAttribute('aria-expanded', String(!t));
     if (this.el.inspToggle) this.el.inspToggle.setAttribute('aria-expanded', String(!i));
-    this._setChev(this.el.attrToggle, a);
-    this._setChev(this.el.talentToggle, t);
-    this._setChev(this.el.inspToggle, i);
+    // 箭头方向由 CSS 驱动：.collapsed .pc-toggle .chev { rotate(180deg) }
   }
   togglePanel(key) {
     if (key !== 'attr' && key !== 'talent' && key !== 'insp') return;

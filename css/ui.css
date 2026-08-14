@@ -21,9 +21,16 @@
   transition: transform .18s var(--ease-back), background .16s, box-shadow .16s;
   -webkit-tap-highlight-color: transparent;
 }
-.pc-toggle:hover { background: rgba(255,255,255,.85); }
+.pc-toggle:hover { background: rgba(255,255,255,.85); color: var(--zhu); }
 .pc-toggle:active { transform: scale(.9); }
-.pc-toggle .chev { display: inline-block; font-size: 11px; line-height: 1; }
+.pc-toggle .chev {
+  display: block; width: 16px; height: 16px;
+  stroke: currentColor; stroke-width: 2.4; fill: none;
+  stroke-linecap: round; stroke-linejoin: round;
+  transition: transform .3s var(--ease-back);
+}
+/* 收起态箭头旋转 180°：朝上=已收起，朝下=已展开，方向即含义 */
+.collapsed .pc-toggle .chev { transform: rotate(180deg); }
 /* 标题栏左组 + 半透明小图标：收起态也不至于空白 */
 .ph-left, .th-left, .ih-left { display: inline-flex; align-items: baseline; gap: 6px; }
 .th-left, .ih-left { align-items: center; }
@@ -38,12 +45,12 @@
 }
 .pc-body > .pc-inner { overflow: hidden; min-height: 0; }
 .collapsed .pc-body { grid-template-rows: 0fr; }
-/* 切换瞬间箭头轻轻弹一下 */
-.pc-toggle.bounce .chev { animation: chevBounce .32s var(--ease-back); }
+/* 切换瞬间按钮轻轻弹一下（动画作用于按钮，避免覆盖箭头的旋转过渡） */
+.pc-toggle.bounce { animation: chevBounce .32s var(--ease-back); }
 @keyframes chevBounce {
   0%   { transform: scale(1); }
-  40%  { transform: scale(.6); }
-  72%  { transform: scale(1.28); }
+  40%  { transform: scale(.72); }
+  72%  { transform: scale(1.22); }
   100% { transform: scale(1); }
 }
 
@@ -635,6 +642,10 @@
 
 .album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; margin-top: 14px; }
 .album-grid.big { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+/* 传世名篇（传世图鉴）：横排固定三列；窄屏降两列 / 单列 */
+.album-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 980px) { .album-grid.cols-3 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .album-grid.cols-3 { grid-template-columns: 1fr; } }
 .album-card {
   position: relative; text-align: left;   font-family: var(--font-song);
   border: 1.5px solid rgba(120,100,70,.4); border-radius: 10px; padding: 12px 14px;
@@ -813,7 +824,7 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
   #attrPanel .ph b { font-size: 13px; }
   /* 移动端放大收起/展开按钮的触摸热区 */
   .pc-toggle { width: 26px; height: 26px; }
-  .pc-toggle .chev { font-size: 12px; }
+  .pc-toggle .chev { width: 17px; height: 17px; }
   /* 窄屏：雷达改放上方、数值列表占满整宽，避免六维数字被挤到框外 */
   .radar-box { flex-direction: column; align-items: center; gap: 4px; }
   #radar { width: 92px; height: 88px; }
