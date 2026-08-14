@@ -136,8 +136,8 @@
 .slot.filled { border-style: solid; color: #4a3a1c; background: linear-gradient(160deg, #fdf0cd, #eed7a0); border-color: #c9a94f; box-shadow: inset 0 1px 0 #fff, 0 2px 5px rgba(0,0,0,.15); cursor: help; }
 .slot.filled.act { background: linear-gradient(160deg, #d8f0f0, #a9dcdd); border-color: #4d9a9e; color: #14484b; }
 
-/* --- 右下：掷骰 --- */
-#rollZone { position: absolute; right: 24px; bottom: 24px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+/* --- 画面中央：掷骰 --- */
+#rollZone { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 10px; }
 #turnInfo {
   padding: 7px 14px; border-radius: 18px; font-size: 13px; letter-spacing: .1em;
   background: rgba(30,24,18,.78); color: var(--xuanzhi); border: 1px solid rgba(180,150,110,.34);
@@ -851,7 +851,7 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 
   #soundToggle { left: 8px; bottom: 12px; top: auto; width: 34px; height: 34px; }
 
-  #rollZone { right: 12px; bottom: 12px; gap: 7px; }
+  #rollZone { left: 50%; right: auto; bottom: auto; gap: 7px; }
   #rollBtn { width: 104px; height: 104px; font-size: 21px; }
   #turnInfo { font-size: 11px; padding: 5px 10px; }
 
