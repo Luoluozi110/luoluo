@@ -98,8 +98,8 @@ export class Hud {
 
       <div id="logBox" class="panel paper"></div>
 
+      <div id="turnInfo">第 <b id="turnNum">0</b> 回合</div>
       <div id="rollZone">
-        <div id="turnInfo">第 <b id="turnNum">0</b> 回合</div>
         <button class="btn btn-primary" id="rollBtn">掷骰</button>
       </div>
 

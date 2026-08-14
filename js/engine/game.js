@@ -94,7 +94,25 @@ export class Game {
     }
   }
 
-  push(text) { this.s.log.push({ turn: this.s.turn, text }); }
+  push(text) {
+    this.s.log.push({ turn: this.s.turn, text });
+    // 日志上限：防止长局把存档撑爆（截断保留最近 150 条，与 save.js 的截断阈值一致）
+    if (this.s.log.length > 200) this.s.log.splice(0, this.s.log.length - 150);
+  }
+
+  /**
+   * 读档后重建派生/引用状态（rehydrate）。
+   * deserializeRun 只还原「可序列化数据」，这里把依赖运行时引用的部分补齐：
+   *   - synergies 按当前持有的文心重算（存档只留 id/name，效果引用须重新指向 cfg）
+   *   - 存档中的天赋/天象已在 deserializeRun 里按 ID 关联回 cfg，这里只需重算羁绊
+   * 调用时机：loadGame 里 `game.s = state` 之后。
+   */
+  rehydrate() {
+    const s = this.s;
+    if (!s) return;
+    s.synergies = this.synergySet().map(sy => ({ id: sy.id, name: sy.name, desc: sy.desc, members: sy.members }));
+    this.ui.onState(s);
+  }
 
   /* ------------------------------------------------------ 派生数据 */
   get lianUnlocked() {
@@ -326,9 +344,11 @@ export class Game {
     const arrived = await this.moveSteps(dice);
     if (s.over) return;
 
-    if (arrived === 'palace') { await this.runPalace(); return; }
+    if (arrived === 'palace') { await this.runPalace(); this.onSavePoint?.(s); return; }
     await this.resolveCell();
     this.ui.onState(s);
+    // 安全保存点：回合内所有状态结算（含弹窗交互）都已完成，此时序列化是稳定快照
+    this.onSavePoint?.(s);
   }
 
   tickSky() {

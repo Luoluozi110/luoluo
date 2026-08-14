@@ -18,7 +18,7 @@ import * as Album from '../engine/album.js';
 import * as Codex from '../engine/codex.js';
 import { initAudio } from './audio.js';
 import { setScene, setTension, setStage } from './music.js';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun } from '../engine/save.js';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_MANUAL_KEY } from '../engine/save.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -128,10 +128,32 @@ function openSchoolScreen() {
   schoolEl.classList.add('on');
 }
 
-/** 本局已结束时，清理「继续上局」入口（hasRun 已会忽略 over 的存档，这里顺手清掉） */
+/** 本局已结束时，清理「继续上局」入口（逐槽检查，只清已结束的槽） */
 function clearRunIfFinished() {
-  const r = loadRun();
-  if (r && r.state && r.state.over) clearRun();
+  for (const r of listRuns()) if (r.over) clearRun(r.slot);
+}
+
+/* ------------------------------------------------ 存档管线（v2） */
+let lastAutoSave = 0;
+
+/** 把自动保存挂到引擎的「安全保存点」回调上 */
+function wireGameSaves(g) {
+  g.onSavePoint = () => autoSaveRun(g);
+}
+
+/**
+ * 自动存档（写入自动槽）。带 300ms 防抖：殿试等流程一回合内可能触发多次保存点。
+ * force=true 时跳过防抖（开局首存）。
+ */
+function autoSaveRun(g, force = false) {
+  if (!g || !g.s || g.s.over) return;
+  const now = Date.now();
+  if (!force && now - lastAutoSave < 300) return;
+  lastAutoSave = now;
+  const r = saveRun(g);
+  if (!r.ok) return;
+  if (r.where !== 'local') hud.toast('本地存储不可用，本次进度仅暂存于内存/会话（关闭页面将丢失）');
+  else if (r.tooBig) hud.toast('存档体积较大，建议及时结算本局');
 }
 
 function buildSchoolScreen() {
@@ -217,6 +239,7 @@ function startGame(schoolId, loadout, playerName) {
   board.cellEls.forEach(e => e.classList.remove('active'));
 
   game = new Game(cfg, makeUi(), Math.random);
+  wireGameSaves(game);
   const cards = loadout || [];
   const s = game.start(schoolId, { loadout: cards, name: playerName || '' });
   modals.playerName = s.playerName || '';   // 叙事文本据此替换「你」
@@ -226,7 +249,7 @@ function startGame(schoolId, loadout, playerName) {
   setScene('board');          // 进入对局：行进配乐
   setTension(0);
   setStage(stageFromProgress(game.progress())); // 按当前科考阶段移调（宫→商→角→徵→羽）
-  saveRun(game); // 开局即存，关闭后可从「继续上局」恢复
+  autoSaveRun(game, true); // 开局即存（跳过防抖），关闭后可从「继续上局」恢复
   hud.toast('手机端可拖动棋盘平移、双指缩放；随时点右上角菜单存档');
   enableRoll();
 }
@@ -288,8 +311,7 @@ async function onRoll() {
   }
   rolling = false;
   if (game && !game.s.over) enableRoll();
-  // 每回合结束自动落盘，关闭页面亦能续玩
-  if (game && !game.s.over) saveRun(game);
+  // 每回合的自动落盘已改由引擎「安全保存点」回调（onSavePoint）触发，此处不再重复存档
 }
 
 /* ---------------------------------------------------- 菜单 / 随时存档 */
@@ -326,12 +348,19 @@ function closeMenu() {
 function showMenu() {
   const canSave = !!(game && !game.s.over);
   const canLoad = hasRun();
+  // 存档摘要：优先手动槽（保留关键节点），其次自动槽
+  const runs = listRuns().filter(r => !r.over);
+  const best = runs.find(r => r.manual) || runs[0] || null;
+  const fmt = t => t ? new Date(t).toLocaleTimeString('zh-CN', { hour12: false }) : '';
+  const loadLabel = best
+    ? `读取存档（${best.manual ? '手动' : '自动'} · 第${best.turn}回合 · ${fmt(best.savedAt)}）`
+    : '没有可用存档';
   const html = `
     <div class="modal paper" style="width:min(360px,90vw)">
       <div class="mtitle"><h2>桃 花 棋 · 菜 单</h2></div>
       <div class="menu-list">
-        <button class="btn btn-ink menu-item" data-save ${canSave ? '' : 'disabled'}>${canSave ? '保存当前进度' : '暂无进行中的对局'}</button>
-        <button class="btn btn-ink menu-item" data-load ${canLoad ? '' : 'disabled'}>${canLoad ? '读取存档' : '没有可用存档'}</button>
+        <button class="btn btn-ink menu-item" data-save ${canSave ? '' : 'disabled'}>${canSave ? '保存当前进度（手动存档）' : '暂无进行中的对局'}</button>
+        <button class="btn btn-ink menu-item" data-load ${canLoad ? '' : 'disabled'}>${loadLabel}</button>
         <button class="btn btn-ink menu-item" data-codex>图鉴阁</button>
         <button class="btn btn-ink menu-item" data-custom>载入自定义配置（高级）</button>
         <button class="btn btn-ink menu-item" data-restart>返回主菜单</button>
@@ -476,30 +505,48 @@ function openCustomConfig() {
 
 function saveGame() {
   if (!game || game.s.over) { hud.toast('当前没有进行中的对局'); return; }
-  const ok = saveRun(game);
-  hud.toast(ok ? '已存档 ✓' : '存档失败（浏览器存储不可用）');
+  const r = saveRun(game, RUN_SAVE_MANUAL_KEY);   // 手动槽：与每回合自动槽分离，关键节点不被覆盖
+  if (!r.ok) { hud.toast('存档失败（浏览器存储不可用）'); return; }
+  const t = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+  hud.toast(r.where === 'local'
+    ? `已存档 ✓（${t}）`
+    : '已暂存（本地存储不可用，关闭页面后将丢失）');
 }
 
 async function loadGame() {
-  const obj = loadRun();
-  if (!obj) { hud.toast('没有可读取的存档'); return; }
-  // 用存档重建一局，再覆盖运行时状态
+  const best = loadBestRun();
+  if (!best) { hud.toast('没有可读取的存档'); return; }
+  if (best.obj.__corrupt) {
+    hud.toast('存档数据已损坏，无法读取');
+    if (confirm('检测到存档已损坏。是否清除该存档？')) clearRun(best.slot);
+    return;
+  }
+  const res = deserializeRun(best.obj, cfg);
+  if (!res.ok) {
+    hud.toast('存档无法读取：' + res.error);
+    if (confirm(`存档校验未通过（${res.error}）。是否清除该存档？`)) clearRun(best.slot);
+    return;
+  }
+  // 用存档重建一局，再覆盖运行时状态并重建派生引用
   game = new Game(cfg, makeUi(), Math.random);
-  const st = deserializeRun(obj, cfg);
-  game.s = st;
+  wireGameSaves(game);
+  game.s = res.state;
   modals.playerName = game.s.playerName || '';   // 续玩沿用存档中的名号
   schoolEl.classList.remove('on');
   resultEl.classList.remove('on');
   albumUI.closeLoadout();
   albumUI.closeAlbum();
+  const st = game.s;
   const curCell = game.currentCell();
   board.setPiecePos(curCell ? curCell.id : st.pos);
   board.clearHint();
   board.cellEls.forEach(e => e.classList.remove('active'));
+  game.rehydrate();            // 重算羁绊等派生态（内部会 hud.render）
   hud.render(st);
   showMenuButton(true);
   enableRoll();
   hud.toast('已读取存档，继续科场之路');
+  for (const w of res.warnings.slice(0, 2)) hud.toast('⚠ ' + w);  // 配置变更导致的失效引用提示
 }
 
 /* ---------------------------------------------------- 结算屏 */
