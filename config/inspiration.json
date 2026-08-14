@@ -1,0 +1,13 @@
+{
+  "initial": 20,
+  "max": 30,
+  "pingCell": 1,
+  "branchEnterCost": 4,
+  "battleCost": -2,
+  "battleCostLate": -2,
+  "battleLoseExtra": -2,
+  "battleLoseExtraLate": -3,
+  "quizWrong": -1,
+  "quizCorrectInsp": 1,
+  "lowWarning": 5
+}

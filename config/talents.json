@@ -1,0 +1,208 @@
+[
+  {
+    "id": "T001",
+    "name": "斗酒诗百篇",
+    "kind": "passive",
+    "school": "shixian",
+    "text": "「李白斗酒诗百篇，长安市上酒家眠。」——杜甫《饮中八仙歌》。以诗出战获胜时，诗力额外 +1。",
+    "effect": { "type": "on_win_bonus", "style": "shi", "value": 1 }
+  },
+  {
+    "id": "T002",
+    "name": "倚声填词",
+    "kind": "passive",
+    "school": "cizong",
+    "text": "词本倚声而作，先有腔调后有文字。填词日久，声律入骨——以词出战获胜时，词力额外 +1。",
+    "effect": { "type": "on_win_bonus", "style": "ci", "value": 1 }
+  },
+  {
+    "id": "T003",
+    "name": "对对如流",
+    "kind": "passive",
+    "school": "liansheng",
+    "text": "属对之才，出口成双。相传解缙幼时应对如流，一座皆惊——以联出战获胜时，联力额外 +1。",
+    "effect": { "type": "on_win_bonus", "style": "lian", "value": 1 }
+  },
+  {
+    "id": "T004",
+    "name": "博览",
+    "kind": "passive",
+    "school": "tongru",
+    "text": "「读书破万卷，下笔如有神。」——杜甫《奉赠韦左丞丈二十二韵》。腹笥既广，学力常驻 +2。",
+    "effect": { "type": "attr_flat", "attrs": { "xue": 2 } }
+  },
+  {
+    "id": "T005",
+    "name": "急智",
+    "kind": "passive",
+    "school": "qishi",
+    "text": "临场生风，机锋不落。每场论战的灵感骰点数 +1。",
+    "effect": { "type": "dice_plus", "value": 1 }
+  },
+  {
+    "id": "T006",
+    "name": "入木三分",
+    "kind": "passive",
+    "text": "相传王羲之题字于木，工人削之，墨迹入木三分。笔力常驻 +3。",
+    "effect": { "type": "attr_flat", "attrs": { "bi": 3 } }
+  },
+  {
+    "id": "T007",
+    "name": "梦笔生花",
+    "kind": "passive",
+    "text": "五代王仁裕《开元天宝遗事》载：李白少时梦所用之笔头上生花，此后天才赡逸，名闻天下。创作时 20% 概率灵光爆发，得分 ×1.5。",
+    "effect": { "type": "crit", "chance": 0.2, "mult": 1.5 }
+  },
+  {
+    "id": "T008",
+    "name": "推敲",
+    "kind": "passive",
+    "text": "贾岛于驴背上吟「僧敲月下门」，「推」「敲」难定，冲撞韩愈仪仗；韩愈曰：作敲字佳。字字斟酌，思力常驻 +3。",
+    "effect": { "type": "attr_flat", "attrs": { "si": 3 } }
+  },
+  {
+    "id": "T009",
+    "name": "囊萤映雪",
+    "kind": "passive",
+    "text": "晋人车胤囊萤照读，孙康映雪读书。贫不废学，学力常驻 +2。",
+    "effect": { "type": "attr_flat", "attrs": { "xue": 2 } }
+  },
+  {
+    "id": "T010",
+    "name": "天马行空",
+    "kind": "passive",
+    "text": "笔势腾踔，不拘辙迹。灵感骰点数 +1。",
+    "effect": { "type": "dice_plus", "value": 1 }
+  },
+  {
+    "id": "T011",
+    "name": "知人论世",
+    "kind": "passive",
+    "text": "「颂其诗，读其书，不知其人可乎？是以论其世也。」——《孟子·万章下》。深谙题材与风格之配，自动获得对手所选风格的相性加成。",
+    "effect": { "type": "copy_affinity" }
+  },
+  {
+    "id": "T012",
+    "name": "李杜文章",
+    "kind": "passive",
+    "text": "「李杜文章在，光焰万丈长。」——韩愈《调张籍》。以诗出战获胜时，诗力额外 +2。需先有「浪漫主义」倾向。",
+    "effect": { "type": "on_win_bonus", "style": "shi", "value": 2 },
+    "unlock": { "tendency": "浪漫主义", "count": 1 }
+  },
+  {
+    "id": "T013",
+    "name": "凡有井水处",
+    "kind": "passive",
+    "text": "南宋叶梦得《避暑录话》载：凡有井水饮处，即能歌柳词。以词出战获胜时，词力额外 +2。需先有「婉约派」倾向 ×2。",
+    "effect": { "type": "on_win_bonus", "style": "ci", "value": 2 },
+    "unlock": { "tendency": "婉约派", "count": 2 }
+  },
+  {
+    "id": "T014",
+    "name": "铁板铜琶",
+    "kind": "passive",
+    "text": "俞文豹《吹剑续录》载幕士评东坡词：须关西大汉，执铁板，唱「大江东去」。以联出战获胜时，联力额外 +2。需先有「豪放派」倾向。",
+    "effect": { "type": "on_win_bonus", "style": "lian", "value": 2 },
+    "unlock": { "tendency": "豪放派", "count": 1 }
+  },
+  {
+    "id": "T015",
+    "name": "不平则鸣",
+    "kind": "passive",
+    "text": "「大凡物不得其平则鸣。」——韩愈《送孟东野序》。胸中块垒一朝喷薄：15% 概率得分 ×1.6。需先有「哲思派」倾向。",
+    "effect": { "type": "crit", "chance": 0.15, "mult": 1.6 },
+    "unlock": { "tendency": "哲思派", "count": 1 }
+  },
+  {
+    "id": "T016",
+    "name": "文思泉涌",
+    "kind": "passive",
+    "text": "思若泉涌，源源不绝。灵感波动改为 1d6×6，下限抬高、上限拉开。",
+    "effect": { "type": "dice_mult", "value": 6 }
+  },
+  {
+    "id": "T099",
+    "name": "三元及第",
+    "kind": "passive",
+    "source": "album",
+    "text": "解元、会元、状元连中三元，本朝数百年不过数人。图鉴「连中三元」解锁后可装配：殿试三场得分各 +5%。",
+    "effect": { "type": "palace_pct", "value": 0.05 }
+  },
+  {
+    "id": "TA01",
+    "name": "七步成诗",
+    "kind": "active",
+    "cost": 1,
+    "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」跳过审题与选风格，本场灵感波动锁定为固定 +15。",
+    "effect": { "type": "fixed_dice", "value": 15 }
+  },
+  {
+    "id": "TA02",
+    "name": "夺胎换骨",
+    "kind": "active",
+    "cost": 1,
+    "text": "惠洪《冷斋夜话》记黄庭坚论诗：不易其意而造其语，谓之换骨法；窥入其意而形容之，谓之夺胎法。本场复制对手所选风格的相性加成。",
+    "effect": { "type": "copy_affinity" }
+  },
+  {
+    "id": "TA03",
+    "name": "语不惊人",
+    "kind": "active",
+    "cost": 2,
+    "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。本场灵感波动改为 1d6×8，高风险高回报。",
+    "effect": { "type": "dice_mult", "value": 8 }
+  },
+  {
+    "id": "TA04",
+    "name": "笔落惊风雨",
+    "kind": "active",
+    "cost": 2,
+    "text": "「笔落惊风雨，诗成泣鬼神。」——杜甫《寄李十二白二十韵》。本场 35% 概率触发灵光爆发，得分 ×1.5。",
+    "effect": { "type": "crit", "chance": 0.35, "mult": 1.5 }
+  },
+  {
+    "id": "TA05",
+    "name": "一气呵成",
+    "kind": "active",
+    "cost": 1,
+    "text": "行文如一线贯珠，中无断续。本场灵感骰点数 +3。",
+    "effect": { "type": "dice_plus", "value": 3 }
+  },
+  {
+    "id": "TA06",
+    "name": "倚马可待",
+    "kind": "active",
+    "cost": 2,
+    "text": "《世说新语·文学》载袁虎倚马前，须臾作露布文七纸，殊可观。本场灵感波动锁定为固定 +18。",
+    "effect": { "type": "fixed_dice", "value": 18 }
+  },
+  {
+    "id": "TA07",
+    "name": "点铁成金",
+    "kind": "active",
+    "cost": 2,
+    "text": "黄庭坚《答洪驹父书》：古之能为文章者……虽取古人之陈言入于翰墨，如灵丹一粒，点铁成金也。本场灵感波动改为 1d6×7。",
+    "effect": { "type": "dice_mult", "value": 7 }
+  },
+  {
+    "id": "T017",
+    "name": "春风得意",
+    "kind": "passive",
+    "text": "孟郊《登科后》：「春风得意马蹄疾，一日看尽长安花。」少年得志，意气风发——每场论战取胜，灵感 +1。",
+    "effect": { "type": "insp_on_win", "value": 1 }
+  },
+  {
+    "id": "T018",
+    "name": "曲水流觞",
+    "kind": "passive",
+    "text": "王羲之《兰亭集序》载：引以为流觞曲水，列坐其次。雅集唱和，从容不迫——与对手平分秋色时，出战文体额外 +1。",
+    "effect": { "type": "draw_bonus", "value": 1 }
+  },
+  {
+    "id": "T019",
+    "name": "洛阳纸贵",
+    "kind": "passive",
+    "text": "《晋书·左思传》：洛阳为之纸贵。一篇既出，士林争传——每获得一枚新文心，灵感 +2。",
+    "effect": { "type": "insp_on_talent", "value": 2 }
+  }
+]

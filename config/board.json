@@ -1,0 +1,626 @@
+{
+  "laps": 2,
+  "branchReturnAdvance": 6,
+  "sides": [
+    {
+      "id": "xiangshi",
+      "name": "乡试路",
+      "range": [
+        0,
+        14
+      ],
+      "season": "spring"
+    },
+    {
+      "id": "huishi",
+      "name": "会试路",
+      "range": [
+        15,
+        29
+      ],
+      "season": "summer"
+    },
+    {
+      "id": "dianshi",
+      "name": "殿试路",
+      "range": [
+        30,
+        44
+      ],
+      "season": "autumn"
+    },
+    {
+      "id": "guizhou",
+      "name": "归舟路",
+      "range": [
+        45,
+        59
+      ],
+      "season": "winter"
+    }
+  ],
+  "mainRing": [
+    {
+      "id": 0,
+      "type": "start",
+      "name": "童生铺"
+    },
+    {
+      "id": 1,
+      "type": "ping",
+      "name": "蒙学巷"
+    },
+    {
+      "id": 2,
+      "type": "ze",
+      "name": "磨墨坡"
+    },
+    {
+      "id": 3,
+      "type": "quiz",
+      "name": "描红斋"
+    },
+    {
+      "id": 4,
+      "type": "ping",
+      "name": "柳荫渡"
+    },
+    {
+      "id": 5,
+      "type": "event",
+      "name": "卖字摊"
+    },
+    {
+      "id": 6,
+      "type": "ze",
+      "name": "悬腕台"
+    },
+    {
+      "id": 7,
+      "type": "battle",
+      "name": "社学擂"
+    },
+    {
+      "id": 8,
+      "type": "ping",
+      "name": "稻花陌"
+    },
+    {
+      "id": 9,
+      "type": "quiz",
+      "name": "县考棚"
+    },
+    {
+      "id": 10,
+      "type": "ze",
+      "name": "洗砚池"
+    },
+    {
+      "id": 11,
+      "type": "sky",
+      "name": "观星阜"
+    },
+    {
+      "id": 12,
+      "type": "branch_gate",
+      "name": "山水岔口",
+      "branch": "shanshui"
+    },
+    {
+      "id": 13,
+      "type": "ping",
+      "name": "桑麻径"
+    },
+    {
+      "id": 14,
+      "type": "event",
+      "name": "野店灯"
+    },
+    {
+      "id": 15,
+      "type": "ping",
+      "name": "长亭道"
+    },
+    {
+      "id": 16,
+      "type": "ze",
+      "name": "临帖廊"
+    },
+    {
+      "id": 17,
+      "type": "quiz",
+      "name": "府学门"
+    },
+    {
+      "id": 18,
+      "type": "ping",
+      "name": "竹韵桥"
+    },
+    {
+      "id": 19,
+      "type": "battle",
+      "name": "诗社台"
+    },
+    {
+      "id": 20,
+      "type": "ze",
+      "name": "铁砚斋"
+    },
+    {
+      "id": 21,
+      "type": "ping",
+      "name": "麦浪坡"
+    },
+    {
+      "id": 22,
+      "type": "quiz",
+      "name": "经义堂"
+    },
+    {
+      "id": 23,
+      "type": "sky",
+      "name": "望气坛"
+    },
+    {
+      "id": 24,
+      "type": "ping",
+      "name": "芦花渚"
+    },
+    {
+      "id": 25,
+      "type": "ze",
+      "name": "抄书阁"
+    },
+    {
+      "id": 26,
+      "type": "event",
+      "name": "古渡遇仙"
+    },
+    {
+      "id": 27,
+      "type": "branch_gate",
+      "name": "书院岔口",
+      "branch": "shuyuan"
+    },
+    {
+      "id": 28,
+      "type": "ping",
+      "name": "松风驿"
+    },
+    {
+      "id": 29,
+      "type": "quiz",
+      "name": "秋闱号舍"
+    },
+    {
+      "id": 30,
+      "type": "ping",
+      "name": "御街晓"
+    },
+    {
+      "id": 31,
+      "type": "ze",
+      "name": "翰墨轩"
+    },
+    {
+      "id": 32,
+      "type": "battle",
+      "name": "曲江宴"
+    },
+    {
+      "id": 33,
+      "type": "quiz",
+      "name": "春闱帘"
+    },
+    {
+      "id": 34,
+      "type": "ping",
+      "name": "杏园路"
+    },
+    {
+      "id": 35,
+      "type": "ze",
+      "name": "石渠阁"
+    },
+    {
+      "id": 36,
+      "type": "event",
+      "name": "雁塔题名"
+    },
+    {
+      "id": 37,
+      "type": "quiz",
+      "name": "策论斋"
+    },
+    {
+      "id": 38,
+      "type": "ping",
+      "name": "金水桥"
+    },
+    {
+      "id": 39,
+      "type": "battle",
+      "name": "论道殿"
+    },
+    {
+      "id": 40,
+      "type": "ze",
+      "name": "藏书楼"
+    },
+    {
+      "id": 41,
+      "type": "sky",
+      "name": "灵台望"
+    },
+    {
+      "id": 42,
+      "type": "branch_gate",
+      "name": "御苑岔口",
+      "branch": "yuyuan"
+    },
+    {
+      "id": 43,
+      "type": "ping",
+      "name": "芙蓉苑"
+    },
+    {
+      "id": 44,
+      "type": "quiz",
+      "name": "制诰房"
+    },
+    {
+      "id": 45,
+      "type": "ping",
+      "name": "灞桥柳"
+    },
+    {
+      "id": 46,
+      "type": "ze",
+      "name": "舟中吟"
+    },
+    {
+      "id": 47,
+      "type": "battle",
+      "name": "江心渡"
+    },
+    {
+      "id": 48,
+      "type": "ping",
+      "name": "芦荻洲"
+    },
+    {
+      "id": 49,
+      "type": "event",
+      "name": "渔父问"
+    },
+    {
+      "id": 50,
+      "type": "ze",
+      "name": "篷窗雨"
+    },
+    {
+      "id": 51,
+      "type": "quiz",
+      "name": "楚水驿"
+    },
+    {
+      "id": 52,
+      "type": "ping",
+      "name": "白鸥汀"
+    },
+    {
+      "id": 53,
+      "type": "battle",
+      "name": "采石矶"
+    },
+    {
+      "id": 54,
+      "type": "ze",
+      "name": "灯下笺"
+    },
+    {
+      "id": 55,
+      "type": "ping",
+      "name": "归帆影"
+    },
+    {
+      "id": 56,
+      "type": "quiz",
+      "name": "故园问"
+    },
+    {
+      "id": 57,
+      "type": "branch_gate",
+      "name": "边塞岔口",
+      "branch": "biansai"
+    },
+    {
+      "id": 58,
+      "type": "event",
+      "name": "故人书"
+    },
+    {
+      "id": 59,
+      "type": "ping",
+      "name": "望乡台"
+    }
+  ],
+  "branchGates": {
+    "12": "shanshui",
+    "27": "shuyuan",
+    "42": "yuyuan",
+    "57": "biansai"
+  },
+  "branches": {
+    "shanshui": {
+      "cells": [
+        60,
+        61,
+        62,
+        63,
+        64,
+        80,
+        81,
+        82,
+        83,
+        84
+      ],
+      "themeAttr": "shi",
+      "landmark": "桃花源",
+      "returnAfter": 12
+    },
+    "shuyuan": {
+      "cells": [
+        65,
+        66,
+        67,
+        68,
+        69,
+        85,
+        86,
+        87,
+        88,
+        89
+      ],
+      "themeAttr": "xue",
+      "landmark": "白鹿洞",
+      "returnAfter": 27
+    },
+    "yuyuan": {
+      "cells": [
+        70,
+        71,
+        72,
+        73,
+        74,
+        90,
+        91,
+        92,
+        93,
+        94
+      ],
+      "themeAttr": "ci",
+      "landmark": "御花园",
+      "returnAfter": 42
+    },
+    "biansai": {
+      "cells": [
+        75,
+        76,
+        77,
+        78,
+        79,
+        95,
+        96,
+        97,
+        98,
+        99
+      ],
+      "themeAttr": "lian",
+      "landmark": "玉门关",
+      "returnAfter": 57
+    }
+  },
+  "branchCells": [
+    {
+      "id": 60,
+      "type": "ping",
+      "name": "溪云初起"
+    },
+    {
+      "id": 61,
+      "type": "quiz",
+      "name": "问津处"
+    },
+    {
+      "id": 62,
+      "type": "event",
+      "name": "落英缤纷"
+    },
+    {
+      "id": 63,
+      "type": "battle",
+      "name": "武陵渔郎"
+    },
+    {
+      "id": 64,
+      "type": "ping",
+      "name": "渔樵闲话"
+    },
+    {
+      "id": 80,
+      "type": "quiz",
+      "name": "桃源问字"
+    },
+    {
+      "id": 81,
+      "type": "event",
+      "name": "桑竹垂荫"
+    },
+    {
+      "id": 82,
+      "type": "battle",
+      "name": "避秦鼓枻"
+    },
+    {
+      "id": 83,
+      "type": "ping",
+      "name": "鸡犬相闻"
+    },
+    {
+      "id": 84,
+      "type": "landmark",
+      "name": "桃花源"
+    },
+    {
+      "id": 65,
+      "type": "ping",
+      "name": "讲经坪"
+    },
+    {
+      "id": 66,
+      "type": "quiz",
+      "name": "白鹿问难"
+    },
+    {
+      "id": 67,
+      "type": "event",
+      "name": "古碑残拓"
+    },
+    {
+      "id": 68,
+      "type": "battle",
+      "name": "鹅湖之会"
+    },
+    {
+      "id": 69,
+      "type": "ping",
+      "name": "弦歌不辍"
+    },
+    {
+      "id": 85,
+      "type": "quiz",
+      "name": "鹿洞书声"
+    },
+    {
+      "id": 86,
+      "type": "event",
+      "name": "石室藏经"
+    },
+    {
+      "id": 87,
+      "type": "battle",
+      "name": "朱陆之辩"
+    },
+    {
+      "id": 88,
+      "type": "ping",
+      "name": "泮水清风"
+    },
+    {
+      "id": 89,
+      "type": "landmark",
+      "name": "白鹿洞"
+    },
+    {
+      "id": 70,
+      "type": "ping",
+      "name": "曲径回廊"
+    },
+    {
+      "id": 71,
+      "type": "quiz",
+      "name": "沉香亭北"
+    },
+    {
+      "id": 72,
+      "type": "event",
+      "name": "太液芙蓉"
+    },
+    {
+      "id": 73,
+      "type": "battle",
+      "name": "清平调"
+    },
+    {
+      "id": 74,
+      "type": "ping",
+      "name": "小殿风微"
+    },
+    {
+      "id": 90,
+      "type": "quiz",
+      "name": "霓裳一曲"
+    },
+    {
+      "id": 91,
+      "type": "event",
+      "name": "海棠春睡"
+    },
+    {
+      "id": 92,
+      "type": "battle",
+      "name": "谪仙斗酒"
+    },
+    {
+      "id": 93,
+      "type": "ping",
+      "name": "玉砌雕栏"
+    },
+    {
+      "id": 94,
+      "type": "landmark",
+      "name": "御花园"
+    },
+    {
+      "id": 75,
+      "type": "ping",
+      "name": "黄沙道"
+    },
+    {
+      "id": 76,
+      "type": "quiz",
+      "name": "阳关三叠"
+    },
+    {
+      "id": 77,
+      "type": "event",
+      "name": "胡笳夜"
+    },
+    {
+      "id": 78,
+      "type": "battle",
+      "name": "燕然勒石"
+    },
+    {
+      "id": 79,
+      "type": "ping",
+      "name": "孤烟落日"
+    },
+    {
+      "id": 95,
+      "type": "quiz",
+      "name": "羌笛杨柳"
+    },
+    {
+      "id": 96,
+      "type": "event",
+      "name": "烽燧传书"
+    },
+    {
+      "id": 97,
+      "type": "battle",
+      "name": "龙城飞将"
+    },
+    {
+      "id": 98,
+      "type": "ping",
+      "name": "春风不度"
+    },
+    {
+      "id": 99,
+      "type": "landmark",
+      "name": "玉门关"
+    }
+  ]
+}

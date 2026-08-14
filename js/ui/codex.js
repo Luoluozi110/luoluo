@@ -1,0 +1,299 @@
+/**
+ * codex.js（UI 层）—— 图鉴阁。
+ * 三个分页：对手图鉴 / 传世名篇 / 文心。
+ *   · 对手图鉴：按「档」分组列出具名对手；邂逅过的显示真容，未遇者留剪影。
+ *   · 传世名篇：复用 Album 的解锁与条件逻辑（剪影 / 进度）。
+ *   · 文心：复用 modals.talentEffectText；获得过的显真容，未获者留剪影。
+ * 所有「已解锁 / 已邂逅 / 已获得」进度均来自持久化存储，跨局累计。
+ */
+import * as Codex from '../engine/codex.js';
+import * as Album from '../engine/album.js';
+import { talentEffectText } from './modals.js';
+import { ATTR_NAMES } from '../engine/rules.js';
+
+const ATTR_KEYS = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
+const STYLE_NAMES = { shi: '诗', ci: '词', lian: '联', bi: '笔', xue: '学', si: '思' };
+
+const esc = s => String(s ?? '')
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/** 取典故第一句，卡面上只放一句 */
+function firstSentence(text) {
+  const t = String(text || '').trim();
+  if (!t) return '';
+  const i = t.indexOf('。');
+  return i >= 0 ? t.slice(0, i + 1) : t;
+}
+
+export class CodexUI {
+  constructor({ el, cfg }) {
+    this.el = el;
+    this.cfg = cfg;
+    this.tab = 'foes';
+  }
+
+  open(tab = 'foes') {
+    this.tab = tab || 'foes';
+    this._render();
+    this.el.classList.add('on');
+  }
+
+  close() { this.el.classList.remove('on'); }
+
+  /* ================================================ 渲染外壳 */
+
+  _render() {
+    const c = Codex.loadCodex();
+    const store = Album.loadStore();
+    const ab = this.cfg.album || [];
+    const tal = this.cfg.talents || [];
+    const npcs = this.cfg.npcs || [];
+
+    const foesTotal = npcs.reduce((a, t) => a + ((t.npcs || []).length || 0), 0);
+    const foesGot = npcs.reduce((a, t) =>
+      a + (t.npcs || []).filter(n => Codex.hasFoe(t.id, n.name)).length, 0);
+    const abGot = ab.filter(x => store.unlocked.includes(x.id)).length;
+    const talGot = tal.filter(t => c.talents.includes(t.id)).length;
+    const syn = this.cfg.synergies || [];
+    const synGot = syn.filter(s => c.synergies.includes(s.id)).length;
+
+    this.el.innerHTML = `
+      <div class="cx-inner scroll-frame paper">
+        <div class="cx-head">
+          <button class="btn btn-ink btn-sm panel-back" data-back>关闭</button>
+          <div class="title-ink" style="font-size:30px;text-align:center">圖 鑑 閣</div>
+          <div class="cx-tabs">
+            <button class="cx-tab ${this.tab === 'foes' ? 'on' : ''}" data-tab="foes">对手图鉴 <span class="cx-ct">${foesGot}/${foesTotal}</span></button>
+            <button class="cx-tab ${this.tab === 'album' ? 'on' : ''}" data-tab="album">传世名篇 <span class="cx-ct">${abGot}/${ab.length}</span></button>
+            <button class="cx-tab ${this.tab === 'tal' ? 'on' : ''}" data-tab="tal">文心 <span class="cx-ct">${talGot}/${tal.length}</span></button>
+            <button class="cx-tab ${this.tab === 'syn' ? 'on' : ''}" data-tab="syn">羁绊 <span class="cx-ct">${synGot}/${syn.length}</span></button>
+          </div>
+        </div>
+        <div class="cx-scroll">
+          <div class="cx-wrap" id="cxWrap">${this._body(store, c)}</div>
+        </div>
+        <div class="cx-foot">
+          <div class="cx-bar">
+            <span class="cx-hint">已邂逅 / 已解锁的内容会跨局累计，存于本机浏览器。</span>
+            <button class="btn btn-primary" data-back>关闭</button>
+          </div>
+        </div>
+      </div>`;
+
+    this.el.querySelectorAll('[data-back]').forEach(b =>
+      b.addEventListener('click', () => this.close()));
+    this.el.querySelectorAll('.cx-tab').forEach(b =>
+      b.addEventListener('click', () => { this.tab = b.dataset.tab; this._render(); }));
+
+    // 已邂逅对手卡 → 点开详情（胜率 / 风格 / 六维）
+    this.el.querySelectorAll('[data-foe-view]').forEach(el =>
+      el.addEventListener('click', () => this._openFoeDetail(el.dataset.tier, el.dataset.name)));
+  }
+
+  _body(store, c) {
+    if (this.tab === 'album') return this._album(store);
+    if (this.tab === 'tal') return this._talents(c);
+    if (this.tab === 'syn') return this._synergies(c);
+    return this._foes(c);
+  }
+
+  /* ================================================ 对手图鉴 */
+
+  _foes(c) {
+    const npcs = this.cfg.npcs || [];
+    if (!npcs.length) return `<div class="cx-empty">尚无对手数据</div>`;
+    let html = '';
+    for (const tier of npcs) {
+      const pool = tier.npcs || [];
+      if (!pool.length) continue;
+      html += `<div class="cx-tier">
+        <div class="cx-tier-h">${esc(tier.tier || tier.name || '对手')}<span class="cx-tier-sub">${esc(tier.desc || '')}</span></div>
+        <div class="album-grid">`;
+      for (const npc of pool) {
+        if (Codex.hasFoe(tier.id, npc.name)) {
+          const sum = ATTR_KEYS.reduce((a, k) => a + (Number(npc.attrs && npc.attrs[k]) || 0), 0);
+          const chips = ATTR_KEYS.map(k =>
+            `<span class="chip">${ATTR_NAMES[k]}${Number(npc.attrs && npc.attrs[k]) || 0}</span>`).join('');
+          const styleBadge = npc.style ? `<span class="opp-style">偏${STYLE_NAMES[npc.style] || npc.style}</span>` : '';
+          html += `<div class="album-card unlocked foe-card" data-foe-view data-tier="${esc(tier.id)}" data-name="${esc(npc.name)}">
+            <div class="ac-name">${esc(npc.name)}${styleBadge}</div>
+            <div class="ac-reward">${esc(npc.title || '')}</div>
+            <div class="cx-chips">${chips}</div>
+            <div class="ac-cond done">六维总和 Σ${sum}</div>
+          </div>`;
+        } else {
+          html += `<div class="album-card locked">
+            <div class="ac-silhouette">？</div>
+            <div class="ac-name" style="font-size:14px;letter-spacing:.2em">未 邂 逅</div>
+            <div class="ac-cond">擂台相逢，方入此册</div>
+          </div>`;
+        }
+      }
+      html += `</div></div>`;
+    }
+    return html;
+  }
+
+  /* ================================================ 传世名篇 */
+
+  _album(store) {
+    const ab = this.cfg.album || [];
+    if (!ab.length) return `<div class="cx-empty">尚无名篇数据</div>`;
+    return ab.map(card => {
+      const got = store.unlocked.includes(card.id);
+      if (got) {
+        return `<div class="album-card unlocked">
+          <div class="ac-name">${esc(card.name)}</div>
+          <div class="ac-reward">${esc(card.rewardDesc || '（无数值加成）')}</div>
+          <div class="ac-text">${esc(firstSentence(card.text))}</div>
+          <div class="ac-cond done">${esc(Album.conditionText(card, store.stats))} ✓</div>
+        </div>`;
+      }
+      const prog = Album.progressOf(card, store.stats);
+      const pct = Math.min(100, Math.round(100 * prog.cur / prog.need));
+      return `<div class="album-card locked">
+        <div class="ac-silhouette">？</div>
+        <div class="ac-name" style="font-size:14px;letter-spacing:.2em">未 解 鎖</div>
+        <div class="ac-cond">${esc(Album.conditionText(card, store.stats))}</div>
+        <div class="ac-prog"><i style="width:${pct}%"></i></div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ================================================ 文心 */
+
+  _talents(c) {
+    const tal = this.cfg.talents || [];
+    if (!tal.length) return `<div class="cx-empty">尚无文心数据</div>`;
+    return tal.map(t => {
+      const got = c.talents.includes(t.id);
+      if (got) {
+        return `<div class="album-card unlocked">
+          <div class="ac-name">${esc(t.name)} <span class="ac-badge">${t.kind === 'active' ? '主动' : '被动'}</span></div>
+          <div class="efx cx-efx">${talentEffectText(t)}</div>
+          <div class="ac-text">${esc(firstSentence(t.text))}</div>
+        </div>`;
+      }
+      return `<div class="album-card locked">
+        <div class="ac-silhouette">？</div>
+        <div class="ac-name" style="font-size:14px;letter-spacing:.2em">未 獲 得</div>
+        <div class="ac-cond">于局中获取，方入此册</div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ================================================ 文心羁绊 */
+
+  _synergyEffectText(ef) {
+    if (!ef || !ef.type) return "（无效果）";
+    switch (ef.type) {
+      case "syn_pct": return "论战得分 +" + Math.round((ef.value || 0) * 100) + "%";
+      case "on_win_bonus": return "以" + (STYLE_NAMES[ef.style] || ef.style || "任意体") + "出战获胜 +" + (ef.value || 0);
+      case "dice_plus": return "灵感骰 +" + (ef.value || 0);
+      case "crit": return Math.round((ef.chance || 0) * 100) + "% 概率得分 ×" + (ef.mult || 0);
+      default: return ef.type;
+    }
+  }
+
+  _synergies(c) {
+    const syn = this.cfg.synergies || [];
+    if (!syn.length) return `<div class="cx-empty">尚无羁绊数据</div>`;
+    const talMap = new Map((this.cfg.talents || []).map(t => [t.id, t]));
+    const talName = id => (talMap.get(id) && talMap.get(id).name) || id;
+    return syn.map(s => {
+      const got = c.synergies.includes(s.id);
+      const mem = (s.members || []).map(m => `<span class="chip">${esc(talName(m))}</span>`).join("");
+      const eff = (s.effects || []).map(e => this._synergyEffectText(e)).join("　");
+      if (got) {
+        return `<div class="album-card unlocked">
+          <div class="ac-name">${esc(s.name)} <span class="ac-badge">羁绊</span></div>
+          <div class="q-tags">${mem}</div>
+          <div class="efx cx-efx">${esc(eff)}</div>
+          <div class="ac-text">${esc(firstSentence(s.desc))}</div>
+        </div>`;
+      }
+      return `<div class="album-card locked">
+        <div class="ac-silhouette">？</div>
+        <div class="ac-name" style="font-size:14px;letter-spacing:.2em">未 达 成</div>
+        <div class="ac-cond">集齐成员「${esc((s.members || []).map(talName).join("、"))}」方入此册</div>
+      </div>`;
+    }).join("");
+  }
+
+  /* ================================================ 对手详情浮层 */
+
+  /** 在配置里按 tierId + name 定位对手（两者组合唯一） */
+  _findFoe(tierId, name) {
+    for (const tier of (this.cfg.npcs || [])) {
+      const npc = (tier.npcs || []).find(n => n.name === name);
+      if (npc && tier.id === tierId) return { tier, npc };
+    }
+    return null;
+  }
+
+  _openFoeDetail(tierId, name) {
+    const found = this._findFoe(tierId, name);
+    if (!found) return;
+    const prev = this.el.querySelector('[data-detail]');
+    if (prev) prev.remove();
+    const ov = document.createElement('div');
+    ov.className = 'cx-detail-overlay';
+    ov.setAttribute('data-detail', '');
+    ov.innerHTML = `<div class="cx-detail paper">${this._foeDetailHtml(found.tier, found.npc)}</div>`;
+    this.el.appendChild(ov);
+    ov.querySelector('[data-detail-close]').addEventListener('click', () => ov.remove());
+    ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+  }
+
+  _foeDetailHtml(tier, npc) {
+    const style = npc.style || '';
+    const sum = ATTR_KEYS.reduce((a, k) => a + (Number(npc.attrs && npc.attrs[k]) || 0), 0);
+    // 最擅长的文体（六维最高项），卡面与评语据此高亮
+    const dom = ATTR_KEYS.reduce((m, k) =>
+      (Number(npc.attrs && npc.attrs[k]) || 0) > (Number(npc.attrs && npc.attrs[m]) || 0) ? k : m, ATTR_KEYS[0]);
+    const chips = ATTR_KEYS.map(k =>
+      `<span class="chip ${k === dom ? 'best' : ''}">${ATTR_NAMES[k]} ${Number(npc.attrs && npc.attrs[k]) || 0}</span>`).join('');
+
+    // 累计战绩（跨局）
+    const st = Codex.getFoeStats(tier.id, npc.name);
+    const tot = st.w + st.d + st.l;
+    const rate = tot ? Math.round(100 * st.w / tot) : 0;
+    const recHtml = tot
+      ? `<div class="cx-rec-row"><span class="win">胜 ${st.w}</span><span class="draw">平 ${st.d}</span><span class="loss">负 ${st.l}</span></div>
+         <div class="cx-rec-bar"><i style="width:${rate}%"></i></div>
+         <div class="cx-rec-rate">胜率 ${rate}%　·　共 ${tot} 战</div>`
+      : `<div class="cx-rec-none">尚未交锋——仅曾邂逅于此册</div>`;
+
+    // 款位附加信息：殿试场次 / 擅场题材
+    const thNames = (tier.themes || []).map(t =>
+      (this.cfg.affinity && this.cfg.affinity.themeNames && this.cfg.affinity.themeNames[t]) || t);
+    const meta = [];
+    if (tier.battles) meta.push(`殿试 ${tier.battles} 场`);
+    if (thNames.length) meta.push(`擅场：${thNames.join('、')}`);
+    const hint = `此人以「${ATTR_NAMES[dom]}」见长（六维 ${sum} 中占 ${Number(npc.attrs && npc.attrs[dom]) || 0}），宜以所长击之，或避其锋芒、另辟蹊径。`;
+
+    return `
+      <div class="cx-detail-head">
+        <button class="btn btn-ink btn-sm" data-detail-close>返回图鉴</button>
+        <div class="title-ink" style="font-size:28px">${esc(npc.name)}</div>
+        <div class="cx-detail-sub">${esc(tier.tier)} · ${esc(npc.title || '')}　${style ? `<span class="opp-style">偏${STYLE_NAMES[style] || style}</span>` : ''}</div>
+      </div>
+      <div class="cx-detail-body scroll-frame">
+        <div class="cx-detail-sec">
+          <div class="cx-sec-t">六维才学</div>
+          <div class="cx-chips cx-chips-lg">${chips}</div>
+          <div class="cx-strong">综合实力 Σ ${sum}</div>
+        </div>
+        <div class="cx-detail-sec">
+          <div class="cx-sec-t">交锋战绩</div>
+          ${recHtml}
+        </div>
+        <div class="cx-detail-sec">
+          <div class="cx-sec-t">款位说明</div>
+          <div class="cx-tier-desc">${esc(tier.desc || '')}</div>
+          ${meta.length ? `<div class="cx-meta">${meta.map(m => `<span class="chip">${esc(m)}</span>`).join('')}</div>` : ''}
+          <div class="cx-hint2">${hint}</div>
+        </div>
+      </div>`;
+  }
+}

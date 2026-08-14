@@ -1,0 +1,26 @@
+{
+  "initial": { "shi": 5, "ci": 5, "lian": 5, "bi": 5, "xue": 5, "si": 5 },
+  "schoolBonus": 3,
+  "quizCorrectGain": 4,
+  "zeCellGain": 1,
+  "branchLandmarkGain": 5,
+  "battleWinGain": [3, 5],
+  "battleDrawGain": { "style": 1 },
+  "battleLoseGain": { "style": 2 },
+
+  "talentDropRate": 0.15,
+
+  "diminish": {
+    "soft": 34,
+    "hard": 48,
+    "midRate": 0.5,
+    "highRate": 0.25,
+    "minGain": 1
+  },
+
+  "winScale": {
+    "min": 0.45,
+    "max": 1,
+    "exp": 1
+  }
+}

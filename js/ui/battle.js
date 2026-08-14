@@ -1,0 +1,300 @@
+/** battle.js —— 「挥毫论道」全屏对决台，六步流程 + 五项逐条弹出累加 */
+import { ATTR_NAMES, STYLE_NAMES, ATTR_KEYS, BATTLE_COEF } from '../engine/rules.js';
+import { talentEffectText, goldBurst, signed, DEFAULT_SECONDS } from './modals.js';
+import { createCountdown } from './timer.js';
+import { play } from './audio.js';
+import { sting } from './music.js';
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+export class BattleStage {
+  /** @param {HTMLElement} el @param {object} cfg - 全量配置，用于文案取值 */
+  constructor(el, cfg) {
+    this.el = el;
+    this.cfg = cfg || {};
+    this.seconds = DEFAULT_SECONDS;
+  }
+
+  attrsRow(a) {
+    return ATTR_KEYS.map(k => `<span>${ATTR_NAMES[k]}<b> ${a[k] || 0}</b></span>`).join('');
+  }
+
+  /** 驱动一场战斗；session 由 engine 提供。返回 resolve 结果 */
+  async run(session) {
+    const el = this.el;
+    el.classList.add('on');
+    el.innerHTML = `
+      <div class="bt-banner">
+        <div class="sm">${esc(session.label)}</div>
+        <div class="bg2" id="btTopic">—</div>
+        <div class="th" id="btTheme"></div>
+      </div>
+      <div class="bt-countdown" id="btTimerSlot"></div>
+      <div class="bt-arena">
+        <div class="fighter self">
+          <div class="fname"><span class="seal">應試</span><span>${esc(session.playerName) || '在下'}</span></div>
+          <div class="fsub" id="selfPick">待审题</div>
+          <div class="fattrs">${this.attrsRow(session.playerAttrs)}</div>
+          <div class="score-lines" id="selfLines"></div>
+          <div class="score-total" id="selfTotal"><span>作品得分</span><b>—</b></div>
+        </div>
+        <div class="vs-badge">對</div>
+        <div class="fighter opp">
+          <div class="fname"><span class="seal">對手</span><span>${esc(session.npc.fullName || session.npc.name)}</span>${session.npc.style ? `<span class="opp-style">偏${STYLE_NAMES[session.npc.style] || ''}</span>` : ''}</div>
+          <div class="fsub">${esc(session.npc.title || '')}</div>
+          <div class="fattrs">${this.attrsRow(session.npc.attrs)}</div>
+          <div class="score-lines" id="oppLines"></div>
+          <div class="score-total" id="oppTotal"><span>作品得分</span><b>—</b></div>
+        </div>
+      </div>
+      <div class="bt-panel" id="btPanel"><div class="ph">① 遭遇</div></div>`;
+
+    const panel = el.querySelector('#btPanel');
+
+    /* ① 遭遇 */
+    panel.innerHTML = `<div class="ph">① 遭遇</div>
+      <div style="font-size:17px;line-height:1.8">「${esc(session.npc.fullName || session.npc.name)}」${esc(session.npc.title || '')}拦路请教，愿以文会友。${session.npc.style ? `<span style="color:var(--zhu)">（此人偏${STYLE_NAMES[session.npc.style] || ''}）</span>` : ''}</div>`;
+    await sleep(750);
+
+    /* ② 审题 */
+    el.querySelector('#btTopic').textContent = session.topic;
+    el.querySelector('#btTheme').textContent = `题材 · ${session.themeName}`;
+    const zg = session.zeitgeist;
+    let info = '';
+    if (zg) {
+      const hot = (session.themeNames && session.themeNames[zg.theme]) || zg.theme;
+      const fash = (session.mannerNames && session.mannerNames[zg.manner]) || zg.manner;
+      const cur = (session.themeName === hot) ? '（本题即热点！）' : '';
+      info += `<div style="margin-top:8px;font-size:13px;color:var(--mo-2)">当朝风潮 · 热点题材「<b>${esc(hot)}</b>${cur}」、得势文体「<b>${esc(fash)}</b>」</div>`;
+    }
+    if (session.schoolHomeName && session.homeBonus > 0) {
+      info += `<div style="margin-top:4px;font-size:13px;color:var(--mo-2)">本门文风 · ${esc(session.schoolHomeName)}（用本门风格额外 +${Math.round(session.homeBonus * 100)}%）</div>`;
+    }
+    const syn = session.synergies || [];
+    if (syn.length) {
+      info += `<div style="margin-top:4px;font-size:13px;color:var(--jin)">文心羁绊 · ${syn.map(sy => esc(sy.name)).join('、')}</div>`;
+    }
+    panel.innerHTML = `<div class="ph">② 审题</div>
+      <div style="font-size:17px;line-height:1.8">题目「<b>${esc(session.topic)}</b>」，题材为<b style="color:var(--zhu)">${session.themeName}</b>。</div>${info}`;
+    await sleep(950);
+
+    /* ③ 选文体（联力 <8 禁选联） */
+    const style = await this.pickStyle(panel, session);
+    el.querySelector('#selfPick').textContent = `文体：${STYLE_NAMES[style]}`;
+
+    /* ④ 选风格 */
+    const manner = await this.pickManner(panel, session);
+    el.querySelector('#selfPick').textContent =
+      `文体：${STYLE_NAMES[style]}　风格：${session.mannerNames[manner]}`;
+
+    /* ⑤ 掷灵感骰 */
+    const dice = await this.rollDice(panel);
+
+    /* ⑥ 算分对决（决策已毕，撤去倒计时） */
+    const slot = el.querySelector('#btTimerSlot');
+    if (slot) slot.innerHTML = '';
+    const out = session.resolve(style, manner, dice);
+    panel.innerHTML = `<div class="ph">⑥ 算分对决　<span style="font-size:12px;color:var(--mo-3)">
+      对手以「${STYLE_NAMES[out.npcStyle]}·${esc(out.npcMannerName)}」应战，掷出 ${out.npcDice} 点</span></div>
+      <div style="font-size:14px;color:var(--mo-2);line-height:1.8" id="btNarrate">正在逐项计分……</div>`;
+
+    await this.revealScores(out);
+    await this.showVerdict(out, session);
+
+    el.classList.remove('on');
+    el.innerHTML = '';
+    return out;
+  }
+
+  /**
+   * 30 秒倒计时条：挂在战斗台顶部（审题栏下方），最后 5 秒转红预警。
+   * 超时触发 onTimeout（由本层自动代打）；返回停止函数。
+   */
+  startTimer(panel, onTimeout, total) {
+    const slot = this.el.querySelector('#btTimerSlot');
+    const cd = createCountdown(total ?? this.seconds, onTimeout);
+    if (slot) { slot.innerHTML = ''; slot.appendChild(cd.el); }
+    return () => cd.stop();
+  }
+
+  pickStyle(panel, session) {
+    return new Promise(resolve => {
+      let done = false, stop = () => {};
+      const finish = s => { if (done) return; done = true; stop(); resolve(s); };
+      const cards = ['shi', 'ci', 'lian'].map(s => {
+        const can = session.canUseStyle(s);
+        const hint = session.styleHint(s);
+        return `<button class="pick" data-s="${s}" ${can ? '' : 'disabled'}>
+          <div class="pn">${STYLE_NAMES[s]}</div>
+          <div class="pv">${ATTR_NAMES[s]} ${session.playerAttrs[s] || 0}　格律分 ${(session.playerAttrs[s] || 0) * BATTLE_COEF.styleMult}</div>
+          ${hint ? `<div class="pv">${hint}</div>` : ''}
+        </button>`;
+      }).join('');
+      panel.innerHTML = `<div class="ph">③ 选文体　<span style="font-size:12px;color:var(--mo-3)">文体属性 ×${BATTLE_COEF.styleMult} = 格律分，基本盘所系　·　限时 ${this.seconds} 秒</span></div>
+        <div class="pick-row">${cards}</div>${this.activeRow(session)}`;
+      this.bindActive(panel, session);
+      panel.querySelectorAll('[data-s]').forEach(b =>
+        b.addEventListener('click', () => finish(b.dataset.s)));
+      stop = this.startTimer(panel, () => {
+        const usable = ['shi', 'ci', 'lian'].filter(s => session.canUseStyle(s));
+        let best = usable[0];
+        for (const s of usable) if ((session.playerAttrs[s] || 0) > (session.playerAttrs[best] || 0)) best = s;
+        this.flash(`时限已到，自动以最高文体「${STYLE_NAMES[best]}」应试`);
+        finish(best);
+      });
+    });
+  }
+
+  pickManner(panel, session) {
+    return new Promise(resolve => {
+      let done = false, stop = () => {};
+      const finish = m => { if (done) return; done = true; stop(); resolve(m); };
+      const cards = session.manners.map(m => {
+        const isHome = session.homeResolved && m === session.homeResolved;
+        const mom = session.momentumPre(m);
+        const momTxt = mom > 0 ? `<div class="mom">气势连捷 +${Math.round(mom * 100)}%</div>` : '';
+        const homeTxt = isHome && session.homeBonus > 0 ? `<div class="home">本门 +${Math.round(session.homeBonus * 100)}%</div>` : '';
+        return `<button class="pick" data-m="${m}">
+          <div class="pn">${session.mannerNames[m]}</div>
+          ${homeTxt}${momTxt}
+        </button>`;
+      }).join('');
+      panel.innerHTML = `<div class="ph">④ 选风格　<span style="font-size:12px;color:var(--mo-3)">限时 ${this.seconds} 秒</span></div>
+        <div class="pick-row">${cards}</div>
+        <div style="font-size:12px;color:var(--mo-3);margin:6px 2px 0">有效相性已含本门文风与当朝风潮；连续同风格取胜可叠「气势连捷」。</div>
+        ${this.activeRow(session)}`;
+      this.bindActive(panel, session);
+      panel.querySelectorAll('[data-m]').forEach(b =>
+        b.addEventListener('click', () => finish(b.dataset.m)));
+      stop = this.startTimer(panel, () => {
+        let best = session.manners[0];
+        for (const m of session.manners) if (session.affinityOf(m) > session.affinityOf(best)) best = m;
+        this.flash(`时限已到，自动以「${session.mannerNames[best]}」落笔`);
+        finish(best);
+      });
+    });
+  }
+
+  rollDice(panel) {
+    return new Promise(resolve => {
+      let done = false, stop = () => {};
+      const doRoll = async (auto) => {
+        if (done) return; done = true; stop();
+        const n = 1 + Math.floor(Math.random() * 6);
+        play('dice');
+        sting('dice');        // 论战掷骰动画配乐
+        panel.innerHTML = `<div class="ph">⑤ 掷灵感骰${auto ? '　<span style="font-size:12px;color:var(--mo-3)">时限已到，代掷</span>' : ''}</div>
+          <div style="text-align:center"><div style="display:inline-block;font-size:62px;letter-spacing:.1em;color:var(--zhu)"
+            class="pop-in">${'一二三四五六'[n - 1]}</div>
+          <div style="font-size:14px;color:var(--mo-3)">掷出 ${n} 点</div></div>`;
+        await sleep(760);
+        resolve(n);
+      };
+      const dm = BATTLE_COEF.diceMult;
+      panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">1d6 × ${dm} = 临场发挥（${dm}～${dm * 6} 分）　·　限时 ${this.seconds} 秒</span></div>
+        <div class="pick-row"><button class="pick" id="btRoll" style="min-width:180px"><div class="pn">掷 骰</div>
+        <div class="pv">听天由命，也听人事</div></button></div>`;
+      panel.querySelector('#btRoll').addEventListener('click', () => doRoll(false));
+      stop = this.startTimer(panel, () => doRoll(true));
+    });
+  }
+
+  activeRow(session) {
+    if (!session.activeTalents.length) return '';
+    const btns = session.activeTalents.map(t => {
+      const used = session.usedActive.some(x => x.id === t.id);
+      const afford = session.inspiration >= (t.cost || 1);
+      return `<button class="at-btn ${used ? 'used' : ''}" data-t="${t.id}" ${used || !afford ? 'disabled' : ''}
+        title="${esc(talentEffectText(t))}">${esc(t.name)}<span class="cost">灵感 -${t.cost || 1}</span></button>`;
+    }).join('');
+    return `<div class="active-talents"><span class="lb">主动文心</span>${btns}</div>`;
+  }
+
+  bindActive(panel, session) {
+    panel.querySelectorAll('[data-t]').forEach(b => b.addEventListener('click', () => {
+      if (session.useActive(b.dataset.t)) {
+        b.classList.add('used'); b.disabled = true;
+        const t = session.activeTalents.find(x => x.id === b.dataset.t);
+        this.flash(`文心「${t.name}」已发动`);
+      }
+    }));
+  }
+
+  flash(text) {
+    const d = document.createElement('div');
+    d.className = 'toast';
+    Object.assign(d.style, { position: 'absolute', left: '50%', top: '12px', transform: 'translateX(-50%)', zIndex: 90 });
+    d.textContent = text;
+    this.el.appendChild(d);
+    setTimeout(() => d.remove(), 1700);
+  }
+
+  /** 五项逐条弹出累加——孩子要能看懂为什么赢 */
+  async revealScores(out) {
+    const selfBox = this.el.querySelector('#selfLines');
+    const oppBox = this.el.querySelector('#oppLines');
+    const selfT = this.el.querySelector('#selfTotal');
+    const oppT = this.el.querySelector('#oppTotal');
+    let sAcc = 0, oAcc = 0;
+
+    for (let i = 0; i < out.selfCalc.items.length; i++) {
+      const si = out.selfCalc.items[i];
+      const oi = out.oppCalc.items[i];
+      sAcc += si.value; oAcc += oi.value;
+      selfBox.appendChild(lineEl(si));
+      oppBox.appendChild(lineEl(oi));
+      selfT.innerHTML = `<span>累计</span><b>${sAcc}</b>`;
+      oppT.innerHTML = `<span>累计</span><b>${oAcc}</b>`;
+      await sleep(620);
+    }
+    if (out.selfCalc.breakdown.critMult !== 1) {
+      selfBox.appendChild(lineEl({ key: 'mods', label: '神来之笔', value: out.selfCalc.total - sAcc, detail: `全场得分 ×${out.selfCalc.breakdown.critMult}` }));
+      goldBurst(this.el, 26);
+      await sleep(620);
+    }
+    selfT.innerHTML = `<span>作品得分</span><b>${out.selfCalc.total}</b>`;
+    oppT.innerHTML = `<span>作品得分</span><b>${out.oppCalc.total}</b>`;
+    // 平局时不加类；classList.add('') 会抛 DOMTokenList 异常
+    const selfCls = out.result === 'win' ? 'win' : out.result === 'lose' ? 'lose' : '';
+    const oppCls = out.result === 'lose' ? 'win' : out.result === 'win' ? 'lose' : '';
+    if (selfCls) selfT.classList.add(selfCls);
+    if (oppCls) oppT.classList.add(oppCls);
+    await sleep(420);
+  }
+
+  async showVerdict(out, session) {
+    const txt = { win: '勝', lose: '負', draw: '平' }[out.result];
+    // 败北灵感惩罚与结算逻辑一致（含会试/殿试 Late 档与「科场风起」翻倍），由引擎预填到 session.projLoseInsp
+    const loseInsp = session.projLoseInsp != null ? session.projLoseInsp
+      : ((this.cfg.inspiration || {}).battleLoseExtra ?? -3);
+    const drawPct = Math.round(BATTLE_COEF.drawRatio * 100);
+    const sub = {
+      win: out.upset ? '以弱胜强，一鸣惊人！' : '技高一筹，可喜可贺。',
+      lose: `技不如人，灵感 ${signed(loseInsp)}。输的只是状态，不是成长。`,
+      draw: `双方仅差 ${Math.abs(out.selfCalc.total - out.oppCalc.total)} 分（≤${drawPct}%），判为平局。`
+    }[out.result];
+
+    const d = document.createElement('div');
+    d.className = 'bt-result ' + out.result;
+    d.innerHTML = `${txt}<div style="font-size:15px;letter-spacing:.1em;margin-top:6px;color:#e9dcc0">${sub}</div>`;
+    this.el.appendChild(d);
+    play(out.result === 'win' ? 'win' : out.result === 'lose' ? 'lose' : 'move');
+    if (out.result === 'win') goldBurst(this.el, 34);
+
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-primary';
+    btn.style.marginTop = '12px';
+    btn.textContent = session.isPalace ? '继续殿试' : '收笔';
+    this.el.appendChild(btn);
+    await new Promise(r => btn.addEventListener('click', r));
+  }
+}
+
+function lineEl(item) {
+  const d = document.createElement('div');
+  d.className = `score-line k-${item.key}`;
+  d.innerHTML = `<span class="lb">${item.label}</span><span class="dt">${esc(item.detail)}</span>
+    <span class="vv">${item.value >= 0 ? '+' : ''}${item.value}</span>`;
+  return d;
+}
