@@ -16,8 +16,7 @@
         "李白",
         "王维"
       ],
-      "answer": 0,
-      "tendency": "羁旅愁思"
+      "answer": 0
     },
     {
       "id": "Q0002",
@@ -33,8 +32,7 @@
         "西江月",
         "满江红"
       ],
-      "answer": 0,
-      "tendency": ""
+      "answer": 0
     },
     {
       "id": "Q0003",
@@ -50,8 +48,7 @@
         "窗含西岭千秋雪",
         "柳暗花明又一村"
       ],
-      "answer": 0,
-      "tendency": ""
+      "answer": 0
     },
     {
       "id": "Q0004",
@@ -67,8 +64,7 @@
         "举头望明月",
         "映日荷花别样红"
       ],
-      "answer": 1,
-      "tendency": ""
+      "answer": 1
     },
     {
       "id": "Q0005",
@@ -84,8 +80,7 @@
         "王之涣",
         "王勃"
       ],
-      "answer": 2,
-      "tendency": ""
+      "answer": 2
     },
     {
       "id": "Q0006",
@@ -101,8 +96,7 @@
         "不畏浮云遮望眼",
         "万里长征人未还"
       ],
-      "answer": 0,
-      "tendency": ""
+      "answer": 0
     },
     {
       "id": "Q0007",
@@ -118,8 +112,7 @@
         "白居易",
         "杜牧"
       ],
-      "answer": 0,
-      "tendency": ""
+      "answer": 0
     },
     {
       "id": "Q0008",
@@ -135,8 +128,7 @@
         "《卖炭翁》",
         "《归园田居》"
       ],
-      "answer": 1,
-      "tendency": ""
+      "answer": 1
     },
     {
       "id": "Q0009",
@@ -152,8 +144,7 @@
         "又送王孙去",
         "萋萋满别情"
       ],
-      "answer": 0,
-      "tendency": ""
+      "answer": 0
     },
     {
       "id": "Q0010",
@@ -169,8 +160,7 @@
         "泰山",
         "黄山"
       ],
-      "answer": 2,
-      "tendency": ""
+      "answer": 2
     },
     {
       "id": "Q0011",
@@ -186,8 +176,7 @@
         "端午节",
         "元宵节"
       ],
-      "answer": 1,
-      "tendency": ""
+      "answer": 1
     },
     {
       "id": "Q0012",
@@ -203,8 +192,7 @@
         "岑参",
         "李白"
       ],
-      "answer": 1,
-      "tendency": "婉约深情"
+      "answer": 1
     },
     {
       "id": "Q0013",
@@ -220,8 +208,7 @@
         "《登高》",
         "《茅屋为秋风所破歌》"
       ],
-      "answer": 0,
-      "tendency": ""
+      "answer": 0
     },
     {
       "id": "Q0014",
@@ -237,8 +224,7 @@
         "《燕歌行》",
         "《白雪歌送武判官归京》"
       ],
-      "answer": 1,
-      "tendency": "边塞豪情"
+      "answer": 1
     },
     {
       "id": "Q0015",
@@ -254,8 +240,7 @@
         "江南的杏花雨",
         "秋日的白霜"
       ],
-      "answer": 1,
-      "tendency": "边塞豪情"
+      "answer": 1
     },
     {
       "id": "Q0016",
@@ -271,8 +256,7 @@
         "孟郊",
         "柳宗元"
       ],
-      "answer": 3,
-      "tendency": ""
+      "answer": 3
     },
     {
       "id": "Q0017",
@@ -288,8 +272,7 @@
         "王安石",
         "陆游"
       ],
-      "answer": 1,
-      "tendency": "哲思派"
+      "answer": 1
     },
     {
       "id": "Q0018",
@@ -305,8 +288,7 @@
         "石灰",
         "青松"
       ],
-      "answer": 2,
-      "tendency": "咏物言志"
+      "answer": 2
     },
     {
       "id": "Q0019",
@@ -322,8 +304,7 @@
         "《竹里馆》",
         "《鹿柴》"
       ],
-      "answer": 0,
-      "tendency": ""
+      "answer": 0
     },
     {
       "id": "Q0020",
@@ -339,8 +320,7 @@
         "飞鸟相与还",
         "心远地自偏"
       ],
-      "answer": 1,
-      "tendency": ""
+      "answer": 1
     },
     {
       "id": "Q0021",
@@ -356,8 +336,7 @@
         "晏几道",
         "李煜"
       ],
-      "answer": 3,
-      "tendency": ""
+      "answer": 3
     },
     {
       "id": "Q0022",
@@ -373,8 +352,7 @@
         "《破阵子·醉里挑灯看剑》",
         "《永遇乐·京口北固亭怀古》"
       ],
-      "answer": 1,
-      "tendency": "豪放派"
+      "answer": 1
     },
     {
       "id": "Q0023",
@@ -390,8 +368,7 @@
         "临江仙",
         "沁园春"
       ],
-      "answer": 1,
-      "tendency": "豪放派"
+      "answer": 1
     },
     {
       "id": "Q0024",
@@ -407,8 +384,7 @@
         "朱淑真《减字木兰花》",
         "李煜《相见欢》"
       ],
-      "answer": 0,
-      "tendency": "婉约派"
+      "answer": 0
     },
     {
       "id": "Q0025",
@@ -424,8 +400,7 @@
         "载不动许多愁",
         "才下眉头，却上心头"
       ],
-      "answer": 1,
-      "tendency": "婉约派"
+      "answer": 1
     },
     {
       "id": "Q0026",
@@ -441,8 +416,7 @@
         "夕阳西下几时回",
         "满目山河空念远"
       ],
-      "answer": 0,
-      "tendency": ""
+      "answer": 0
     },
     {
       "id": "Q0027",
@@ -458,8 +432,7 @@
         "周邦彦",
         "欧阳修"
       ],
-      "answer": 1,
-      "tendency": "婉约派"
+      "answer": 1
     },
     {
       "id": "Q0028",
@@ -475,8 +448,7 @@
         "辛弃疾",
         "张孝祥"
       ],
-      "answer": 2,
-      "tendency": "豪放派"
+      "answer": 2
     },
     {
       "id": "Q0029",
@@ -492,8 +464,7 @@
         "中秋节",
         "清明节"
       ],
-      "answer": 0,
-      "tendency": ""
+      "answer": 0
     },
     {
       "id": "Q0030",
@@ -509,8 +480,7 @@
         "《望海潮》",
         "《蝶恋花》"
       ],
-      "answer": 0,
-      "tendency": "婉约派"
+      "answer": 0
     },
     {
       "id": "Q0031",
@@ -526,8 +496,7 @@
         "《鹧鸪天·陌上柔桑破嫩芽》",
         "《破阵子·醉里挑灯看剑》"
       ],
-      "answer": 1,
-      "tendency": ""
+      "answer": 1
     },
     {
       "id": "Q0032",
@@ -543,8 +512,7 @@
         "江城子",
         "卜算子"
       ],
-      "answer": 1,
-      "tendency": "哲思派"
+      "answer": 1
     },
     {
       "id": "Q0033",
@@ -560,8 +528,7 @@
         "寿比南山不老松",
         "春满人间福满门"
       ],
-      "answer": 2,
-      "tendency": ""
+      "answer": 2
     },
     {
       "id": "Q0034",
@@ -577,8 +544,7 @@
         "两个黄鹂鸣翠柳",
         "孤帆远影碧空尽"
       ],
-      "answer": 1,
-      "tendency": ""
+      "answer": 1
     },
     {
       "id": "Q0035",
@@ -594,8 +560,7 @@
         "腹有诗书气自华",
         "只留清气满乾坤"
       ],
-      "answer": 0,
-      "tendency": ""
+      "answer": 0
     },
     {
       "id": "Q0036",
@@ -611,8 +576,7 @@
         "六畜兴旺",
         "万象更新"
       ],
-      "answer": 3,
-      "tendency": ""
+      "answer": 3
     },
     {
       "id": "Q0037",
@@ -628,8 +592,7 @@
         "必须是入声",
         "仄声"
       ],
-      "answer": 3,
-      "tendency": ""
+      "answer": 3
     },
     {
       "id": "Q0038",
@@ -645,8 +608,7 @@
         "右侧",
         "左右均可"
       ],
-      "answer": 2,
-      "tendency": ""
+      "answer": 2
     },
     {
       "id": "Q0039",
@@ -662,8 +624,7 @@
         "花香墨香书卷香，香香沁脾",
         "春意秋意天地意，意意关情"
       ],
-      "answer": 0,
-      "tendency": ""
+      "answer": 0
     },
     {
       "id": "Q0040",
@@ -679,8 +640,7 @@
         "李白",
         "程登吉"
       ],
-      "answer": 0,
-      "tendency": ""
+      "answer": 0
     },
     {
       "id": "Q0041",
@@ -696,8 +656,7 @@
         "词性相对、结构相称",
         "平仄相谐、内容相关"
       ],
-      "answer": 1,
-      "tendency": ""
+      "answer": 1
     },
     {
       "id": "Q0042",
@@ -713,8 +672,7 @@
         "王维与孟浩然",
         "白居易与刘禹锡"
       ],
-      "answer": 0,
-      "tendency": ""
+      "answer": 0
     },
     {
       "id": "Q0043",
@@ -730,8 +688,7 @@
         "乐府新题",
         "长短句"
       ],
-      "answer": 3,
-      "tendency": ""
+      "answer": 3
     },
     {
       "id": "Q0044",
@@ -747,8 +704,7 @@
         "颈联和尾联",
         "颔联和颈联"
       ],
-      "answer": 3,
-      "tendency": ""
+      "answer": 3
     },
     {
       "id": "Q0045",
@@ -764,8 +720,7 @@
         "王维与白居易",
         "杜牧与李商隐"
       ],
-      "answer": 1,
-      "tendency": ""
+      "answer": 1
     },
     {
       "id": "Q0046",
@@ -781,8 +736,7 @@
         "蘅塘退士（孙洙）",
         "纪昀"
       ],
-      "answer": 2,
-      "tendency": ""
+      "answer": 2
     },
     {
       "id": "Q0047",
@@ -798,8 +752,7 @@
         "贾岛",
         "李贺"
       ],
-      "answer": 3,
-      "tendency": ""
+      "answer": 3
     },
     {
       "id": "Q0048",
@@ -815,8 +768,7 @@
         "《滕王阁序》",
         "《陋室铭》"
       ],
-      "answer": 1,
-      "tendency": ""
+      "answer": 1
     },
     {
       "id": "Q0101",
@@ -829,21 +781,17 @@
       "options": [
         {
           "text": "举杯邀明月，对影成三人",
-          "attr": "shi",
-          "tendency": "浪漫主义"
+          "attr": "shi"
         },
         {
           "text": "江畔何人初见月，江月何年初照人",
-          "attr": "si",
-          "tendency": "哲思派"
+          "attr": "si"
         },
         {
           "text": "默默记下此景，继续前行",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0102",
@@ -856,21 +804,17 @@
       "options": [
         {
           "text": "劝君更尽一杯酒，西出阳关无故人",
-          "attr": "shi",
-          "tendency": "婉约深情"
+          "attr": "shi"
         },
         {
           "text": "黄沙百战穿金甲，不破楼兰终不还",
-          "attr": "shi",
-          "tendency": "边塞豪情"
+          "attr": "shi"
         },
         {
           "text": "赠他一壶家乡水",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0103",
@@ -883,21 +827,17 @@
       "options": [
         {
           "text": "疏影横斜水清浅，暗香浮动月黄昏",
-          "attr": "shi",
-          "tendency": "婉约派"
+          "attr": "shi"
         },
         {
           "text": "已是悬崖百丈冰，犹有花枝俏",
-          "attr": "si",
-          "tendency": "豪放派"
+          "attr": "si"
         },
         {
           "text": "拍下来发给同窗看",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0104",
@@ -910,21 +850,17 @@
       "options": [
         {
           "text": "会当凌绝顶，一览众山小",
-          "attr": "shi",
-          "tendency": "壮怀激烈"
+          "attr": "shi"
         },
         {
           "text": "遥知兄弟登高处，遍插茱萸少一人",
-          "attr": "ci",
-          "tendency": "婉约深情"
+          "attr": "ci"
         },
         {
           "text": "只看风景，不写一字",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0105",
@@ -937,21 +873,17 @@
       "options": [
         {
           "text": "无可奈何花落去，似曾相识燕归来",
-          "attr": "ci",
-          "tendency": "婉约派"
+          "attr": "ci"
         },
         {
           "text": "落红不是无情物，化作春泥更护花",
-          "attr": "si",
-          "tendency": "哲思派"
+          "attr": "si"
         },
         {
           "text": "拾起一瓣夹进书里",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0106",
@@ -964,21 +896,17 @@
       "options": [
         {
           "text": "写「爆竹一声除旧岁，桃符万户换新春」，稳妥喜庆",
-          "attr": "lian",
-          "tendency": "端方"
+          "attr": "lian"
         },
         {
           "text": "为每家量身撰一副，嵌上各家姓氏行当",
-          "attr": "si",
-          "tendency": "巧思"
+          "attr": "si"
         },
         {
           "text": "照着现成的春联抄一遍",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0107",
@@ -991,21 +919,17 @@
       "options": [
         {
           "text": "立在船头，任雨打衣衫，吟啸徐行",
-          "attr": "si",
-          "tendency": "旷达"
+          "attr": "si"
         },
         {
           "text": "入舱推窗，听雨打篷声，填一阕小令",
-          "attr": "ci",
-          "tendency": "婉约派"
+          "attr": "ci"
         },
         {
           "text": "抱紧行囊，护住书稿要紧",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0108",
@@ -1018,21 +942,17 @@
       "options": [
         {
           "text": "写「羌笛何须怨杨柳，春风不度玉门关」式的苍凉",
-          "attr": "shi",
-          "tendency": "边塞豪情"
+          "attr": "shi"
         },
         {
           "text": "写「不知何处吹芦管，一夜征人尽望乡」式的思归",
-          "attr": "ci",
-          "tendency": "婉约深情"
+          "attr": "ci"
         },
         {
           "text": "掩耳而卧，明日还要赶路",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0109",
@@ -1045,21 +965,17 @@
       "options": [
         {
           "text": "当场致谢，回去逐条改定",
-          "attr": "xue",
-          "tendency": "谦谨"
+          "attr": "xue"
         },
         {
           "text": "引经据典，与他辩到日落",
-          "attr": "si",
-          "tendency": "锋锐"
+          "attr": "si"
         },
         {
           "text": "笑而不答，各持己见",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0110",
@@ -1072,21 +988,17 @@
       "options": [
         {
           "text": "「雁过也，最伤心，却是旧时相识」",
-          "attr": "ci",
-          "tendency": "婉约派"
+          "attr": "ci"
         },
         {
           "text": "「乡书何处达？归雁洛阳边」",
-          "attr": "shi",
-          "tendency": "羁旅愁思"
+          "attr": "shi"
         },
         {
           "text": "推窗看了一眼，掩窗读书",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0111",
@@ -1099,21 +1011,17 @@
       "options": [
         {
           "text": "写英雄成败：「江山如画，一时多少豪杰」",
-          "attr": "shi",
-          "tendency": "豪放派"
+          "attr": "shi"
         },
         {
           "text": "写兴亡之理：「兴，百姓苦；亡，百姓苦」",
-          "attr": "si",
-          "tendency": "哲思派"
+          "attr": "si"
         },
         {
           "text": "拾一枚箭镞收进行囊",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0112",
@@ -1126,21 +1034,17 @@
       "options": [
         {
           "text": "「海内存知己，天涯若比邻」",
-          "attr": "shi",
-          "tendency": "旷达"
+          "attr": "shi"
         },
         {
           "text": "「孤帆远影碧空尽，唯见长江天际流」",
-          "attr": "ci",
-          "tendency": "婉约深情"
+          "attr": "ci"
         },
         {
           "text": "挥手不语，转身先走",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0113",
@@ -1153,21 +1057,17 @@
       "options": [
         {
           "text": "「但愿人长久，千里共婵娟」，写祝愿",
-          "attr": "ci",
-          "tendency": "旷达"
+          "attr": "ci"
         },
         {
           "text": "「举头望明月，低头思故乡」，写思念",
-          "attr": "shi",
-          "tendency": "羁旅愁思"
+          "attr": "shi"
         },
         {
           "text": "吃完月饼，早些歇息",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0114",
@@ -1180,21 +1080,17 @@
       "options": [
         {
           "text": "「霜皮溜雨四十围」，以形写其苍劲",
-          "attr": "lian",
-          "tendency": "端方"
+          "attr": "lian"
         },
         {
           "text": "「岂不罹凝寒，松柏有本性」，以志写其贞坚",
-          "attr": "si",
-          "tendency": "咏物言志"
+          "attr": "si"
         },
         {
           "text": "婉言辞谢，说自己联力尚浅",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0115",
@@ -1207,21 +1103,17 @@
       "options": [
         {
           "text": "就着这一夜愁绪写下一首，如张继之得《枫桥夜泊》",
-          "attr": "shi",
-          "tendency": "羁旅愁思"
+          "attr": "shi"
         },
         {
           "text": "把落第的卷子重抄一遍，逐句找病",
-          "attr": "xue",
-          "tendency": "谦谨"
+          "attr": "xue"
         },
         {
           "text": "收拾行囊，明早还乡",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0116",
@@ -1234,21 +1126,17 @@
       "options": [
         {
           "text": "题一首自己的近作",
-          "attr": "shi",
-          "tendency": "浪漫主义"
+          "attr": "shi"
         },
         {
           "text": "先读遍满墙旧题，再和其中一首",
-          "attr": "xue",
-          "tendency": "谦谨"
+          "attr": "xue"
         },
         {
           "text": "谢过寺僧，不题",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0117",
@@ -1261,21 +1149,17 @@
       "options": [
         {
           "text": "用「桃李满门」「杏坛春暖」一路的现成典故，稳当得体",
-          "attr": "lian",
-          "tendency": "端方"
+          "attr": "lian"
         },
         {
           "text": "把先生生平事迹嵌入联中，专为他一人而作",
-          "attr": "si",
-          "tendency": "巧思"
+          "attr": "si"
         },
         {
           "text": "只写「福如东海，寿比南山」八字",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     },
     {
       "id": "Q0118",
@@ -1288,21 +1172,17 @@
       "options": [
         {
           "text": "把苦寒写成惊喜：「千树万树梨花开」",
-          "attr": "shi",
-          "tendency": "浪漫主义"
+          "attr": "shi"
         },
         {
           "text": "把苦寒写成实录：「瀚海阑干百丈冰，愁云惨淡万里凝」",
-          "attr": "bi",
-          "tendency": "写实"
+          "attr": "bi"
         },
         {
           "text": "缩回帐中烤火，明日再说",
-          "attr": null,
-          "tendency": null
+          "attr": null
         }
-      ],
-      "tendency": ""
+      ]
     }
   ],
   "events": [
@@ -2156,10 +2036,6 @@
         "type": "on_win_bonus",
         "style": "shi",
         "value": 2
-      },
-      "unlock": {
-        "tendency": "浪漫主义",
-        "count": 1
       }
     },
     {
@@ -2171,10 +2047,6 @@
         "type": "on_win_bonus",
         "style": "ci",
         "value": 2
-      },
-      "unlock": {
-        "tendency": "婉约派",
-        "count": 2
       }
     },
     {
@@ -2186,10 +2058,6 @@
         "type": "on_win_bonus",
         "style": "lian",
         "value": 2
-      },
-      "unlock": {
-        "tendency": "豪放派",
-        "count": 1
       }
     },
     {
@@ -2201,10 +2069,6 @@
         "type": "crit",
         "chance": 0.15,
         "mult": 1.6
-      },
-      "unlock": {
-        "tendency": "哲思派",
-        "count": 1
       }
     },
     {
@@ -2703,18 +2567,18 @@
           "title": "国子监祭酒",
           "style": "bi",
           "attrs": {
-            "shi": 19,
-            "ci": 19,
-            "lian": 20,
+            "shi": 16,
+            "ci": 16,
+            "lian": 15,
             "bi": 35,
-            "xue": 21,
-            "si": 19
+            "xue": 16,
+            "si": 17
           }
         },
         {
           "name": "康尔玉",
-          "title": "联圣有继",
-          "style": "lian",
+          "title": "联胜有继",
+          "style": "ci",
           "attrs": {
             "shi": 16,
             "ci": 18,
@@ -2811,5 +2675,454 @@
     "zeitgeistMannerBonus": 0.03,
     "momentumPer": 0.02,
     "momentumMax": 5
+  },
+  "board": {
+    "laps": 2,
+    "sides": [
+      {
+        "id": "xiangshi",
+        "name": "乡试路",
+        "range": [
+          0,
+          19
+        ],
+        "season": "spring"
+      },
+      {
+        "id": "huishi",
+        "name": "会试路",
+        "range": [
+          20,
+          39
+        ],
+        "season": "summer"
+      },
+      {
+        "id": "dianshi",
+        "name": "殿试路",
+        "range": [
+          40,
+          59
+        ],
+        "season": "autumn"
+      },
+      {
+        "id": "guizhou",
+        "name": "归舟路",
+        "range": [
+          60,
+          79
+        ],
+        "season": "winter"
+      }
+    ],
+    "mainRing": [
+      {
+        "id": 0,
+        "type": "start",
+        "name": "童生铺"
+      },
+      {
+        "id": 1,
+        "type": "ping",
+        "name": "蒙学巷"
+      },
+      {
+        "id": 2,
+        "type": "ze",
+        "name": "磨墨坡"
+      },
+      {
+        "id": 3,
+        "type": "quiz",
+        "name": "描红斋"
+      },
+      {
+        "id": 4,
+        "type": "ping",
+        "name": "柳荫渡"
+      },
+      {
+        "id": 5,
+        "type": "event",
+        "name": "卖字摊"
+      },
+      {
+        "id": 6,
+        "type": "sky",
+        "name": "星矅崖"
+      },
+      {
+        "id": 7,
+        "type": "battle",
+        "name": "社学擂"
+      },
+      {
+        "id": 8,
+        "type": "ping",
+        "name": "稻花陌"
+      },
+      {
+        "id": 9,
+        "type": "quiz",
+        "name": "县考棚"
+      },
+      {
+        "id": 10,
+        "type": "ze",
+        "name": "洗砚池"
+      },
+      {
+        "id": 11,
+        "type": "sky",
+        "name": "观星阜"
+      },
+      {
+        "id": 12,
+        "type": "mingjing",
+        "name": "桃花源"
+      },
+      {
+        "id": 13,
+        "type": "ping",
+        "name": "桑麻径"
+      },
+      {
+        "id": 14,
+        "type": "event",
+        "name": "春在堂",
+        "effect": {
+          "attrs": {
+            "si": 1
+          },
+          "inspiration": 1
+        }
+      },
+      {
+        "id": 15,
+        "type": "ping",
+        "name": "长亭道"
+      },
+      {
+        "id": 16,
+        "type": "ze",
+        "name": "临帖廊"
+      },
+      {
+        "id": 17,
+        "type": "quiz",
+        "name": "府学门"
+      },
+      {
+        "id": 18,
+        "type": "sky",
+        "name": "云津渡"
+      },
+      {
+        "id": 19,
+        "type": "battle",
+        "name": "诗社台"
+      },
+      {
+        "id": 20,
+        "type": "ze",
+        "name": "铁砚斋"
+      },
+      {
+        "id": 21,
+        "type": "ping",
+        "name": "麦浪坡"
+      },
+      {
+        "id": 22,
+        "type": "quiz",
+        "name": "经义堂"
+      },
+      {
+        "id": 23,
+        "type": "sky",
+        "name": "望气坛"
+      },
+      {
+        "id": 24,
+        "type": "ping",
+        "name": "芦花渚"
+      },
+      {
+        "id": 25,
+        "type": "ze",
+        "name": "抄书阁"
+      },
+      {
+        "id": 26,
+        "type": "event",
+        "name": "指南录"
+      },
+      {
+        "id": 27,
+        "type": "mingjing",
+        "name": "白鹿洞"
+      },
+      {
+        "id": 28,
+        "type": "ping",
+        "name": "松风阁"
+      },
+      {
+        "id": 29,
+        "type": "quiz",
+        "name": "秋闱号舍"
+      },
+      {
+        "id": 30,
+        "type": "ping",
+        "name": "御街晓"
+      },
+      {
+        "id": 31,
+        "type": "ze",
+        "name": "翰墨轩"
+      },
+      {
+        "id": 32,
+        "type": "battle",
+        "name": "曲江宴"
+      },
+      {
+        "id": 33,
+        "type": "quiz",
+        "name": "春闱帘"
+      },
+      {
+        "id": 34,
+        "type": "sky",
+        "name": "月华津"
+      },
+      {
+        "id": 35,
+        "type": "ze",
+        "name": "石渠阁"
+      },
+      {
+        "id": 36,
+        "type": "event",
+        "name": "雁塔题名"
+      },
+      {
+        "id": 37,
+        "type": "quiz",
+        "name": "策论斋"
+      },
+      {
+        "id": 38,
+        "type": "ping",
+        "name": "金水桥"
+      },
+      {
+        "id": 39,
+        "type": "battle",
+        "name": "论道殿"
+      },
+      {
+        "id": 40,
+        "type": "ze",
+        "name": "藏书楼"
+      },
+      {
+        "id": 41,
+        "type": "sky",
+        "name": "灵台望"
+      },
+      {
+        "id": 42,
+        "type": "mingjing",
+        "name": "御花园"
+      },
+      {
+        "id": 43,
+        "type": "ping",
+        "name": "芙蓉苑"
+      },
+      {
+        "id": 44,
+        "type": "quiz",
+        "name": "制诰房"
+      },
+      {
+        "id": 45,
+        "type": "ping",
+        "name": "灞桥柳"
+      },
+      {
+        "id": 46,
+        "type": "ze",
+        "name": "一叶舟"
+      },
+      {
+        "id": 47,
+        "type": "battle",
+        "name": "江心渡"
+      },
+      {
+        "id": 48,
+        "type": "ping",
+        "name": "白鹭洲"
+      },
+      {
+        "id": 49,
+        "type": "event",
+        "name": "渔父问"
+      },
+      {
+        "id": 50,
+        "type": "ze",
+        "name": "篷窗雨"
+      },
+      {
+        "id": 51,
+        "type": "quiz",
+        "name": "楚水驿"
+      },
+      {
+        "id": 52,
+        "type": "sky",
+        "name": "风露台"
+      },
+      {
+        "id": 53,
+        "type": "battle",
+        "name": "采石矶"
+      },
+      {
+        "id": 54,
+        "type": "ze",
+        "name": "秉烛园"
+      },
+      {
+        "id": 55,
+        "type": "ping",
+        "name": "归帆影"
+      },
+      {
+        "id": 56,
+        "type": "quiz",
+        "name": "故园问"
+      },
+      {
+        "id": 57,
+        "type": "ze",
+        "name": "寒砧月"
+      },
+      {
+        "id": 58,
+        "type": "event",
+        "name": "故人斋"
+      },
+      {
+        "id": 59,
+        "type": "ping",
+        "name": "望乡台"
+      },
+      {
+        "id": 60,
+        "type": "ping",
+        "name": "暮江吟"
+      },
+      {
+        "id": 61,
+        "type": "ze",
+        "name": "欸乃曲"
+      },
+      {
+        "id": 62,
+        "type": "quiz",
+        "name": "渡口问"
+      },
+      {
+        "id": 63,
+        "type": "event",
+        "name": "渔火遇"
+      },
+      {
+        "id": 64,
+        "type": "battle",
+        "name": "中流擂"
+      },
+      {
+        "id": 65,
+        "type": "ping",
+        "name": "芦花雪"
+      },
+      {
+        "id": 66,
+        "type": "ze",
+        "name": "篷窗课"
+      },
+      {
+        "id": 67,
+        "type": "quiz",
+        "name": "故园讯"
+      },
+      {
+        "id": 68,
+        "type": "event",
+        "name": "邻舟笛"
+      },
+      {
+        "id": 69,
+        "type": "battle",
+        "name": "沧浪渡"
+      },
+      {
+        "id": 70,
+        "type": "mingjing",
+        "name": "玉门关"
+      },
+      {
+        "id": 71,
+        "type": "ping",
+        "name": "孤蓬夜"
+      },
+      {
+        "id": 72,
+        "type": "ze",
+        "name": "寒江钓"
+      },
+      {
+        "id": 73,
+        "type": "quiz",
+        "name": "雪夜访"
+      },
+      {
+        "id": 74,
+        "type": "event",
+        "name": "梅边酌"
+      },
+      {
+        "id": 75,
+        "type": "battle",
+        "name": "钓鳌台"
+      },
+      {
+        "id": 76,
+        "type": "sky",
+        "name": "霄汉亭"
+      },
+      {
+        "id": 77,
+        "type": "ze",
+        "name": "蓑衣湿"
+      },
+      {
+        "id": 78,
+        "type": "quiz",
+        "name": "楚狂歌"
+      },
+      {
+        "id": 79,
+        "type": "event",
+        "name": "沧溟志"
+      }
+    ]
   }
 }
