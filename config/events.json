@@ -5,7 +5,13 @@
     "rarity": "legend",
     "kind": "direct",
     "text": "夜宿江畔驿馆，梦中所执之笔头上忽然生出花来。醒后握管，字字如有神助。《开元天宝遗事》记李白少时正有此梦，自此天才赡逸，名闻天下。",
-    "effect": { "attrs": { "bi": 5 }, "inspiration": 0, "talent": "T007" }
+    "effect": {
+      "attrs": {
+        "bi": 5
+      },
+      "inspiration": 0,
+      "talent": "T007"
+    }
   },
   {
     "id": "E002",
@@ -13,7 +19,13 @@
     "rarity": "legend",
     "kind": "direct",
     "text": "你的旧作被人抄去传阅，一日之间满城竞相摹写，纸价为之腾涌。当年左思十年成《三都赋》，豪贵之家争相传写，洛阳为之纸贵——今日轮到你了。",
-    "effect": { "attrs": { "xue": 4, "bi": 2 }, "inspiration": 3 }
+    "effect": {
+      "attrs": {
+        "xue": 4,
+        "bi": 2
+      },
+      "inspiration": 3
+    }
   },
   {
     "id": "E003",
@@ -21,7 +33,16 @@
     "rarity": "legend",
     "kind": "challenge",
     "text": "暮春之初，会于会稽山阴之兰亭。曲水流觞，觞停于谁前，谁便须赋诗一首，作不出者罚酒三斗。今日觞停了三次，都停在你面前。",
-    "challenge": { "battles": 3, "winAll": { "attrs": { "bi": 5, "si": 3 }, "talent": "T015" } }
+    "challenge": {
+      "battles": 3,
+      "winAll": {
+        "attrs": {
+          "bi": 5,
+          "si": 3
+        },
+        "talent": "T015"
+      }
+    }
   },
   {
     "id": "E004",
@@ -29,7 +50,13 @@
     "rarity": "legend",
     "kind": "direct",
     "text": "旅次遇一白发老者，索观你的近作，读罢长揖：「子非人世中人，得非太白星精耶？」——当年贺知章读《蜀道难》，便是这样称李白为「谪仙人」的。",
-    "effect": { "attrs": { "shi": 5 }, "inspiration": 2, "talent": "T012" }
+    "effect": {
+      "attrs": {
+        "shi": 5
+      },
+      "inspiration": 2,
+      "talent": "T012"
+    }
   },
   {
     "id": "E005",
@@ -37,7 +64,15 @@
     "rarity": "rare",
     "kind": "challenge",
     "text": "「李白斗酒诗百篇，长安市上酒家眠。」酒肆中三位狂客拍案而起，要与你连比三场。酒已温好，笔已蘸墨——敢不敢接？",
-    "challenge": { "battles": 3, "winAll": { "attrs": { "shi": 5 }, "inspiration": 2 } }
+    "challenge": {
+      "battles": 3,
+      "winAll": {
+        "attrs": {
+          "shi": 5
+        },
+        "inspiration": 2
+      }
+    }
   },
   {
     "id": "E006",
@@ -46,8 +81,24 @@
     "kind": "choice",
     "text": "夜梦一人自称郭璞，向你索还那支寄放多年的五色笔。《南史》载江淹还笔之后，为诗绝无美句，时人谓之才尽。笔在你手，还是不还？",
     "choices": [
-      { "text": "还他五色笔，从此老实读书", "effect": { "attrs": { "si": 3 }, "inspiration": -2 } },
-      { "text": "强留彩笔，搜尽枯肠再赋一篇", "effect": { "attrs": { "bi": 4 }, "inspiration": -4 } }
+      {
+        "text": "还他五色笔，从此老实读书",
+        "effect": {
+          "attrs": {
+            "si": 3
+          },
+          "inspiration": -4
+        }
+      },
+      {
+        "text": "强留彩笔，搜尽枯肠再赋一篇",
+        "effect": {
+          "attrs": {
+            "bi": 4
+          },
+          "inspiration": -6
+        }
+      }
     ]
   },
   {
@@ -57,8 +108,25 @@
     "kind": "choice",
     "text": "你把新作示人，对方沉吟良久，只改了一个字。当年齐己《早梅》原作「前村深雪里，昨夜数枝开」，郑谷改「数枝」为「一枝」，齐己下拜，世称一字师。改，还是不改？",
     "choices": [
-      { "text": "长揖称谢，从此虚心求教", "effect": { "attrs": { "xue": 3, "si": 2 }, "inspiration": 1 } },
-      { "text": "自恃己见，仍用原句", "effect": { "attrs": { "bi": 2 }, "inspiration": 0 } }
+      {
+        "text": "长揖称谢，从此虚心求教",
+        "effect": {
+          "attrs": {
+            "xue": 3,
+            "si": 2
+          },
+          "inspiration": 1
+        }
+      },
+      {
+        "text": "自恃己见，仍用原句",
+        "effect": {
+          "attrs": {
+            "bi": 2
+          },
+          "inspiration": 0
+        }
+      }
     ]
   },
   {
@@ -67,7 +135,13 @@
     "rarity": "rare",
     "kind": "direct",
     "text": "溪畔见一老媪持铁杵在石上磨，问之，曰：「欲作针。」你怔在原地，忽然明白自己欠缺的从来不是天分。",
-    "effect": { "attrs": { "bi": 3, "si": 2 }, "inspiration": 1 }
+    "effect": {
+      "attrs": {
+        "bi": 3,
+        "si": 2
+      },
+      "inspiration": 1
+    }
   },
   {
     "id": "E009",
@@ -75,7 +149,12 @@
     "rarity": "rare",
     "kind": "direct",
     "text": "客舍无烛，邻家灯明。你学匡衡穿壁引光，就着那一线微芒读了半夜。眼睛酸涩，胸中却亮堂了许多。",
-    "effect": { "attrs": { "xue": 4 }, "inspiration": -1 }
+    "effect": {
+      "attrs": {
+        "xue": 4
+      },
+      "inspiration": -4
+    }
   },
   {
     "id": "E010",
@@ -83,7 +162,12 @@
     "rarity": "rare",
     "kind": "direct",
     "text": "新科进士齐集曲江，杏园探花，紫云楼下赐宴。丝竹既作，你也被推着填了一阕小令，满座传观。",
-    "effect": { "attrs": { "ci": 3 }, "inspiration": 3 }
+    "effect": {
+      "attrs": {
+        "ci": 3
+      },
+      "inspiration": 3
+    }
   },
   {
     "id": "E011",
@@ -91,7 +175,15 @@
     "rarity": "rare",
     "kind": "challenge",
     "text": "慈恩寺塔下，同榜者依例题名于壁。有人指着空处笑道：「敢在此处落笔，须先过我这两联。」",
-    "challenge": { "battles": 2, "winAll": { "attrs": { "lian": 4, "xue": 2 } } }
+    "challenge": {
+      "battles": 2,
+      "winAll": {
+        "attrs": {
+          "lian": 4,
+          "xue": 2
+        }
+      }
+    }
   },
   {
     "id": "E012",
@@ -100,8 +192,22 @@
     "kind": "choice",
     "text": "「焚膏油以继晷，恒兀兀以穷年。」——韩愈《进学解》。灯油将尽，你面前是一函未读完的集子。添油再读，还是熄灯就寝？",
     "choices": [
-      { "text": "添油再读，直到天明", "effect": { "attrs": { "xue": 4 }, "inspiration": -3 } },
-      { "text": "熄灯就寝，明日再来", "effect": { "attrs": {}, "inspiration": 2 } }
+      {
+        "text": "添油再读，直到天明",
+        "effect": {
+          "attrs": {
+            "xue": 4
+          },
+          "inspiration": -6
+        }
+      },
+      {
+        "text": "熄灯就寝，明日再来",
+        "effect": {
+          "attrs": {},
+          "inspiration": 2
+        }
+      }
     ]
   },
   {
@@ -111,8 +217,25 @@
     "kind": "choice",
     "text": "江上遇一樵者，听你吟罢，说出的竟正是你心中所想。伯牙鼓琴志在高山，钟子期曰「巍巍乎若泰山」；志在流水，曰「洋洋乎若江河」。这样的人，一生能遇几个？",
     "choices": [
-      { "text": "结为知交，联句唱和至夜深", "effect": { "attrs": { "lian": 3, "si": 2 }, "inspiration": 2 } },
-      { "text": "赠他一册诗稿，各自上路", "effect": { "attrs": { "bi": 2 }, "inspiration": 3 } }
+      {
+        "text": "结为知交，联句唱和至夜深",
+        "effect": {
+          "attrs": {
+            "lian": 3,
+            "si": 2
+          },
+          "inspiration": 2
+        }
+      },
+      {
+        "text": "赠他一册诗稿，各自上路",
+        "effect": {
+          "attrs": {
+            "bi": 2
+          },
+          "inspiration": 3
+        }
+      }
     ]
   },
   {
@@ -122,8 +245,19 @@
     "kind": "choice",
     "text": "「鸟宿池边树，僧推月下门」——「推」字好，还是「敲」字好？贾岛在驴背上比划了一路，直撞进韩愈的仪仗。你也卡在这一个字上了。",
     "choices": [
-      { "text": "苦思三日，非得一个定字不可", "effect": { "attrs": { "si": 3 }, "inspiration": -2 } },
-      { "text": "两字皆可，掷笔而去", "effect": {} }
+      {
+        "text": "苦思三日，非得一个定字不可",
+        "effect": {
+          "attrs": {
+            "si": 3
+          },
+          "inspiration": -4
+        }
+      },
+      {
+        "text": "两字皆可，掷笔而去",
+        "effect": {}
+      }
     ]
   },
   {
@@ -133,8 +267,25 @@
     "kind": "choice",
     "text": "市集摆开一张矮几，替人写春联、写家书。一位老丈没有铜钱，提来半坛新酿：「字换酒，可换否？」",
     "choices": [
-      { "text": "换酒。酒入豪肠，笔下生风", "effect": { "attrs": { "shi": 2 }, "inspiration": 2 } },
-      { "text": "分文不取，只当练笔", "effect": { "attrs": { "bi": 2, "lian": 1 }, "inspiration": 0 } }
+      {
+        "text": "换酒。酒入豪肠，笔下生风",
+        "effect": {
+          "attrs": {
+            "shi": 2
+          },
+          "inspiration": 2
+        }
+      },
+      {
+        "text": "分文不取，只当练笔",
+        "effect": {
+          "attrs": {
+            "bi": 2,
+            "lian": 1
+          },
+          "inspiration": 0
+        }
+      }
     ]
   },
   {
@@ -143,7 +294,12 @@
     "rarity": "common",
     "kind": "direct",
     "text": "「书非借不能读也。」——袁枚《黄生借书说》。邻家藏书楼肯借你一函，限期十日。你连夜抄录，指节生茧。",
-    "effect": { "attrs": { "xue": 2 }, "inspiration": 0 }
+    "effect": {
+      "attrs": {
+        "xue": 2
+      },
+      "inspiration": -3
+    }
   },
   {
     "id": "E017",
@@ -151,7 +307,12 @@
     "rarity": "common",
     "kind": "direct",
     "text": "十里长亭，友人远行。折一枝柳相赠——「柳」谐「留」，自汉唐以来送别皆折柳。执手无语，倒填出一阕好词。",
-    "effect": { "attrs": { "ci": 2 }, "inspiration": 1 }
+    "effect": {
+      "attrs": {
+        "ci": 2
+      },
+      "inspiration": 1
+    }
   },
   {
     "id": "E018",
@@ -160,8 +321,25 @@
     "kind": "choice",
     "text": "田埂上一位老农拦住你，摊开一张官府文书：「后生，这几个字念啥？」他身后还站着七八个同样不识字的乡邻。",
     "choices": [
-      { "text": "就地讲了半个时辰，日头都偏了", "effect": { "attrs": { "xue": 2, "si": 1 }, "inspiration": 1 } },
-      { "text": "念完便走，赶路要紧", "effect": { "attrs": { "xue": 1 }, "inspiration": 0 } }
+      {
+        "text": "就地讲了半个时辰，日头都偏了",
+        "effect": {
+          "attrs": {
+            "xue": 2,
+            "si": 1
+          },
+          "inspiration": 1
+        }
+      },
+      {
+        "text": "念完便走，赶路要紧",
+        "effect": {
+          "attrs": {
+            "xue": 1
+          },
+          "inspiration": 0
+        }
+      }
     ]
   },
   {
@@ -171,8 +349,22 @@
     "kind": "choice",
     "text": "「莫听穿林打叶声，何妨吟啸且徐行。」雨来得急，同行的人都往檐下躲。你呢？",
     "choices": [
-      { "text": "竹杖芒鞋，冒雨徐行", "effect": { "attrs": { "si": 2 }, "inspiration": -2 } },
-      { "text": "檐下避雨，看了一场好雨", "effect": { "attrs": {}, "inspiration": 2 } }
+      {
+        "text": "竹杖芒鞋，冒雨徐行",
+        "effect": {
+          "attrs": {
+            "si": 2
+          },
+          "inspiration": -3
+        }
+      },
+      {
+        "text": "檐下避雨，看了一场好雨",
+        "effect": {
+          "attrs": {},
+          "inspiration": 2
+        }
+      }
     ]
   },
   {
@@ -181,7 +373,12 @@
     "rarity": "common",
     "kind": "direct",
     "text": "山道旁一方青石，上有前人半联，墨迹已淡。你从行囊摸出笔，续了下联。风过处，字迹微微反光。",
-    "effect": { "attrs": { "lian": 2 }, "inspiration": 1 }
+    "effect": {
+      "attrs": {
+        "lian": 2
+      },
+      "inspiration": 1
+    }
   },
   {
     "id": "E021",
@@ -189,7 +386,12 @@
     "rarity": "common",
     "kind": "direct",
     "text": "宋濂《送东阳马生序》：「天大寒，砚冰坚，手指不可屈伸，弗之怠。」今夜你也抄到手僵，抄完却觉得那卷书已长在心里。",
-    "effect": { "attrs": { "xue": 2 }, "inspiration": -1 }
+    "effect": {
+      "attrs": {
+        "xue": 2
+      },
+      "inspiration": -4
+    }
   },
   {
     "id": "E022",
@@ -197,7 +399,12 @@
     "rarity": "common",
     "kind": "direct",
     "text": "私塾放学，一群孩童围住你：「先生，『云对雨』下一句是啥？」你笑着接：「雪对风，晚照对晴空。」——《笠翁对韵》开篇便是。",
-    "effect": { "attrs": { "lian": 2 }, "inspiration": 1 }
+    "effect": {
+      "attrs": {
+        "lian": 2
+      },
+      "inspiration": 1
+    }
   },
   {
     "id": "E023",
@@ -205,7 +412,10 @@
     "rarity": "common",
     "kind": "direct",
     "text": "「姑苏城外寒山寺，夜半钟声到客船。」钟声一记一记撞过来，胸中那点焦躁，竟被撞散了。",
-    "effect": { "attrs": {}, "inspiration": 3 }
+    "effect": {
+      "attrs": {},
+      "inspiration": 3
+    }
   },
   {
     "id": "E024",
@@ -214,8 +424,25 @@
     "kind": "choice",
     "text": "夜泊江心，邻舟传来吟哦声。要不要挑灯过去，与那位素不相识的同道说上几句？",
     "choices": [
-      { "text": "过舟共话，直到河汉西斜", "effect": { "attrs": { "shi": 2, "si": 1 }, "inspiration": -1 } },
-      { "text": "隔水听着，也自成趣", "effect": { "attrs": { "ci": 1 }, "inspiration": 2 } }
+      {
+        "text": "过舟共话，直到河汉西斜",
+        "effect": {
+          "attrs": {
+            "shi": 2,
+            "si": 1
+          },
+          "inspiration": -2
+        }
+      },
+      {
+        "text": "隔水听着，也自成趣",
+        "effect": {
+          "attrs": {
+            "ci": 1
+          },
+          "inspiration": 2
+        }
+      }
     ]
   },
   {
@@ -225,8 +452,24 @@
     "kind": "choice",
     "text": "榜前人山人海，你从头看到尾，没有自己的名字。张继落第之年，写下了《枫桥夜泊》——「江枫渔火对愁眠」。愁归愁，笔要不要提起来？",
     "choices": [
-      { "text": "就着这一夜愁绪，写下一首", "effect": { "attrs": { "shi": 3 }, "inspiration": -1 } },
-      { "text": "收拾行囊，来年再来", "effect": { "attrs": { "xue": 1 }, "inspiration": 2 } }
+      {
+        "text": "就着这一夜愁绪，写下一首",
+        "effect": {
+          "attrs": {
+            "shi": 3
+          },
+          "inspiration": -3
+        }
+      },
+      {
+        "text": "收拾行囊，来年再来",
+        "effect": {
+          "attrs": {
+            "xue": 1
+          },
+          "inspiration": 2
+        }
+      }
     ]
   },
   {
@@ -235,7 +478,12 @@
     "rarity": "common",
     "kind": "direct",
     "text": "桑树下歇脚，听见妇人教儿：「少壮不努力，老大徒伤悲。」——《长歌行》里的句子，从村妇口中说出，格外扎人。",
-    "effect": { "attrs": { "xue": 2 }, "inspiration": 0 }
+    "effect": {
+      "attrs": {
+        "xue": 2
+      },
+      "inspiration": 0
+    }
   },
   {
     "id": "E027",
@@ -243,7 +491,12 @@
     "rarity": "common",
     "kind": "direct",
     "text": "「闲敲棋子落灯花。」与山中道人对了一局，输了半子。收官时忽然想通了那篇卡住三天的策论该怎么起笔。",
-    "effect": { "attrs": { "si": 2 }, "inspiration": 1 }
+    "effect": {
+      "attrs": {
+        "si": 2
+      },
+      "inspiration": 1
+    }
   },
   {
     "id": "E028",
@@ -251,7 +504,12 @@
     "rarity": "common",
     "kind": "direct",
     "text": "「采菊东篱下，悠然见南山。」——陶渊明《饮酒·其五》。你在篱边站了很久，什么都没想，回来却下笔极顺。",
-    "effect": { "attrs": { "shi": 2 }, "inspiration": 1 }
+    "effect": {
+      "attrs": {
+        "shi": 2
+      },
+      "inspiration": 1
+    }
   },
   {
     "id": "E029",
@@ -259,7 +517,15 @@
     "rarity": "common",
     "kind": "challenge",
     "text": "药铺门前挂出一联求对，围了半条街。掌柜说：对上者，赠药一剂、酒一壶。你挤到最前面。",
-    "challenge": { "battles": 1, "winAll": { "attrs": { "lian": 3 }, "inspiration": 1 } }
+    "challenge": {
+      "battles": 1,
+      "winAll": {
+        "attrs": {
+          "lian": 3
+        },
+        "inspiration": 1
+      }
+    }
   },
   {
     "id": "E030",
@@ -268,8 +534,24 @@
     "kind": "choice",
     "text": "青帘一角在风里翻。「三杯两盏淡酒，怎敌他、晚来风急」——李清照说的是愁；你此刻却只是想歇一歇脚。",
     "choices": [
-      { "text": "沽酒小酌，微醺而后书", "effect": { "attrs": { "ci": 2 }, "inspiration": 1 } },
-      { "text": "过门不入，留清醒赶路", "effect": { "attrs": { "si": 1 }, "inspiration": 1 } }
+      {
+        "text": "沽酒小酌，微醺而后书",
+        "effect": {
+          "attrs": {
+            "ci": 2
+          },
+          "inspiration": 1
+        }
+      },
+      {
+        "text": "过门不入，留清醒赶路",
+        "effect": {
+          "attrs": {
+            "si": 1
+          },
+          "inspiration": 1
+        }
+      }
     ]
   },
   {
@@ -278,7 +560,14 @@
     "rarity": "common",
     "kind": "challenge",
     "text": "一纸花笺送到客舍：城南诗会，限韵赋咏，敢来否？落款只有一个「客」字。",
-    "challenge": { "battles": 1, "winAll": { "attrs": { "shi": 3 } } }
+    "challenge": {
+      "battles": 1,
+      "winAll": {
+        "attrs": {
+          "shi": 3
+        }
+      }
+    }
   },
   {
     "id": "E032",
@@ -287,8 +576,22 @@
     "kind": "choice",
     "text": "旅途染恙，卧在客舍。半睡半醒间忽得一联绝妙好句，怕忘。起身研墨，还是闭眼再睡？",
     "choices": [
-      { "text": "披衣起坐，把它记下来", "effect": { "attrs": { "bi": 3 }, "inspiration": -2 } },
-      { "text": "先养好身子，句子会再来的", "effect": { "attrs": {}, "inspiration": 3 } }
+      {
+        "text": "披衣起坐，把它记下来",
+        "effect": {
+          "attrs": {
+            "bi": 3
+          },
+          "inspiration": -5
+        }
+      },
+      {
+        "text": "先养好身子，句子会再来的",
+        "effect": {
+          "attrs": {},
+          "inspiration": 3
+        }
+      }
     ]
   },
   {
@@ -297,7 +600,12 @@
     "rarity": "common",
     "kind": "direct",
     "text": "「赠人以言，重于金石珠玉。」——《荀子·非相》。你替一位赴任的旧友写了几句临别赠语，他读罢眼眶发红。",
-    "effect": { "attrs": { "si": 1 }, "inspiration": 2 }
+    "effect": {
+      "attrs": {
+        "si": 1
+      },
+      "inspiration": 2
+    }
   },
   {
     "id": "E034",
@@ -305,7 +613,13 @@
     "rarity": "common",
     "kind": "direct",
     "text": "荒寺后院一通断碑，苔痕半掩。你拓下残存的十几个字，回去比对典籍，竟对上了一段久佚的旧文。",
-    "effect": { "attrs": { "xue": 2, "bi": 1 }, "inspiration": 0 }
+    "effect": {
+      "attrs": {
+        "xue": 2,
+        "bi": 1
+      },
+      "inspiration": -3
+    }
   },
   {
     "id": "E035",
@@ -314,8 +628,24 @@
     "kind": "choice",
     "text": "《世说新语》载：王子猷雪夜忽忆戴安道，乘舟一夜而至，造门不前而返，曰「乘兴而行，兴尽而返，何必见戴」。今夜也下雪，你也忽然想起一个人。",
     "choices": [
-      { "text": "乘兴而行，兴尽而返", "effect": { "attrs": { "si": 2 }, "inspiration": 1 } },
-      { "text": "叩门相见，围炉夜话", "effect": { "attrs": { "ci": 2 }, "inspiration": 0 } }
+      {
+        "text": "乘兴而行，兴尽而返",
+        "effect": {
+          "attrs": {
+            "si": 2
+          },
+          "inspiration": 1
+        }
+      },
+      {
+        "text": "叩门相见，围炉夜话",
+        "effect": {
+          "attrs": {
+            "ci": 2
+          },
+          "inspiration": 0
+        }
+      }
     ]
   },
   {
@@ -324,7 +654,12 @@
     "rarity": "common",
     "kind": "direct",
     "text": "「白发渔樵江渚上，惯看秋月春风。」——杨慎《临江仙》。听两位老者说了一下午古今兴废，回头看自己的功名心，忽然轻了些。",
-    "effect": { "attrs": { "si": 2 }, "inspiration": 1 }
+    "effect": {
+      "attrs": {
+        "si": 2
+      },
+      "inspiration": 1
+    }
   },
   {
     "id": "E037",
@@ -332,7 +667,12 @@
     "rarity": "common",
     "kind": "direct",
     "text": "欧阳修夜读，闻有声自西南来，问童子，曰「星月皎洁，声在树间」——是为《秋声赋》。今夜你也听见了那阵声音。",
-    "effect": { "attrs": { "ci": 2 }, "inspiration": 0 }
+    "effect": {
+      "attrs": {
+        "ci": 2
+      },
+      "inspiration": -2
+    }
   },
   {
     "id": "E038",
@@ -340,7 +680,12 @@
     "rarity": "common",
     "kind": "direct",
     "text": "得一方端砚，发墨如油。你连写了三十个「永」字——「永字八法」，横竖点撇捺，一字备尽笔势。",
-    "effect": { "attrs": { "bi": 3 }, "inspiration": -1 }
+    "effect": {
+      "attrs": {
+        "bi": 3
+      },
+      "inspiration": -3
+    }
   },
   {
     "id": "E039",
@@ -348,7 +693,12 @@
     "rarity": "common",
     "kind": "direct",
     "text": "「谁家玉笛暗飞声，散入春风满洛城。此夜曲中闻折柳，何人不起故园情。」——李白《春夜洛城闻笛》。今夜的笛声，也吹的是《折杨柳》。",
-    "effect": { "attrs": { "ci": 2 }, "inspiration": 1 }
+    "effect": {
+      "attrs": {
+        "ci": 2
+      },
+      "inspiration": 1
+    }
   },
   {
     "id": "E040",
@@ -356,7 +706,10 @@
     "rarity": "common",
     "kind": "direct",
     "text": "「晨兴理荒秽，带月荷锄归。」——陶渊明《归园田居·其三》。跟着农人下了半日地，腰酸背痛，晚饭却吃得极香。",
-    "effect": { "attrs": {}, "inspiration": 2 }
+    "effect": {
+      "attrs": {},
+      "inspiration": 2
+    }
   },
   {
     "id": "E041",
@@ -364,6 +717,13 @@
     "rarity": "common",
     "kind": "challenge",
     "text": "「渭城朝雨浥轻尘，客舍青青柳色新。」——王维《送元二使安西》。客舍中有人正以「送别」为题较艺，见你进门，让出一个座位。",
-    "challenge": { "battles": 1, "winAll": { "attrs": { "ci": 3 } } }
+    "challenge": {
+      "battles": 1,
+      "winAll": {
+        "attrs": {
+          "ci": 3
+        }
+      }
+    }
   }
 ]

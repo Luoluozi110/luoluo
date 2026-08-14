@@ -9,7 +9,5 @@
   "battleLoseExtraLate": -3,
   "quizWrong": -1,
   "quizCorrectInsp": 1,
-  "lowWarning": 5,
-  "stepDrainChance": 0.05,
-  "stepDrainAmount": 2
+  "lowWarning": 5
 }

@@ -348,11 +348,6 @@ export class Game {
     const board = this.cfg.board;
 
     for (let i = 0; i < steps; i++) {
-      // 「灵感经济」耗损：每前进一步都有概率损耗灵感，制造持续的枯竭压力（调参见 inspiration.json）
-      const dcfg = this.cfg.inspiration;
-      if (dcfg.stepDrainChance && this.rand() < dcfg.stepDrainChance) {
-        this.addInspiration(-(Number(dcfg.stepDrainAmount) || 2), '行路耗神');
-      }
       if (s.track === 'branch') {
         const len = board.branches[s.branchId].cells.length;
         if (s.branchIndex >= len - 1) break;             // 支线无需精确到达

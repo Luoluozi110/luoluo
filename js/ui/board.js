@@ -163,11 +163,23 @@ export class BoardView {
     }
   }
 
-  /** 触摸/鼠标拖动平移 + 双指缩放（手机看大棋盘的关键） */
+  /** 触摸/鼠标拖动平移 + 双指缩放（围绕捏合中心缩放 + 平移范围随缩放扩大） */
   _initPan() {
     const root = this.root;
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
     const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+    const ZOOM_MIN = 0.4, ZOOM_MAX = 2.8;
+
+    /** 平移范围随当前缩放扩大：放大后可拖到棋盘边角，全盘可见时锁在中心 */
+    const panBounds = () => {
+      const span = (GRID + PAD * 2) * UNIT;
+      const sc = this.bscale * this.view.zoom;
+      const margin = 60;
+      return {
+        maxX: Math.max(0, (span * sc - root.clientWidth) / 2 + margin),
+        maxY: Math.max(0, (span * sc - root.clientHeight) / 2 + margin)
+      };
+    };
 
     root.addEventListener('pointerdown', e => {
       // 仅响应落在棋盘区域内的操作（HUD/弹窗是 #scene 的兄弟层，不会冒泡进来）
@@ -180,23 +192,39 @@ export class BoardView {
       } else if (this._pointers.size === 2) {
         const p = [...this._pointers.values()];
         this._pinch = { dist: dist(p[0], p[1]), zoom: this.view.zoom };
+        this._panStart = null;
       }
     });
 
     root.addEventListener('pointermove', e => {
       if (!this._pointers.has(e.pointerId)) return;
       this._pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      if (this._pointers.size === 1 && this._panStart) {
-        const maxX = root.clientWidth * 0.65 + 240;
-        const maxY = root.clientHeight * 0.65 + 240;
+      if (this._pointers.size === 1) {
+        if (!this._panStart) {
+          // 双指缩放松手后剩一指继续拖：重新锚定，避免平移跳变
+          this._panStart = { x: e.clientX, y: e.clientY, px: this.view.panX, py: this.view.panY };
+        }
+        const { maxX, maxY } = panBounds();
         this.view.panX = clamp(this._panStart.px + (e.clientX - this._panStart.x), -maxX, maxX);
         this.view.panY = clamp(this._panStart.py + (e.clientY - this._panStart.y), -maxY, maxY);
         this.applyView();
       } else if (this._pointers.size === 2 && this._pinch) {
         const p = [...this._pointers.values()];
-        // 双指缩放：1.3 倍灵敏度 + 上限 2.8（原 1:1 / 1.8），力度更足，可放大看清格内文字
-        const z = this._pinch.zoom * (dist(p[0], p[1]) / this._pinch.dist) * 1.3;
-        this.view.zoom = clamp(z, 0.4, 2.8);
+        const d = dist(p[0], p[1]);
+        if (d < 1) return;
+        const zoomNew = clamp(this._pinch.zoom * (d / this._pinch.dist), ZOOM_MIN, ZOOM_MAX);
+        // 围绕双指捏合中点缩放：保持手指下方棋盘坐标不动
+        const rr = root.getBoundingClientRect();
+        const cx = (p[0].x + p[1].x) / 2 - (rr.left + rr.width / 2);
+        const cy = (p[0].y + p[1].y) / 2 - (rr.top + rr.height / 2);
+        const k = zoomNew / this.view.zoom;
+        this.view.panX = cx - (cx - this.view.panX) * k;
+        this.view.panY = cy - (cy - this.view.panY) * k;
+        this.view.zoom = zoomNew;
+        // 缩放后收紧平移范围，避免拖出棋盘过远
+        const { maxX, maxY } = panBounds();
+        this.view.panX = clamp(this.view.panX, -maxX, maxX);
+        this.view.panY = clamp(this.view.panY, -maxY, maxY);
         this.applyView();
       }
     });
@@ -204,7 +232,11 @@ export class BoardView {
     const end = e => {
       this._pointers.delete(e.pointerId);
       if (this._pointers.size < 2) this._pinch = null;
-      if (this._pointers.size === 0) {
+      if (this._pointers.size === 1) {
+        // 剩一指继续拖动：重新锚定平移起点
+        const p = [...this._pointers.values()][0];
+        this._panStart = { x: p.x, y: p.y, px: this.view.panX, py: this.view.panY };
+      } else if (this._pointers.size === 0) {
         this._panStart = null;
         const wrap = root.querySelector('#boardWrap');
         if (wrap) wrap.style.transition = '';
