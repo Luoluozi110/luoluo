@@ -63,7 +63,7 @@ for (const t of cfg.talents) {
 
 console.log('\n== 引擎：grantTalent 落 Lv1 生效副本 ==');
 const game = new Game(cfg, makeUI(), rng);
-game.start('shixian', { name: '测' });
+game.start('cizong_bi', { name: '测' }); // 三派之一；初始文心 T006（bi），与下文 T004 无关，避免重复授予
 game.s.inspiration = 60; game.s.inspirationMax = 60;
 // 选 attr_flat 文心 T004（学力 +2@Lv1 → +4@Lv3）
 const T004 = cfg.talentById.get('T004');

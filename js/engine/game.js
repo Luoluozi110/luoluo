@@ -251,6 +251,11 @@ export class Game {
       } else if (r.type === 'talent') {
         const t = this.cfg.talentById.get(r.talent);
         if (t) this.grantTalent(t, { silent: true });
+      } else if (r.type === 'inspirationMax') {
+        const gain = Math.max(0, Number(r.value) || 0);
+        if (gain > 0) {
+          this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, (Number(this.s.inspirationMax) || 0) + gain);
+        }
       } else if (r.type === 'title' && r.title) {
         this.s.titles.push(r.title);
       }
@@ -923,6 +928,13 @@ export class Game {
     if (!effect) return;
     if (effect.attrs) this.addAttrs(effect.attrs);
     if (effect.inspiration) this.addInspiration(Number(effect.inspiration), '奇遇');
+    if (effect.inspirationMax) {
+      const gain = Math.max(0, Number(effect.inspirationMax) || 0);
+      if (gain > 0) {
+        this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, (Number(this.s.inspirationMax) || 0) + gain);
+        this.push(`心源拓阔，本局灵感上限 +${gain}`);
+      }
+    }
     if (effect.item) { this.s.events.items++; this.ui.toast(`获得道具「${effect.item}」`); }
     if (effect.talent) {
       const t = this.cfg.talentById.get(effect.talent) || this.randomTalent();
