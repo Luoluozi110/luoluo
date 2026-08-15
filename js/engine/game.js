@@ -63,6 +63,7 @@ export class Game {
       zeitgeist: this.seedZeitgeist(cfg.affinity),   // 当朝风潮（每局随机，制造变化性）
       affStreak: { manner: null, n: 0 },             // 气势连捷：连续同风格胜场
       synergies: [],                                 // 当前已激活的文心羁绊（id/name/desc/members）
+      talentLevels: {},                              // 文心等级：{ [talentId]: level }（Lv1 起，存档持久化）
       talentState: { triggers: {}, flags: {} },       // 文心局内触发次数/一次性互斥标记（存档持久化）
       npcMech: { history: {}, palace: {} },          // NPC 三机制跨场状态
       loadout: [], titles: [],
@@ -322,6 +323,24 @@ export class Game {
   }
 
   /* -------------------------------------------------------- 文心 */
+  /**
+   * 取某文心「指定等级」的生效副本：effect 取自升级表 levels[level-1]（设计 Lv1 起为权威生效值），
+   * 主动文心附带该等级 cost。返回新对象，绝不改动 cfg 模板，便于升级时原地替换存储副本的 effect/cost。
+   * 无升级数据时退化为直接克隆配置模板（保持旧行为）。
+   */
+  leveledTalent(talent, level = 1) {
+    const up = this.cfg.talentUpgradeById && this.cfg.talentUpgradeById.get(talent.id);
+    const clone = { ...talent };
+    if (up && up.levels && up.levels[level - 1]) {
+      clone.effect = JSON.parse(JSON.stringify(up.levels[level - 1].effect));
+      if (up.levels[level - 1].cost != null) clone.cost = up.levels[level - 1].cost;
+      else if (talent.cost != null) clone.cost = talent.cost;
+    } else if (talent.effect) {
+      clone.effect = JSON.parse(JSON.stringify(talent.effect));
+    }
+    return clone;
+  }
+
   async grantTalent(talent, opts = {}) {
     if (!talent) return false;
     const s = this.s;
@@ -331,6 +350,9 @@ export class Game {
 
     if (!opts.silent) await this.ui.showTalentGain(talent);
 
+    // 持有副本按当前等级（Lv1）生效；升级时原地替换 effect/cost，不污染 cfg 模板。
+    const lvl1 = this.leveledTalent(talent, 1);
+
     if (list.length >= max) {
       const idx = await this.ui.askReplaceTalent(talent, list.slice());
       if (idx === null || idx === undefined || idx < 0) {
@@ -339,14 +361,15 @@ export class Game {
       }
       const removed = list[idx];
       this.revokeTalentFlat(removed);
-      list.splice(idx, 1, talent);
+      list.splice(idx, 1, lvl1);
       this.push(`以「${talent.name}」替换「${removed.name}」`);
     } else {
-      list.push(talent);
+      list.push(lvl1);
       this.push(`获得文心「${talent.name}」`);
     }
-    this.applyTalentFlat(talent);
-    this.applyTalentInstant(talent);
+    this.applyTalentFlat(lvl1);
+    this.applyTalentInstant(lvl1);
+    s.talentLevels[talent.id] = 1;
     s.events.talents++;
 
     // 文心「洛阳纸贵」：每获得一枚新文心，灵感 +2（含替换所得）
@@ -369,6 +392,63 @@ export class Game {
     Codex.recordTalent(talent.id);   // 图鉴：记录已获得的文心（跨局累计）
     this.ui.onState(s);
     return true;
+  }
+
+  /**
+   * 文心升级：玩家在「文心」详情中花费灵感提升某枚已持有文心的等级。
+   * - 校验：必须持有、未满级、灵感足以支付「升下一级成本」。
+   * - 扣灵感 → 原地替换持有副本的 effect/cost 为新等级生效值。
+   * - 一次性/常驻类按差值结算，避免重复套取或重复加成：
+   *     · attr_flat：先 revoke 旧等级属性，再 apply 新等级（净差值刚好）。
+   *     · start_insp：仅结算 (新值 − 旧值) 的灵感差值。
+   *     · insp_max：仅结算扩容差值（同 group 互斥标记不重设，替换后不回退）。
+   * - 其余类型（dice_plus/ crit/ dice_mult/ copy_affinity/ 各 pct 等）效果在战斗中实时读取 t.effect，替换即生效。
+   * 返回 { ok, level?, max?, cost?, reason? }。
+   */
+  upgradeTalent(id) {
+    const s = this.s;
+    const up = this.cfg.talentUpgradeById && this.cfg.talentUpgradeById.get(id);
+    if (!up) return { ok: false, reason: '该文心暂不可升级' };
+    const t = s.passive.find(x => x.id === id) || s.active.find(x => x.id === id);
+    if (!t) return { ok: false, reason: '未持有该文心' };
+    const level = Number(s.talentLevels[id]) || 1;
+    if (level >= up.maxLevel) return { ok: false, reason: '已满级', level, max: up.maxLevel };
+    const cost = Number(up.upCost[level - 1]) || 0;
+    if (s.inspiration < cost) return { ok: false, reason: '灵感不足', level, max: up.maxLevel, cost };
+    const newLevel = level + 1;
+    const newEntry = up.levels[newLevel - 1];
+    if (!newEntry) return { ok: false, reason: '升级数据缺失', level, max: up.maxLevel };
+
+    this.addInspiration(-cost, `升级·${t.name}`);   // 灵感不足已在上方拦截，此处必可扣
+
+    const oldEffect = t.effect || {};
+    const ef = newEntry.effect;
+    // attr_flat：先撤销旧等级、再施加新等级（净差值）
+    if (oldEffect.type === 'attr_flat' && ef.type === 'attr_flat') this.revokeTalentFlat(t);
+
+    // 原地替换持有副本的 effect / cost（不污染 cfg 模板）
+    t.effect = JSON.parse(JSON.stringify(ef));
+    if (newEntry.cost != null) t.cost = newEntry.cost;
+
+    if (ef.type === 'attr_flat') {
+      this.applyTalentFlat(t);
+    } else if (ef.type === 'start_insp') {
+      const delta = (Number(ef.value) || 0) - (Number(oldEffect.value) || 0);
+      if (delta > 0) this.addInspiration(delta, `升级·${t.name}`);
+    } else if (ef.type === 'insp_max') {
+      const delta = (Number(ef.value) || 0) - (Number(oldEffect.value) || 0);
+      if (delta > 0) {
+        const gain = Math.max(0, delta);
+        this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, (Number(this.s.inspirationMax) || 0) + gain);
+        this.push(`文心「${t.name}」精进，本局灵感上限 +${gain}`);
+      }
+    }
+
+    s.talentLevels[id] = newLevel;
+    Codex.recordTalentLevel && Codex.recordTalentLevel(id, newLevel);
+    this.ui.onState(s);
+    this.push(`文心「${t.name}」精进至 Lv${newLevel}`);
+    return { ok: true, level: newLevel, max: up.maxLevel, cost };
   }
 
   applyTalentFlat(t) {
@@ -919,6 +999,13 @@ export class Game {
         pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
       }
       if (ef.type === 'lucky_six' && hasSix) critMult = Math.max(critMult, Number(ef.mult) || 1);
+      // —— 被动「创意文心」补接（设计 P0：此前仅在主动循环生效） ——
+      if (ef.type === 'dice_mult') diceMult = Number(ef.value) || R.BATTLE_COEF.diceMult;
+      if (ef.type === 'copy_affinity') {
+        session._copyAffinity = true;
+        session._copyAffinityName = t.name;
+        session._copyAffinityRatio = Math.max(session._copyAffinityRatio || 0, Number(ef.ratio) || 1);
+      }
     }
     for (const t of session.usedActive) {
       const ef = t.effect || {};
@@ -926,7 +1013,11 @@ export class Game {
       if (ef.type === 'dice_mult') diceMult = Number(ef.value) || R.BATTLE_COEF.diceMult;
       if (ef.type === 'dice_plus') dicePlus += Number(ef.value) || 0;
       if (ef.type === 'crit') { if (this.rand() < (Number(ef.chance) || 0)) critMult = Math.max(critMult, Number(ef.mult) || 1); }
-      if (ef.type === 'copy_affinity') session._copyAffinity = true;
+      if (ef.type === 'copy_affinity') {
+        session._copyAffinity = true;
+        session._copyAffinityName = t.name;
+        session._copyAffinityRatio = Math.max(session._copyAffinityRatio || 0, Number(ef.ratio) || 1);
+      }
       // —— 主动文心亦可触发创意效果 ——
       if (ef.type === 'style_pct' && (ef.style === style || ef.style === 'any')) {
         pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
@@ -1011,7 +1102,8 @@ export class Game {
     }
 
     if (session._copyAffinity && npcAff > 0) {
-      pct.push({ source: 'copy', label: '夺胎换骨·复制相性', value: npcAff });
+      const r = session._copyAffinityRatio || 1;
+      pct.push({ source: 'copy', label: `复制相性·${session._copyAffinityName || '文心'}`, value: npcAff * r });
     }
     if (s.nextBattlePct) {
       pct.push({ source: 'sky', label: '金榜题名时', value: s.nextBattlePct });

@@ -16,7 +16,7 @@
 
 export const RUN_SAVE_KEY = 'feihua_run_save';               // 自动存档槽（每回合结束）
 export const RUN_SAVE_MANUAL_KEY = 'feihua_run_save_manual'; // 手动存档槽（菜单「保存当前进度」）
-export const RUN_SAVE_VERSION = 3;
+export const RUN_SAVE_VERSION = 4;
 export const SAVE_WARN_BYTES = 3 * 1024 * 1024;              // 体积预警阈值 3MB
 
 const LOG_MAX = 200;   // 超过则截断
@@ -29,8 +29,28 @@ const STATE_KEYS = [
   'lap', 'turn', 'phase',   'sky', 'nextBattlePct', 'battle', 'events',
   'quiz', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
   'zeitgeist', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
-  'over', 'reachedEnd', 'endReason', 'log'
+  'talentLevels', 'over', 'reachedEnd', 'endReason', 'log'
 ];
+
+/**
+ * 取某文心「指定等级」的生效副本（与引擎 game.leveledTalent 同口径，供读档重建）。
+ * effect 取自升级表 levels[level-1]（设计 Lv1 起为权威生效值）；主动文心附带该等级 cost。
+ * 返回新对象，绝不改动 cfg 模板。
+ */
+function leveledClone(cfg, id, level) {
+  const t = cfg.talentById && cfg.talentById.get(id);
+  if (!t) return null;
+  const up = cfg.talentUpgradeById && cfg.talentUpgradeById.get(id);
+  const clone = { ...t };
+  if (up && up.levels && up.levels[level - 1]) {
+    clone.effect = JSON.parse(JSON.stringify(up.levels[level - 1].effect));
+    if (up.levels[level - 1].cost != null) clone.cost = up.levels[level - 1].cost;
+    else if (t.cost != null) clone.cost = t.cost;
+  } else if (t.effect) {
+    clone.effect = JSON.parse(JSON.stringify(t.effect));
+  }
+  return clone;
+}
 
 function hasLS() {
   try { return typeof localStorage !== 'undefined' && localStorage !== null; }
@@ -135,6 +155,11 @@ function migrateRun(obj) {
   // v3：旧档没有文心限次/互斥状态；默认空对象，不重复触发旧的一次性文心。
   state.talentState = (state.talentState && typeof state.talentState === 'object')
     ? state.talentState : { triggers: {}, flags: {} };
+  // v4：文心等级。v3 及更早旧档无此字段 → 按持有文心置 Lv1（上限钳制推迟到 deserialize，因此处无 cfg）。
+  if (!state.talentLevels || typeof state.talentLevels !== 'object') {
+    state.talentLevels = {};
+    for (const id of [...idsOf(state.passive), ...idsOf(state.active)]) state.talentLevels[id] = 1;
+  }
   return { v: RUN_SAVE_VERSION, savedAt: Number(obj.savedAt) || Date.now(), state };
 }
 
@@ -177,15 +202,22 @@ export function deserializeRun(rawObj, cfg) {
     warnings.push(`存档流派「${st.school && st.school.id}」已失效，回退为「${out.school ? out.school.name : '无'}」`);
   }
 
-  // 天赋：按 ID 重新关联，失效的静默过滤并汇总提示
+  // 天赋：按 ID 重新关联，并以存档中的等级重建「生效副本」（effect 取自升级表对应等级）。
+  // 旧档 talentLevels 缺失 → 全部按 Lv1；等级越界（>maxLevel 或 <1）钳制，保证读档不崩。
   const lostTalents = [];
+  const levels = (st.talentLevels && typeof st.talentLevels === 'object') ? { ...st.talentLevels } : {};
+  for (const id of [...(st.passive || []), ...(st.active || [])]) if (!(id in levels)) levels[id] = 1;
+  const upById = cfg.talentUpgradeById || new Map();
   const relink = ids => (Array.isArray(ids) ? ids : []).map(id => {
     const t = cfg.talentById && cfg.talentById.get(id);
     if (!t) { lostTalents.push(id); return null; }
-    return t;
+    const maxL = (upById.get(id) || {}).maxLevel || 1;
+    const lvl = Math.max(1, Math.min(Number(levels[id]) || 1, maxL));
+    return leveledClone(cfg, id, lvl);
   }).filter(Boolean);
   out.passive = relink(st.passive);
   out.active = relink(st.active);
+  out.talentLevels = levels;
   if (lostTalents.length) warnings.push(`有 ${lostTalents.length} 枚文心在当前配置中已失效，已移除（${lostTalents.join('、')}）`);
 
   // 天象：按 ID 重新关联 cfg.sky

@@ -7,8 +7,8 @@ const FILES = [
   'attrs', 'inspiration', 'board', 'questions', 'events',
   'talents', 'schools', 'affinity', 'npcs', 'sky', 'grades'
 ];
-/** 可选配置：缺失时降级为空数组，不阻断启动 */
-const OPTIONAL_FILES = ['album', 'synergies', 'npc-mechanics'];
+/** 可选配置：缺失时降级为空数组/空对象，不阻断启动 */
+const OPTIONAL_FILES = ['album', 'synergies', 'npc-mechanics', 'talent-upgrade'];
 
 export const configSource = {};   // { attrs: 'config' | 'config-dev' }
 
@@ -113,6 +113,9 @@ function normalize(cfg) {
   af.matrix = af.matrix || {};
 
   cfg.talentById = new Map((cfg.talents || []).map(t => [t.id, t]));
+
+  // 文心升级系统：id → { quality, maxLevel, upCost[], levels:[{effect,cost?}] }
+  cfg.talentUpgradeById = new Map(Object.entries(cfg['talent-upgrade'] || {}));
 
   // NPC 三机制模板库：缺失/非法时回退为空对象，引擎按「无机制」行驶，不阻断启动。
   const nm = cfg['npc-mechanics'];

@@ -254,6 +254,7 @@ function startGame(schoolId, loadout, playerName) {
   const cards = loadout || [];
   const s = game.start(schoolId, { loadout: cards, name: playerName || '' });
   modals.playerName = s.playerName || '';   // 叙事文本据此替换「你」
+  modals.game = game;                       // 文心升级：详情弹窗调用引擎 upgradeTalent
   if (cards.length) hud.toast(`行囊生效：${cards.map(c => `「${c.name}」`).join('')}`);
   hud.render(s);
   showMenuButton(true);
@@ -547,6 +548,7 @@ async function loadGame() {
   game.onVictory = (nm, sc) => Leaderboard.submit(nm, sc).catch(() => {});   // 通关 → 提交云端排行榜
   game.s = res.state;
   modals.playerName = game.s.playerName || '';   // 续玩沿用存档中的名号
+  modals.game = game;                            // 文心升级：详情弹窗调用引擎 upgradeTalent
   schoolEl.classList.remove('on');
   resultEl.classList.remove('on');
   albumUI.closeLoadout();

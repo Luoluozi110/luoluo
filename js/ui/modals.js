@@ -30,6 +30,7 @@ export class Modals {
     this.layer = layer;
     this.cfg = cfg || {};
     this.playerName = '';   // 由 app.js 在对局开始时写入；留空则叙事维持「你」
+    this.game = null;       // 由 app.js 在对局开始时注入（升级文心需要调用引擎）
   }
 
   open(html, cls) {
@@ -177,18 +178,86 @@ export class Modals {
     this.close(ov);
   }
 
-  /** 查看已拥有文心的属性 / 效果（只读，不改变持有） */
-  async showTalentDetail(t) {
-    const ov = this.open(`
-      <div class="talent-card paper ${t.kind === 'active' ? 'act' : ''}">
-        <div class="kind">${t.kind === 'active' ? `主动文心　消耗灵感 ${t.cost || 1}` : '被动文心　常驻生效'}</div>
-        <h3>${esc(t.name)}</h3>
-        <div class="efx">${talentEffectText(t)}</div>
-        <div class="dianggu">${esc(personalize(t.text || '', this.playerName))}</div>
-        <div style="text-align:center;margin-top:16px"><button class="btn btn-ink" data-ok>知道了</button></div>
-      </div>`);
-    await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', r));
-    this.close(ov);
+  /**
+   * 查看已拥有文心的属性 / 效果；并在此处直接升级。
+   * 升级操作：玩家点开「文心」（HUD 文心栏点击）即可在此花费灵感提升该文心等级，
+   * 实时展示当前等级效果、下一级预览与成本，灵感不足/已满级时按钮禁用并说明原因。
+   */
+  showTalentDetail(t) {
+    const id = t.id;
+    const up = (this.cfg.talentUpgradeById && this.cfg.talentUpgradeById.get(id)) || null;
+    const QLABEL = { common: '普通', rare: '稀有', epic: '史诗', legend: '传说' };
+    const lvlOf = () => (this.game && this.game.s.talentLevels[id]) || 1;
+
+    const render = () => {
+      const level = lvlOf();
+      const max = up ? up.maxLevel : 1;
+      const insp = this.game ? this.game.s.inspiration : Infinity;
+      const isActive = t.kind === 'active';
+      const kindLine = isActive
+        ? `主动文心　消耗灵感 ${t.cost != null ? t.cost : 1}`
+        : '被动文心　常驻生效';
+      const lvlLine = up ? `　·　${QLABEL[up.quality] || up.quality}　Lv ${level}/${max}` : '';
+
+      let nextHtml = '';
+      let btnHtml = `<div class="btn-row"><button class="btn btn-ink" data-ok>知道了</button></div>`;
+      if (up && level < max) {
+        const nEff = JSON.parse(JSON.stringify(up.levels[level].effect));
+        const nCost = up.upCost[level - 1];
+        const can = insp >= nCost;
+        nextHtml = `
+          <div class="up-next">
+            <div class="up-next-h">下一级（Lv${level + 1}）· 消耗灵感 ${nCost}</div>
+            <div class="efx up-next-efx">${talentEffectText({ ...t, effect: nEff })}</div>
+          </div>`;
+        const disabled = can ? '' : 'disabled style="opacity:.45;cursor:not-allowed"';
+        const label = can ? `升级（消耗灵感 ${nCost}）` : `灵感不足（需 ${nCost}）`;
+        btnHtml = `
+          <div class="btn-row">
+            <button class="btn btn-primary" data-up="1" ${disabled}>${label}</button>
+            <button class="btn btn-ink" data-ok>知道了</button>
+          </div>`;
+      } else if (up && level >= max) {
+        nextHtml = `<div class="up-next"><div class="up-next-h" style="color:var(--zhu)">已达满级（Lv${max}）</div></div>`;
+      }
+
+      return `
+        <div class="talent-card paper ${isActive ? 'act' : ''}">
+          <div class="kind">${kindLine}${lvlLine}</div>
+          <h3>${esc(t.name)}${up ? `　<span class="lvbadge">Lv ${level}/${max}</span>` : ''}</h3>
+          <div class="efx">${talentEffectText(t)}</div>
+          ${nextHtml}
+          <div class="dianggu">${esc(personalize(t.text || '', this.playerName))}</div>
+          ${btnHtml}
+        </div>`;
+    };
+
+    const ov = this.open(render(), 'talent-detail');
+    let done = false;
+    const fin = () => { if (!done) { done = true; this.close(ov); } };
+    const rebind = () => {
+      ov.querySelector('[data-ok]')?.addEventListener('click', fin);
+      ov.querySelector('[data-up]')?.addEventListener('click', async () => {
+        if (!this.game) return;
+        const res = await this.game.upgradeTalent(id);
+        if (res.ok) {
+          this.game.ui.onState(this.game.s);                 // 刷新 HUD（灵感/属性/上限）
+          // 原地重渲染弹窗内容（保留不关闭），让玩家看到新等级与下一级预览
+          const card = ov.querySelector('.talent-card');
+          if (card) card.outerHTML = render().trim();
+          rebind();
+          if (this.game.ui.toast) this.game.ui.toast(`「${esc(t.name)}」精进至 Lv${res.level}`);
+        } else {
+          if (this.game.ui.toast) this.game.ui.toast(res.reason || '无法升级');
+        }
+      });
+    };
+    rebind();
+    return new Promise(resolve => {
+      // 仅「知道了」关闭弹窗；升级成功后保持打开以便连续升级
+      const obs = new MutationObserver(() => { if (!ov.isConnected) resolve(); });
+      obs.observe(this.layer, { childList: true });
+    });
   }
 
   /** 超限替换弹窗；返回被替换下标，null = 放弃新卡 */
