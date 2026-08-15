@@ -1,6 +1,6 @@
 {
-  "initial": 40,
-  "max": 66,
+  "initial": 60,
+  "max": 80,
   "pingCell": 2,
   "zeCellInsp": 1,
   "scenicCost": 8,
