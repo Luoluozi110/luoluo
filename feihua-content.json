@@ -1183,20 +1183,6 @@
           "attr": null
         }
       ]
-    },
-    {
-      "id": "Q0119",
-      "type": "knowledge",
-      "stem": "1",
-      "difficulty": 2,
-      "category": "shi",
-      "analysis": "",
-      "enabled": true,
-      "options": [
-        "1",
-        "1"
-      ],
-      "answer": 0
     }
   ],
   "events": [
