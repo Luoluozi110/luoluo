@@ -194,7 +194,7 @@ export class CodexUI {
       return `<div class="album-card locked">
         <div class="ac-silhouette">？</div>
         <div class="ac-name" style="font-size:14px;letter-spacing:.2em">未 獲 得</div>
-        <div class="ac-cond">于局中获取，方入此册</div>
+        <div class="ac-cond">${esc(t.acquireText || '于局中获取，方入此册')}</div>
       </div>`;
     }).join('');
   }

@@ -63,6 +63,7 @@ export class Game {
       zeitgeist: this.seedZeitgeist(cfg.affinity),   // 当朝风潮（每局随机，制造变化性）
       affStreak: { manner: null, n: 0 },             // 气势连捷：连续同风格胜场
       synergies: [],                                 // 当前已激活的文心羁绊（id/name/desc/members）
+      talentState: { triggers: {}, flags: {} },       // 文心局内触发次数/一次性互斥标记（存档持久化）
       npcMech: { history: {}, palace: {} },          // NPC 三机制跨场状态
       loadout: [], titles: [],
       over: false, reachedEnd: false, endReason: '',
@@ -377,6 +378,19 @@ export class Game {
   applyTalentInstant(t) {
     const ef = t.effect || {};
     if (ef.type === 'start_insp') this.addInspiration(Number(ef.value) || 0, `文心·${t.name}`);
+    // 本局永久扩容：只结算一次；即使之后替换掉该文心，上限也不回退。
+    // 同 group 的扩容文心互斥，防止「蓄水成渊 + 海纳百川」叠加造成资源失衡。
+    if (ef.type === 'insp_max') {
+      const ts = this.s.talentState || (this.s.talentState = { triggers: {}, flags: {} });
+      ts.flags = ts.flags || {};
+      const group = String(ef.group || 'inspiration_capacity');
+      if (!ts.flags[group]) {
+        const gain = Math.max(0, Number(ef.value) || 0);
+        this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, (Number(this.s.inspirationMax) || 0) + gain);
+        ts.flags[group] = t.id;
+        this.push(`文心「${t.name}」开拓心源，本局灵感上限 +${gain}`);
+      }
+    }
   }
   revokeTalentFlat(t) {
     if (t.effect && t.effect.type === 'attr_flat' && t.effect.attrs) {
@@ -388,13 +402,44 @@ export class Game {
    * 抽一枚玩家尚未持有的文心（图鉴专属文心不参与随机掉落）。
    */
   randomTalent(kind) {
-    const have = new Set([...this.s.passive, ...this.s.active].map(t => t.id));
+    const s = this.s;
+    const have = new Set([...s.passive, ...s.active].map(t => t.id));
+    const ts = s.talentState || (s.talentState = { triggers: {}, flags: {} });
+    ts.flags = ts.flags || {};
+    const ownedCount = have.size;
+    const eligible = t => {
+      const a = t.acquire || null;
+      if (!a) return true;                         // 旧文心完全沿用原随机池
+      if (a.minTurn != null && s.turn < Number(a.minTurn)) return false;
+      if (a.maxInspiration != null && s.inspiration > Number(a.maxInspiration)) return false;
+      if (a.minTalents != null && ownedCount < Number(a.minTalents)) return false;
+      if (a.minWins != null && (s.battle.win || 0) < Number(a.minWins)) return false;
+      if (a.phase && s.phase !== a.phase) return false;
+      if (a.excludeFlag && ts.flags[String(a.excludeFlag)]) return false;
+      return true;
+    };
     const pool = this.cfg.talents.filter(t =>
       !have.has(t.id)
       && (!kind || t.kind === kind)
-      && t.source !== 'album');
+      && t.source !== 'album'
+      && eligible(t));
     if (!pool.length) return null;
     return pool[Math.floor(this.rand() * pool.length)];
+  }
+
+  /** 受上限约束的文心触发；次数写入 talentState，替换/再获得不会刷新。 */
+  triggerTalentLimited(t, reason) {
+    const ef = (t && t.effect) || {};
+    const ts = this.s.talentState || (this.s.talentState = { triggers: {}, flags: {} });
+    ts.triggers = ts.triggers || {};
+    const used = Number(ts.triggers[t.id]) || 0;
+    const max = Math.max(0, Number(ef.maxTriggers) || 0);
+    if (max && used >= max) return false;
+    const gain = Math.max(0, Number(ef.value) || 0);
+    if (!gain || this.s.inspiration >= this.s.inspirationMax) return false;
+    const real = this.addInspiration(gain, reason || `文心·${t.name}`);
+    if (real > 0) ts.triggers[t.id] = used + 1;
+    return real > 0;
   }
 
   /** 当前已激活的文心羁绊：拥有 members 全部 id 即激活（战斗时实时重算，无持久状态需回滚）。 */
@@ -531,6 +576,7 @@ export class Game {
         this.addAttrs({ [key]: gain });
         this.push(`答对「${q.id}」，${R.ATTR_NAMES[key]} +${gain}`);
         this.addInspiration(this.cfg.inspiration.quizCorrectInsp ?? 0, '答对'); // 核心技能↔燃料闭环
+        for (const t of s.passive) if ((t.effect || {}).type === 'insp_on_quiz') this.triggerTalentLimited(t, `文心·${t.name}`);
       } else {
         this.addInspiration(this.cfg.inspiration.quizWrong ?? -2, ans.timedOut ? '超时' : '答错');
         this.push(`答错「${q.id}」`);
@@ -543,6 +589,7 @@ export class Game {
         const opt = q.options[ans.index];
         if (opt && opt.attr) this.addAttrs({ [opt.attr]: this.cfg.attrs.quizCorrectGain ?? 2 });
         this.addInspiration(this.cfg.inspiration.quizCorrectInsp ?? 0, '抉择');
+        for (const t of s.passive) if ((t.effect || {}).type === 'insp_on_quiz') this.triggerTalentLimited(t, `文心·${t.name}`);
         await this.ui.showQuizResult(q, ans, true);
       } else {
         this.addInspiration(this.cfg.inspiration.quizWrong ?? -2, '超时');
@@ -1190,6 +1237,15 @@ export class Game {
         layers = Math.max(0, Math.min(maxLayers, layers + delta));
         s.npcMech.palace[PALACE_KEY] = { layers };
         s.npcMech.palaceLast = { style: out.style, manner: out.manner };
+      }
+    }
+
+    // 限次战后恢复放在所有战斗/NPC机制资源结算之后，防止先托底再被文债扣穿。
+    // 每局次数写入 talentState；灵感已满时不消耗触发次数。
+    for (const t of s.passive) {
+      const ef = t.effect || {};
+      if (ef.type === 'insp_battle_recover' && s.inspiration <= (Number(ef.threshold) || 0)) {
+        this.triggerTalentLimited(t, `文心·${t.name}`);
       }
     }
 

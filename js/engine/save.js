@@ -7,7 +7,7 @@
  *   - STATE_KEYS 白名单：只序列化受控字段，新增/删除引擎字段不再污染存档。
  *   - 引用按 ID 存储：school / passive / active / sky / loadout 只存 ID，
  *     读档时从当前 cfg 重新关联，配置更新后旧存档不引用过时对象。
- *   - 版本迁移 migrateRun：v1（对象直存）→ v2（ID 引用），并清理已删除系统的字段。
+ *   - 版本迁移 migrateRun：v1/v2 → v3（ID 引用 + 文心触发状态），并清理已删除系统字段。
  *   - 结构化校验 validateRun：坏档、缺字段、类型错误都能 graceful 降级。
  *   - 双槽位：自动槽 feihua_run_save + 手动槽 feihua_run_save_manual。
  *   - 日志截断：s.log 最多保留最近 150 条，防 localStorage 撑爆。
@@ -16,7 +16,7 @@
 
 export const RUN_SAVE_KEY = 'feihua_run_save';               // 自动存档槽（每回合结束）
 export const RUN_SAVE_MANUAL_KEY = 'feihua_run_save_manual'; // 手动存档槽（菜单「保存当前进度」）
-export const RUN_SAVE_VERSION = 2;
+export const RUN_SAVE_VERSION = 3;
 export const SAVE_WARN_BYTES = 3 * 1024 * 1024;              // 体积预警阈值 3MB
 
 const LOG_MAX = 200;   // 超过则截断
@@ -28,7 +28,7 @@ const STATE_KEYS = [
   'passive', 'active', 'track', 'pos', 'branchId', 'branchIndex',
   'lap', 'turn', 'phase',   'sky', 'nextBattlePct', 'battle', 'events',
   'quiz', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
-  'zeitgeist', 'affStreak', 'synergies', 'npcMech', 'loadout', 'titles',
+  'zeitgeist', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
   'over', 'reachedEnd', 'endReason', 'log'
 ];
 
@@ -108,7 +108,7 @@ export function serializeRun(game) {
 
 /* ------------------------------------------------ 迁移与校验 */
 
-/** v1 → v2：对象引用改 ID、清理已删除系统字段、去掉包装层冗余 */
+/** v1/v2 → v3：对象引用改 ID、补文心触发状态、清理已删除系统字段 */
 function migrateRun(obj) {
   if (!obj || typeof obj !== 'object') return null;
   if (obj.v >= RUN_SAVE_VERSION) return obj;
@@ -132,6 +132,9 @@ function migrateRun(obj) {
     .filter(sk => sk && typeof sk.id === 'string');
   // loadout：v1 包装层可能存对象数组
   state.loadout = idsOf(state.loadout);
+  // v3：旧档没有文心限次/互斥状态；默认空对象，不重复触发旧的一次性文心。
+  state.talentState = (state.talentState && typeof state.talentState === 'object')
+    ? state.talentState : { triggers: {}, flags: {} };
   return { v: RUN_SAVE_VERSION, savedAt: Number(obj.savedAt) || Date.now(), state };
 }
 
@@ -203,8 +206,12 @@ export function deserializeRun(rawObj, cfg) {
 
   // 兜底默认值：防止缺字段导致后续回合崩溃
   out.attrs = (out.attrs && typeof out.attrs === 'object') ? out.attrs : { ...(cfg.attrs && cfg.attrs.initial) };
-  out.inspiration = Number.isFinite(Number(out.inspiration)) ? Number(out.inspiration) : (cfg.inspiration ? cfg.inspiration.initial : 20);
-  out.inspirationMax = Number.isFinite(Number(out.inspirationMax)) ? Number(out.inspirationMax) : (cfg.inspiration ? cfg.inspiration.max : 40);
+  const baseInsp = Math.max(0, Number(cfg.inspiration && cfg.inspiration.initial) || 20);
+  const baseMax = Math.max(baseInsp, Number(cfg.inspiration && cfg.inspiration.max) || 40);
+  // 配置提高基础上限时，旧档至少升级到新基线；已有更高的文心扩容上限则保留。
+  out.inspirationMax = Math.max(baseMax, Number.isFinite(Number(out.inspirationMax)) ? Number(out.inspirationMax) : baseMax);
+  out.inspiration = Math.max(0, Math.min(out.inspirationMax,
+    Number.isFinite(Number(out.inspiration)) ? Number(out.inspiration) : baseInsp));
   out.track = out.track === 'branch' ? 'branch' : 'main';
   out.pos = Math.max(0, Number(out.pos) || 0);
   out.branchIndex = Number.isFinite(Number(out.branchIndex)) ? Number(out.branchIndex) : -1;
@@ -215,6 +222,9 @@ export function deserializeRun(rawObj, cfg) {
   out.log = Array.isArray(out.log) ? out.log.slice(-LOG_KEEP) : [];
   out.titles = Array.isArray(out.titles) ? out.titles : [];
   out.synergies = Array.isArray(out.synergies) ? out.synergies : [];
+  out.talentState = (out.talentState && typeof out.talentState === 'object') ? out.talentState : { triggers: {}, flags: {} };
+  out.talentState.triggers = (out.talentState.triggers && typeof out.talentState.triggers === 'object') ? out.talentState.triggers : {};
+  out.talentState.flags = (out.talentState.flags && typeof out.talentState.flags === 'object') ? out.talentState.flags : {};
   out.npcMech = (out.npcMech && typeof out.npcMech === 'object') ? out.npcMech : { history: {}, palace: {} };
   out.battle = (out.battle && typeof out.battle === 'object') ? out.battle : { win: 0, draw: 0, loss: 0, streak: 0, maxStreak: 0, upsets: 0, winsByStyle: { shi: 0, ci: 0, lian: 0 } };
   out.events = (out.events && typeof out.events === 'object') ? out.events : { total: 0, rare: 0, legend: 0, talents: 0, items: 0 };

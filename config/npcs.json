@@ -132,14 +132,14 @@
             "disclosure": "full"
           },
           "weakness": {
-          "name": "泥于绳墨",
-          "template": "wea_harmonious_manner",
-          "manners": [
-            "wanyue",
-            "qingya"
-          ],
-          "retention": 0.1,
-          "playerBonus": 0.08
+            "name": "泥于绳墨",
+            "template": "wea_harmonious_manner",
+            "manners": [
+              "wanyue",
+              "qingya"
+            ],
+            "retention": 0.1,
+            "playerBonus": 0.08
           },
           "intent": {
             "template": "int_preferred_style",
@@ -347,14 +347,14 @@
             "disclosure": "full"
           },
           "weakness": {
-          "name": "词丽辞平",
-          "template": "wea_harmonious_manner",
-          "manners": [
-            "zheli",
-            "qingya"
-          ],
-          "retention": 0.1,
-          "playerBonus": 0.08
+            "name": "词丽辞平",
+            "template": "wea_harmonious_manner",
+            "manners": [
+              "zheli",
+              "qingya"
+            ],
+            "retention": 0.1,
+            "playerBonus": 0.08
           },
           "intent": {
             "template": "int_preferred_style",
@@ -517,25 +517,25 @@
           "version": 1,
           "complexity": "advanced",
           "signature": {
-          "name": "观风择势",
-          "template": "sig_dice_response",
-          "steps": [
-            14,
-            9,
-            4
-          ],
-          "cap": 22,
-          "altAction": {
-            "trigger": "playerExtraDice>=1",
-            "switchTo": "strong_attack"
-          }
-        },
-        "weakness": {
-          "name": "心浮气躁",
-          "template": "wea_base_dice_only",
-          "flat": 12,
-          "playerBonus": 0
-        },
+            "name": "观风择势",
+            "template": "sig_dice_response",
+            "steps": [
+              14,
+              9,
+              4
+            ],
+            "cap": 22,
+            "altAction": {
+              "trigger": "playerExtraDice>=1",
+              "switchTo": "strong_attack"
+            }
+          },
+          "weakness": {
+            "name": "心浮气躁",
+            "template": "wea_base_dice_only",
+            "flat": 12,
+            "playerBonus": 0
+          },
           "intent": {
             "template": "int_dice_response",
             "style": "si",
@@ -554,7 +554,7 @@
       0.5,
       0.75
     ],
-    "desc": "会试圈前半登场。乡试解元之流，若 Build 尚未成型，会被压着打。每人独精一门，专克对应短板。",
+    "desc": "会试中坚。六维总预算提升至 90，偏科优势更明确；开始要求玩家利用相性与破绽，而非只靠属性碾压。",
     "npcs": [
       {
         "id": "fan_jieyuan",
@@ -562,36 +562,36 @@
         "title": "乡试解元",
         "style": "shi",
         "attrs": {
-          "shi": 26,
-          "ci": 13,
+          "shi": 27,
+          "ci": 14,
           "lian": 11,
-          "bi": 13,
-          "xue": 12,
+          "bi": 14,
+          "xue": 13,
           "si": 11
         },
         "mech": {
           "version": 1,
           "complexity": "advanced",
           "signature": {
-          "name": "鹿鸣争先",
-          "template": "sig_dice_response",
-          "steps": [
-            16,
-            10,
-            4
-          ],
-          "cap": 26,
-          "altAction": {
-            "trigger": "playerExtraDice>=1",
-            "switchTo": "strong_attack"
-          }
-        },
-        "weakness": {
-          "name": "恃才冒进",
-          "template": "wea_base_dice_only",
-          "flat": 10,
-          "playerBonus": 0
-        },
+            "name": "鹿鸣争先",
+            "template": "sig_dice_response",
+            "steps": [
+              16,
+              10,
+              4
+            ],
+            "cap": 26,
+            "altAction": {
+              "trigger": "playerExtraDice>=1",
+              "switchTo": "strong_attack"
+            }
+          },
+          "weakness": {
+            "name": "恃才冒进",
+            "template": "wea_base_dice_only",
+            "flat": 10,
+            "playerBonus": 0
+          },
           "intent": {
             "template": "int_dice_response",
             "style": "shi",
@@ -607,11 +607,11 @@
         "title": "公车举人",
         "style": "ci",
         "attrs": {
-          "shi": 12,
-          "ci": 26,
+          "shi": 13,
+          "ci": 27,
           "lian": 11,
-          "bi": 12,
-          "xue": 13,
+          "bi": 13,
+          "xue": 14,
           "si": 12
         },
         "mech": {
@@ -653,11 +653,11 @@
         "title": "鹿鸣宴客",
         "style": "lian",
         "attrs": {
-          "shi": 12,
-          "ci": 13,
-          "lian": 26,
+          "shi": 13,
+          "ci": 14,
+          "lian": 27,
           "bi": 11,
-          "xue": 12,
+          "xue": 13,
           "si": 12
         },
         "mech": {
@@ -672,14 +672,14 @@
             "disclosure": "full"
           },
           "weakness": {
-          "name": "意止于对",
-          "template": "wea_harmonious_manner",
-          "manners": [
-            "haofang",
-            "zheli"
-          ],
-          "retention": 0.1,
-          "playerBonus": 0.08
+            "name": "意止于对",
+            "template": "wea_harmonious_manner",
+            "manners": [
+              "haofang",
+              "zheli"
+            ],
+            "retention": 0.1,
+            "playerBonus": 0.08
           },
           "intent": {
             "template": "int_preferred_style",
@@ -696,11 +696,11 @@
         "title": "乙榜举人",
         "style": "bi",
         "attrs": {
-          "shi": 12,
-          "ci": 12,
+          "shi": 13,
+          "ci": 13,
           "lian": 11,
-          "bi": 26,
-          "xue": 13,
+          "bi": 27,
+          "xue": 14,
           "si": 12
         },
         "mech": {
@@ -735,11 +735,11 @@
         "title": "孝廉举人",
         "style": "xue",
         "attrs": {
-          "shi": 13,
-          "ci": 12,
-          "lian": 12,
+          "shi": 14,
+          "ci": 13,
+          "lian": 13,
           "bi": 12,
-          "xue": 26,
+          "xue": 27,
           "si": 11
         },
         "mech": {
@@ -778,12 +778,12 @@
         "title": "秋闱中式",
         "style": "si",
         "attrs": {
-          "shi": 12,
-          "ci": 13,
-          "lian": 12,
+          "shi": 13,
+          "ci": 14,
+          "lian": 13,
           "bi": 12,
           "xue": 11,
-          "si": 26
+          "si": 27
         },
         "mech": {
           "version": 1,
@@ -830,7 +830,7 @@
       0.75,
       1
     ],
-    "desc": "会试圈后半登场。已登进士第的老手，认真选文体、算相性才能赢。各踞一科，遇偏科强者宜避其锋。",
+    "desc": "高阶名家。六维总预算提升至 117，并强化招牌能力；需要稳定构筑与资源规划，低级档不随之上涨。",
     "npcs": [
       {
         "id": "ouyang_han",
@@ -838,12 +838,12 @@
         "title": "殿前进士",
         "style": "shi",
         "attrs": {
-          "shi": 30,
-          "ci": 15,
-          "lian": 14,
-          "bi": 15,
-          "xue": 15,
-          "si": 16
+          "shi": 33,
+          "ci": 17,
+          "lian": 15,
+          "bi": 17,
+          "xue": 17,
+          "si": 18
         },
         "mech": {
           "version": 1,
@@ -853,7 +853,7 @@
               "name": "文债催人",
               "template": "sig_debt_drain",
               "threshold": 0.12,
-              "cost": 2,
+              "cost": 3,
               "maxCost": 2
             },
             "weak": {
@@ -885,12 +885,12 @@
         "title": "同进士出身",
         "style": "ci",
         "attrs": {
-          "shi": 16,
-          "ci": 30,
-          "lian": 14,
-          "bi": 15,
-          "xue": 15,
-          "si": 15
+          "shi": 18,
+          "ci": 33,
+          "lian": 15,
+          "bi": 17,
+          "xue": 17,
+          "si": 17
         },
         "mech": {
           "version": 1,
@@ -899,20 +899,20 @@
             "name": "曲折藏锋",
             "template": "sig_style_mastery",
             "style": "ci",
-            "pct": 0.1,
+            "pct": 0.11,
             "intentBias": 1.3,
             "disclosure": "full"
           },
           "weakness": {
-          "name": "文绉其表",
-          "template": "wea_style_manner_combo",
-          "style": "lian",
-          "manners": [
-            "qili",
-            "zheli"
-          ],
-          "retention": 0.1,
-          "playerBonus": 0.08
+            "name": "文绉其表",
+            "template": "wea_style_manner_combo",
+            "style": "lian",
+            "manners": [
+              "qili",
+              "zheli"
+            ],
+            "retention": 0.1,
+            "playerBonus": 0.08
           },
           "intent": {
             "template": "int_preferred_style",
@@ -929,12 +929,12 @@
         "title": "进士及第",
         "style": "lian",
         "attrs": {
-          "shi": 15,
-          "ci": 15,
-          "lian": 30,
-          "bi": 14,
-          "xue": 15,
-          "si": 16
+          "shi": 17,
+          "ci": 17,
+          "lian": 33,
+          "bi": 15,
+          "xue": 17,
+          "si": 18
         },
         "mech": {
           "version": 1,
@@ -943,7 +943,7 @@
             "name": "双关设伏",
             "template": "sig_copycat",
             "style": "lian",
-            "pct": 0.1,
+            "pct": 0.11,
             "historyLen": 2,
             "noHistory": "fallback_preferred"
           },
@@ -978,12 +978,12 @@
         "title": "翰林庶吉士",
         "style": "bi",
         "attrs": {
-          "shi": 15,
-          "ci": 15,
-          "lian": 14,
-          "bi": 30,
-          "xue": 15,
-          "si": 16
+          "shi": 17,
+          "ci": 17,
+          "lian": 15,
+          "bi": 33,
+          "xue": 17,
+          "si": 18
         },
         "mech": {
           "version": 1,
@@ -993,7 +993,7 @@
             "template": "sig_steady_pressure",
             "floor": 8,
             "ceiling": 6,
-            "floorPct": 0.05
+            "floorPct": 0.06
           },
           "weakness": {
             "name": "忌被压卷",
@@ -1017,12 +1017,12 @@
         "title": "赐进士出身",
         "style": "xue",
         "attrs": {
-          "shi": 16,
-          "ci": 15,
-          "lian": 15,
-          "bi": 14,
-          "xue": 30,
-          "si": 15
+          "shi": 18,
+          "ci": 17,
+          "lian": 17,
+          "bi": 15,
+          "xue": 33,
+          "si": 17
         },
         "mech": {
           "version": 1,
@@ -1030,7 +1030,7 @@
           "signature": {
             "name": "科场博洽",
             "template": "sig_repeat_read",
-            "pct": 0.1,
+            "pct": 0.11,
             "firstBattle": "disabled"
           },
           "weakness": {
@@ -1060,12 +1060,12 @@
         "title": "甲科进士",
         "style": "si",
         "attrs": {
-          "shi": 15,
-          "ci": 16,
-          "lian": 15,
-          "bi": 14,
-          "xue": 15,
-          "si": 30
+          "shi": 17,
+          "ci": 18,
+          "lian": 17,
+          "bi": 15,
+          "xue": 17,
+          "si": 33
         },
         "mech": {
           "version": 1,
@@ -1077,18 +1077,18 @@
               "zheli",
               "chenyu"
             ],
-            "pct": 0.1,
+            "pct": 0.12,
             "cap": 0.1,
             "applyTo": "si_contribution"
           },
           "weakness": {
-          "name": "意胜辞涩",
-          "template": "wea_harmonious_manner",
-          "manners": [
-            "qingya",
-            "qili"
-          ],
-          "retention": 0.1,
+            "name": "意胜辞涩",
+            "template": "wea_harmonious_manner",
+            "manners": [
+              "qingya",
+              "qili"
+            ],
+            "retention": 0.1,
             "altCondition": {
               "playerStyle": "ci",
               "extraShutdown": 0.1
@@ -1118,7 +1118,7 @@
       1,
       1
     ],
-    "desc": "殿试三场的终极大考。题材固定为咏物、送别、怀古各一场，三场全胜可得「金榜题名」。三位考官各偏诗、词、笔。",
+    "desc": "殿试三场终极大考。六维总预算 148，关键能力进一步强化；三位考官各偏诗、词、笔，仍保留可读破绽与换策空间。",
     "isFinal": true,
     "battles": 3,
     "themes": [
@@ -1133,12 +1133,12 @@
         "title": "礼部侍郎",
         "style": "shi",
         "attrs": {
-          "shi": 40,
-          "ci": 17,
-          "lian": 17,
-          "bi": 17,
-          "xue": 17,
-          "si": 19
+          "shi": 46,
+          "ci": 20,
+          "lian": 20,
+          "bi": 20,
+          "xue": 20,
+          "si": 22
         },
         "mech": {
           "version": 1,
@@ -1148,8 +1148,8 @@
             "template": "sig_palace_adapt",
             "maxLayers": 2,
             "perLayer": 1,
-            "weaknessDampen": 0.25,
-            "minWeaknessRetention": 0.5
+            "weaknessDampen": 0.28,
+            "minWeaknessRetention": 0.45
           },
           "weakness": [
             {
@@ -1161,7 +1161,10 @@
               "name": "定势可乘",
               "template": "wea_style_manner_combo",
               "style": "any",
-              "manners": ["wanyue", "haofang"],
+              "manners": [
+                "wanyue",
+                "haofang"
+              ],
               "retention": 0.3,
               "playerBonus": 0.06
             }
@@ -1181,12 +1184,12 @@
         "title": "翰林学士",
         "style": "ci",
         "attrs": {
-          "shi": 19,
-          "ci": 40,
-          "lian": 17,
-          "bi": 17,
-          "xue": 17,
-          "si": 17
+          "shi": 22,
+          "ci": 46,
+          "lian": 20,
+          "bi": 20,
+          "xue": 20,
+          "si": 20
         },
         "mech": {
           "version": 1,
@@ -1196,7 +1199,7 @@
               "name": "殿试声律",
               "template": "sig_style_mastery",
               "style": "ci",
-              "pct": 0.1,
+              "pct": 0.12,
               "intentBias": 1.3,
               "disclosure": "full"
             },
@@ -1208,14 +1211,14 @@
             }
           },
           "weakness": {
-          "name": "重典轻境",
-          "template": "wea_harmonious_manner",
-          "manners": [
-            "haofang",
-            "zheli"
-          ],
-          "retention": 0.1,
-          "playerBonus": 0.08
+            "name": "重典轻境",
+            "template": "wea_harmonious_manner",
+            "manners": [
+              "haofang",
+              "zheli"
+            ],
+            "retention": 0.1,
+            "playerBonus": 0.08
           },
           "intent": {
             "template": "int_preferred_style",
@@ -1232,12 +1235,12 @@
         "title": "国子监祭酒",
         "style": "bi",
         "attrs": {
-          "shi": 17,
-          "ci": 17,
-          "lian": 17,
-          "bi": 40,
-          "xue": 17,
-          "si": 19
+          "shi": 20,
+          "ci": 20,
+          "lian": 20,
+          "bi": 46,
+          "xue": 20,
+          "si": 22
         },
         "mech": {
           "version": 1,
@@ -1247,7 +1250,7 @@
             "template": "sig_steady_pressure",
             "floor": 9,
             "ceiling": 5,
-            "floorPct": 0.05
+            "floorPct": 0.07
           },
           "weakness": {
             "name": "忌被压卷",

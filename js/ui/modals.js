@@ -349,6 +349,22 @@ export function talentEffectText(t) {
     case 'attr_flat': return Object.entries(e.attrs || {}).map(([k, v]) => `${ATTR_NAMES[k]} +${v}`).join('　');
     case 'unlock_lian': return '解除联力 8 点门槛';
     case 'palace_pct': return `殿试每场得分 +${Math.round((e.value || 0) * 100)}%`;
+    case 'insp_on_win': return `每场论战取胜，灵感 +${e.value || 0}`;
+    case 'draw_bonus': return `平分秋色时，出战文体额外 +${e.value || 0}`;
+    case 'insp_on_talent': return `每获得一枚新文心，灵感 +${e.value || 0}`;
+    case 'style_pct': return `以${S[e.style] || e.style}出战，得分 +${Math.round((e.value || 0) * 100)}%`;
+    case 'theme_pct': return `指定题材出战，得分 +${Math.round((e.value || 0) * 100)}%`;
+    case 'streak_mult': return `气势连捷收益 ×${(1 + (e.value || 0)).toFixed(2)}`;
+    case 'insp_floor': return `每场结算后灵感至少为 ${e.value || 0}`;
+    case 'lucky_six': return `任一灵感骰掷出六点，本场得分 ×${e.mult || 0}`;
+    case 'comeback': return `灵感 ≤${e.threshold || 0} 时，本场得分 +${Math.round((e.value || 0) * 100)}%`;
+    case 'armory_pct': return `每拥有 ${e.step || 0} 枚文心，六维算分属性 +${Math.round((e.value || 0) * 100)}%`;
+    case 'study_bonus': return `败/平研习补偿属性额外 +${e.value || 0}`;
+    case 'palace_insp': return `殿试每场开场，灵感 +${e.value || 0}`;
+    case 'start_insp': return `获得时，灵感一次性 +${e.value || 0}`;
+    case 'insp_on_quiz': return `答对/完成抉择额外 +${e.value || 0} 灵感（每局最多 ${e.maxTriggers || 0} 次）`;
+    case 'insp_battle_recover': return `战后灵感 ≤${e.threshold || 0} 时恢复 ${e.value || 0}（每局最多 ${e.maxTriggers || 0} 次）`;
+    case 'insp_max': return `获得时，本局灵感上限永久 +${e.value || 0}（同类扩容互斥）`;
     default: return t.desc || '效果由配置定义';
   }
 }
