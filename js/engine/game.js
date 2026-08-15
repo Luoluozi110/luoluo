@@ -317,7 +317,8 @@ export class Game {
         attrs: tier.attrs || {}, fullName: label
       };
     }
-    const pick = pool[Math.floor(this.rand() * pool.length)] || pool[0];
+    // 出战权重：具名 NPC 可配 weight（默认 100，0=本阶段不出战），按权重带权抽取。
+    const pick = R.pickNpcByWeight(pool, this.rand) || pool[0];
     return this._npcFromPick(tier, pick);
   }
 
@@ -1621,19 +1622,15 @@ export class Game {
     await this.ui.showPalaceIntro(themes, names);
 
     const n = themes.length;
-    // 殿试三场对手：从主考官具名池「任意抽取三个」且不重复（洗牌后取前 n 个），
-    // 而非每场独立随机——独立随机可能撞到同一名考官，观感像「固定/重复」。
-    // 池不足 n 时，余下场次退化为独立抽取（含重复兜底）；池为 0 时退化为档内随机。
+    // 殿试三场对手：从主考官具名池「按出战权重加权、不重复抽取 n 个」（幂等去重，防止撞同名考官）。
+    // weight 省略=默认 100，weight=0=本阶段不出战；池不足 n 时按实际返回，余下场次退化为独立抽取，
+    // 池为 0 时退化为档内随机。注意：场次仍以主考官档优先，若主考官档全被 weight=0 关停则退化为档内随机兜底。
     const zkPool = Array.isArray(zk.npcs) ? zk.npcs : null;
     const palaceFoes = [];
     if (zkPool && zkPool.length) {
-      const shuffled = zkPool.slice();
-      for (let k = shuffled.length - 1; k > 0; k--) {
-        const j = Math.floor(this.rand() * (k + 1));
-        const tmp = shuffled[k]; shuffled[k] = shuffled[j]; shuffled[j] = tmp;
-      }
+      const weighted = R.pickNpcByWeightUnique(zkPool, n, this.rand);
       for (let i = 0; i < n; i++) {
-        const entry = shuffled[i] || shuffled[Math.floor(this.rand() * shuffled.length)];
+        const entry = weighted[i] || zkPool[Math.floor(this.rand() * zkPool.length)];
         palaceFoes.push(this._npcFromPick(zk, entry));
       }
     } else {

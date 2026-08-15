@@ -277,6 +277,48 @@ export function pickNpcManner(matrix, manners, theme) {
   return best;
 }
 
+/* ====================== 具名 NPC 出战权重 ======================
+ * 每个具名 NPC 可配 `weight`（出战权重，正整数）。同一档内其被抽中的概率正比于 weight / Σweight。
+ *  - weight 省略 / 非法 → 视为默认权重 100。
+ *  - weight === 0 → 该阶段不出战（skip）。
+ * 纯函数，本模块自测友好，供 game.pickNpc（普通战）与殿试抽取共用。
+ */
+export const NPC_DEFAULT_WEIGHT = 100;
+export function npcWeight(n) {
+  const w = Number(n && n.weight);
+  return Number.isFinite(w) && w >= 0 ? w : NPC_DEFAULT_WEIGHT;
+}
+
+/** 按权重从候选池抽一枚；返回 entry 本身（null 当池为空或全部 weight=0）。 */
+export function pickNpcByWeight(pool, rand) {
+  if (!pool || !pool.length) return null;
+  let total = 0;
+  for (const x of pool) total += npcWeight(x);
+  if (!(total > 0)) return null;
+  let r = rand() * total, acc = 0;
+  for (const x of pool) {
+    acc += npcWeight(x);
+    if (r < acc) return x;
+  }
+  return pool[pool.length - 1];
+}
+
+/** 按权重不重复抽取 count 枚（洗带权，逐次剔除已选，防止殿试撞同名）。池有效项不足时按实际返；全为 weight=0 返回 count 个空位。 */
+export function pickNpcByWeightUnique(pool, count, rand) {
+  const out = [];
+  if (!pool || !pool.length || !(count > 0)) return out;
+  const remaining = pool.slice();
+  for (let i = 0; i < count; i++) {
+    const p = remaining.filter(x => npcWeight(x) > 0);
+    if (!p.length) { out.push(null); continue; }
+    const pick = pickNpcByWeight(p, rand);
+    if (!pick) { out.push(null); continue; }
+    out.push(pick);
+    remaining.splice(remaining.indexOf(pick), 1);
+  }
+  return out;
+}
+
 /* ====================== NPC 三机制纯函数（招牌/破绽/意图） ======================
  *
  * 约定（与 stage-02/03/05 对齐）：
