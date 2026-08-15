@@ -33,6 +33,11 @@ const ok = (c, m) => { if (c) console.log('  ✓ ' + m); else { console.error(' 
 
 const cfg = buildCfg();
 const T034 = cfg.talentById.get('T034');
+// 三派（博闻 bowen/xue、奇士 qishi/si、辞宗 cizong_bi/bi）：attr 均不含 shi，
+// 用它们做跨局继承断言不会被「流派入门加成」污染 shi/诗力。
+const S_BOWEN = 'bowen';  // attr=xue
+const S_QISHI = 'qishi';  // attr=si
+const schoolBonus = cfg.attrs.schoolBonus ?? 3;
 Reincarnate.reset();
 
 console.log('== 结构：T034 传说 / Lv6 / 逐级门槛递减·比例递增 ==');
@@ -50,7 +55,7 @@ ok(up.levels[0].effect.inspThreshold === T034.effect.inspThreshold, 'Lv1 升级�
 
 console.log('\n== 点亮：殿试结算且余灵达标 → 记录传承 ==');
 const g1 = new Game(cfg, makeUI(), rng);
-g1.start('shixian', { name: '甲' });
+g1.start(S_BOWEN, { name: '甲' });
 g1.grantTalent(T034, { silent: true });
 const held1 = g1.s.passive.find(t => t.id === 'T034');
 ok(held1 && held1.effect.type === 'reincarnate' && held1.effect.inspThreshold === 40, '持有 T034（Lv1，门槛 40 / 比例 0.8）');
@@ -63,23 +68,24 @@ ok(pend1 && pend1.attrs.shi === 40 && pend1.attrs.xue === 48, '继承属性 = fl
 ok(Math.round(pend1.ratio * 100) === 80, '记录比例 80%');
 
 console.log('\n== 消费：下一局开局继承并一次性清除 ==');
-const baseShi = cfg.attrs.initial.shi;          // 5（tongru 的流派属性是 xue，不污染 shi 断言）
+const baseShi = cfg.attrs.initial.shi;          // bowen 流派加成落在 xue，不污染 shi 断言
 const g2 = new Game(cfg, makeUI(), rng);
-g2.start('tongru', { name: '乙' }); // 不同流派，验证无视流派加成叠加
+g2.start(S_BOWEN, { name: '乙' }); // 不同流派（xue），验证无视流派加成叠加到 shi
 const inheritGained = g2.s.attrs.shi - baseShi;
 ok(inheritGained === 40, '开局继承：诗力 +40（来自上局 50×0.8，无视新流派）');
 ok(g2.s.attrs.bi === cfg.attrs.initial.bi + 16, '开局继承：笔力 +16（本局基础 5 + 传承 16，bi 非流派属性）');
 ok(Reincarnate.peek() === null, '传承消费后已清除（一次性）');
-// 再开一局不应重复继承
+// 再开一局（换 qishi/si）不应重复继承——si 仅吃到流派入门加成，无继承带来的 shi
 const g3 = new Game(cfg, makeUI(), rng);
-const baseShi3 = cfg.attrs.initial.shi;
-g3.start('shixian', { name: '丙' });
-ok(g3.s.attrs.shi === baseShi3 + (cfg.attrs.schoolBonus ?? 3), '第三局不再继承（火种已耗尽，仅基础+流派）');
+g3.start(S_QISHI, { name: '丙' });
+const baseSi3 = cfg.attrs.initial.si;
+ok(g3.s.attrs.si === baseSi3 + schoolBonus && g3.s.attrs.shi === cfg.attrs.initial.shi,
+  '第三局不再继承（火种已耗尽，si 仅基础+流派加成，诗力无继承）');
 
 console.log('\n== 门槛：余灵不足不点亮 ==');
 Reincarnate.reset();
 const g4 = new Game(cfg, makeUI(), rng);
-g4.start('shixian', { name: '丁' });
+g4.start(S_BOWEN, { name: '丁' });
 g4.grantTalent(T034, { silent: true });
 g4.s.attrs = { shi: 50, ci: 40, lian: 30, bi: 20, xue: 60, si: 10 };
 g4.s.inspiration = 30; // < 40 门槛
@@ -89,7 +95,7 @@ ok(Reincarnate.peek() === null, '余灵 30 < 门槛 40 → 不点亮传承');
 console.log('\n== 满级：Lv6 门槛 20 / 比例 100% ==');
 Reincarnate.reset();
 const g5 = new Game(cfg, makeUI(), rng);
-g5.start('shixian', { name: '戊' });
+g5.start(S_BOWEN, { name: '戊' });
 g5.s.inspirationMax = 200; // 放宽上限，模拟玩家逐次升级（单次升级成本 ≤31 远低于上限）
 g5.s.inspiration = 200;
 g5.grantTalent(T034, { silent: true });

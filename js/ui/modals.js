@@ -407,12 +407,25 @@ export class Modals {
           <hr class="hr-ink"/>
           <div style="font-size:15px;line-height:1.95;color:var(--mo-3)">
             科场之路，先有一名号。<br/>留空不填，则叙事仍以「你」自称。</div>
+          <div style="
+            margin-top:14px;padding:11px 14px;border-radius:10px;
+            border:1px dashed rgba(120,100,70,.42);background:rgba(255,250,232,.28);
+            font-family:var(--font-kai);font-size:13.5px;line-height:1.9;color:var(--mo-2);
+            letter-spacing:.08em;text-align:center">
+            古人起名，往往与<span style="color:var(--zhu);font-weight:600">「流派」</span>相映<br/>
+            <span style="color:#4a6fa5">博闻</span>士&emsp;·&emsp;<span style="color:#7a5c8a">奇士</span>&emsp;·&emsp;<span style="color:#8b5e3c">辞宗</span><br/>
+            <span style="font-size:12px;color:var(--mo-3);letter-spacing:.06em">或依师门、或缘志向、或取自所好——只求一个你的名字</span>
+          </div>
           <input id="nameInput" class="name-input" type="text" maxlength="12" autocomplete="off"
             placeholder="例如：青莲居士（最多 12 字）" value="${esc(defaultName)}"
             style="width:100%;box-sizing:border-box;margin-top:14px;padding:11px 14px;font-size:18px;
               font-family:var(--font-kai);text-align:center;border:1px solid var(--mo-3);
               border-radius:10px;background:rgba(255,255,255,.06);color:var(--ink)" />
-          <div style="font-size:12px;color:var(--mo-3);margin-top:8px;letter-spacing:.04em">回车即可开局</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;
+            margin-top:7px;padding:0 4px;font-size:12px;color:var(--mo-3);letter-spacing:.04em">
+            <span>回车即可开局</span>
+            <span id="nameCount" style="font-family:var(--font-song);font-variant-numeric:tabular-nums">0 / 12</span>
+          </div>
           <div class="btn-row" style="margin-top:16px">
             <button class="btn btn-ink" data-back>返回</button>
             <button class="btn btn-primary" data-go>就此开局</button>
@@ -420,8 +433,16 @@ export class Modals {
         </div>`, 'namePrompt');
 
       const input = ov.querySelector('#nameInput');
+      const counter = ov.querySelector('#nameCount');
       const finish = v => { this.close(ov); resolve(v); };
-      setTimeout(() => input.focus(), 50);
+      const updateCount = () => {
+        if (!counter) return;
+        const len = [...input.value].length;                        // 用展开计数 Unicode 字符（Emoji/生僻字各占 1）
+        counter.textContent = `${len} / 12`;
+        counter.style.color = len >= 12 ? 'var(--zhu)' : '';
+      };
+      setTimeout(() => { input.focus(); updateCount(); }, 50);
+      input.addEventListener('input', updateCount);
       input.addEventListener('keydown', e => {
         if (e.key === 'Enter') { e.preventDefault(); finish(normalizeName(input.value)); }
       });

@@ -89,8 +89,13 @@ async function boot() {
   if (cloudSyncNotice) announceCloudSync();
 }
 
-/** 首次真正进入棋局时再创建高成本的棋盘/HUD；重复调用安全。 */
-function ensureGameUi() {
+/**
+ * 首次真正进入棋局时再创建高成本的棋盘/HUD；重复调用安全。
+ * 创建前先等待后台云端同步收尾，保证 BoardView 基建在完成合并后的 cfg 上、
+ * 复现地图编辑器覆盖，同时菜单首屏不受云端请求拖延。
+ */
+async function ensureGameUi() {
+  await waitForCloudBeforeGame();   // 同步 Promise 不忙时立即通过
   if (!board) board = new BoardView(cfg, $('#scene'));
   if (!hud) {
     hud = new Hud($('#hud'));
@@ -186,13 +191,14 @@ function autoSaveRun(g, force = false) {
 function buildSchoolScreen() {
   const cards = cfg.schools.map(sch => {
     const tal = (cfg.talents || []).find(t => t.id === sch.talent);
+    const bonusTxt = `入门 ${ATTR_NAMES[sch.attr]} +${cfg.attrs.schoolBonus ?? 3} · 初授文心「${tal ? tal.name : '—'}」`;
     return `
       <button class="school-card" data-id="${sch.id}">
         <div class="emblem">${SCHOOL_EMBLEM[sch.attr] || ''}</div>
         <h3>${sch.name}</h3>
-        <div class="bonus">入门 ${ATTR_NAMES[sch.attr]} +${cfg.attrs.schoolBonus ?? 3}</div>
-        <div class="tal">初授文心：${tal ? tal.name : '—'}</div>
-        <div class="desc">${sch.desc || ''}</div>
+        ${sch.motto ? `<div class="motto">${sch.motto}</div>` : ''}
+        ${sch.flavor ? `<div class="flavor">${sch.flavor}</div>` : ''}
+        <div class="meta">${esc(bonusTxt)}</div>
       </button>`;
   }).join('');
 
@@ -262,11 +268,11 @@ async function openNameScreen(schoolId, loadout) {
   albumUI.closeLoadout();   // 收起装配屏，名号弹窗独占画面
   const name = await modals.showNamePrompt('');
   if (name === null) { openLoadout(schoolId); return; }
-  startGame(schoolId, loadout, name);
+  await startGame(schoolId, loadout, name);
 }
 
-function startGame(schoolId, loadout, playerName) {
-  ensureGameUi();
+async function startGame(schoolId, loadout, playerName) {
+  await ensureGameUi();   // 保证棋盘/HUD 就绪，且基于已完成合并的云端配置构建
   schoolEl.classList.remove('on');
   resultEl.classList.remove('on');
   albumUI.closeLoadout();
@@ -644,6 +650,7 @@ function saveGame() {
 }
 
 async function loadGame() {
+  await ensureGameUi();          // 从主菜单直接“继续上局”时，棋盘/HUD 尚未构建，须先补齐再使用
   const best = loadBestRun();
   if (!best) { hud.toast('没有可读取的存档'); return; }
   if (best.obj.__corrupt) {

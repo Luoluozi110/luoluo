@@ -508,18 +508,18 @@
 .school-progress { display:flex; justify-content:space-between; gap:10px; margin-top:8px; padding:6px 9px; border:1px solid rgba(120,100,70,.25); border-radius:6px; background:rgba(255,250,232,.55); font-size:11px; color:var(--mo-2); }
 .school-progress-name { color:var(--zhu); font-weight:700; }
 .school-card {
-  width: 195px; border-radius: 14px; padding: 18px 16px; cursor: pointer;
+  width: 268px; border-radius: 14px; padding: 20px 18px; cursor: pointer;
   border: 2px solid rgba(120,100,70,.4); text-align: center;
   transition: transform .22s var(--ease-back), box-shadow .22s, border-color .22s;
   box-shadow: 0 10px 26px rgba(0,0,0,.4);
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  display: flex; flex-direction: column; align-items: center; gap: 9px;
 }
 .school-card:hover { transform: translateY(-12px) scale(1.04); border-color: var(--taohua-deep); box-shadow: 0 20px 40px rgba(0,0,0,.5), 0 0 24px rgba(207,100,134,.4); }
 .school-card .emblem { width: 68px; height: 68px; }
-.school-card h3 { margin: 0; font-family: var(--font-kai); font-size: 22px; letter-spacing: .2em; }
-.school-card .bonus { font-size: 13px; color: #8a5a12; letter-spacing: .08em; }
-.school-card .tal { font-size: 13px; color: #14484b; letter-spacing: .06em; }
-.school-card .desc { font-size: 12px; line-height: 1.7; color: var(--mo-3); }
+.school-card h3 { margin: 0; font-family: var(--font-kai); font-size: 22px; letter-spacing: .25em; }
+.school-card .motto { font-family: var(--font-kai); font-size: 14px; color: var(--zhu); letter-spacing: .12em; margin-top: 2px; }
+.school-card .flavor { font-family: var(--font-kai); font-size: 13px; line-height: 1.85; color: var(--mo-2); text-align: justify; padding: 0 2px; }
+.school-card .meta { margin-top: auto; font-size: 11px; color: var(--mo-3); letter-spacing: .05em; line-height: 1.6; border-top: 1px dashed rgba(120,100,70,.35); padding-top: 8px; width: 100%; }
 
 /* =========================================== 装配名篇 / 传世名篇 / 图鉴阁 */
 #loadout-screen, #album-screen, #codex-screen {

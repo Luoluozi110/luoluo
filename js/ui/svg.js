@@ -182,7 +182,12 @@ export const SCHOOL_EMBLEM = {
   si: S(objGroup(`
     <circle cx="32" cy="32" r="28" fill="#eee6f6" class="ta-purple ta-3"/>
     <circle cx="32" cy="32" r="28" fill="url(#ta-vol)"/>
-    <path d="M32 12l5 12 12 2-9 8 3 13-11-7-11 7 3-13-9-8 12-2z" fill="#a98fd0" class="ta-purple ta-2"/>`), '0 0 64 64')
+    <path d="M32 12l5 12 12 2-9 8 3 13-11-7-11 7 3-13-9-8 12-2z" fill="#a98fd0" class="ta-purple ta-2"/>`), '0 0 64 64'),
+  bi: S(objGroup(`
+    <circle cx="32" cy="32" r="28" fill="#fdf3e2" class="ta-mo ta-3"/>
+    <circle cx="32" cy="32" r="28" fill="url(#ta-vol)"/>
+    <path d="M40 14c-2 4-5 7-8 10l-2 2 6 6 3-2c3-2 5-6 7-8-1-4-4-7-6-8z" fill="#33302a" class="ta-mo ta-2"/>
+    <path d="M30 27l7 7-13 13c-2 2-6 2-8-1 3-2 2-5 0-8l-1 0c1-5 6-8 10-8l5-3z" fill="#cf6486" class="ta-mo ta-2"/>`), '0 0 64 64')
 };
 
 /* ------------------------------------------------- 远山 */
