@@ -14,6 +14,18 @@ import { ATTR_NAMES } from '../engine/rules.js';
 const ATTR_KEYS = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
 const STYLE_NAMES = { shi: '诗', ci: '词', lian: '联', bi: '笔', xue: '学', si: '思' };
 
+/** 该 NPC 在引擎结算中使用的稳定标识：机制 NPC 用具名 id，普通 NPC 用档位 id */
+function foeId(tier, npc) {
+  return (npc && npc.mech && npc.id) ? npc.id : (tier.id);
+}
+
+/** 四级认知的进阶描述（跨局，随交锋与破绽累计推进） */
+function cognitionText(cog) {
+  const lv = (cog && Number(cog.level)) || 0;
+  const name = (Codex.FOE_LEVEL_NAMES && Codex.FOE_LEVEL_NAMES[lv]) || '未识';
+  return { lv, name };
+}
+
 const esc = s => String(s ?? '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -115,8 +127,12 @@ export class CodexUI {
           const chips = ATTR_KEYS.map(k =>
             `<span class="chip">${ATTR_NAMES[k]}${Number(npc.attrs && npc.attrs[k]) || 0}</span>`).join('');
           const styleBadge = npc.style ? `<span class="opp-style">偏${STYLE_NAMES[npc.style] || npc.style}</span>` : '';
+          // 四级认知徽标（阶段 B）：已交手者按认知等级标记
+          const cog = cognitionText(Codex.getFoeCognition(foeId(tier, npc)));
+          const cogBadge = cog.lv > 0
+            ? `<span class="cog-badge lv${cog.lv}">识·${esc(cog.name)}</span>` : '';
           html += `<div class="album-card unlocked foe-card" data-foe-view data-tier="${esc(tier.id)}" data-name="${esc(npc.name)}">
-            <div class="ac-name">${esc(npc.name)}${styleBadge}</div>
+            <div class="ac-name">${esc(npc.name)}${styleBadge}${cogBadge}</div>
             <div class="ac-reward">${esc(npc.title || '')}</div>
             <div class="cx-chips">${chips}</div>
             <div class="ac-cond done">六维总和 Σ${sum}</div>
@@ -223,6 +239,26 @@ export class CodexUI {
 
   /* ================================================ 对手详情浮层 */
 
+  /** 认知深浅区块（阶段 B）：四级进度 + 交手/破绽统计 + 附机制战术注释 */
+  _cognitionHtml(tier, npc) {
+    const cog = Codex.getFoeCognition(foeId(tier, npc));
+    const { lv, name } = cognitionText(cog);
+    const steps = (Codex.FOE_LEVEL_NAMES || ['未识', '相识', '察意', '破招']).map((n, i) =>
+      `<span class="cog-step ${i === lv ? 'cur' : ''} ${i < lv ? 'done' : ''}">${n}</span>`).join('');
+    const stat =
+      `<div class="cx-cog-stat"><span>交手 <b>${cog.meets}</b> 次</span>
+       <span>破其招 <b>${cog.weaknessHits}</b> 次</span></div>`;
+    const tip = lv <= 0
+      ? '尚未交锋——此册只记你亲眼所见。'
+      : lv === 1
+        ? '初识其面，但知其有拿手好戏与可乘之隙，尚无实证。'
+        : lv === 2
+          ? '交手中渐知其常法，行动路数已了然于胸。'
+          : '已亲手破其拿手好戏，破绽所在与克制之法皆心中有数。';
+    return `<div class="cx-cog"><div class="cx-cog-track">${steps}</div>${stat}
+      <div class="cx-hint2">${esc(tip)}</div></div>`;
+  }
+
   /** 在配置里按 tierId + name 定位对手（两者组合唯一） */
   _findFoe(tierId, name) {
     for (const tier of (this.cfg.npcs || [])) {
@@ -288,6 +324,10 @@ export class CodexUI {
         <div class="cx-detail-sec">
           <div class="cx-sec-t">交锋战绩</div>
           ${recHtml}
+        </div>
+        <div class="cx-detail-sec">
+          <div class="cx-sec-t">你所识其深浅<span class="cx-sec-sub">（未识 → 相识 → 察意 → 破招）</span></div>
+          ${this._cognitionHtml(tier, npc)}
         </div>
         <div class="cx-detail-sec">
           <div class="cx-sec-t">款位说明</div>

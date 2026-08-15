@@ -277,6 +277,323 @@ export function pickNpcManner(matrix, manners, theme) {
   return best;
 }
 
+/* ====================== NPC 三机制纯函数（招牌/破绽/意图） ======================
+ *
+ * 约定（与 stage-02/03/05 对齐）：
+ *  - 意图在 createSession 时「锁定」一次并存入 session，结算阶段只消费、不改写（E0）。
+ *  - 破绽先于招牌结算（F0）：先判玩家是否命中破绽 → 得到招牌保留比例 retention →
+ *    再按保留比例结算招牌对 NPC 得分的修正。
+ *  - 所有数值来自 config/npc-mechanics.json 模板 + npcs.json 的 mech 引用；缺失/非法一律
+ *    走「无机制」旧行为兜底，绝不抛错阻断对局。
+ *  - 三枚举键：ATTR_KEYS / CREATIVE_KEYS / STYLE_NAMES 见本模块顶部。
+ */
+
+/**
+ * 抽取 NPC 出战文体：在「签名偏置」与「合理性底线」之间取平衡。
+ * 签名偏置把目标文体权重显著抬高；但若目标文体期望分低于最优候选的 bottom（如 0.85）,
+ * 说明偏置会让 NPC 自残送分，则回退到期望分最优者（低阶教学 NPC 传更高 bottom 更保守）。
+ * @param {object} npcAttrs  六维
+ * @param {object} tpl       意图模板（含 signatureBias / bottom）
+ * @param {number} biasMult  签名偏置倍率（npcs.json mech.intent.bias）
+ * @returns {string} 'shi'|'ci'|'lian'
+ */
+export function pickIntentionStyle(npcAttrs, tpl, biasMult) {
+  const bias = num(biasMult, 1);
+  const bottom = num(tpl && tpl.bottom, 0.78);
+  const biasStyle = tpl && tpl.signatureBias && tpl.signatureBias.style;
+  const cands = CREATIVE_KEYS.filter(s => s !== 'lian' || (npcAttrs.lian || 0) >= 8);
+  const scores = {};
+  for (const s of cands) scores[s] = expectedScore(npcAttrs, s);
+  const best = cands.reduce((a, b) => (scores[b] > scores[a] ? b : a), cands[0]);
+  // 目标文体落入底线 → 回退最优（不送分、不自残）
+  if (biasStyle && cands.includes(biasStyle) && scores[biasStyle] >= scores[best] * bottom) return biasStyle;
+  return best;
+}
+
+/**
+ * 生成（并锁定）NPC 本场意图。返回 { style, manner, styleDisclosed, mannerDisclosed, template }。
+ * - style：按签名偏置抽取的文体；
+ * - manner：对文风立意型（int_manner_theme）按模板候选＋相性选最佳；其余用题材相性最优。
+ * - 意图锁定即冻结于此，后续结算不得改变（E0）。
+ * @param {object} opt { mech, npcAttrs, af, theme, manners }
+ */
+export function rollIntention(opt) {
+  const raw = opt && opt.mech;
+  const mech = (raw && raw.mech) ? raw.mech : (raw || {});
+  const af = opt.af || {};
+  const theme = opt.theme;
+  const manners = opt.manners || af.manners || ['wanyue', 'haofang', 'zheli'];
+  const intent = (mech && mech.intent) || {};
+  const tpl = intent.template ? ((opt.templates || {}).intentTemplates || {})[intent.template] : null;
+
+  // 文体（无签名偏置时退化为纯期望分最优）
+  const style = pickIntentionStyle(opt.npcAttrs || {}, tpl, intent.bias);
+
+  // 文风：文风立意型取模板候选中最优相性者；否则题材相性最优
+  let manner;
+  if (tpl && tpl.type === 'manner') {
+    const cands = Array.isArray(intent.manners) ? intent.manners.filter(m => manners.includes(m)) : manners;
+    if (cands.length) {
+      let vm = -Infinity;
+      for (const m of cands) { const v = affinityValue(af.matrix, m, theme); if (v > vm) { vm = v; manner = m; } }
+    }
+    if (!manner) manner = pickNpcManner(af.matrix, manners, theme);
+  } else {
+    manner = pickNpcManner(af.matrix, manners, theme);
+  }
+
+  // 披露层级：模板声明或默认（教学型默认行动明确）
+  const disclosure = (tpl && tpl.disclosure) || 'action';
+  return {
+    style, manner,
+    styleDisclosed: disclosure === 'full' || disclosure === 'action',
+    mannerDisclosed: disclosure === 'full' || tpl?.type === 'manner',
+    template: intent.template || 'int_preferred_style'
+  };
+}
+
+/**
+ * 判定招牌是否触发。返回 { level:'main'|'weak'|null, key, reason }。
+ * 触发规则来自模板 trigger + npcs.json mech.signature 的参数化。
+ * @param {object} ctx {
+ *   mech, templates, npcStyle(锁定意图文体), npcManner,
+ *   playerMove:{ style, manner, extraDice },
+ *   playerHistory:{ lastStyle },       // 本场上一场文体（无历史为空）
+ *   palaceAdapt:{ layers }             // 跨场适应层数
+ * }
+ */
+export function signatureTriggered(ctx) {
+  const raw = ctx && ctx.mech;
+  const mech = (raw && raw.mech) ? raw.mech : (raw || {});   // 兼容传 npc 对象(内含.mech)或直接传 mech 对象
+  if (!mech || Object.keys(mech).length === 0) return { level: null };
+  const main = mech.signature && mech.signature.main ? mech.signature.main : mech.signature;
+  const weak = mech.signature && mech.signature.main ? mech.signature.weak : null;
+  const tmplLib = (ctx.templates || {}).signatureTemplates || {};
+  const pm = ctx.playerMove || {};
+  const hist = ctx.playerHistory || {};
+  const npcStyle = ctx.npcStyle;
+  const npcManner = ctx.npcManner;
+
+  const hitOne = (sig, npcStyle, npcManner, templates) => {
+    if (!sig || !sig.template) return null;
+    const tpl = templates[sig.template];
+    if (!tpl) return null;
+    if (sig.template === 'sig_style_mastery') {
+      return sig.style === npcStyle ? { level: 'main' } : null;
+    }
+    if (sig.template === 'sig_repeat_read') {
+      if (!hist.lastStyle) return null;                      // 首场无历史不触发
+      return pm.style === hist.lastStyle ? { level: 'main' } : null;
+    }
+    if (sig.template === 'sig_dice_response') {
+      return (pm.extraDice || 0) >= 1 ? { level: 'main' } : null;
+    }
+    if (sig.template === 'sig_copycat') {
+      if (!hist.habitualStyle) return null;
+      return pm.style === hist.habitualStyle ? { level: 'main' } : null;
+    }
+    if (sig.template === 'sig_debt_drain') {
+      // 文债耗神在战后结算（见 weaknessResolution / settle 侧），此处反馈 main 供计算原值
+      return { level: 'main' };
+    }
+    if (sig.template === 'sig_steady_pressure') {
+      return { level: 'main' };                               // 常态化下限
+    }
+    if (sig.template === 'sig_manner_theme') {
+      const ms = sig.manners || [];
+      return ms.includes(npcManner) ? { level: 'main' } : null;
+    }
+    if (sig.template === 'sig_palace_adapt') {
+      return true ? { level: 'main' } : null;                 // 跨场适应：每场常驻（防御性）
+    }
+    return null;
+  };
+
+  const mainHit = hitOne(main, npcStyle, npcManner, tmplLib);
+  if (mainHit) return { ...mainHit, key: main.name || '主招牌' };
+  // 弱副招牌：仅当举人以上（由 mech 结构决定是否配置），独立判
+  if (weak) {
+    const weakHit = hitOne(weak, npcStyle, npcManner, tmplLib);
+    if (weakHit) return { level: 'weak', key: weak.name || '副招牌' };
+  }
+  return { level: null };
+}
+
+/**
+ * 破绽判定（先于招牌结算）。返回 {
+ *   hit,                     // 是否命中任一破绽路径
+ *   retention,               // 招牌保留比例（1 = 全额保留；0 = 完全关闭；中间=削弱）
+ *   shutdownLevel,           // 'full'|'partial'|'none'
+ *   playerBonus,             // 额外玩家加分比例（0 为无）
+ *   refundInsp,              // 返还灵感点数
+ *   infoBonus,               // 意图信息精度提升层级
+ *   extraInspCost,           // 文债耗神导致的额外灵感扣除（负数）
+ *   reason
+ * }
+ * @param {object} ctx { mech, templates, npcStyle, playerMove, playerHistory, result, relativeMargin }
+ */
+export function weaknessResolution(ctx) {
+  const raw = ctx && ctx.mech;
+  const mech = (raw && raw.mech) ? raw.mech : (raw || {});
+  const nullR = { hit: false, retention: 1, shutdownLevel: 'none', playerBonus: 0, refundInsp: 0, infoBonus: 0, extraInspCost: 0 };
+  if (!mech || Object.keys(mech).length === 0) return nullR;
+  const wea = mech.weakness;
+  const tmplLib = (ctx.templates || {}).weaknessTemplates || {};
+  const pm = ctx.playerMove || {};
+  const hist = ctx.playerHistory || {};
+  const weaT = tmplLib[wea && wea.template];
+  if (!wea || !weaT) return nullR;
+  // 标记本次判定的破绽模板（结果型破绽需在算出双方分后二次判定，game.js 靠此识别）
+  nullR.template = wea.template;
+  const npcStyle = ctx.npcStyle;
+
+  const fullRet = () => {
+    const r = Number(wea.retention ?? 0);
+    return clamp(r, 0, 1);
+  };
+
+  switch (wea.template) {
+    case 'wea_use_other_style': {
+      // wea 参数化：style=专精文体；fullClose=完全关闭的文体；partialReduction={style[],retention} 部分削弱
+      const fullClose = (wea.fullClose && wea.fullClose.includes('*')) || (Array.isArray(wea.fullClose) && wea.fullClose.includes(pm.style)) || (wea.fullClose === '*' && pm.style !== npcStyle);
+      const pr = wea.partialReduction;
+      const inPartial = pr && pr.style && Array.isArray(pr.style) && pr.style.includes(pm.style);
+      if (pm.style && pm.style !== npcStyle) {
+        if (fullClose) return { ...nullR, hit: true, retention: 0, shutdownLevel: 'full', reason: '改用他体' };
+        if (inPartial) {
+          const retention = clamp(Number(pr.retention ?? 0.5), 0, 1);
+          return { ...nullR, hit: true, retention, shutdownLevel: retention <= 0.3 ? 'full' : 'partial', reason: '部分削弱' };
+        }
+        // 未列出的他体：默认完全关闭（改用他体是教学主破绽）
+        return { ...nullR, hit: true, retention: 0, shutdownLevel: 'full', reason: '改用他体' };
+      }
+      return nullR;
+    }
+    case 'wea_switch_style': {
+      if (hist.lastStyle && pm.style && pm.style !== hist.lastStyle) {
+        return { ...nullR, hit: true, retention: 0, shutdownLevel: 'full', infoBonus: wea.infoBonus ? Number(wea.infoBonus.intentPrecision) || 0 : 0 };
+      }
+      if (!hist.lastStyle) return { ...nullR, hit: true, retention: 1, shutdownLevel: 'partial', reason: '无历史，仅提升信息' };
+      return nullR;
+    }
+    case 'wea_base_dice_only': {
+      if ((pm.extraDice || 0) === 0) {
+        // 关闭响应招牌 + 失去 stable 分（flat 负值）
+        const flat = Number(wea.flat) || 0;
+        return { ...nullR, hit: true, retention: 0, shutdownLevel: 'full', extraInspCost: 0, flatPenalty: -flat };
+      }
+      return nullR;
+    }
+    case 'wea_style_manner_combo': {
+      const ms = wea.manners || [];
+      if (wea.style === pm.style && ms.includes(pm.manner)) {
+        const ret = fullRet();
+        return { ...nullR, hit: true, retention: ret, shutdownLevel: ret <= 0.3 ? 'full' : 'partial', playerBonus: Number(wea.playerBonus) || 0 };
+      }
+      return nullR;
+    }
+    case 'wea_crushing_win': {
+      if (ctx.result === 'win' && ctx.relativeMargin != null && ctx.relativeMargin >= (Number(wea.threshold) || 0)) {
+        return { ...nullR, hit: true, retention: 0, shutdownLevel: 'full', refundInsp: Number(wea.refund) || 0 };
+      }
+      return nullR;
+    }
+    case 'wea_harmonious_manner': {
+      const ms = wea.manners || [];
+      if (ms.includes(pm.manner)) {
+        const ret = fullRet();
+        return { ...nullR, hit: true, retention: ret, shutdownLevel: ret <= 0.3 ? 'full' : 'partial' };
+      }
+      return nullR;
+    }
+    case 'wea_counter_intent': {
+      if (pm.matchesIntent === true) {
+        const ret = fullRet();
+        return { ...nullR, hit: true, retention: ret, shutdownLevel: ret >= 1 ? 'none' : 'partial', cancelAlt: true };
+      }
+      return nullR;
+    }
+    case 'wea_cross_battle_shift': {
+      if (ctx.strategyChanged) {
+        return { ...nullR, hit: true, retention: 1, shutdownLevel: 'partial', layerReduce: Number(wea.layerReduce) || 1 };
+      }
+      return nullR;
+    }
+    default:
+      return nullR;
+  }
+}
+
+/**
+ * 按「招牌触发 + 破绽保留比例」生成对 NPC 得分的最终修正列表。
+ * - 破绽先结算：retention 决定招牌生效比例；
+ * - 返回对象直接对接调用方（game.js）分发：
+ *     pct / flat                    —— 应用于 NPC 得分的修正（招牌按 retention 摊薄）
+ *     playerBonusPct                —— 破绽带给玩家的额外加分比例（供玩家侧）
+ *     extraInspCost                 —— 破绽代价（文债耗神等，负数则扣灵感）
+ *     refundInsp / infoBonus / cancelAlt —— 结果型/信息型/策略型奖励
+ * @param {object} tri     signatureTriggered 的结果
+ * @param {object} wea     weaknessResolution 的结果
+ * @param {object} sig     mech.signature（主/副）
+ */
+export function signatureScoreMods(tri, wea, sig, ctx) {
+  const pct = [], flat = [];
+  const main = sig && sig.main ? sig.main : sig;
+  const weak = sig && sig.main ? sig.weak : null;
+  const ret = wea && wea.hit ? (wea.retention ?? 0) : 1;
+  const extraDice = (ctx && ctx.extraDice) || 0;
+  const label = (obj) => obj && obj.name || (main && main.name) || '招牌';
+
+  /** 追加骰响应：按 玩家追加骰数 累加递减 flat 分，封顶 cap */
+  const diceResponseFlat = (sigObj) => {
+    const steps = Array.isArray(sigObj.steps) ? sigObj.steps : [];
+    const cap = Number(sigObj.cap) || 0;
+    let sum = 0;
+    for (let i = 0; i < extraDice; i++) sum += Number(steps[i] !== undefined ? steps[i] : (steps[steps.length - 1] || 0));
+    if (cap) sum = Math.min(sum, cap);
+    return sum;
+  };
+
+  /** 稳稿压迫：floor 折算为 flat 下限（简化版，仅提高下限，暂不限制上限） */
+  const steadyFloor = (sigObj) => Number(sigObj.floor) || 0;
+
+  const applyMain = (obj, isWeak = false) => {
+    const tag = isWeak ? '副招牌' : '主招牌';
+    const name = obj && obj.name || tag;
+    if (obj && obj.template === 'sig_dice_response') {
+      const fv = Math.round(diceResponseFlat(obj) * ret);
+      if (fv !== 0) flat.push({ source: 'npcSign', label: `招牌·${name}`, value: fv });
+    } else if (obj && obj.template === 'sig_steady_pressure') {
+      const fv = Math.round(steadyFloor(obj) * ret);
+      if (fv !== 0) flat.push({ source: 'npcSign', label: `招牌·${name}`, value: fv });
+    } else if (obj && (obj.template === 'sig_style_mastery' || obj.template === 'sig_repeat_read' || obj.template === 'sig_copycat')) {
+      const v = Number(obj.pct) || 0;
+      const eff = v * ret;
+      if (eff !== 0) pct.push({ source: 'npcSign', label: `招牌·${name}`, value: eff });
+    }
+    // sig_debt_drain / sig_manner_theme / sig_palace_adapt 不在本场得分修正；由后果/后续处理
+  };
+
+  if (tri && tri.level === 'main' && main) applyMain(main, false);
+  else if (tri && tri.level === 'weak' && weak) applyMain(weak, true);
+
+  // 只用基础骰破绽：NPC 失去稳定分 → 负的 flat 修正（wea.flatPenalty 已是负值）
+  if (wea && wea.flatPenalty) flat.push({ source: 'npcWeak', label: '失稳', value: Math.round(wea.flatPenalty) });
+
+  return {
+    pct, flat,
+    playerBonusPct: wea && wea.playerBonus ? Number(wea.playerBonus) || 0 : 0,
+    extraInspCost: wea && wea.extraInspCost ? Number(wea.extraInspCost) : 0,
+    refundInsp: wea && wea.refundInsp ? Number(wea.refundInsp) || 0 : 0,
+    infoBonus: wea && wea.infoBonus ? Number(wea.infoBonus) || 0 : 0,
+    cancelAlt: !!(wea && wea.cancelAlt)
+  };
+}
+
+export default {
+  rollIntention, pickIntentionStyle, signatureTriggered, weaknessResolution, signatureScoreMods
+};
+
 /* ============================ 六维评分 ============================ */
 
 /**

@@ -8,7 +8,7 @@ const FILES = [
   'talents', 'schools', 'affinity', 'npcs', 'sky', 'grades'
 ];
 /** 可选配置：缺失时降级为空数组，不阻断启动 */
-const OPTIONAL_FILES = ['album', 'synergies'];
+const OPTIONAL_FILES = ['album', 'synergies', 'npc-mechanics'];
 
 export const configSource = {};   // { attrs: 'config' | 'config-dev' }
 
@@ -63,7 +63,7 @@ export async function loadCloudUrl() {
 export function applyProjectOverride(baseCfg, project) {
   if (!project || typeof project !== 'object') return baseCfg;
   const next = Object.assign({}, baseCfg);
-  for (const key of ['questions', 'events', 'talents', 'npcs', 'affinity', 'synergies', 'board']) {
+  for (const key of ['questions', 'events', 'talents', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics']) {
     if (project[key] !== undefined && project[key] !== null) next[key] = project[key];
   }
   return normalize(next);
@@ -113,5 +113,14 @@ function normalize(cfg) {
   af.matrix = af.matrix || {};
 
   cfg.talentById = new Map((cfg.talents || []).map(t => [t.id, t]));
+
+  // NPC 三机制模板库：缺失/非法时回退为空对象，引擎按「无机制」行驶，不阻断启动。
+  const nm = cfg['npc-mechanics'];
+  if (!nm || typeof nm !== 'object' || Array.isArray(nm)) cfg['npc-mechanics'] = {};
+  const m = cfg['npc-mechanics'];
+  m.signatureTemplates = m.signatureTemplates || {};
+  m.weaknessTemplates = m.weaknessTemplates || {};
+  m.intentTemplates = m.intentTemplates || {};
+  m.budget = m.budget || {};
   return cfg;
 }

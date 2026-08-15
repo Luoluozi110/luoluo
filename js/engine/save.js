@@ -26,9 +26,9 @@ const LOG_KEEP = 150;  // 截断后保留最近条数
 const STATE_KEYS = [
   'school', 'playerName', 'attrs', 'inspiration', 'inspirationMax',
   'passive', 'active', 'track', 'pos', 'branchId', 'branchIndex',
-  'lap', 'turn', 'phase', 'sky', 'nextBattlePct', 'battle', 'events',
+  'lap', 'turn', 'phase',   'sky', 'nextBattlePct', 'battle', 'events',
   'quiz', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
-  'zeitgeist', 'affStreak', 'synergies', 'loadout', 'titles',
+  'zeitgeist', 'affStreak', 'synergies', 'npcMech', 'loadout', 'titles',
   'over', 'reachedEnd', 'endReason', 'log'
 ];
 
@@ -215,6 +215,7 @@ export function deserializeRun(rawObj, cfg) {
   out.log = Array.isArray(out.log) ? out.log.slice(-LOG_KEEP) : [];
   out.titles = Array.isArray(out.titles) ? out.titles : [];
   out.synergies = Array.isArray(out.synergies) ? out.synergies : [];
+  out.npcMech = (out.npcMech && typeof out.npcMech === 'object') ? out.npcMech : { history: {}, palace: {} };
   out.battle = (out.battle && typeof out.battle === 'object') ? out.battle : { win: 0, draw: 0, loss: 0, streak: 0, maxStreak: 0, upsets: 0, winsByStyle: { shi: 0, ci: 0, lian: 0 } };
   out.events = (out.events && typeof out.events === 'object') ? out.events : { total: 0, rare: 0, legend: 0, talents: 0, items: 0 };
   out.quiz = (out.quiz && typeof out.quiz === 'object') ? out.quiz : { asked: 0, right: 0 };

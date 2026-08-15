@@ -10,6 +10,12 @@ export const PASSIVE_MAX = 8;
 export const ACTIVE_MAX = 4;
 export const TURN_LIMIT = 84;
 
+/** NPC 的稳定标识：机制 NPC（有 mech）优先用具名 id，普通 NPC 用其 id（档位 id）或姓名 */
+function stableFoeId(npc) {
+  if (!npc) return '论敌';
+  return npc.id ? npc.id : npc.name;
+}
+
 export class Game {
   constructor(cfg, ui, rand = Math.random) {
     this.cfg = cfg;
@@ -50,6 +56,7 @@ export class Game {
       zeitgeist: this.seedZeitgeist(cfg.affinity),   // 当朝风潮（每局随机，制造变化性）
       affStreak: { manner: null, n: 0 },             // 气势连捷：连续同风格胜场
       synergies: [],                                 // 当前已激活的文心羁绊（id/name/desc/members）
+      npcMech: { history: {}, palace: {} },          // NPC 三机制跨场状态
       loadout: [], titles: [],
       over: false, reachedEnd: false, endReason: '',
       log: []
@@ -191,14 +198,37 @@ export class Game {
   _npcFromPick(tier, pick) {
     const label = tier.tier || tier.name || '论敌';
     return {
-      id: tier.id, tier: label, range: tier.range, desc: tier.desc,
+      // 稳定 id 优先：具名 NPC 配了 id（如 zhou_xiaoman）则用其标识跨局稳定；缺省回退档位 id
+      //（普通 NPC 保持 tierId，图鉴键沿用「档位|姓名」兼容旧档）
+      id: (pick && pick.id) ? pick.id : tier.id,
+      tierId: tier.id,                      // 档位 id（童生级/秀才级等）
+      tier: label, range: tier.range, desc: tier.desc,
       isFinal: tier.isFinal, battles: tier.battles, themes: tier.themes,
       name: pick.name || label,
       title: pick.title || '',
       style: pick.style || '',
       attrs: pick.attrs || tier.attrs || {},
+      mech: pick.mech || null,
       fullName: `${label}·${pick.name || label}`
     };
+  }
+
+  /**
+   * NPC 三机制：把跨场玩家行为状态映射为 rules 纯函数期望的 playerHistory 形态。
+   *  - lastStyle / lastManner：上一场玩家文体/文风（识破重复/换体破绽用）
+   *  - habitualStyle：最近 2 场同一文体（仿作惯用用）
+   * @param {string|null} npcId 当前 NPC 的稳定 id（用于按 NPC 分桶历史）
+   */
+  _mechHistoryForNpc(npcId) {
+    const nm = this.s.npcMech || {};
+    const lastStyle = nm.lastPlayerStyle || null;
+    const lastManner = nm.lastPlayerManner || null;
+    let habitualStyle = null;
+    const h = nm.history && nm.history[npcId];
+    if (h && Array.isArray(h.styles) && h.styles.length >= 2) {
+      if (h.styles[h.styles.length - 1] === h.styles[h.styles.length - 2]) habitualStyle = h.styles[h.styles.length - 1];
+    }
+    return { lastStyle, lastManner, habitualStyle, _nm: nm };
   }
 
   cellAt(track, pos, branchId, branchIndex) {
@@ -545,7 +575,7 @@ export class Game {
     } else {
       const exist = this.s.sky.find(x => x.card.id === card.id);
       // 契约字段是 duration；turns 为引擎侧别名，两者都认
-      const turns = Number(card.turns) || Number(card.duration) || 3;
+      const turns = Number(card.turns) || Number(card.duration) || 6;
       if (exist) exist.left = turns;
       else this.s.sky.push({ card, left: turns });
     }
@@ -585,8 +615,32 @@ export class Game {
     const theme = opts.theme || themes[Math.floor(this.rand() * themes.length)];
     const npc = opts.npc;
 
-    // 图鉴：记录本次邂逅的对手（跨局累计，发现进度持久化）
-    if (npc && npc.id && npc.name) Codex.recordFoe(npc.id, npc.name);
+    // 图鉴：记录本次邂逅的对手（发现进度持久化；具名 NPC 用稳定 id，无稳定 id 回退档位 id）
+    if (npc && npc.name) {
+      const fid = (npc.mech && npc.id) ? npc.id : (npc.id || npc.name);
+      Codex.recordFoe(fid, npc.name);
+    }
+
+    // —— NPC 三机制：锁定本场意图（E0：锁定后不得暗改）——
+    // 仅当 NPC 配置了 mech 才生成机制意图；其余走旧 pickNpcStyle/pickNpcManner。
+    const npcMech = npc && npc.mech;
+    let npcIntent = null;
+    if (npcMech) {
+      npcIntent = R.rollIntention({
+        mech: npcMech,
+        npcAttrs: (npc && npc.attrs) || {},
+        af,
+        theme,
+        templates: this.cfg['npc-mechanics']
+      });
+      // 联力未解锁时，若意图锁定了联体，回退期望分最优（避免锁死不可用文体）
+      if (npcIntent.style === 'lian' && !this.lianUnlocked) {
+        npcIntent.style = R.pickNpcStyle(npc.attrs, false);
+      }
+    }
+    const intentLocked = npcIntent
+      ? { style: npcIntent.style, manner: npcIntent.manner, styleDisclosed: npcIntent.styleDisclosed, mannerDisclosed: npcIntent.mannerDisclosed }
+      : null;
 
     const session = {
       label: opts.label || '挥毫论道',
@@ -595,6 +649,7 @@ export class Game {
       themeName: af.themeNames[theme] || theme,
       playerName: s.playerName || '',
       topic: opts.topic || pickTopic(theme, af, this.rand),
+      intentLocked,               // NPC 三机制：本场锁定意图（E0）
       manners: af.manners || ['wanyue', 'haofang', 'zheli'],
       mannerNames: af.mannerNames,
       themeNames: af.themeNames,
@@ -626,6 +681,12 @@ export class Game {
         return m;
       })(),
       isPalace: !!opts.isPalace,
+      // 殿试跨场适应层数（若本场为殿试且这是机制主考官）：供 UI 出「场间评语」
+      palaceLayers: (() => {
+        if (!opts.isPalace || !(npc && npc.mech)) return 0;
+        const pal = (s.npcMech && s.npcMech.palace && s.npcMech.palace[stableFoeId(npc)]) || null;
+        return pal ? (Number(pal.layers) || 0) : 0;
+      })(),
       playerAttrs: this.effectiveAttrs(),
       lianUnlocked: this.lianUnlocked,
       activeTalents: s.active.slice(),
@@ -691,6 +752,7 @@ export class Game {
     const dicePips = Array.isArray(dice) ? dice.slice() : [Number(dice) || 1];
     const totalPips = dicePips.reduce((a, b) => a + (Number(b) || 0), 0) || 1;
     const hasSix = dicePips.includes(6);
+    const extraDice = dicePips.length > 1 ? dicePips.length - 1 : 0;   // 玩家本场追加的灵感骰数
 
     /* ---- 玩家侧修正 ---- */
     const pct = [], flat = [];
@@ -773,10 +835,39 @@ export class Game {
 
     /* ---- NPC 侧 ---- */
     const npcAttrs = session.npc.attrs;
-    const npcStyle = R.pickNpcStyle(npcAttrs, npcAttrs.lian >= 8);
-    const npcManner = R.pickNpcManner(af.matrix, session.manners, session.theme);
+    // 意图锁定：机制 NPC 用 createSession 锁定的意图文体/文风；普通 NPC 走旧规则
+    const npcStyle = (session.intentLocked && session.intentLocked.style)
+      ? session.intentLocked.style : R.pickNpcStyle(npcAttrs, npcAttrs.lian >= 8);
+    const npcManner = (session.intentLocked && session.intentLocked.manner)
+      ? session.intentLocked.manner : R.pickNpcManner(af.matrix, session.manners, session.theme);
     const npcAff = R.affinityValue(af.matrix, npcManner, session.theme);
     const npcDice = this.d6();
+
+    /* ---- NPC 三机制：破绽先于招牌结算（F0）---- */
+    const npcMech = session.npc && session.npc.mech;
+    let mechOut = null;
+    if (npcMech) {
+      const tplLib = this.cfg['npc-mechanics'] || {};
+      const pm = { style, manner, extraDice };
+      const playerHistory = this._mechHistoryForNpc(session.npc.id);
+      // 破绽（先）
+      const wea = R.weaknessResolution({
+        mech: npcMech, npcStyle,
+        playerMove: pm,
+        playerHistory,
+        npcManner,
+        templates: tplLib,
+        result: null, relativeMargin: null,
+        strategyChanged: false
+      });
+      // 招牌（后）
+      const tri = R.signatureTriggered({
+        mech: npcMech, npcStyle, npcManner,
+        playerMove: pm, playerHistory, templates: tplLib
+      });
+      mechOut = { tri, wea, mods: R.signatureScoreMods(tri, wea, npcMech.signature, { extraDice }) };
+      session._mechOut = mechOut;
+    }
 
     if (session._copyAffinity && npcAff > 0) {
       pct.push({ source: 'copy', label: '夺胎换骨·复制相性', value: npcAff });
@@ -786,23 +877,63 @@ export class Game {
       s.nextBattlePct = 0;
     }
 
+    // 破绽带给玩家的加分
+    if (mechOut && mechOut.mods.playerBonusPct) {
+      pct.push({
+        source: 'npcWeak',
+        label: `破绽·${(mechOut.wea && mechOut.wea.shutdownLevel) === 'partial' ? '部分压制' : '压制'}`,
+        value: mechOut.mods.playerBonusPct
+      });
+    }
+
     const selfCalc = R.battleScore({
       attrs: session.playerAttrs, style, dice: totalPips, dicePlus, diceMult, diceFixed, critMult,
       pctMods: pct, flatMods: flat
     });
-    const oppCalc = R.battleScore({
+    let oppPct = npcAff !== 0 ? [{ source: 'affinity', label: `相性·${af.mannerNames[npcManner]}`, value: npcAff }] : [];
+    let oppFlat = [];
+    if (mechOut) {
+      for (const m of mechOut.mods.pct) oppPct.push(m);
+      for (const m of mechOut.mods.flat) oppFlat.push(m);
+    }
+    let oppCalc = R.battleScore({
       attrs: npcAttrs, style: npcStyle, dice: npcDice,
-      pctMods: npcAff !== 0 ? [{ source: 'affinity', label: `相性·${af.mannerNames[npcManner]}`, value: npcAff }] : []
+      pctMods: oppPct, flatMods: oppFlat
     });
-
-    const result = R.judgeBattle(selfCalc.total, oppCalc.total, (this.cfg.grades.battle || {}).drawRatio);
+    let result = R.judgeBattle(selfCalc.total, oppCalc.total, (this.cfg.grades.battle || {}).drawRatio);
     const upset = result === 'win'
       && R.expectedScore(npcAttrs, npcStyle) > R.expectedScore(session.playerAttrs, style);
+
+    // 结果型破绽（高分差压卷）：需在算出双方分后按相对分差二次判定，并据此重算 NPC 修正与胜负
+    if (mechOut && mechOut.wea && mechOut.wea.template === 'wea_crushing_win') {
+      const hi = Math.max(selfCalc.total, oppCalc.total);
+      const relMarg = hi > 0 ? (selfCalc.total - oppCalc.total) / hi : 0;
+      const pm2 = { style, manner, extraDice };
+      const wea2 = R.weaknessResolution({
+        mech: npcMech, npcStyle,
+        playerMove: pm2,
+        playerHistory: this._mechHistoryForNpc(session.npc.id), npcManner,
+        templates: this.cfg['npc-mechanics'] || {},
+        result, relativeMargin: relMarg, strategyChanged: false
+      });
+      const mods2 = R.signatureScoreMods(mechOut.tri, wea2, npcMech.signature, { extraDice });
+      if (mods2 !== mechOut.mods) {
+        oppPct = npcAff !== 0 ? [{ source: 'affinity', label: `相性·${af.mannerNames[npcManner]}`, value: npcAff }] : [];
+        oppFlat = [];
+        for (const m of mods2.pct) oppPct.push(m);
+        for (const m of mods2.flat) oppFlat.push(m);
+        oppCalc = R.battleScore({ attrs: npcAttrs, style: npcStyle, dice: npcDice, pctMods: oppPct, flatMods: oppFlat });
+        result = R.judgeBattle(selfCalc.total, oppCalc.total, (this.cfg.grades.battle || {}).drawRatio);
+        mechOut = { tri: mechOut.tri, wea: wea2, mods: mods2 };
+        session._mechOut = mechOut;
+      }
+    }
 
     return {
       style, manner, dice: totalPips, dicePips, selfCalc,
       npcStyle, npcManner, npcDice, oppCalc,
-      npcMannerName: af.mannerNames[npcManner], result, upset
+      npcMannerName: af.mannerNames[npcManner], result, upset,
+      mech: mechOut
     };
   }
 
@@ -813,7 +944,13 @@ export class Game {
 
     // 图鉴：累计该对手的胜/平/负战绩（跨局留存，供「图鉴阁·对手详情」展示胜率）
     const n0 = session.npc;
-    if (n0 && n0.id && n0.name) Codex.recordFoeResult(n0.id, n0.name, out.result);
+    const foeId = stableFoeId(n0);
+    if (n0 && n0.name) {
+      Codex.recordFoeResult(foeId, n0.name, out.result);
+      // 图鉴认知升级（未识→相识→察意→破招）：本场命中破绽则推进「破招」认知
+      const mechHit = !!(out.mech && out.mech.wea && out.mech.wea.hit);
+      Codex.recordFoeCognition(foeId, out.result, mechHit);
+    }
 
     // 「科场风起」只翻倍灵感奖惩，不翻倍属性奖励——属性翻倍是 Round 2 雪球的主源之一
     const mult = this.skyActive('battle_reward_mult') ? 2 : 1;
@@ -900,6 +1037,48 @@ export class Game {
     if (floor > 0 && s.inspiration < floor) {
       s.inspiration = Math.min(this.s.inspirationMax, floor);
       this.push(`文心托底：「${session.npc.fullName || session.npc.name}」一役后灵感补足至 ${floor}`);
+    }
+
+    // ---- NPC 三机制：跨场状态维护 + 战后消费型招牌/破绽结算 ----
+    const npcMech = session.npc && session.npc.mech;
+    const mechOut = out.mech || session._mechOut || null;
+    if (npcMech && foeId) {
+      // ① 跨场玩家行为历史（供识破重复/仿作惯用/换体破绽读取）
+      if (!s.npcMech) s.npcMech = { history: {}, palace: {} };
+      if (!s.npcMech.history) s.npcMech.history = {};
+      const hist = s.npcMech.history[foeId] || (s.npcMech.history[foeId] = { styles: [], manners: [] });
+      hist.styles.push(out.style); if (hist.styles.length > 2) hist.styles.shift();
+      hist.manners.push(out.manner); if (hist.manners.length > 2) hist.manners.shift();
+      s.npcMech.lastPlayerStyle = out.style;
+      s.npcMech.lastPlayerManner = out.manner;
+
+      // ② 战后消费型招牌：文债耗神（玩家未达规定相对分差/战败 → 扣灵感；达到则反之）
+      const debt = npcMech.signature && (npcMech.signature.main || npcMech.signature);
+      if (debt && debt.template === 'sig_debt_drain') {
+        const hi = Math.max(out.selfCalc.total, out.oppCalc.total);
+        const relMarg = hi > 0 ? (out.selfCalc.total - out.oppCalc.total) / hi : 0;
+        const met = out.result === 'win' && relMarg >= (Number(debt.threshold) || 0);
+        if (met) {
+          // 破绽命中（高分差压卷）→ 返还本场投入的灵感（最多 1 点）
+          if (mechOut && mechOut.wea && mechOut.wea.hit && mechOut.mods.refundInsp) {
+            const refund = Math.min(Number(mechOut.mods.refundInsp) || 1, 1);
+            this.addInspiration(refund, `破绽·一气压卷`);
+            this.push(`破绽反击，返还灵感 ${refund}`);
+          }
+        } else {
+          const cost = Number(debt.cost) || 2;
+          this.addInspiration(-cost, `文债·${debt.name || '文债催人'}`);
+          this.push(`「${debt.name || '文债催人'}」余意未尽，耗神 ${cost}`);
+        }
+      }
+
+      // ③ 殿试跨场适应：主考官每场至多叠一层，三层封顶 2 层
+      if (session.isPalace) {
+        if (!s.npcMech.palace) s.npcMech.palace = {};
+        const pal = s.npcMech.palace[foeId] || { layers: 0 };
+        pal.layers = Math.min(2, pal.layers + 1);
+        s.npcMech.palace[foeId] = pal;
+      }
     }
 
     this.ui.onState(s);

@@ -903,3 +903,83 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
   #rollBtn { width: 92px; height: 92px; font-size: 19px; }
   .school-card { width: 42vw; }
 }
+
+/* ========================================================== 阶段B：NPC 三机制 · 交互反馈
+ * 研判卡(jt-)、定策破绽提示(jt-tip)、机制结算明细(mech-)、图鉴四级认知(cog-/cx-cog)、
+ * 殿试场间评语(palace-remark)。全部为展示层，不触碰算分逻辑。
+ */
+#battleStage.on .bt-panel { overflow: visible; }
+
+/* --- 研判卡 --- */
+.jt-row { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.jt-card {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  padding: 7px 10px; border-radius: 8px; border-left: 3px solid var(--taohua-deep);
+  background: rgba(255, 251, 244, .55); font-family: var(--font-song);
+}
+.jt-tag {
+  flex: 0 0 auto; font-size: 11px; letter-spacing: .18em; color: #fff;
+  background: var(--zhu); border-radius: 4px; padding: 1px 7px; line-height: 1.5;
+}
+.jt-title { font-size: 15px; letter-spacing: .08em; color: #3d3229; font-weight: 600; }
+.jt-body { font-size: 12.5px; color: var(--mo-3); line-height: 1.5; }
+
+/* --- 定策破绽提示（选文体/选风格下方） --- */
+.jt-tip {
+  display: flex; align-items: flex-start; gap: 7px; margin-top: 8px;
+  padding: 7px 10px; border-radius: 8px; border-left: 3px solid var(--jin);
+  background: rgba(201, 151, 31, .08); font-family: var(--font-song);
+  font-size: 12.5px; color: var(--mo-2); line-height: 1.55;
+}
+.jt-tip .jt-tag { background: var(--jin); margin-top: 1px; }
+
+/* --- 机制结算明细 --- */
+.mech-result {
+  margin-top: 10px; padding: 9px 11px; border-radius: 9px;
+  border: 1px solid rgba(120, 100, 70, .35); background: rgba(255, 252, 246, .6);
+}
+.mech-result .ph { margin-bottom: 6px; }
+.mech-line {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  padding: 5px 8px; border-radius: 6px; margin-bottom: 4px;
+  border-left: 3px solid var(--mo-3); font-family: var(--font-song); font-size: 12.5px;
+}
+.mech-line .lb { flex: 0 0 auto; font-size: 12px; letter-spacing: .08em; color: var(--mo-2); font-weight: 600; }
+.mech-line .bd { flex: 1; min-width: 180px; color: var(--mo-3); line-height: 1.5; }
+.mech-line.tone-sig    { border-left-color: var(--zhu);  background: rgba(178, 58, 46, .06); }
+.mech-line.tone-sigWeak{ border-left-color: var(--taohua-deep); background: rgba(207, 100, 134, .06); }
+.mech-line.tone-weaHit { border-left-color: var(--qing); background: rgba(47, 139, 144, .08); }
+.mech-line.tone-weaMiss{ border-left-color: var(--mo-3); background: rgba(122, 109, 93, .06); }
+.mech-line.tone-score  { border-left-color: var(--jin);  background: rgba(201, 151, 31, .06); }
+.mech-line.tone-res    { border-left-color: #8a5fb0; background: rgba(138, 95, 176, .07); }
+
+/* --- 图鉴四级认知 --- */
+.cog-badge {
+  display: inline-block; font-size: 11px; letter-spacing: .05em; color: #fff;
+  border-radius: 5px; padding: 1px 7px; line-height: 1.6; margin-left: 4px;
+  background: var(--mo-3);
+}
+.cog-badge.lv1 { background: var(--qing); }
+.cog-badge.lv2 { background: #8a5fb0; }
+.cog-badge.lv3 { background: var(--zhu); }
+.cx-sec-sub { font-size: 11px; color: var(--mo-3); margin-left: 6px; font-weight: 400; }
+.cx-cog { margin-top: 6px; }
+.cx-cog-track { display: flex; gap: 4px; margin-bottom: 8px; }
+.cog-step {
+  flex: 1; text-align: center; font-size: 12px; letter-spacing: .05em;
+  padding: 4px 0; border-radius: 5px; border: 1px solid rgba(120,100,70,.3);
+  color: var(--mo-3); background: rgba(255,255,255,.4);
+}
+.cog-step.done { color: #3d3229; border-color: var(--qing); background: rgba(47,139,144,.12); }
+.cog-step.cur  { color: #fff; border-color: var(--zhu); background: var(--zhu); font-weight: 700; }
+.cx-cog-stat { display: flex; gap: 16px; font-size: 13px; color: var(--mo-2); margin-bottom: 6px; }
+.cx-cog-stat b { color: var(--zhu); font-family: var(--font-song); }
+
+/* --- 殿试场间评语 --- */
+.palace-remark {
+  margin: 12px auto 0; max-width: 560px; padding: 9px 14px;
+  border-radius: 9px; border: 1px solid rgba(120,100,70,.35);
+  background: rgba(255, 252, 246, .72); font-family: var(--font-kai);
+  font-size: 14px; color: #3d3229; line-height: 1.7; text-align: center;
+  box-shadow: 0 2px 0 rgba(178,58,46,.18), inset 0 1px 0 rgba(255,255,255,.7);
+}

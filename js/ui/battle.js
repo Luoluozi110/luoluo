@@ -4,6 +4,7 @@ import { talentEffectText, goldBurst, signed, DEFAULT_SECONDS } from './modals.j
 import { createCountdown } from './timer.js';
 import { play } from './audio.js';
 import { sting } from './music.js';
+import { intentHint, weaknessHint, settleLines } from './mechHints.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -57,6 +58,21 @@ export class BattleStage {
       <div style="font-size:17px;line-height:1.8">「${esc(session.npc.fullName || session.npc.name)}」${esc(session.npc.title || '')}拦路请教，愿以文会友。${session.npc.style ? `<span style="color:var(--zhu)">（此人偏${STYLE_NAMES[session.npc.style] || ''}）</span>` : ''}</div>`;
     await sleep(750);
 
+    /* ①½ 研判卡：机制 NPC 的意图行藏 + 长短可读提示（阶段 B） */
+    const mechCtx = { styleNames: STYLE_NAMES, mannerNames: session.mannerNames || {} };
+    if (session.npc && session.npc.mech) {
+      const hints = intentHint(session.npc, session.intentLocked, mechCtx);
+      if (hints.length) {
+        const card = hints.map(h =>
+          `<div class="jt-card"><span class="jt-tag">${esc(h.tag)}</span>
+             <span class="jt-title">${esc(h.title)}</span>
+             <span class="jt-body">${esc(h.body)}</span></div>`).join('');
+        panel.insertAdjacentHTML('beforeend', `<div class="ph" style="margin-top:8px">硏 判 <span style="font-size:11px;color:var(--mo-3)">交手可明彼之长短</span></div>
+          <div class="jt-row">${card}</div>`);
+        await sleep(720);
+      }
+    }
+
     /* ② 审题 */
     el.querySelector('#btTopic').textContent = session.topic;
     el.querySelector('#btTheme').textContent = `题材 · ${session.themeName}`;
@@ -100,6 +116,7 @@ export class BattleStage {
       <div style="font-size:14px;color:var(--mo-2);line-height:1.8" id="btNarrate">正在逐项计分……</div>`;
 
     await this.revealScores(out);
+    await this.revealMech(out, session);
     await this.showVerdict(out, session);
 
     el.classList.remove('on');
@@ -132,7 +149,7 @@ export class BattleStage {
         </button>`;
       }).join('');
       panel.innerHTML = `<div class="ph">③ 选文体　<span style="font-size:12px;color:var(--mo-3)">文体属性 ×${BATTLE_COEF.styleMult} = 格律分，基本盘所系　·　限时 ${this.seconds} 秒</span></div>
-        <div class="pick-row">${cards}</div>${this.activeRow(session)}`;
+        <div class="pick-row">${cards}</div>${this.weaknessTip(session)}${this.activeRow(session)}`;
       this.bindActive(panel, session);
       panel.querySelectorAll('[data-s]').forEach(b =>
         b.addEventListener('click', () => finish(b.dataset.s)));
@@ -163,6 +180,7 @@ export class BattleStage {
       panel.innerHTML = `<div class="ph">④ 选风格　<span style="font-size:12px;color:var(--mo-3)">限时 ${this.seconds} 秒</span></div>
         <div class="pick-row">${cards}</div>
         <div style="font-size:12px;color:var(--mo-3);margin:6px 2px 0">有效相性已含本门文风与当朝风潮；连续同风格取胜可叠「气势连捷」。</div>
+        ${this.weaknessTip(session)}
         ${this.activeRow(session)}`;
       this.bindActive(panel, session);
       panel.querySelectorAll('[data-m]').forEach(b =>
@@ -268,6 +286,15 @@ export class BattleStage {
     setTimeout(() => d.remove(), 1700);
   }
 
+  /** 定策期破绽提示（阶段 B）：机制 NPC 在选文体/选风格时给出方向性反制提示 */
+  weaknessTip(session) {
+    const mech = session.npc && session.npc.mech;
+    if (!mech || !mech.weakness) return '';
+    const tip = weaknessHint(mech, { styleNames: STYLE_NAMES, mannerNames: session.mannerNames || {} });
+    if (!tip) return '';
+    return `<div class="jt-tip" style="margin:4px 2px 0"><span class="jt-tag">机</span>${esc(tip)}</div>`;
+  }
+
   /** 五项逐条弹出累加——孩子要能看懂为什么赢 */
   async revealScores(out) {
     const selfBox = this.el.querySelector('#selfLines');
@@ -301,6 +328,35 @@ export class BattleStage {
     await sleep(420);
   }
 
+  /** 结算明细·机制段（阶段 B）：招牌被压制与否 / 破绽本场状态 / 修正生效逐条解释 */
+  async revealMech(out, session) {
+    if (!out.mech || !session.npc || !session.npc.mech) return;
+    const lines = settleLines(session.npc, out.mech, { styleNames: STYLE_NAMES, mannerNames: session.mannerNames || {} });
+    if (!lines.length) return;
+    const box = document.createElement('div');
+    box.className = 'mech-result scroll-frame';
+    box.innerHTML = `<div class="ph">机制结算　<span style="font-size:11px;color:var(--mo-3)">招牌 · 破绽 · 修正</span></div>` +
+      lines.map(l => `<div class="mech-line tone-${l.tone}">
+        <span class="lb">${esc(l.label)}</span><span class="bd">${esc(l.body)}</span></div>`).join('');
+    this.el.querySelector('#btPanel').appendChild(box);
+    await sleep(700);
+  }
+
+  /** 殿试场间评语（阶段 B）：机制主考官王侍郎的「跨场适应」叙事化 */
+  palaceVerdict(out, session) {
+    if (!session.isPalace || !session.npc || !session.npc.mech) return null;
+    const name = session.npc.name || '主考官';
+    const layers = Number(session.palaceLayers) || 0;
+    const won = out.result === 'win';
+    // 跨场适应招牌存在时才出评语
+    const sig = session.npc.mech.signature || {};
+    const main = sig.main || sig;
+    if (main.template !== 'sig_palace_adapt') return null;
+    if (!won && out.result !== 'draw') return `「${name}」执卷凝睇，若有所思：『卿之路数，本官已记下一程。』`;
+    if (layers >= 2) return `「${name}」微微颔首：『卿连破两层，果非常人。然察变之道，方兴未艾。』`;
+    return `「${name}」按卷不语，目光在案上几处批注间流转——似已记住了这一场。`;
+  }
+
   async showVerdict(out, session) {
     const txt = { win: '勝', lose: '負', draw: '平' }[out.result];
     // 败北灵感惩罚与结算逻辑一致（含会试/殿试 Late 档与「科场风起」翻倍），由引擎预填到 session.projLoseInsp
@@ -317,6 +373,16 @@ export class BattleStage {
     d.className = 'bt-result ' + out.result;
     d.innerHTML = `${txt}<div style="font-size:15px;letter-spacing:.1em;margin-top:6px;color:#e9dcc0">${sub}</div>`;
     this.el.appendChild(d);
+
+    // 殿试场间评语（阶段 B）：机制主考官王侍郎每场后据战况出语，层数越高越显「察变」
+    const palaceR = this.palaceVerdict(out, session);
+    if (palaceR) {
+      const p = document.createElement('div');
+      p.className = 'palace-remark';
+      p.textContent = palaceR;
+      this.el.appendChild(p);
+    }
+
     play(out.result === 'win' ? 'win' : out.result === 'lose' ? 'lose' : 'move');
     if (out.result === 'win') goldBurst(this.el, 34);
 

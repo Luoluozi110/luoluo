@@ -241,7 +241,7 @@ export class Modals {
   async showSky(card) {
     const ov = this.open(`
       <div class="talent-card paper" style="border-color:#7f95cf;box-shadow:0 16px 40px rgba(0,0,0,.5),0 0 34px rgba(127,149,207,.55)">
-        <div class="kind">天象　${(card.effect || {}).type === 'next_battle_pct' ? '下一场论战 · 一次性' : `持续 ${card.turns || 3} 回合`}</div>
+        <div class="kind">天象　${(card.effect || {}).type === 'next_battle_pct' ? '下一场论战 · 一次性' : `持续 ${card.turns || 6} 回合`}</div>
         <h3>${esc(card.name)}</h3>
         <div class="dianggu" style="background:rgba(76,102,168,.13);border-left-color:#4a5a80">${esc(personalize(card.text || '', this.playerName))}</div>
         <div class="efx" style="color:#3a4a80">${skyEffectText(card)}</div>
