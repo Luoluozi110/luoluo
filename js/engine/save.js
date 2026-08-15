@@ -306,6 +306,30 @@ export function loadRun(slot = RUN_SAVE_KEY) {
   catch (e) { return { __corrupt: true, slot }; }   // 损坏标记，供 UI 提示
 }
 
+/**
+ * 用已校验的原始存档替换指定槽位。供存档码导入使用，复用与 saveRun 相同的降级策略。
+ * 返回 { ok, where, bytes, tooBig }；无效对象不会写入任何存储。
+ */
+export function replaceRun(rawObj, slot = RUN_SAVE_KEY) {
+  const chk = validateRun(rawObj);
+  if (!chk.ok) return { ok: false, error: chk.error, where: null, bytes: 0, tooBig: false };
+  let text;
+  try { text = JSON.stringify(rawObj); }
+  catch (e) { return { ok: false, error: '存档序列化失败', where: null, bytes: 0, tooBig: false }; }
+  const bytes = text.length;
+  const tooBig = bytes > SAVE_WARN_BYTES;
+  if (hasLS()) {
+    try { localStorage.setItem(slot, text); return { ok: true, where: 'local', bytes, tooBig }; }
+    catch (e) { /* 配额/隐私模式 → 走 session */ }
+  }
+  if (hasSS()) {
+    try { sessionStorage.setItem(slot, text); return { ok: true, where: 'session', bytes, tooBig }; }
+    catch (e) { /* 继续降级 */ }
+  }
+  memorySlots.set(slot, text);
+  return { ok: true, where: 'memory', bytes, tooBig };
+}
+
 /** 读取「最佳可用存档」：手动槽优先，其次自动槽。返回 { obj, slot } 或 null */
 export function loadBestRun() {
   const m = loadRun(RUN_SAVE_MANUAL_KEY);

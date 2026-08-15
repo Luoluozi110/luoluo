@@ -30,6 +30,35 @@ let openOv = null;              // 当前已打开的排行榜弹窗（用于提
 const esc = s => String(s ?? '').replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '&gt;': '&gt;' }[m]));
 const cleanName = n => String(n || '无名氏').trim().slice(0, 16) || '无名氏';
 const LIMIT = 50;
+export const REQUEST_TIMEOUT_MS = 10000;
+
+/**
+ * 为云端请求设置硬超时：浏览器 fetch 在 DNS、代理或跨域链路悬挂时不会自行结束，
+ * 因此必须用竞速 Promise 兜底；有 AbortController 时同时中止底层请求。
+ */
+export async function fetchWithTimeout(url, options = {}, timeoutMs = Number(cfg?.requestTimeoutMs) || REQUEST_TIMEOUT_MS) {
+  const controller = typeof AbortController === 'function' ? new AbortController() : null;
+  let timer;
+  const timedOut = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      if (controller) controller.abort();
+      const error = new Error('请求超时，请检查网络后重试');
+      error.code = 'REQUEST_TIMEOUT';
+      reject(error);
+    }, timeoutMs);
+  });
+  try {
+    const requestOptions = controller ? { ...options, signal: controller.signal } : options;
+    return await Promise.race([fetch(url, requestOptions), timedOut]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function requestError(error) {
+  if (error?.code === 'REQUEST_TIMEOUT' || error?.name === 'AbortError') return '请求超时，请检查网络后重试';
+  return '网络请求失败：' + (error?.message || '请检查网络后重试');
+}
 
 /* unicode 安全的 base64（浏览器环境） */
 function b64encode(str) {
@@ -131,7 +160,7 @@ function ghHeaders(extra) {
 }
 
 async function githubGet() {
-  const r = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`, { headers: ghHeaders() });
+  const r = await fetchWithTimeout(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`, { headers: ghHeaders() });
   if (r.status === 404) return { notFound: true };
   if (!r.ok) throw new Error('GitHub 读取失败 HTTP ' + r.status);
   const j = await r.json();
@@ -143,7 +172,7 @@ async function githubGet() {
 async function githubPut(rows, sha) {
   const body = { message: 'leaderboard: 更新榜单', content: b64encode(JSON.stringify(rows)), encoding: 'utf-8' };
   if (sha) body.sha = sha;
-  const r = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`, {
+  const r = await fetchWithTimeout(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`, {
     method: 'PUT',
     headers: ghHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(body)
@@ -158,7 +187,9 @@ async function githubPut(rows, sha) {
 
 async function githubFetchTop() {
   const url = `https://raw.githubusercontent.com/${cfg.repo}/${cfg.branch}/${cfg.path}?_cb=${Date.now()}`;
-  const r = await fetch(url, { cache: 'no-store' });
+  let r;
+  try { r = await fetchWithTimeout(url, { cache: 'no-store' }); }
+  catch (error) { return { ok: false, error: requestError(error) }; }
   if (r.status === 404) return { ok: true, list: [] };
   if (!r.ok) return { ok: false, error: '读取失败 HTTP ' + r.status };
   let rows; try { rows = await r.json(); } catch (_) { return { ok: false, error: '榜单数据格式错误' }; }
@@ -193,7 +224,9 @@ async function githubSubmit(name, score) {
 
 /* ====================================================== Cloudflare Worker 后端 */
 async function cfFetchTop() {
-  const r = await fetch(`${cfg.workerUrl}?_cb=${Date.now()}`, { cache: 'no-store' });
+  let r;
+  try { r = await fetchWithTimeout(`${cfg.workerUrl}?_cb=${Date.now()}`, { cache: 'no-store' }); }
+  catch (error) { return { ok: false, error: requestError(error) }; }
   if (!r.ok) return { ok: false, error: 'Worker 读取失败 HTTP ' + r.status };
   let j;
   try { j = await r.json(); } catch (_) { return { ok: false, error: '榜单数据格式错误' }; }
@@ -202,11 +235,16 @@ async function cfFetchTop() {
 }
 
 async function cfSubmit(name, score) {
-  const r = await fetch(cfg.workerUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: cleanName(name), score: Number(score) || 0 }),
-  });
+  let r;
+  try {
+    r = await fetchWithTimeout(cfg.workerUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: cleanName(name), score: Number(score) || 0 })
+    });
+  } catch (error) {
+    return { ok: false, error: requestError(error) };
+  }
   if (!r.ok) {
     let m = '';
     try { m = (await r.json()).error || ''; } catch (_) {}
@@ -227,7 +265,9 @@ function supaHeaders(extra) {
 
 async function supaFetchTop() {
   const url = `${cfg.supabaseUrl}/rest/v1/${cfg.table}?select=name,score,ts&order=score.desc&limit=200`;
-  const r = await fetch(url, { headers: supaHeaders(), cache: 'no-store' });
+  let r;
+  try { r = await fetchWithTimeout(url, { headers: supaHeaders(), cache: 'no-store' }); }
+  catch (error) { return { ok: false, error: requestError(error) }; }
   if (!r.ok) return { ok: false, error: '读取失败 HTTP ' + r.status };
   let data; try { data = await r.json(); } catch (_) { return { ok: false, error: '榜单数据格式错误' }; }
   return { ok: true, list: normalize(Array.isArray(data) ? data : []) };
@@ -235,11 +275,16 @@ async function supaFetchTop() {
 
 async function supaSubmit(name, score) {
   const url = `${cfg.supabaseUrl}/rest/v1/${cfg.table}`;
-  const r = await fetch(url, {
-    method: 'POST',
-    headers: supaHeaders({ 'Content-Type': 'application/json' }),
-    body: JSON.stringify({ name: cleanName(name), score: Number(score) || 0, ts: new Date().toISOString() })
-  });
+  let r;
+  try {
+    r = await fetchWithTimeout(url, {
+      method: 'POST',
+      headers: supaHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ name: cleanName(name), score: Number(score) || 0, ts: new Date().toISOString() })
+    });
+  } catch (error) {
+    return { ok: false, error: requestError(error) };
+  }
   if (!r.ok) {
     let m = '';
     try { m = (await r.json()).message || ''; } catch (_) {}
@@ -258,7 +303,10 @@ async function refresh(ov) {
     return;
   }
   body.innerHTML = '<div class="lb-empty">读取中…</div>';
-  const res = await Leaderboard.fetchTop();
+  let res;
+  try { res = await Leaderboard.fetchTop(); }
+  catch (error) { res = { ok: false, error: requestError(error) }; }
+  if (!ov.isConnected || ov !== openOv) return;   // 弹窗已关闭或被新的请求替代，不再写入旧节点
   if (!res.ok) {
     body.innerHTML = `<div class="lb-empty" style="color:var(--bad)">读取失败：${esc(res.error)}</div>`;
     return;

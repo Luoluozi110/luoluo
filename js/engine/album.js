@@ -9,10 +9,17 @@
  * 内存存档，读写不报错，因此引擎可以无条件调用。
  */
 
+import { loadCodex, saveCodex } from './codex.js';
+import { loadRun, replaceRun, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY, validateRun } from './save.js';
+
 export const ALBUM_KEY = 'feihua_album';
 export const SAVECODE_KEY = 'feihua_savecode';
+export const REINCARNATE_KEY = 'feihua_reincarnate_v1';
 export const LOADOUT_MAX = 2;
 export const STORE_VERSION = 1;
+export const SAVECODE_VERSION = 2;
+export const SAVECODE_PREFIX = 'FHQS2';
+const SAVECODE_MAX_CHARS = 6 * 1024 * 1024;
 
 const STYLES = ['shi', 'ci', 'lian'];
 
@@ -190,25 +197,112 @@ function fromB64(code) {
   return Buffer.from(code, 'base64').toString('utf8');
 }
 
-/** 导出：store → base64 文本，并留痕到 feihua_savecode */
-export function exportCode(store) {
-  const code = toB64(JSON.stringify(normalizeStore(store)));
+function checksum(text) {
+  // FNV-1a 32 位校验：识别剪贴板截断、误改与不完整粘贴（不是加密或防作弊）。
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    hash ^= text.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(36).toUpperCase();
+}
+
+function readReincarnate() {
+  if (!hasLS()) return null;
+  try {
+    const raw = localStorage.getItem(REINCARNATE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveReincarnate(value) {
+  if (!hasLS()) return;
+  try {
+    if (value == null) localStorage.removeItem(REINCARNATE_KEY);
+    else localStorage.setItem(REINCARNATE_KEY, JSON.stringify(value));
+  } catch (e) { /* ignore */ }
+}
+
+function saveCodeHistory(code) {
   if (hasLS()) { try { localStorage.setItem(SAVECODE_KEY, code); } catch (e) { /* ignore */ } }
+}
+
+/**
+ * 导出全量存档：累计图鉴、对手认知、传承与进行中的自动/手动对局。
+ * 代码带固定前缀、版本与校验和；仅在用户设备间复制，不会上传服务器。
+ */
+export function exportCode(store = loadStore()) {
+  const payload = {
+    v: SAVECODE_VERSION,
+    album: normalizeStore(store),
+    codex: loadCodex(),
+    reincarnate: readReincarnate(),
+    runs: {
+      auto: loadRun(RUN_SAVE_KEY),
+      manual: loadRun(RUN_SAVE_MANUAL_KEY)
+    }
+  };
+  const body = toB64(JSON.stringify(payload));
+  const code = `${SAVECODE_PREFIX}.${checksum(body)}.${body}`;
+  saveCodeHistory(code);
   return code;
 }
 
-/** 导入：base64 → store 并覆盖写入。失败抛出可读错误 */
-export function importCode(code) {
+function parseLegacyCode(raw) {
+  let obj;
+  try { obj = JSON.parse(fromB64(raw)); }
+  catch (e) { throw new Error('存档码无法解析，请确认完整复制'); }
+  if (!obj || typeof obj !== 'object' || !obj.stats) throw new Error('存档码内容不是有效的飞花棋存档');
+  return { legacy: true, album: normalizeStore(obj) };
+}
+
+function parseCode(code) {
   const raw = String(code || '').replace(/\s+/g, '');
   if (!raw) throw new Error('存档码为空');
-  let obj;
-  try {
-    obj = JSON.parse(fromB64(raw));
-  } catch (e) {
-    throw new Error('存档码无法解析，请确认完整复制');
+  if (raw.length > SAVECODE_MAX_CHARS) throw new Error('存档码过长，已拒绝导入');
+  if (!raw.startsWith(`${SAVECODE_PREFIX}.`)) return parseLegacyCode(raw);
+
+  const parts = raw.split('.');
+  if (parts.length !== 3 || !parts[1] || !parts[2]) throw new Error('存档码格式不完整');
+  const [, sig, body] = parts;
+  if (checksum(body) !== sig) throw new Error('存档码校验未通过，请重新完整复制');
+  let payload;
+  try { payload = JSON.parse(fromB64(body)); }
+  catch (e) { throw new Error('存档码无法解析，请确认完整复制'); }
+  if (!payload || payload.v !== SAVECODE_VERSION || !payload.album || !payload.codex || !payload.runs) {
+    throw new Error('存档码版本不受支持');
   }
-  if (!obj || typeof obj !== 'object' || !obj.stats) throw new Error('存档码内容不是有效的飞花棋存档');
-  const store = saveStore(obj);
-  if (hasLS()) { try { localStorage.setItem(SAVECODE_KEY, raw); } catch (e) { /* ignore */ } }
-  return store;
+  for (const run of [payload.runs.auto, payload.runs.manual]) {
+    if (run == null) continue;
+    const chk = validateRun(run);
+    if (!chk.ok) throw new Error(`对局存档校验失败：${chk.error}`);
+  }
+  return { legacy: false, album: normalizeStore(payload.album), codex: payload.codex, reincarnate: payload.reincarnate, runs: payload.runs };
+}
+
+/**
+ * 导入存档码并覆盖本机同类数据。新版导入前完成全部解析和校验，避免半写入；
+ * 旧版图鉴码仍可导入，但不含进行中的对局、图鉴阁认知与传承。
+ */
+export function importCode(code) {
+  const parsed = parseCode(code);
+  if (parsed.legacy) {
+    const store = saveStore(parsed.album);
+    saveCodeHistory(String(code || '').replace(/\s+/g, ''));
+    return { store, legacy: true, hasRun: false };
+  }
+
+  const auto = parsed.runs.auto;
+  const manual = parsed.runs.manual;
+  if (auto && !replaceRun(auto, RUN_SAVE_KEY).ok) throw new Error('自动对局存档写入失败');
+  if (manual && !replaceRun(manual, RUN_SAVE_MANUAL_KEY).ok) throw new Error('手动对局存档写入失败');
+  if (!auto && hasLS()) { try { localStorage.removeItem(RUN_SAVE_KEY); } catch (e) { /* ignore */ } }
+  if (!manual && hasLS()) { try { localStorage.removeItem(RUN_SAVE_MANUAL_KEY); } catch (e) { /* ignore */ } }
+  const store = saveStore(parsed.album);
+  saveCodex(parsed.codex);
+  saveReincarnate(parsed.reincarnate);
+  saveCodeHistory(String(code || '').replace(/\s+/g, ''));
+  return { store, legacy: false, hasRun: !!(auto || manual) };
 }

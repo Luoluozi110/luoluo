@@ -184,7 +184,7 @@ export class AlbumUI {
     }
     io.innerHTML = `
       <div class="io-box">
-        <div class="io-title">存档码（全选复制，妥善保存）</div>
+        <div class="io-title">全量存档码（含累计图鉴、图鉴阁认知、传承与进行中对局；全选复制后妥善保存）</div>
         <textarea class="io-text" readonly rows="3">${esc(code)}</textarea>
         <div class="io-row">
           <button class="btn btn-sm btn-ink" data-copy>复制到剪贴板</button>
@@ -213,7 +213,7 @@ export class AlbumUI {
   _importPanel(io) {
     io.innerHTML = `
       <div class="io-box">
-        <div class="io-title">粘贴存档码，导入后将覆盖本机图鉴与累计战绩</div>
+        <div class="io-title">粘贴全量存档码。导入将覆盖本机图鉴、累计战绩、图鉴阁、传承及进行中对局；请确认已备份当前进度。</div>
         <textarea class="io-text" rows="3" placeholder="在此粘贴存档码"></textarea>
         <div class="io-row">
           <button class="btn btn-sm btn-primary" data-do>确认导入</button>
@@ -224,9 +224,12 @@ export class AlbumUI {
     const ta = io.querySelector('.io-text');
     const msg = io.querySelector('[data-msg]');
     io.querySelector('[data-do]').addEventListener('click', () => {
+      if (!confirm('导入会覆盖本机现有进度（含进行中对局）。确认继续吗？')) return;
       try {
-        Album.importCode(ta.value);
-        msg.textContent = '导入成功，正在刷新……';
+        const result = Album.importCode(ta.value);
+        msg.textContent = result.legacy
+          ? '旧版图鉴码导入成功（不含进行中对局），正在刷新……'
+          : '全量存档导入成功，正在刷新……';
         msg.className = 'io-msg ok';
         setTimeout(() => location.reload(), 700);
       } catch (e) {
