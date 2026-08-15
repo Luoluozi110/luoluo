@@ -447,6 +447,10 @@ export class Game {
     s.talentLevels[id] = newLevel;
     Codex.recordTalentLevel && Codex.recordTalentLevel(id, newLevel);
     this.ui.onState(s);
+    // 升级效果立即与存档绑定：触发强制落盘，使「存档重载 / 继续上局」都能还原到升级后状态，
+    // 不会因升级后到下一回合存档点前重载而回退到升级前。（onForceSave 由 UI 挂接，无 UI 时安全空转）
+    if (typeof this.onForceSave === 'function') this.onForceSave();
+    else if (typeof this.onSavePoint === 'function') this.onSavePoint();
     this.push(`文心「${t.name}」精进至 Lv${newLevel}`);
     return { ok: true, level: newLevel, max: up.maxLevel, cost };
   }

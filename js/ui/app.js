@@ -142,6 +142,22 @@ let lastAutoSave = 0;
 /** 把自动保存挂到引擎的「安全保存点」回调上 */
 function wireGameSaves(g) {
   g.onSavePoint = () => autoSaveRun(g);
+  // 升级等「玩家主动推进」操作调用：立即落盘，避免升级后到下一存档点前重载导致回退。
+  // 同步手动槽（若存在且未结束），保证「继续上局」从自动/手动任一槽读都反映最新进度。
+  g.onForceSave = () => forceSaveRun(g);
+}
+
+/**
+ * 强制落盘（升级等主动推进时调用）：写入自动槽，并同步手动槽（若存在且未结束）。
+ * 与 autoSaveRun 的区别：跳过防抖、且把手动槽一并刷新，确保「继续上局」无论读哪个槽都拿到最新进度。
+ */
+function forceSaveRun(g) {
+  if (!g || !g.s || g.s.over) return;
+  const a = saveRun(g, RUN_SAVE_KEY);
+  const m = loadRun(RUN_SAVE_MANUAL_KEY);
+  if (m && !m.__corrupt && m.state && !m.state.over) saveRun(g, RUN_SAVE_MANUAL_KEY);
+  if (a.where !== 'local') hud.toast('本地存储不可用，本次进度仅暂存于内存/会话（关闭页面将丢失）');
+  else if (a.tooBig) hud.toast('存档体积较大，建议及时结算本局');
 }
 
 /**
