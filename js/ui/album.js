@@ -154,24 +154,51 @@ export class AlbumUI {
         </div>
         <div class="ab-scroll">
           <div class="album-grid big">${grid}</div>
-          <div class="ab-io" id="abIo"></div>
         </div>
         <div class="ab-foot">
           <div class="ab-bar">
-            <button class="btn btn-ink btn-sm" data-export>导出存档码</button>
-            <button class="btn btn-ink btn-sm" data-import>导入存档码</button>
             <button class="btn btn-primary" data-back>返回</button>
           </div>
         </div>
       </div>`;
 
-    const io = this.albumEl.querySelector('#abIo');
-    this.albumEl.querySelector('[data-export]').addEventListener('click', () => this._exportPanel(io));
-    this.albumEl.querySelector('[data-import]').addEventListener('click', () => this._importPanel(io));
     this.albumEl.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => {
       this.closeAlbum();
       if (this._abOpts.onBack) this._abOpts.onBack();
     }));
+  }
+
+  /**
+   * 独立存档迁移弹窗：可从主菜单或局内菜单调用，不再依附“传世名篇”。
+   * @param {object} opts - { beforeExport(), onImported(result) }
+   */
+  openSaveTransfer(opts = {}) {
+    const ov = document.createElement('div');
+    ov.className = 'overlay save-transfer';
+    ov.innerHTML = `
+      <div class="modal paper" style="width:min(680px,94vw)">
+        <div class="mtitle"><h2>存 档 码</h2></div>
+        <div style="font-size:13px;color:var(--mo-3);line-height:1.85;margin:6px 0 12px">
+          存档码包含累计战绩与传世名篇图鉴、图鉴阁（对手／文心／羁绊／天象）进度、传承火种，以及自动／手动进行中对局。<br/>
+          代码仅在设备间复制，不会上传；导入将覆盖本机同类进度。
+        </div>
+        <div class="save-transfer-actions">
+          <button class="btn btn-primary" data-export>导出完整存档</button>
+          <button class="btn btn-ink" data-import>导入完整存档</button>
+          <button class="btn btn-ink" data-close>关闭</button>
+        </div>
+        <div class="ab-io" data-io></div>
+      </div>`;
+    this.topEl.appendChild(ov);
+    const io = ov.querySelector('[data-io]');
+    ov.querySelector('[data-export]').addEventListener('click', () => {
+      if (opts.beforeExport) opts.beforeExport();
+      this._exportPanel(io);
+    });
+    ov.querySelector('[data-import]').addEventListener('click', () => this._importPanel(io, opts.onImported));
+    ov.querySelector('[data-close]').addEventListener('click', () => ov.remove());
+    ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+    return ov;
   }
 
   _exportPanel(io) {
@@ -210,7 +237,7 @@ export class AlbumUI {
     io.querySelector('[data-close]').addEventListener('click', () => { io.innerHTML = ''; });
   }
 
-  _importPanel(io) {
+  _importPanel(io, onImported) {
     io.innerHTML = `
       <div class="io-box">
         <div class="io-title">粘贴全量存档码。导入将覆盖本机图鉴、累计战绩、图鉴阁、传承及进行中对局；请确认已备份当前进度。</div>
@@ -229,8 +256,9 @@ export class AlbumUI {
         const result = Album.importCode(ta.value);
         msg.textContent = result.legacy
           ? '旧版图鉴码导入成功（不含进行中对局），正在刷新……'
-          : '全量存档导入成功，正在刷新……';
+          : '完整存档导入成功，正在刷新……';
         msg.className = 'io-msg ok';
+        if (onImported) onImported(result);
         setTimeout(() => location.reload(), 700);
       } catch (e) {
         msg.textContent = '导入失败：' + e.message;

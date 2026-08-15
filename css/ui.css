@@ -691,6 +691,8 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
   border-radius: 8px; padding: 8px; resize: vertical; user-select: text;
 }
 .io-row { display: flex; gap: 10px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+.save-transfer-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.save-transfer .ab-io { max-height: 52vh; overflow: auto; }
 .io-msg { font-size: 12.5px; letter-spacing: .06em; }
 .io-msg.ok  { color: #3e7d3e; }
 .io-msg.bad { color: var(--zhu); }

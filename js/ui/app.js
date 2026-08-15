@@ -215,6 +215,7 @@ function buildSchoolScreen() {
       <div class="school-actions" style="text-align:center;margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
         <button class="btn btn-ink" data-album>传世名篇（已解锁 ${store.unlocked.length}/${(cfg.album || []).length}）</button>
         <button class="btn btn-ink" data-codex>图鉴阁（已邂逅 ${foesGot}/${foesTotal}）</button>
+        <button class="btn btn-ink" data-save-transfer>存档码（导入／导出）</button>
       </div>
       <div style="font-size:12px;color:var(--mo-3);letter-spacing:.08em;margin-top:8px;text-align:center">
         择定流派后，可于「装配名篇」中携带至多 ${Album.LOADOUT_MAX} 张图鉴卡入局。
@@ -229,6 +230,7 @@ function buildSchoolScreen() {
   schoolEl.querySelector('[data-album]').addEventListener('click', () =>
     albumUI.openAlbum({ onBack: () => { buildSchoolScreen(); } }));
   schoolEl.querySelector('[data-codex]')?.addEventListener('click', () => codexUI.open('foes'));
+  schoolEl.querySelector('[data-save-transfer]')?.addEventListener('click', () => albumUI.openSaveTransfer());
   const cont = schoolEl.querySelector('[data-continue]');
   if (cont) cont.addEventListener('click', () => loadGame());
 }
@@ -390,6 +392,7 @@ function showMenu() {
       <div class="menu-list">
         <button class="btn btn-ink menu-item" data-save ${canSave ? '' : 'disabled'}>${canSave ? '保存当前进度（手动存档）' : '暂无进行中的对局'}</button>
         <button class="btn btn-ink menu-item" data-load ${canLoad ? '' : 'disabled'}>${loadLabel}</button>
+        <button class="btn btn-ink menu-item" data-save-transfer>存档码（导入／导出）</button>
         <button class="btn btn-ink menu-item" data-codex>图鉴阁</button>
         <button class="btn btn-ink menu-item" data-leaderboard>☁ 云端排行榜</button>
         <button class="btn btn-ink menu-item" data-custom>载入自定义配置（高级）</button>
@@ -407,6 +410,13 @@ function showMenu() {
   if (menuEl) menuEl.classList.add('on');
   ov.querySelector('[data-save]')?.addEventListener('click', () => { saveGame(); closeMenu(); });
   ov.querySelector('[data-load]')?.addEventListener('click', () => { closeMenu(); loadGame(); });
+  ov.querySelector('[data-save-transfer]')?.addEventListener('click', () => {
+    closeMenu();
+    albumUI.openSaveTransfer({
+      // 局内导出前把当前瞬时状态强制写入自动槽，避免导出上一个安全存档点。
+      beforeExport: () => { if (game && game.s && !game.s.over) forceSaveRun(game); }
+    });
+  });
   ov.querySelector('[data-codex]')?.addEventListener('click', () => { closeMenu(); codexUI.open('foes'); });
   ov.querySelector('[data-leaderboard]')?.addEventListener('click', () => { closeMenu(); Leaderboard.openModal(); });
   ov.querySelector('[data-custom]')?.addEventListener('click', () => { closeMenu(); openCustomConfig(); });
