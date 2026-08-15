@@ -554,8 +554,20 @@ export function signatureScoreMods(tri, wea, sig, ctx) {
     return sum;
   };
 
-  /** 稳稿压迫：floor 折算为 flat 下限（简化版，仅提高下限，暂不限制上限） */
-  const steadyFloor = (sigObj) => Number(sigObj.floor) || 0;
+  /** 稳稿压迫：floor 折算为 flat 下限。
+   *  支持两种口径：
+   *   - floorPct（推荐，阶段 E 校准）：按 NPC 最佳文体期望分 × 比例折算，全档位稳定贡献等效 pct
+   *     （解决此前固定 floor 在高档总分中占比摊薄、招牌近失效的问题）；
+   *   - floor（旧格式兼容）：固定分。
+   *  仅提高下限，暂不限制上限（ceiling 为对称设计位，阶段 E 后续接入）。
+   */
+  const steadyFloor = (sigObj) => {
+    if (sigObj && sigObj.floorPct != null) {
+      const exp = Math.max(0, Number(ctx && ctx.npcExpected) || 0);
+      return Math.round(exp * (Number(sigObj.floorPct) || 0));
+    }
+    return Number(sigObj.floor) || 0;
+  };
 
   const applyMain = (obj, isWeak = false) => {
     const tag = isWeak ? '副招牌' : '主招牌';
@@ -570,8 +582,18 @@ export function signatureScoreMods(tri, wea, sig, ctx) {
       const v = Number(obj.pct) || 0;
       const eff = v * ret;
       if (eff !== 0) pct.push({ source: 'npcSign', label: `招牌·${name}`, value: eff });
+    } else if (obj && obj.template === 'sig_manner_theme') {
+      // 文风立意（阶段D D4 落地，此前仅在 UI 文案展示、无实际分数效果）：
+      // 对「思力贡献 = npcSi × siMult」按 pct 折算为额外 flat 分（等效总分提高 pct），
+      // 再按破绽保留比例摊薄。applyTo !== 'si_contribution' 时忽略（仅内容告警 E3）。
+      if ((obj.applyTo || 'si_contribution') === 'si_contribution') {
+        const pctM = Number(obj.pct) || 0;
+        const si = Math.max(0, Number(ctx && ctx.npcSi) || 0);
+        const add = Math.round(si * BATTLE_COEF.siMult * pctM * ret);
+        if (add !== 0) flat.push({ source: 'npcSign', label: `招牌·${name}`, value: add });
+      }
     }
-    // sig_debt_drain / sig_manner_theme / sig_palace_adapt 不在本场得分修正；由后果/后续处理
+    // sig_debt_drain / sig_palace_adapt 不在本场得分修正；由后果/后续处理
   };
 
   if (tri && tri.level === 'main' && main) applyMain(main, false);

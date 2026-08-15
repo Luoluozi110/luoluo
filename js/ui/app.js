@@ -19,6 +19,7 @@ import * as Codex from '../engine/codex.js';
 import { initAudio } from './audio.js';
 import { setScene, setTension, setStage } from './music.js';
 import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_MANUAL_KEY } from '../engine/save.js';
+import { Leaderboard } from './leaderboard.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -77,6 +78,7 @@ async function boot() {
   hud = new Hud($('#hud'));
   if (cloudConfigActive) hud.toast('已从云端同步最新配置');
   modals = new Modals($('#modalLayer'), cfg);
+  Leaderboard.init(modals).catch(() => {});   // 云端排行榜：读取配置并加载 Supabase 客户端（失败不阻断启动）
   battle = new BattleStage($('#battleStage'), cfg);
   schoolEl = $('#schoolScreen');
   resultEl = $('#resultScreen');
@@ -248,6 +250,7 @@ function startGame(schoolId, loadout, playerName) {
 
   game = new Game(cfg, makeUi(), Math.random);
   wireGameSaves(game);
+  game.onVictory = (nm, sc) => Leaderboard.submit(nm, sc).catch(() => {});   // 通关 → 提交云端排行榜
   const cards = loadout || [];
   const s = game.start(schoolId, { loadout: cards, name: playerName || '' });
   modals.playerName = s.playerName || '';   // 叙事文本据此替换「你」
@@ -370,6 +373,7 @@ function showMenu() {
         <button class="btn btn-ink menu-item" data-save ${canSave ? '' : 'disabled'}>${canSave ? '保存当前进度（手动存档）' : '暂无进行中的对局'}</button>
         <button class="btn btn-ink menu-item" data-load ${canLoad ? '' : 'disabled'}>${loadLabel}</button>
         <button class="btn btn-ink menu-item" data-codex>图鉴阁</button>
+        <button class="btn btn-ink menu-item" data-leaderboard>☁ 云端排行榜</button>
         <button class="btn btn-ink menu-item" data-custom>载入自定义配置（高级）</button>
         <button class="btn btn-ink menu-item" data-restart>返回主菜单</button>
         <button class="btn btn-ink menu-item" data-quality>${getTier() === 'low' ? '切换高画质' : '切换省电档'}</button>
@@ -386,6 +390,7 @@ function showMenu() {
   ov.querySelector('[data-save]')?.addEventListener('click', () => { saveGame(); closeMenu(); });
   ov.querySelector('[data-load]')?.addEventListener('click', () => { closeMenu(); loadGame(); });
   ov.querySelector('[data-codex]')?.addEventListener('click', () => { closeMenu(); codexUI.open('foes'); });
+  ov.querySelector('[data-leaderboard]')?.addEventListener('click', () => { closeMenu(); Leaderboard.openModal(); });
   ov.querySelector('[data-custom]')?.addEventListener('click', () => { closeMenu(); openCustomConfig(); });
   ov.querySelector('[data-restart]')?.addEventListener('click', () => { closeMenu(); openSchoolScreen(); });
   ov.querySelector('[data-quality]')?.addEventListener('click', () => {
@@ -539,6 +544,7 @@ async function loadGame() {
   // 用存档重建一局，再覆盖运行时状态并重建派生引用
   game = new Game(cfg, makeUi(), Math.random);
   wireGameSaves(game);
+  game.onVictory = (nm, sc) => Leaderboard.submit(nm, sc).catch(() => {});   // 通关 → 提交云端排行榜
   game.s = res.state;
   modals.playerName = game.s.playerName || '';   // 续玩沿用存档中的名号
   schoolEl.classList.remove('on');

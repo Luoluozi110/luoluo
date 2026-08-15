@@ -231,6 +231,31 @@ export class Game {
     return { lastStyle, lastManner, habitualStyle, _nm: nm };
   }
 
+  /**
+   * 判断玩家「本场战法」相对「上一场同考官战法」是否更换。
+   * 供 wea_cross_battle_shift（王侍郎跨场换策）判定：第二场之后，若玩家换用
+   * 不同的文体或文风，则视为换策，可移除一层跨场适应层数。
+   * 取该 NPC（稳定 id）分桶历史中最近一场所用文体/文风作比较，避免跨对手串场；
+   * 无历史（首场）或上一场缺失则为 false。
+   * @param {object} npc 当前 NPC
+   * @param {string} style 本场玩家文体
+   * @param {string} manner 本场玩家文风
+   */
+  _strategyChangedSinceLast(npc, style, manner) {
+    try {
+      const nm = this.s.npcMech || {};
+      const h = nm.history && nm.history[stableFoeId(npc)];
+      if (!h) return false;
+      const lastStyle = h.styles && h.styles[h.styles.length - 1];
+      const lastManner = h.manners && h.manners[h.manners.length - 1];
+      if (!lastStyle) return false;                       // 首场无前一战
+      return lastStyle !== style || lastManner !== manner;
+    } catch (e) {
+      // 存档异常时安全降级：不判定换策（E1）
+      return false;
+    }
+  }
+
   cellAt(track, pos, branchId, branchIndex) {
     if (track === 'branch') {
       const br = this.cfg.board.branches[branchId];
@@ -623,7 +648,26 @@ export class Game {
 
     // —— NPC 三机制：锁定本场意图（E0：锁定后不得暗改）——
     // 仅当 NPC 配置了 mech 才生成机制意图；其余走旧 pickNpcStyle/pickNpcManner。
-    const npcMech = npc && npc.mech;
+    // E1 守卫（第六章 6.2/6.3）：若主公招牌或主破绽引用的模板在模板库中缺失，
+    // 整套机制降级为旧行为——不生成机制意图、不展示研判区，避免「有招牌无破绽」
+    // 的半成品以完整强度上线。副招牌缺失仅停用副招牌、主机制继续。
+    const tplLib = this.cfg['npc-mechanics'] || {};
+    const mechOk = (() => {
+      const raw = npc && npc.mech;
+      if (!raw) return false;
+      const sigLib = tplLib.signatureTemplates || {};
+      const weaLib = tplLib.weaknessTemplates || {};
+      const sigMain = raw.signature && (raw.signature.main || raw.signature);
+      const wea = raw.weakness;
+      // 完整性（第六章 6.2）：招牌与破绽必须成对，缺一整套降级
+      if (!sigMain || !wea) return false;
+      // 主破绽缺失模板 → 整套降级
+      if (wea && wea.template && !weaLib[wea.template]) return false;
+      // 主招牌缺失模板 → 整套降级
+      if (sigMain && sigMain.template && !sigLib[sigMain.template]) return false;
+      return true;
+    })();
+    const npcMech = mechOk ? (npc && npc.mech) : null;
     let npcIntent = null;
     if (npcMech) {
       npcIntent = R.rollIntention({
@@ -631,7 +675,7 @@ export class Game {
         npcAttrs: (npc && npc.attrs) || {},
         af,
         theme,
-        templates: this.cfg['npc-mechanics']
+        templates: tplLib
       });
       // 联力未解锁时，若意图锁定了联体，回退期望分最优（避免锁死不可用文体）
       if (npcIntent.style === 'lian' && !this.lianUnlocked) {
@@ -645,6 +689,8 @@ export class Game {
     const session = {
       label: opts.label || '挥毫论道',
       npc,
+      // 本场是否以完整机制运行（模板缺失已整套降级旧行为，供结算侧复用判定）
+      _mechValid: !!mechOk,
       theme,
       themeName: af.themeNames[theme] || theme,
       playerName: s.playerName || '',
@@ -842,14 +888,25 @@ export class Game {
       ? session.intentLocked.manner : R.pickNpcManner(af.matrix, session.manners, session.theme);
     const npcAff = R.affinityValue(af.matrix, npcManner, session.theme);
     const npcDice = this.d6();
+    // NPC 最佳文体期望分（阶段 E：供 sig_steady_pressure 的 floorPct / sig_dice_response
+    // 的 perDicePct 作等效比例基准，使招牌强度在全档位稳定落入 5-10% 预算）。
+    const npcExpected = Math.max(R.expectedScore(npcAttrs, npcStyle),
+      ...(R.CREATIVE_KEYS||[]).map(s => s==='lian'&&(npcAttrs.lian||0)<8 ? -1 : R.expectedScore(npcAttrs, s)));
 
     /* ---- NPC 三机制：破绽先于招牌结算（F0）---- */
-    const npcMech = session.npc && session.npc.mech;
+    const npcMech = session._mechValid ? (session.npc && session.npc.mech) : null;
     let mechOut = null;
+    // 提升到块外，供 wea_crushing_win 二次判定复用（matchesIntent/strategyChanged）
+    let pm = null, matchesIntent = false, strategyChanged = false;
     if (npcMech) {
       const tplLib = this.cfg['npc-mechanics'] || {};
-      const pm = { style, manner, extraDice };
-      const playerHistory = this._mechHistoryForNpc(session.npc.id);
+      // 意图反制破绽：玩家出战是否与 NPC 本场锁定意图一致（供 wea_counter_intent 使用）
+      const il = session.intentLocked;
+      matchesIntent = !!(il && style === il.style && manner === il.manner);
+      pm = { style, manner, extraDice, matchesIntent };
+      const playerHistory = this._mechHistoryForNpc(stableFoeId(session.npc));
+      // 跨场换策破绽：与上一场同考官的战法相比，本轮是否换策（供 wea_cross_battle_shift 使用）
+      strategyChanged = this._strategyChangedSinceLast(session.npc, style, manner);
       // 破绽（先）
       const wea = R.weaknessResolution({
         mech: npcMech, npcStyle,
@@ -858,14 +915,14 @@ export class Game {
         npcManner,
         templates: tplLib,
         result: null, relativeMargin: null,
-        strategyChanged: false
+        strategyChanged
       });
       // 招牌（后）
       const tri = R.signatureTriggered({
         mech: npcMech, npcStyle, npcManner,
         playerMove: pm, playerHistory, templates: tplLib
       });
-      mechOut = { tri, wea, mods: R.signatureScoreMods(tri, wea, npcMech.signature, { extraDice }) };
+      mechOut = { tri, wea, mods: R.signatureScoreMods(tri, wea, npcMech.signature, { extraDice, npcSi: npcAttrs.si || 0, npcExpected }) };
       session._mechOut = mechOut;
     }
 
@@ -908,15 +965,15 @@ export class Game {
     if (mechOut && mechOut.wea && mechOut.wea.template === 'wea_crushing_win') {
       const hi = Math.max(selfCalc.total, oppCalc.total);
       const relMarg = hi > 0 ? (selfCalc.total - oppCalc.total) / hi : 0;
-      const pm2 = { style, manner, extraDice };
+      const pm2 = { style, manner, extraDice, matchesIntent };
       const wea2 = R.weaknessResolution({
         mech: npcMech, npcStyle,
         playerMove: pm2,
-        playerHistory: this._mechHistoryForNpc(session.npc.id), npcManner,
+        playerHistory: this._mechHistoryForNpc(stableFoeId(session.npc)), npcManner,
         templates: this.cfg['npc-mechanics'] || {},
-        result, relativeMargin: relMarg, strategyChanged: false
+        result, relativeMargin: relMarg, strategyChanged
       });
-      const mods2 = R.signatureScoreMods(mechOut.tri, wea2, npcMech.signature, { extraDice });
+      const mods2 = R.signatureScoreMods(mechOut.tri, wea2, npcMech.signature, { extraDice, npcSi: npcAttrs.si || 0, npcExpected });
       if (mods2 !== mechOut.mods) {
         oppPct = npcAff !== 0 ? [{ source: 'affinity', label: `相性·${af.mannerNames[npcManner]}`, value: npcAff }] : [];
         oppFlat = [];
@@ -1040,7 +1097,9 @@ export class Game {
     }
 
     // ---- NPC 三机制：跨场状态维护 + 战后消费型招牌/破绽结算 ----
-    const npcMech = session.npc && session.npc.mech;
+    // E1 守卫：createSession 已判定模板缺失/不完整的机制，整场按旧行为完成，
+    // 不写入历史、不扣文债、不叠 palace 适应层，避免半成品污染跨场状态。
+    const npcMech = session._mechValid ? (session.npc && session.npc.mech) : null;
     const mechOut = out.mech || session._mechOut || null;
     if (npcMech && foeId) {
       // ① 跨场玩家行为历史（供识破重复/仿作惯用/换体破绽读取）
@@ -1211,6 +1270,10 @@ export class Game {
     }[reason] || '对局结束';
     summary.state = s;
     Object.assign(summary, this.commitAlbum(summary));
+    // 通关（金榜题名）→ 提交分数到云端排行榜（解耦：由 app.js 注入 onVictory）
+    if (summary.reason === 'jinbang' && typeof this.onVictory === 'function') {
+      try { this.onVictory((s.playerName || '无名氏'), summary.total); } catch (_) { /* 提交失败不阻断结算 */ }
+    }
     await this.ui.showResult(summary);
     return summary;
   }

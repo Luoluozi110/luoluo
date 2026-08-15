@@ -820,6 +820,23 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
   #logBox { display: none; }
 }
 
+/* ==================================================== 云端排行榜弹窗 */
+.lb-body { margin: 6px 0 4px; max-height: 56vh; overflow-y: auto; }
+.lb-empty { color: var(--mo-3); text-align: center; padding: 18px 6px; font-size: 13px; line-height: 1.7; }
+.lb-list { list-style: none; margin: 0; padding: 0; }
+.lb-row {
+  display: grid; grid-template-columns: 38px 1fr auto; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: 9px; margin-bottom: 5px;
+  background: rgba(127,149,207,.08); font-size: 14px;
+}
+.lb-row .lb-rk { font-weight: 700; color: var(--mo-2); text-align: center; }
+.lb-row .lb-nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-row .lb-sc { font-weight: 700; color: var(--zhu); font-variant-numeric: tabular-nums; }
+.lb-row.top1 { background: linear-gradient(90deg, rgba(212,175,55,.22), rgba(127,149,207,.08)); }
+.lb-row.top1 .lb-rk { color: #c79a2e; }
+.lb-row.top2 { background: linear-gradient(90deg, rgba(176,176,182,.18), rgba(127,149,207,.07)); }
+.lb-row.top3 { background: linear-gradient(90deg, rgba(180,132,92,.16), rgba(127,149,207,.07)); }
+
 /* ==================================================== 移动端适配（竖屏手机 ≤600px）
    原 HUD 各面板用固定像素定位，窄屏会互相重叠并盖住棋盘；战斗台两名「对阵者」默认并排会被压扁；
    结算页雷达与六维默认左右排、窄屏挤成一团。以下在窄屏重排 HUD / 战斗台 / 结算页，并收紧弹窗内边距。 */

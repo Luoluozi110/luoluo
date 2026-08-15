@@ -139,7 +139,9 @@ export function weaknessHint(mech, ctx) {
     case 'wea_style_manner_combo': {
       const sS = w.style && styleNames[w.style];
       const ms = (w.manners || []).map(m => mannerNames[m]).filter(Boolean).join('、');
-      return `临题有人言：「${weaName}」——若以${sS || '某'}体并辅以${ms || '相性相合'}一路，其「${sigName}」可被压至{{retention}}分。`;
+      const raw = Number(w.retention ?? 0.5);
+      const pct = Math.round(Math.max(0, Math.min(1, raw)) * 100);
+      return `临题有人言：「${weaName}」——若以${sS || '某'}体并辅以${ms || '相性相合'}一路，其「${sigName}」最多可剩 ${pct}% 之威。`;
     }
     case 'wea_crushing_win':
       return `临题有人言：「${weaName}」——此人恃才，须以大分数压服之，方能使「${sigName}」无从施展。`;

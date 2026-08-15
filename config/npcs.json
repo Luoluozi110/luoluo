@@ -29,21 +29,28 @@
             "template": "sig_style_mastery",
             "style": "shi",
             "pct": 0.06,
-            "intentBias": 1.50,
+            "intentBias": 1.5,
             "disclosure": "full"
           },
           "weakness": {
             "name": "声律未稳",
             "template": "wea_use_other_style",
             "npcStyle": "shi",
-            "fullClose": ["ci"],
-            "partialReduction": { "style": ["lian"], "retention": 0.50 },
+            "fullClose": [
+              "ci"
+            ],
+            "partialReduction": {
+              "style": [
+                "lian"
+              ],
+              "retention": 0.5
+            },
             "playerBonus": 0
           },
           "intent": {
             "template": "int_preferred_style",
             "style": "shi",
-            "bias": 1.50,
+            "bias": 1.5,
             "bottom": 0.85,
             "noAntiRepeat": true,
             "description": "本场准备使用诗体"
@@ -51,6 +58,7 @@
         }
       },
       {
+        "id": "chen_yanqiu",
         "name": "陈砚秋",
         "title": "村塾学子",
         "style": "ci",
@@ -61,9 +69,46 @@
           "bi": 4,
           "xue": 3,
           "si": 4
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "tutorial",
+          "signature": {
+            "name": "婉约稳进",
+            "template": "sig_style_mastery",
+            "style": "ci",
+            "pct": 0.06,
+            "intentBias": 1.5,
+            "disclosure": "full"
+          },
+          "weakness": {
+            "name": "辞藻局促",
+            "template": "wea_use_other_style",
+            "npcStyle": "ci",
+            "fullClose": [
+              "shi",
+              "lian"
+            ],
+            "partialReduction": {
+              "style": [
+                "bi"
+              ],
+              "retention": 0.5
+            },
+            "playerBonus": 0.08
+          },
+          "intent": {
+            "template": "int_preferred_style",
+            "style": "ci",
+            "bias": 1.5,
+            "bottom": 0.85,
+            "noAntiRepeat": true,
+            "description": "本场准备使用词体"
+          }
         }
       },
       {
+        "id": "wu_shuang_er",
         "name": "吴双儿",
         "title": "启蒙幼童",
         "style": "lian",
@@ -74,9 +119,40 @@
           "bi": 3,
           "xue": 4,
           "si": 4
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "tutorial",
+          "signature": {
+            "name": "对仗追随",
+            "template": "sig_style_mastery",
+            "style": "lian",
+            "pct": 0.06,
+            "intentBias": 1.4,
+            "disclosure": "full"
+          },
+          "weakness": {
+          "name": "泥于绳墨",
+          "template": "wea_harmonious_manner",
+          "manners": [
+            "wanyue",
+            "qingya"
+          ],
+          "retention": 0.1,
+          "playerBonus": 0.08
+          },
+          "intent": {
+            "template": "int_preferred_style",
+            "style": "lian",
+            "bias": 1.4,
+            "bottom": 0.85,
+            "noAntiRepeat": true,
+            "description": "本场准备使用联体"
+          }
         }
       },
       {
+        "id": "sun_a_niu",
         "name": "孙阿牛",
         "title": "私塾蒙童",
         "style": "bi",
@@ -87,9 +163,35 @@
           "bi": 10,
           "xue": 3,
           "si": 4
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "tutorial",
+          "signature": {
+            "name": "字稳卷平",
+            "template": "sig_steady_pressure",
+            "floor": 4,
+            "ceiling": 4,
+            "floorPct": 0.04
+          },
+          "weakness": {
+            "name": "怕大场面",
+            "template": "wea_crushing_win",
+            "threshold": 0.18,
+            "refund": 0,
+            "playerBonus": 0
+          },
+          "intent": {
+            "template": "int_steady",
+            "style": "bi",
+            "bias": 1.2,
+            "bottom": 0.85,
+            "description": "本场求稳，降低波动"
+          }
         }
       },
       {
+        "id": "qian_xiao_yi",
         "name": "钱小乙",
         "title": "初学蒙生",
         "style": "xue",
@@ -100,9 +202,39 @@
           "bi": 4,
           "xue": 10,
           "si": 3
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "basic",
+          "signature": {
+            "name": "熟题先机",
+            "template": "sig_repeat_read",
+            "pct": 0.06,
+            "firstBattle": "disabled"
+          },
+          "weakness": {
+            "name": "死记旧章",
+            "template": "wea_switch_style",
+            "fullClose": [
+              "*"
+            ],
+            "infoBonus": {
+              "intentPrecision": 1
+            },
+            "playerBonus": 0
+          },
+          "intent": {
+            "template": "int_preferred_style",
+            "style": "xue",
+            "bias": 1.3,
+            "bottom": 0.85,
+            "historyAware": true,
+            "description": "本场准备沿用上一场路数"
+          }
         }
       },
       {
+        "id": "li_mo_tong",
         "name": "李墨童",
         "title": "开蒙学童",
         "style": "si",
@@ -113,6 +245,31 @@
           "bi": 4,
           "xue": 3,
           "si": 10
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "basic",
+          "signature": {
+            "name": "临题学样",
+            "template": "sig_copycat",
+            "style": "si",
+            "pct": 0.06,
+            "historyLen": 2,
+            "noHistory": "fallback_preferred"
+          },
+          "weakness": {
+            "name": "不善变化",
+            "template": "wea_base_dice_only",
+            "flat": 6,
+            "playerBonus": 0
+          },
+          "intent": {
+            "template": "int_copycat",
+            "style": "si",
+            "bias": 1.3,
+            "bottom": 0.85,
+            "description": "准备仿你近日常用路数"
+          }
         }
       }
     ]
@@ -127,6 +284,7 @@
     "desc": "乡试圈后半登场。已入庠序的秀才，有来有回，赢下靠的是稳。六人各擅一体，摸清谁偏哪门再出手。",
     "npcs": [
       {
+        "id": "zhang_xiucai",
         "name": "张秀才",
         "title": "庠序生员",
         "style": "shi",
@@ -137,9 +295,35 @@
           "bi": 9,
           "xue": 6,
           "si": 6
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "basic",
+          "signature": {
+            "name": "工稳守卷",
+            "template": "sig_steady_pressure",
+            "floor": 5,
+            "ceiling": 5,
+            "floorPct": 0.045
+          },
+          "weakness": {
+            "name": "怯于变化",
+            "template": "wea_crushing_win",
+            "threshold": 0.18,
+            "refund": 0,
+            "playerBonus": 0
+          },
+          "intent": {
+            "template": "int_steady",
+            "style": "shi",
+            "bias": 1.2,
+            "bottom": 0.8,
+            "description": "本场求稳，降低波动"
+          }
         }
       },
       {
+        "id": "huang_ming_yuan",
         "name": "黄明远",
         "title": "县学秀才",
         "style": "ci",
@@ -150,6 +334,35 @@
           "bi": 6,
           "xue": 9,
           "si": 9
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "basic",
+          "signature": {
+            "name": "声律相持",
+            "template": "sig_style_mastery",
+            "style": "ci",
+            "pct": 0.08,
+            "intentBias": 1.3,
+            "disclosure": "full"
+          },
+          "weakness": {
+          "name": "词丽辞平",
+          "template": "wea_harmonious_manner",
+          "manners": [
+            "zheli",
+            "qingya"
+          ],
+          "retention": 0.1,
+          "playerBonus": 0.08
+          },
+          "intent": {
+            "template": "int_preferred_style",
+            "style": "ci",
+            "bias": 1.3,
+            "bottom": 0.8,
+            "description": "本场准备使用词体"
+          }
         }
       },
       {
@@ -177,21 +390,26 @@
           "weakness": {
             "name": "临题拘泥",
             "template": "wea_switch_style",
-            "fullClose": ["*"],
-            "infoBonus": { "intentPrecision": 1 },
+            "fullClose": [
+              "*"
+            ],
+            "infoBonus": {
+              "intentPrecision": 1
+            },
             "playerBonus": 0
           },
           "intent": {
             "template": "int_preferred_style",
             "style": "lian",
-            "bias": 1.30,
-            "bottom": 0.80,
+            "bias": 1.3,
+            "bottom": 0.8,
             "historyAware": true,
             "description": "本场仍偏好联体"
           }
         }
       },
       {
+        "id": "zhao_wen_bin",
         "name": "赵文彬",
         "title": "府学秀才",
         "style": "bi",
@@ -202,9 +420,39 @@
           "bi": 15,
           "xue": 9,
           "si": 9
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "basic",
+          "signature": {
+            "name": "观你旧辙",
+            "template": "sig_repeat_read",
+            "pct": 0.07,
+            "firstBattle": "disabled"
+          },
+          "weakness": {
+            "name": "依样画瓢",
+            "template": "wea_switch_style",
+            "fullClose": [
+              "*"
+            ],
+            "infoBonus": {
+              "intentPrecision": 1
+            },
+            "playerBonus": 0
+          },
+          "intent": {
+            "template": "int_preferred_style",
+            "style": "bi",
+            "bias": 1.3,
+            "bottom": 0.8,
+            "historyAware": true,
+            "description": "本场沿用你上一场路数"
+          }
         }
       },
       {
+        "id": "zheng_shu_yu",
         "name": "郑书玉",
         "title": "廪膳生员",
         "style": "xue",
@@ -215,9 +463,45 @@
           "bi": 6,
           "xue": 15,
           "si": 6
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "advanced",
+          "signature": {
+            "name": "引经据典",
+            "template": "sig_copycat",
+            "style": "xue",
+            "pct": 0.08,
+            "historyLen": 2,
+            "noHistory": "fallback_preferred"
+          },
+          "weakness": {
+            "name": "囿于经注",
+            "template": "wea_use_other_style",
+            "npcStyle": "xue",
+            "fullClose": [
+              "shi",
+              "ci"
+            ],
+            "partialReduction": {
+              "style": [
+                "lian"
+              ],
+              "retention": 0.5
+            },
+            "playerBonus": 0.08
+          },
+          "intent": {
+            "template": "int_copycat",
+            "style": "xue",
+            "bias": 1.3,
+            "bottom": 0.8,
+            "description": "准备仿你近日常用路数"
+          }
         }
       },
       {
+        "id": "wang_han_sheng",
         "name": "王翰生",
         "title": "邑庠秀才",
         "style": "si",
@@ -228,6 +512,37 @@
           "bi": 6,
           "xue": 6,
           "si": 15
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "advanced",
+          "signature": {
+          "name": "观风择势",
+          "template": "sig_dice_response",
+          "steps": [
+            14,
+            9,
+            4
+          ],
+          "cap": 22,
+          "altAction": {
+            "trigger": "playerExtraDice>=1",
+            "switchTo": "strong_attack"
+          }
+        },
+        "weakness": {
+          "name": "心浮气躁",
+          "template": "wea_base_dice_only",
+          "flat": 12,
+          "playerBonus": 0
+        },
+          "intent": {
+            "template": "int_dice_response",
+            "style": "si",
+            "bias": 1.25,
+            "bottom": 0.8,
+            "description": "正常应战；若你追加骰，则顺势强攻"
+          }
         }
       }
     ]
@@ -258,18 +573,25 @@
           "version": 1,
           "complexity": "advanced",
           "signature": {
-            "name": "鹿鸣争先",
-            "template": "sig_dice_response",
-            "steps": [6, 3, 1],
-            "cap": 10,
-            "altAction": { "trigger": "playerExtraDice>=1", "switchTo": "strong_attack" }
-          },
-          "weakness": {
-            "name": "恃才冒进",
-            "template": "wea_base_dice_only",
-            "flat": 6,
-            "playerBonus": 0
-          },
+          "name": "鹿鸣争先",
+          "template": "sig_dice_response",
+          "steps": [
+            16,
+            10,
+            4
+          ],
+          "cap": 26,
+          "altAction": {
+            "trigger": "playerExtraDice>=1",
+            "switchTo": "strong_attack"
+          }
+        },
+        "weakness": {
+          "name": "恃才冒进",
+          "template": "wea_base_dice_only",
+          "flat": 10,
+          "playerBonus": 0
+        },
           "intent": {
             "template": "int_dice_response",
             "style": "shi",
@@ -307,20 +629,26 @@
             "name": "形似神离",
             "template": "wea_use_other_style",
             "npcStyle": "ci",
-            "fullClose": ["*"],
-            "partialReduction": { "changeManner": true, "retention": 0.50 },
+            "fullClose": [
+              "*"
+            ],
+            "partialReduction": {
+              "changeManner": true,
+              "retention": 0.5
+            },
             "playerBonus": 0
           },
           "intent": {
             "template": "int_copycat",
             "style": "ci",
-            "bias": 1.30,
+            "bias": 1.3,
             "bottom": 0.78,
             "description": "准备模仿你近日常用路数"
           }
         }
       },
       {
+        "id": "lu_yun_ting",
         "name": "陆云亭",
         "title": "鹿鸣宴客",
         "style": "lian",
@@ -331,9 +659,39 @@
           "bi": 11,
           "xue": 12,
           "si": 12
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "advanced",
+          "signature": {
+            "name": "对答如流",
+            "template": "sig_style_mastery",
+            "style": "lian",
+            "pct": 0.09,
+            "intentBias": 1.3,
+            "disclosure": "full"
+          },
+          "weakness": {
+          "name": "意止于对",
+          "template": "wea_harmonious_manner",
+          "manners": [
+            "haofang",
+            "zheli"
+          ],
+          "retention": 0.1,
+          "playerBonus": 0.08
+          },
+          "intent": {
+            "template": "int_preferred_style",
+            "style": "lian",
+            "bias": 1.3,
+            "bottom": 0.78,
+            "description": "本场准备使用联体，以对仗相迎"
+          }
         }
       },
       {
+        "id": "han_shi_chang",
         "name": "韩世昌",
         "title": "乙榜举人",
         "style": "bi",
@@ -344,9 +702,35 @@
           "bi": 26,
           "xue": 13,
           "si": 12
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "advanced",
+          "signature": {
+            "name": "章法成城",
+            "template": "sig_steady_pressure",
+            "floor": 7,
+            "ceiling": 6,
+            "floorPct": 0.05
+          },
+          "weakness": {
+            "name": "惧高压",
+            "template": "wea_crushing_win",
+            "threshold": 0.18,
+            "refund": 0,
+            "playerBonus": 0
+          },
+          "intent": {
+            "template": "int_steady",
+            "style": "bi",
+            "bias": 1.2,
+            "bottom": 0.78,
+            "description": "本场求稳，严守章法"
+          }
         }
       },
       {
+        "id": "tang_ji_qing",
         "name": "唐季卿",
         "title": "孝廉举人",
         "style": "xue",
@@ -357,9 +741,39 @@
           "bi": 12,
           "xue": 26,
           "si": 11
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "advanced",
+          "signature": {
+            "name": "博闻压题",
+            "template": "sig_repeat_read",
+            "pct": 0.09,
+            "firstBattle": "disabled"
+          },
+          "weakness": {
+            "name": "泥于所闻",
+            "template": "wea_switch_style",
+            "fullClose": [
+              "*"
+            ],
+            "infoBonus": {
+              "intentPrecision": 1
+            },
+            "playerBonus": 0
+          },
+          "intent": {
+            "template": "int_preferred_style",
+            "style": "xue",
+            "bias": 1.3,
+            "bottom": 0.78,
+            "historyAware": true,
+            "description": "本场沿用你上一场路数"
+          }
         }
       },
       {
+        "id": "bai_wen_yuan",
         "name": "白文渊",
         "title": "秋闱中式",
         "style": "si",
@@ -370,6 +784,41 @@
           "bi": 12,
           "xue": 11,
           "si": 26
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "advanced",
+          "signature": {
+            "name": "察势转锋",
+            "template": "sig_copycat",
+            "style": "si",
+            "pct": 0.09,
+            "historyLen": 2,
+            "noHistory": "fallback_preferred"
+          },
+          "weakness": {
+            "name": "恃察轻守",
+            "template": "wea_use_other_style",
+            "npcStyle": "si",
+            "fullClose": [
+              "shi",
+              "ci"
+            ],
+            "partialReduction": {
+              "style": [
+                "lian"
+              ],
+              "retention": 0.5
+            },
+            "playerBonus": 0.08
+          },
+          "intent": {
+            "template": "int_copycat",
+            "style": "si",
+            "bias": 1.3,
+            "bottom": 0.78,
+            "description": "准备仿你近日常用路数，相机转锋"
+          }
         }
       }
     ]
@@ -417,7 +866,7 @@
           "weakness": {
             "name": "一气压卷",
             "template": "wea_crushing_win",
-            "threshold": 0.12,
+            "threshold": 0.18,
             "refund": 1,
             "playerBonus": 0
           },
@@ -431,6 +880,7 @@
         }
       },
       {
+        "id": "si_ma_wen",
         "name": "司马文",
         "title": "同进士出身",
         "style": "ci",
@@ -441,9 +891,40 @@
           "bi": 15,
           "xue": 15,
           "si": 15
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "advanced",
+          "signature": {
+            "name": "曲折藏锋",
+            "template": "sig_style_mastery",
+            "style": "ci",
+            "pct": 0.1,
+            "intentBias": 1.3,
+            "disclosure": "full"
+          },
+          "weakness": {
+          "name": "文绉其表",
+          "template": "wea_style_manner_combo",
+          "style": "lian",
+          "manners": [
+            "qili",
+            "zheli"
+          ],
+          "retention": 0.1,
+          "playerBonus": 0.08
+          },
+          "intent": {
+            "template": "int_preferred_style",
+            "style": "ci",
+            "bias": 1.3,
+            "bottom": 0.75,
+            "description": "本场准备使用词体"
+          }
         }
       },
       {
+        "id": "shang_guan_ming",
         "name": "上官明",
         "title": "进士及第",
         "style": "lian",
@@ -454,9 +935,45 @@
           "bi": 14,
           "xue": 15,
           "si": 16
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "advanced",
+          "signature": {
+            "name": "双关设伏",
+            "template": "sig_copycat",
+            "style": "lian",
+            "pct": 0.1,
+            "historyLen": 2,
+            "noHistory": "fallback_preferred"
+          },
+          "weakness": {
+            "name": "机巧易察",
+            "template": "wea_use_other_style",
+            "npcStyle": "lian",
+            "fullClose": [
+              "shi",
+              "ci"
+            ],
+            "partialReduction": {
+              "style": [
+                "bi"
+              ],
+              "retention": 0.5
+            },
+            "playerBonus": 0.08
+          },
+          "intent": {
+            "template": "int_copycat",
+            "style": "lian",
+            "bias": 1.3,
+            "bottom": 0.75,
+            "description": "准备仿你近日常用路数"
+          }
         }
       },
       {
+        "id": "xia_hou_jin",
         "name": "夏侯瑾",
         "title": "翰林庶吉士",
         "style": "bi",
@@ -467,9 +984,35 @@
           "bi": 30,
           "xue": 15,
           "si": 16
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "advanced",
+          "signature": {
+            "name": "翰林稳卷",
+            "template": "sig_steady_pressure",
+            "floor": 8,
+            "ceiling": 6,
+            "floorPct": 0.05
+          },
+          "weakness": {
+            "name": "忌被压卷",
+            "template": "wea_crushing_win",
+            "threshold": 0.18,
+            "refund": 1,
+            "playerBonus": 0
+          },
+          "intent": {
+            "template": "int_steady",
+            "style": "bi",
+            "bias": 1.2,
+            "bottom": 0.75,
+            "description": "本场求稳，严守翰苑章法"
+          }
         }
       },
       {
+        "id": "mu_rong_yu",
         "name": "慕容玉",
         "title": "赐进士出身",
         "style": "xue",
@@ -480,6 +1023,35 @@
           "bi": 14,
           "xue": 30,
           "si": 15
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "advanced",
+          "signature": {
+            "name": "科场博洽",
+            "template": "sig_repeat_read",
+            "pct": 0.1,
+            "firstBattle": "disabled"
+          },
+          "weakness": {
+            "name": "倦于变通",
+            "template": "wea_switch_style",
+            "fullClose": [
+              "*"
+            ],
+            "infoBonus": {
+              "intentPrecision": 1
+            },
+            "playerBonus": 0
+          },
+          "intent": {
+            "template": "int_preferred_style",
+            "style": "xue",
+            "bias": 1.3,
+            "bottom": 0.75,
+            "historyAware": true,
+            "description": "本场沿用你上一场路数"
+          }
         }
       },
       {
@@ -501,23 +1073,37 @@
           "signature": {
             "name": "立意先行",
             "template": "sig_manner_theme",
-            "manners": ["zheli", "chenyu"],
-            "pct": 0.10,
-            "cap": 0.10,
+            "manners": [
+              "zheli",
+              "chenyu"
+            ],
+            "pct": 0.1,
+            "cap": 0.1,
             "applyTo": "si_contribution"
           },
           "weakness": {
-            "name": "意胜辞涩",
-            "template": "wea_harmonious_manner",
-            "manners": ["qingya", "qili"],
-            "retention": 0.30,
-            "altCondition": { "playerStyle": "ci", "extraShutdown": 0.10 },
-            "fallback": { "useBestManner": "削弱30%" }
+          "name": "意胜辞涩",
+          "template": "wea_harmonious_manner",
+          "manners": [
+            "qingya",
+            "qili"
+          ],
+          "retention": 0.1,
+            "altCondition": {
+              "playerStyle": "ci",
+              "extraShutdown": 0.1
+            },
+            "fallback": {
+              "useBestManner": "削弱30%"
+            }
           },
           "intent": {
             "template": "int_manner_theme",
-            "manners": ["zheli", "chenyu"],
-            "bias": 1.30,
+            "manners": [
+              "zheli",
+              "chenyu"
+            ],
+            "bias": 1.3,
             "bottom": 0.75,
             "description": "重立意，倾向哲理或沉郁"
           }
@@ -563,7 +1149,7 @@
             "maxLayers": 2,
             "perLayer": 1,
             "weaknessDampen": 0.25,
-            "minWeaknessRetention": 0.50
+            "minWeaknessRetention": 0.5
           },
           "weakness": {
             "name": "跨场换策",
@@ -573,13 +1159,14 @@
           "intent": {
             "template": "int_palace_adapt",
             "style": "shi",
-            "bias": 1.30,
+            "bias": 1.3,
             "bottom": 0.75,
             "description": "已根据上一场战况调整策略"
           }
         }
       },
       {
+        "id": "li_xue_shi",
         "name": "李学士",
         "title": "翰林学士",
         "style": "ci",
@@ -590,9 +1177,47 @@
           "bi": 17,
           "xue": 17,
           "si": 17
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "advanced",
+          "signature": {
+            "main": {
+              "name": "殿试声律",
+              "template": "sig_style_mastery",
+              "style": "ci",
+              "pct": 0.1,
+              "intentBias": 1.3,
+              "disclosure": "full"
+            },
+            "weak": {
+              "name": "衡文稳卷",
+              "template": "sig_steady_pressure",
+              "floor": 4,
+              "ceiling": 4
+            }
+          },
+          "weakness": {
+          "name": "重典轻境",
+          "template": "wea_harmonious_manner",
+          "manners": [
+            "haofang",
+            "zheli"
+          ],
+          "retention": 0.1,
+          "playerBonus": 0.08
+          },
+          "intent": {
+            "template": "int_preferred_style",
+            "style": "ci",
+            "bias": 1.3,
+            "bottom": 0.75,
+            "description": "本场准备使用词体，以声律取胜"
+          }
         }
       },
       {
+        "id": "zhao_da_ru",
         "name": "赵大儒",
         "title": "国子监祭酒",
         "style": "bi",
@@ -603,6 +1228,31 @@
           "bi": 40,
           "xue": 17,
           "si": 19
+        },
+        "mech": {
+          "version": 1,
+          "complexity": "advanced",
+          "signature": {
+            "name": "经义稳卷",
+            "template": "sig_steady_pressure",
+            "floor": 9,
+            "ceiling": 5,
+            "floorPct": 0.05
+          },
+          "weakness": {
+            "name": "忌被压卷",
+            "template": "wea_crushing_win",
+            "threshold": 0.18,
+            "refund": 1,
+            "playerBonus": 0
+          },
+          "intent": {
+            "template": "int_steady",
+            "style": "bi",
+            "bias": 1.2,
+            "bottom": 0.75,
+            "description": "本场求稳，严守经义法度"
+          }
         }
       }
     ]
