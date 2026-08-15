@@ -624,7 +624,9 @@ export class Game {
   async doZe(cell) {
     const g = this.cfg.attrs.zeCellGain ?? 1;
     this.addAttrs({ bi: g, xue: g, si: g });
-    this.ui.toast(`${cell.name}——仄韵格，基本功精进`);
+    const zc = this.cfg.inspiration.zeCellInsp ?? 1;
+    this.addInspiration(zc, '仄韵');
+    this.ui.toast(`${cell.name}——仄韵格，基本功精进，灵感 +${zc}`);
   }
 
   /* ------------------------------------------------------ 考题格 */

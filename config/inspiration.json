@@ -1,7 +1,8 @@
 {
   "initial": 40,
   "max": 66,
-  "pingCell": 1,
+  "pingCell": 2,
+  "zeCellInsp": 1,
   "scenicCost": 8,
   "battleCost": -2,
   "battleCostLate": -2,
