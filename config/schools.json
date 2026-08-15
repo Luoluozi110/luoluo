@@ -1,42 +1,52 @@
 [
   {
-    "id": "shixian",
-    "name": "诗仙流",
-    "attr": "shi",
-    "homeManner": "haofang",
-    "talent": "T001",
-    "desc": "开局诗力 +3，初始文心「斗酒诗百篇」。斗酒挥毫、一气呵成，专注诗体的爆发成长路线。"
-  },
-  {
-    "id": "cizong",
-    "name": "词宗流",
-    "attr": "ci",
-    "homeManner": "wanyue",
-    "talent": "T002",
-    "desc": "开局词力 +3，初始文心「倚声填词」。依谱倚声、步步为营，专注词体的稳健路线。"
-  },
-  {
-    "id": "liansheng",
-    "name": "联圣流",
-    "attr": "lian",
-    "homeManner": "zheli",
-    "talent": "T003",
-    "desc": "开局联力 +3，初始文心「对对如流」。属对敏捷、后发制人，专注楹联的逆袭路线。"
-  },
-  {
-    "id": "tongru",
-    "name": "通儒流",
+    "id": "bowen",
+    "name": "博闻",
     "attr": "xue",
-    "homeManner": "adaptive",
+    "homeManner": null,
     "talent": "T004",
-    "desc": "开局学力 +3，初始文心「博览」。腹笥深广、诸体皆通，走三绝均衡的全才路线。"
+    "aliases": ["tongru"],
+    "schoolMechanics": {
+      "type": "bowen",
+      "knowledgeThreshold": 2,
+      "knowledgeReward": { "mode": "allCreative", "value": 1 },
+      "knowledgePityTurn": 3
+    },
+    "desc": "开局学力 +3，初始文心「博览」。答对考题或完成抉择积累博闻，知识达到 2 后三体各得其益。"
   },
   {
     "id": "qishi",
-    "name": "奇士流",
+    "name": "奇士",
     "attr": "si",
-    "homeManner": "qili",
-    "talent": "T005",
-    "desc": "开局思力 +3，初始文心「急智」。立意奇崛、辞采鲜丽，主打战斗爆发的暴击路线。"
+    "homeManner": null,
+    "talent": "T008",
+    "aliases": ["qishi_old"],
+    "schoolMechanics": {
+      "type": "qishi",
+      "inspirationBonusRate": 0.35,
+      "upgradeCostRate": 0.65,
+      "talentDropRate": 0.35,
+      "talentDropCap": 0.45,
+      "talentDropPityWin": 5
+    },
+    "desc": "开局思力 +3，初始文心「推敲」。正向灵感来源以 35% 累积转化，文心升级成本按 0.65 折扣。"
+  },
+  {
+    "id": "cizong_bi",
+    "name": "辞宗",
+    "attr": "bi",
+    "homeManner": null,
+    "talent": "T006",
+    "aliases": ["cizong"],
+    "schoolMechanics": {
+      "type": "cizong_bi",
+      "creativeDicePlus": 2,
+      "freeDiceCap": 5,
+      "basicMinGain": 1,
+      "basicMinThreshold": 4,
+      "basicMinAccelerate": 1,
+      "lightEventEvery": 2
+    },
+    "desc": "开局笔力 +3，初始文心「入木三分」。创作骰点 +2（固定骰不受影响），结算后补足最低基本功。"
   }
 ]

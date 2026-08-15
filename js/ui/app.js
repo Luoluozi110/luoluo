@@ -24,7 +24,7 @@ import { Leaderboard } from './leaderboard.js';
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
-let cfg, board, hud, modals, battle, schoolEl, resultEl, albumUI, codexUI;
+let cfg, cloudBaseCfg, board, hud, modals, battle, schoolEl, resultEl, albumUI, codexUI;
 let game = null;
 let rolling = false;
 let menuEl = null;
@@ -32,6 +32,15 @@ let menuOv = null;
 let customConfigActive = false;
 let cloudConfigUrl = '';     // 云端配置地址（部署级 cloud.json 或本机 localStorage 覆盖）
 let cloudConfigActive = false;
+let cloudSyncPromise = Promise.resolve(null);
+let cloudSyncRunning = false;
+let cloudSyncNotice = '';
+let leaderboardInitPromise = null;
+
+// 云端工程配置须兼顾“编辑器发布后可更新”与“弱网不拖住首屏”。
+// 成功结果会被本机缓存，下一次启动先用已验证版本显示菜单，再在后台限时检查更新。
+const CLOUD_CACHE_KEY = 'feihua_cloud_config_cache_v1';
+const CLOUD_REQUEST_TIMEOUT_MS = 3500;
 
 /** index.html 已带静态骨架；缺失时补建，保证 app.js 单独引用也能跑 */
 function ensureSkeleton() {
@@ -60,28 +69,12 @@ async function boot() {
   // 配乐：待机/标题界面 BGM（首次交互后真正起播）
   setScene('idle');
 
-  // 云端自动同步必须发生在 BoardView / Modals / BattleStage 创建之前。
-  // 旧顺序先创建 BoardView 再拉云端：cfg 虽被覆盖，但 BoardView 仍持有旧 board，
-  // 因而地图编辑器的名称/图标/格子效果不会反映到画面。
-  try {
-    cloudConfigUrl = localStorage.getItem('feihua_cloud_config_url') || (await loadCloudUrl()) || '';
-    if (cloudConfigUrl) {
-      const proj = await fetchCloudConfig(cloudConfigUrl);
-      if (proj) {
-        cfg = applyProjectOverride(cfg, proj);
-        cloudConfigActive = true;
-      }
-    }
-  } catch (_) { /* 云端不可用不阻断启动 */ }
-
-  board = new BoardView(cfg, $('#scene'));
-  hud = new Hud($('#hud'));
-  if (cloudConfigActive) hud.toast('已从云端同步最新配置');
-  modals = new Modals($('#modalLayer'), cfg);
-  Leaderboard.init(modals).catch(() => {});   // 云端排行榜：读取配置并加载 Supabase 客户端（失败不阻断启动）
-  battle = new BattleStage($('#battleStage'), cfg);
+  // 主菜单与图鉴/名篇操作只需配置，不需要预先构建完整棋盘与 HUD。
+  // 先用本地已验证的云端缓存（若有）合并，立即显示菜单；网络刷新在后台限时进行。
+  await prepareCloudConfig();
   schoolEl = $('#schoolScreen');
   resultEl = $('#resultScreen');
+  modals = new Modals($('#modalLayer'), cfg);
   albumUI = new AlbumUI({
     loadoutEl: $('#loadout-screen'),
     albumEl: $('#album-screen'),
@@ -90,16 +83,31 @@ async function boot() {
     cards: cfg.album || []
   });
   codexUI = new CodexUI({ el: $('#codex-screen'), cfg });
-  if (cfg.inspiration && cfg.inspiration.lowWarning) hud.lowWarning = cfg.inspiration.lowWarning;
-  // 点击 HUD 中文心格 → 查看已拥有文心的属性 / 效果
-  hud.onTalent = t => modals.showTalentDetail(t);
-
-  // 掷骰按钮只绑定一次，用 rolling 标志防止重入
-  hud.onRoll(onRoll);
 
   buildMenu();
-  openSchoolScreen();
+  openSchoolScreen({ resync: false });
+  if (cloudSyncNotice) announceCloudSync();
 }
+
+/** 首次真正进入棋局时再创建高成本的棋盘/HUD；重复调用安全。 */
+function ensureGameUi() {
+  if (!board) board = new BoardView(cfg, $('#scene'));
+  if (!hud) {
+    hud = new Hud($('#hud'));
+    if (cfg.inspiration && cfg.inspiration.lowWarning) hud.lowWarning = cfg.inspiration.lowWarning;
+    hud.onTalent = t => modals.showTalentDetail(t);
+    hud.onRoll(onRoll);
+  }
+  if (!battle) battle = new BattleStage($('#battleStage'), cfg);
+  ensureLeaderboard();
+}
+
+/** 排行榜配置不进入首屏关键路径；首次需要排行榜能力或开启对局时再读取。 */
+function ensureLeaderboard() {
+  if (!leaderboardInitPromise) leaderboardInitPromise = Leaderboard.init(modals).catch(() => false);
+  return leaderboardInitPromise;
+}
+
 
 /* ---------------------------------------------------- 阶段 → 配乐移调 */
 
@@ -117,8 +125,8 @@ function stageFromProgress(p) {
 }
 
 /* ---------------------------------------------------- 选流派屏 */
-function openSchoolScreen() {
-  maybeResyncCloud();   // 返回主菜单时静默重新拉取云端配置（若已开启）
+function openSchoolScreen(opts = {}) {
+  if (opts.resync !== false) maybeResyncCloud();   // 返回主菜单时再静默检查更新，首次启动避免重复请求
   showMenuButton(false);
   setScene('idle');            // 返回待机/标题界面：恢复待机配乐
   setStage(game ? stageFromProgress(game.progress()) : 0); // 待机主题按当前所处阶段移调
@@ -208,7 +216,7 @@ function buildSchoolScreen() {
   schoolEl.innerHTML = `
     <div class="school-inner scroll-frame paper" style="max-width:min(1080px,94vw);border-radius:14px">
       <div class="title-ink" style="font-size:40px;text-align:center">選 擇 流 派</div>
-      <div class="subtitle" style="text-align:center;margin-top:6px">五子各有所长，落子无悔，且赴科场。</div>
+      <div class="subtitle" style="text-align:center;margin-top:6px">三派各有所长，落子无悔，且赴科场。</div>
       ${canContinue ? `<div style="text-align:center;margin:10px 0 4px"><button class="btn btn-primary" data-continue style="font-size:18px;padding:12px 30px;letter-spacing:.12em">▶ 继续上局</button>
         <div style="font-size:12px;color:var(--mo-3);margin-top:6px">${contInfo}</div></div>` : ''}
       <div class="school-grid">${cards}</div>
@@ -258,6 +266,7 @@ async function openNameScreen(schoolId, loadout) {
 }
 
 function startGame(schoolId, loadout, playerName) {
+  ensureGameUi();
   schoolEl.classList.remove('on');
   resultEl.classList.remove('on');
   albumUI.closeLoadout();
@@ -306,6 +315,7 @@ function makeUi() {
     showQuiz: (q, opt) => modals.showQuiz(q, opt),
     showQuizResult: (q, ans, ok) => modals.showQuizResult(q, ans, ok),
     showEvent: ev => modals.showEvent(ev),
+    showBowenChoice: () => modals.showBowenChoice(),
     showSky: c => modals.showSky(c),
     showZeitgeist: z => modals.showZeitgeist(z),
     askScenic: (cell, cost, curInsp) => modals.askScenic(cell, cost, curInsp),
@@ -418,7 +428,10 @@ function showMenu() {
     });
   });
   ov.querySelector('[data-codex]')?.addEventListener('click', () => { closeMenu(); codexUI.open('foes'); });
-  ov.querySelector('[data-leaderboard]')?.addEventListener('click', () => { closeMenu(); Leaderboard.openModal(); });
+  ov.querySelector('[data-leaderboard]')?.addEventListener('click', () => {
+    closeMenu();
+    ensureLeaderboard().then(() => Leaderboard.openModal());
+  });
   ov.querySelector('[data-custom]')?.addEventListener('click', () => { closeMenu(); openCustomConfig(); });
   ov.querySelector('[data-restart]')?.addEventListener('click', () => { closeMenu(); openSchoolScreen(); });
   ov.querySelector('[data-quality]')?.addEventListener('click', () => {
@@ -433,30 +446,105 @@ function showMenu() {
 
 /* ------------------------------------------------------ 云端自动同步（编辑器发布 → 所有玩家共享） */
 
-/** 拉取云端配置（带缓存击穿），返回解析后的工程对象或 null */
-async function fetchCloudConfig(url) {
+function readCloudCache(url) {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CLOUD_CACHE_KEY) || 'null');
+    return cached && cached.url === url && cached.project && typeof cached.project === 'object'
+      ? cached.project : null;
+  } catch (_) { return null; }
+}
+
+function writeCloudCache(url, project) {
+  try { localStorage.setItem(CLOUD_CACHE_KEY, JSON.stringify({ url, project, savedAt: Date.now() })); }
+  catch (_) { /* 缓存不可写不影响同步结果 */ }
+}
+
+/** 拉取云端配置：保留缓存击穿以获取编辑器刚发布的内容，并以 AbortController 限制弱网等待。 */
+async function fetchCloudConfig(url, opts = {}) {
+  const timeoutMs = Number(opts.timeoutMs) || CLOUD_REQUEST_TIMEOUT_MS;
+  const controller = typeof AbortController === 'function' ? new AbortController() : null;
+  let timer;
   try {
     const sep = url.includes('?') ? '&' : '?';
-    const res = await fetch(url + sep + '_cb=' + Date.now(), { cache: 'no-store' });
-    if (!res.ok) {
-      if (hud && hud.toast) hud.toast('云端配置拉取失败（HTTP ' + res.status + '）');
-      return null;
-    }
+    timer = setTimeout(() => controller && controller.abort(), timeoutMs);
+    const res = await fetch(url + sep + '_cb=' + Date.now(), {
+      cache: 'no-store',
+      signal: controller ? controller.signal : undefined
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const obj = await res.json();
-    if (!obj || typeof obj !== 'object') return null;
+    if (!obj || typeof obj !== 'object') throw new Error('云端配置格式无效');
     return obj;
   } catch (e) {
-    if (hud && hud.toast) hud.toast('云端配置拉取失败：' + e.message);
+    if (!opts.silent && hud && hud.toast) {
+      const msg = e && e.name === 'AbortError' ? '云端配置同步超时，已使用本地内容' : '云端配置拉取失败：' + (e.message || e);
+      hud.toast(msg);
+    }
     return null;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
-/** 返回主菜单时静默重新拉取（若已开启云端同步），使中途的发布在下一局生效 */
-function maybeResyncCloud() {
+function refreshConfigBoundUi() {
+  if (modals) modals.cfg = cfg;
+  if (albumUI) albumUI.cards = cfg.album || [];
+  if (codexUI) codexUI.cfg = cfg;
+  // 棋盘一旦已构建便持有自己的地图；为保证地图覆盖一致性，只把远端刷新作为“下一局/刷新后”生效。
+}
+
+/** 合并一份已验证的云端工程配置，并将它缓存给下一次首屏。 */
+function applyCloudProject(url, project, notice) {
+  cfg = applyProjectOverride(cloudBaseCfg || cfg, project);
+  cloudConfigActive = true;
+  writeCloudCache(url, project);
+  refreshConfigBoundUi();
+  if (notice) cloudSyncNotice = notice;
+}
+
+/**
+ * 启动云端同步：先立即采用本机缓存，再后台限时拉取最新版本。
+ * 不把远端 Raw 请求放在菜单首屏的硬等待链上；真正进局时会等待同一 Promise，
+ * 因而 BoardView 始终根据完成合并后的 cfg 建立。
+ */
+async function prepareCloudConfig() {
+  try {
+    cloudConfigUrl = localStorage.getItem('feihua_cloud_config_url') || await loadCloudUrl() || '';
+  } catch (_) { cloudConfigUrl = ''; }
   if (!cloudConfigUrl) return;
-  fetchCloudConfig(cloudConfigUrl).then(proj => {
-    if (proj) { cfg = applyProjectOverride(cfg, proj); cloudConfigActive = true; }
-  }).catch(() => {});
+
+  const cached = readCloudCache(cloudConfigUrl);
+  if (cached) {
+    applyCloudProject(cloudConfigUrl, cached, '已使用本机缓存的云端配置，并在后台检查更新');
+  }
+  cloudSyncRunning = true;
+  cloudSyncPromise = fetchCloudConfig(cloudConfigUrl, { silent: true }).then(project => {
+    if (!project) return null;
+    applyCloudProject(cloudConfigUrl, project, cached ? '云端配置已刷新，下一局将使用最新内容' : '已从云端同步最新配置');
+    return project;
+  }).finally(() => { cloudSyncRunning = false; });
+}
+
+function announceCloudSync() {
+  if (!cloudSyncNotice) return;
+  if (hud) hud.toast(cloudSyncNotice);
+  cloudSyncNotice = '';
+}
+
+/** 返回主菜单时静默拉取；有进行中的棋盘时不热替换地图，避免画面与规则配置脱节。 */
+function maybeResyncCloud() {
+  if (!cloudConfigUrl || cloudSyncRunning) return;
+  cloudSyncRunning = true;
+  cloudSyncPromise = fetchCloudConfig(cloudConfigUrl, { silent: true }).then(project => {
+    if (project) applyCloudProject(cloudConfigUrl, project, '云端配置已刷新，下一局将使用最新内容');
+    return project;
+  }).finally(() => { cloudSyncRunning = false; });
+}
+
+/** 第一次进入对局前等待有限时的同步收尾，保证新建棋盘不会拿到半更新配置。 */
+async function waitForCloudBeforeGame() {
+  try { await cloudSyncPromise; } catch (_) { /* fetchCloudConfig 已降级为 null */ }
+  announceCloudSync();
 }
 
 /* ------------------------------------------------------ 载入自定义配置（编辑器导出 → 本机生效） */

@@ -82,6 +82,54 @@ export class Game {
     this.d6 = () => 1 + Math.floor(this.rand() * 6);
   }
 
+  schoolMechanics(school = this.s && this.s.school) {
+    return (school && school.schoolMechanics) || {};
+  }
+
+  async gainBowenKnowledge(reason) {
+    const mech = this.schoolMechanics();
+    if (mech.type !== 'bowen') return false;
+    const s = this.s;
+    const st = s.schoolState || (s.schoolState = this.createSchoolState(s.school));
+    st.knowledge = (Number(st.knowledge) || 0) + 1;
+    const threshold = Math.max(1, Number(mech.knowledgeThreshold) || 2);
+    const pity = Number(mech.knowledgePityTurn) || 3;
+    if (st.knowledge < threshold && !(s.turn <= pity && !st.knowledgeTriggered)) return false;
+    st.knowledge = 0;
+    st.knowledgeTriggered = true;
+    const choice = this.ui.showBowenChoice ? await this.ui.showBowenChoice() : 'broad';
+    if (choice === 'focus') {
+      const key = R.CREATIVE_KEYS.slice().sort((a, b) => (s.attrs[a] || 0) - (s.attrs[b] || 0))[0];
+      this.addAttrs({ [key]: 3 }, { noSchoolGrowth: true });
+      st.bowenFocus = key;
+      this.push(`博闻·专攻一体：${R.ATTR_NAMES[key]} +3${reason ? `（${reason}）` : ''}`);
+    } else if (choice === 'battle') {
+      this.addAttrs({ xue: 2 }, { noSchoolGrowth: true });
+      this.addInspiration(2, '博闻·以学驭战');
+      st.bowenBattleHint = true;
+      this.push(`博闻·以学驭战：学力 +2，灵感 +2`);
+    } else {
+      this.addAttrs({ shi: 1, ci: 1, lian: 1 }, { noSchoolGrowth: true });
+      st.bowenBroad = true;
+      this.push(`博闻·兼收并蓄：三体各 +1${reason ? `（${reason}）` : ''}`);
+    }
+    this.ui.toast(`博闻抉择已兑现：${choice === 'focus' ? '专攻一体' : choice === 'battle' ? '以学驭战' : '兼收并蓄'}`);
+    return true;
+  }
+
+  createSchoolState(school) {
+    const mech = this.schoolMechanics(school);
+    return {
+      type: mech.type || school.id,
+      knowledge: 0,
+      knowledgeTriggered: false,
+      inspirationAccumulator: 0,
+      qishiTalentDropObtained: false,
+      battleSeq: 0,
+      settledBattleIds: []
+    };
+  }
+
   /* ---------------------------------------------------------- 开局 */
   /**
    * @param {string} schoolId
@@ -109,6 +157,7 @@ export class Game {
 
     this.s = {
       school,
+      schoolState: this.createSchoolState(school),
       playerName,
       attrs,
       inspiration: cfg.inspiration.initial,
@@ -202,8 +251,7 @@ export class Game {
 
   /* ------------------------------------------------------ 派生数据 */
   get lianUnlocked() {
-    return this.s.school.attr === 'lian'
-      || this.s.attrs.lian >= 8
+    return this.s.attrs.lian >= 8
       || this.s.passive.some(t => t.effect && t.effect.type === 'unlock_lian');
   }
 
@@ -385,8 +433,23 @@ export class Game {
 
   addInspiration(v, reason) {
     if (!v) return 0;
+    const mech = this.schoolMechanics();
+    const st = this.s.schoolState || (this.s.schoolState = this.createSchoolState(this.s.school));
+    let amount = Number(v) || 0;
+    // 奇士只放大正向、非开局来源；负向和 start_insp 不进入累积器。
+    const isPositiveSource = amount > 0 && reason !== '开局' && !String(reason || '').startsWith('文心·') && !String(reason || '').startsWith('传承');
+    if (mech.type === 'qishi' && isPositiveSource) {
+      st.inspirationAccumulator = Number(st.inspirationAccumulator) || 0;
+      const extra = amount * (Number(mech.inspirationBonusRate) || 0);
+      st.inspirationAccumulator += extra;
+      const whole = Math.floor(st.inspirationAccumulator);
+      if (whole > 0) {
+        amount += whole;
+        st.inspirationAccumulator -= whole;
+      }
+    }
     const before = this.s.inspiration;
-    this.s.inspiration = R.clamp(before + v, 0, this.s.inspirationMax);
+    this.s.inspiration = R.clamp(before + amount, 0, this.s.inspirationMax);
     const real = this.s.inspiration - before;
     if (real) this.ui.floatInspiration(real, reason);
     return real;
@@ -483,8 +546,12 @@ export class Game {
     if (!t) return { ok: false, reason: '未持有该文心' };
     const level = Number(s.talentLevels[id]) || 1;
     if (level >= up.maxLevel) return { ok: false, reason: '已满级', level, max: up.maxLevel };
-    const cost = Number(up.upCost[level - 1]) || 0;
-    if (s.inspiration < cost) return { ok: false, reason: '灵感不足', level, max: up.maxLevel, cost };
+    const baseCost = Number(up.upCost[level - 1]) || 0;
+    const schoolMech = this.schoolMechanics();
+    const cost = schoolMech.type === 'qishi'
+      ? Math.max(1, Math.ceil(baseCost * (Number(schoolMech.upgradeCostRate) || 0.65)))
+      : baseCost;
+    if (s.inspiration < cost) return { ok: false, reason: '灵感不足', level, max: up.maxLevel, cost, baseCost };
     const newLevel = level + 1;
     const newEntry = up.levels[newLevel - 1];
     if (!newEntry) return { ok: false, reason: '升级数据缺失', level, max: up.maxLevel };
@@ -737,6 +804,7 @@ export class Game {
         this.addAttrs({ [key]: gain });
         this.push(`答对「${q.id}」，${R.ATTR_NAMES[key]} +${gain}`);
         this.addInspiration(this.cfg.inspiration.quizCorrectInsp ?? 0, '答对'); // 核心技能↔燃料闭环
+        await this.gainBowenKnowledge('答对知识题');
         for (const t of s.passive) if ((t.effect || {}).type === 'insp_on_quiz') this.triggerTalentLimited(t, `文心·${t.name}`);
       } else {
         this.addInspiration(this.cfg.inspiration.quizWrong ?? -2, ans.timedOut ? '超时' : '答错');
@@ -750,6 +818,7 @@ export class Game {
         const opt = q.options[ans.index];
         if (opt && opt.attr) this.addAttrs({ [opt.attr]: this.cfg.attrs.quizCorrectGain ?? 2 });
         this.addInspiration(this.cfg.inspiration.quizCorrectInsp ?? 0, '抉择');
+        await this.gainBowenKnowledge('完成抉择');
         for (const t of s.passive) if ((t.effect || {}).type === 'insp_on_quiz') this.triggerTalentLimited(t, `文心·${t.name}`);
         await this.ui.showQuizResult(q, ans, true);
       } else {
@@ -758,6 +827,38 @@ export class Game {
         await this.ui.showQuizResult(q, ans, false);
       }
     }
+  }
+
+  /* ------------------------------------------------------ 辞宗战后轻奇遇 */
+  _eventHasTalentReward(ev) {
+    const has = e => !!(e && (e.talent || (Array.isArray(e.choices) && e.choices.some(c => c && c.effect && c.effect.talent))));
+    return has(ev) || has(ev && ev.challenge && ev.challenge.winAll);
+  }
+
+  async runCizongLightEvent() {
+    const mech = this.schoolMechanics();
+    if (mech.type !== 'cizong_bi') return false;
+    const st = this.s.schoolState || (this.s.schoolState = this.createSchoolState(this.s.school));
+    const every = Number(mech.lightEventEvery) || 2;
+    if ((Number(st.battleSeq) || 0) % every !== 0 || st.lightEventBattle === st.battleSeq) return false;
+    const pool = (this.cfg.events || []).filter(ev => {
+      if (!ev || this.s.seenEvents.has(ev.id)) return false;
+      if (ev.kind === 'challenge' || this._eventHasTalentReward(ev)) return false;
+      return ev.kind === 'choice' || ev.kind === 'direct' || (!ev.kind && ev.effect);
+    });
+    if (!pool.length) { this.push('辞宗·文成有遇：今夜文缘已尽'); return false; }
+    const ev = pool[Math.floor(this.rand() * pool.length)];
+    this.s.seenEvents.add(ev.id);
+    st.lightEventBattle = st.battleSeq;
+    st.cizongEvents = (Number(st.cizongEvents) || 0) + 1;
+    if (this.cfg.inspiration.eventCellCost) this.addInspiration(this.cfg.inspiration.eventCellCost, '辞宗·战后奇遇耗神');
+    this.push(`辞宗·文成有遇：${ev.name}`);
+    const idx = await this.ui.showEvent(ev);
+    if (ev.kind === 'choice') {
+      const c = (ev.choices || [])[idx] || (ev.choices || [])[0] || {};
+      await this.applyEffect(c.effect || {});
+    } else await this.applyEffect(ev.effect || {});
+    return true;
   }
 
   /* ------------------------------------------------------ 奇遇格 */
@@ -1035,6 +1136,9 @@ export class Game {
     /* ---- 玩家侧修正 ---- */
     const pct = [], flat = [];
     let dicePlus = 0, diceMult = R.BATTLE_COEF.diceMult, diceFixed = null, critMult = 1;
+    const schoolMech = this.schoolMechanics();
+    const schoolDicePlus = schoolMech.type === 'cizong_bi'
+      ? Math.min(Number(schoolMech.creativeDicePlus) || 0, Number(schoolMech.freeDiceCap) || 5) : 0;
 
     // 相性 2.0：四层叠加（基矩阵 / 门派文风 / 当朝风潮 / 气势连捷）
     const base = R.affinityValue(af.matrix, manner, session.theme);
@@ -1201,6 +1305,7 @@ export class Game {
       });
     }
 
+    if (diceFixed == null) dicePlus += schoolDicePlus;
     const selfCalc = R.battleScore({
       attrs: session.playerAttrs, style, dice: totalPips, dicePlus, diceMult, diceFixed, critMult,
       pctMods: pct, flatMods: flat
@@ -1263,6 +1368,12 @@ export class Game {
   async settleBattle(session, out) {
     const s = this.s;
     const insp = this.cfg.inspiration;
+    const schoolMech = this.schoolMechanics();
+    const schoolState = s.schoolState || (s.schoolState = this.createSchoolState(s.school));
+    const battleId = `${s.turn}:${schoolState.battleSeq || 0}:${session.label || ''}`;
+    if (schoolState.settledBattleIds && schoolState.settledBattleIds.includes(battleId)) return;
+    schoolState.battleSeq = (Number(schoolState.battleSeq) || 0) + 1;
+    schoolState.settledBattleIds = [...(schoolState.settledBattleIds || []), battleId].slice(-40);
 
     // 图鉴：累计该对手的胜/平/负战绩（跨局留存，供「图鉴阁·对手详情」展示胜率）
     const n0 = session.npc;
@@ -1308,10 +1419,18 @@ export class Game {
       this.push(`论战胜「${session.npc.fullName || session.npc.name}」，${R.ATTR_NAMES[out.style]} +${gain}`);
       // 获胜后文心掉落概率：抽成可调旋钮（config/attrs.json → talentDropRate），
       // 以便在不做数值膨胀的前提下调节「联动」出现的频率。缺省回退 0.15。
-      const talentDropRate = Number((this.cfg.attrs && this.cfg.attrs.talentDropRate) ?? 0.15);
-      if (this.rand() < talentDropRate) {
+      const baseDrop = Number((this.cfg.attrs && this.cfg.attrs.talentDropRate) ?? 0.15);
+      const dropRate = schoolMech.type === 'qishi'
+        ? Math.min(Number(schoolMech.talentDropCap) || 0.45, Number(schoolMech.talentDropRate) || 0.35)
+        : baseDrop;
+      const pity = schoolMech.type === 'qishi' && schoolState.battleSeq >= (Number(schoolMech.talentDropPityWin) || 5)
+        && !schoolState.qishiTalentDropObtained && s.events.talents <= 1;
+      if (this.rand() < dropRate || pity) {
         const t = this.randomTalent();
-        if (t) await this.grantTalent(t);
+        if (t) {
+          const got = await this.grantTalent(t);
+          if (got && schoolMech.type === 'qishi') schoolState.qishiTalentDropObtained = true;
+        }
       }
     } else if (out.result === 'draw') {
       s.battle.draw++; s.battle.streak = 0;
@@ -1366,6 +1485,20 @@ export class Game {
     // 不写入历史、不扣文债、不叠 palace 适应层，避免半成品污染跨场状态。
     const npcMech = session._mechValid ? (session.npc && session.npc.mech) : null;
     const mechOut = out.mech || session._mechOut || null;
+    if (schoolMech.type === 'cizong_bi' && schoolMech.basicMinGain) {
+      const basic = R.BASIC_KEYS || ['bi', 'xue', 'si'];
+      const key = basic.slice().sort((a, b) => (s.attrs[a] || 0) - (s.attrs[b] || 0))[0];
+      const gain = Number(schoolMech.basicMinGain) || 1;
+      this.addAttrs({ [key]: gain });
+      schoolState.basicProgress = schoolState.basicProgress || { bi: 0, xue: 0, si: 0 };
+      schoolState.basicProgress[key] = (schoolState.basicProgress[key] || 0) + gain;
+      const threshold = Number(schoolMech.basicMinThreshold) || 4;
+      if (schoolState.basicProgress[key] >= threshold) {
+        schoolState.basicProgress[key] -= threshold;
+        this.addAttrs({ [key]: Number(schoolMech.basicMinAccelerate) || 1 });
+      }
+      this.push(`辞宗·一战一得：${R.ATTR_NAMES[key]} +${gain}`);
+    }
     if (npcMech && foeId) {
       // ① 跨场玩家行为历史（供识破重复/仿作惯用/换体破绽读取）
       if (!s.npcMech) s.npcMech = { history: {}, palace: {} };
@@ -1423,6 +1556,7 @@ export class Game {
       }
     }
 
+    if (schoolMech.type === 'cizong_bi' && out.result !== 'lose') await this.runCizongLightEvent();
     this.ui.onState(s);
   }
 

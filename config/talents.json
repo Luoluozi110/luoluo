@@ -3,7 +3,7 @@
     "id": "T001",
     "name": "斗酒诗百篇",
     "kind": "passive",
-    "school": "shixian",
+    "school": "",
     "text": "「李白斗酒诗百篇，长安市上酒家眠。」——杜甫《饮中八仙歌》。以诗出战获胜时，诗力额外 +1。",
     "effect": {
       "type": "on_win_bonus",
@@ -15,7 +15,7 @@
     "id": "T002",
     "name": "倚声填词",
     "kind": "passive",
-    "school": "cizong",
+    "school": "",
     "text": "词本倚声而作，先有腔调后有文字。填词日久，声律入骨——以词出战获胜时，词力额外 +1。",
     "effect": {
       "type": "on_win_bonus",
@@ -27,7 +27,7 @@
     "id": "T003",
     "name": "对对如流",
     "kind": "passive",
-    "school": "liansheng",
+    "school": "",
     "text": "属对之才，出口成双。相传解缙幼时应对如流，一座皆惊——以联出战获胜时，联力额外 +1。",
     "effect": {
       "type": "on_win_bonus",
@@ -39,7 +39,7 @@
     "id": "T004",
     "name": "博览",
     "kind": "passive",
-    "school": "tongru",
+    "school": "bowen",
     "text": "「读书破万卷，下笔如有神。」——杜甫《奉赠韦左丞丈二十二韵》。腹笥既广，学力常驻 +2。",
     "effect": {
       "type": "attr_flat",
@@ -52,7 +52,7 @@
     "id": "T005",
     "name": "急智",
     "kind": "passive",
-    "school": "qishi",
+    "school": "",
     "text": "临场生风，机锋不落。每场论战的灵感骰点数 +1。",
     "effect": {
       "type": "dice_plus",

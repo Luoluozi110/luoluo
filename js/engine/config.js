@@ -29,11 +29,14 @@ async function loadOne(name) {
 }
 
 export async function loadConfig() {
-  const entries = await Promise.all(FILES.map(async n => [n, await loadOne(n)]));
-  const cfg = Object.fromEntries(entries);
-  await Promise.all(OPTIONAL_FILES.map(async n => {
-    try { cfg[n] = await loadOne(n); } catch (e) { cfg[n] = []; configSource[n] = '缺失'; }
-  }));
+  // 必需与可选配置同批发起，避免先等 11 个必需文件、再多等一轮可选文件的网络往返。
+  // HTTP/2 下这些小型 JSON 可复用同一连接；任一可选文件缺失仍只按原约定降级，不阻断启动。
+  const required = FILES.map(async n => [n, await loadOne(n)]);
+  const optional = OPTIONAL_FILES.map(async n => {
+    try { return [n, await loadOne(n)]; }
+    catch (_) { configSource[n] = '缺失'; return [n, []]; }
+  });
+  const cfg = Object.fromEntries(await Promise.all([...required, ...optional]));
   return normalize(cfg);
 }
 

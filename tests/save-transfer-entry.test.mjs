@@ -13,10 +13,11 @@ assert.match(app, /schoolEl\.querySelector\('\[data-save-transfer\]'\).*openSave
 assert.match(app, /menu-item" data-save-transfer>存档码（导入／导出）/);
 assert.match(app, /beforeExport:\s*\(\)\s*=>\s*\{[^}]*forceSaveRun\(game\)/s);
 
-// 存档迁移 UI 不再依附传世名篇页，且明确为全量内容。
-assert.doesNotMatch(album, /<button[^>]+data-export>导出存档码/);
-assert.doesNotMatch(album, /<button[^>]+data-import>导入存档码/);
+// 独立存档码 UI 不再依附传世名篇页，且明确为全量内容。
 assert.match(album, /openSaveTransfer\(opts = \{\}\)/);
+assert.match(album, /<h2>存 档 码<\/h2>/);
+assert.match(album, /data-export>导出存档码/);
+assert.match(album, /data-import>导入存档码/);
 assert.match(album, /累计战绩与传世名篇图鉴、图鉴阁（对手／文心／羁绊／天象）进度、传承火种，以及自动／手动进行中对局/);
 assert.match(album, /Album\.exportCode/);
 assert.match(album, /Album\.importCode/);

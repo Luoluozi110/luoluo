@@ -169,7 +169,7 @@ export class AlbumUI {
   }
 
   /**
-   * 独立存档迁移弹窗：可从主菜单或局内菜单调用，不再依附“传世名篇”。
+   * 独立存档码弹窗：可从主菜单或局内菜单调用，不再依附“传世名篇”。
    * @param {object} opts - { beforeExport(), onImported(result) }
    */
   openSaveTransfer(opts = {}) {
@@ -183,8 +183,8 @@ export class AlbumUI {
           代码仅在设备间复制，不会上传；导入将覆盖本机同类进度。
         </div>
         <div class="save-transfer-actions">
-          <button class="btn btn-primary" data-export>导出完整存档</button>
-          <button class="btn btn-ink" data-import>导入完整存档</button>
+          <button class="btn btn-primary" data-export>导出存档码</button>
+          <button class="btn btn-ink" data-import>导入存档码</button>
           <button class="btn btn-ink" data-close>关闭</button>
         </div>
         <div class="ab-io" data-io></div>
@@ -211,7 +211,7 @@ export class AlbumUI {
     }
     io.innerHTML = `
       <div class="io-box">
-        <div class="io-title">全量存档码（含累计图鉴、图鉴阁认知、传承与进行中对局；全选复制后妥善保存）</div>
+        <div class="io-title">全量存档码（含传世名篇图鉴、图鉴阁四类进度、累计战绩、传承与进行中对局；全选复制后妥善保存）</div>
         <textarea class="io-text" readonly rows="3">${esc(code)}</textarea>
         <div class="io-row">
           <button class="btn btn-sm btn-ink" data-copy>复制到剪贴板</button>
@@ -240,7 +240,7 @@ export class AlbumUI {
   _importPanel(io, onImported) {
     io.innerHTML = `
       <div class="io-box">
-        <div class="io-title">粘贴全量存档码。导入将覆盖本机图鉴、累计战绩、图鉴阁、传承及进行中对局；请确认已备份当前进度。</div>
+        <div class="io-title">粘贴全量存档码。导入将覆盖本机传世名篇图鉴、图鉴阁四类进度、累计战绩、传承及进行中对局；请确认已备份当前进度。</div>
         <textarea class="io-text" rows="3" placeholder="在此粘贴存档码"></textarea>
         <div class="io-row">
           <button class="btn btn-sm btn-primary" data-do>确认导入</button>

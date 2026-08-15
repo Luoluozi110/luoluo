@@ -129,6 +129,19 @@ export class Modals {
     this._quizOv = null;
   }
 
+  /* ---------------------------------------------------- 博闻抉择 */
+  showBowenChoice() {
+    return new Promise(resolve => {
+      const options = [
+        { id: 'focus', title: '专攻一体', desc: '选择诗、词或联之一，获得该文体 +3。' },
+        { id: 'broad', title: '兼收并蓄', desc: '诗、词、联各 +1，并获得一次小型奇遇。' },
+        { id: 'battle', title: '以学驭战', desc: '学力 +2、灵感 +2，下一场论战更从容。' }
+      ];
+      const ov = this.open(`<div class="modal scroll-frame paper bowen-choice"><div class="mtitle"><h2>博闻抉择</h2><span class="mtag">知识已成其用</span></div><div class="dianggu">腹笥既广，今当择其所用。</div><div class="opt-list">${options.map(o => `<button class="opt" data-id="${o.id}"><b>${o.title}</b><span>${o.desc}</span></button>`).join('')}</div></div>`);
+      ov.querySelectorAll('[data-id]').forEach(btn => btn.addEventListener('click', () => { const id = btn.dataset.id; this.close(ov); resolve(id); }));
+    });
+  }
+
   /* ---------------------------------------------------- 奇遇格 */
   showEvent(ev) {
     return new Promise(resolve => {

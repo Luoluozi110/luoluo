@@ -16,7 +16,7 @@
 
 export const RUN_SAVE_KEY = 'feihua_run_save';               // 自动存档槽（每回合结束）
 export const RUN_SAVE_MANUAL_KEY = 'feihua_run_save_manual'; // 手动存档槽（菜单「保存当前进度」）
-export const RUN_SAVE_VERSION = 4;
+export const RUN_SAVE_VERSION = 5;
 export const SAVE_WARN_BYTES = 3 * 1024 * 1024;              // 体积预警阈值 3MB
 
 const LOG_MAX = 200;   // 超过则截断
@@ -29,7 +29,7 @@ const STATE_KEYS = [
   'lap', 'turn', 'phase',   'sky', 'nextBattlePct', 'battle', 'events',
   'quiz', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
   'zeitgeist', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
-  'talentLevels', 'over', 'reachedEnd', 'endReason', 'log'
+  'talentLevels', 'schoolState', 'over', 'reachedEnd', 'endReason', 'log'
 ];
 
 /**
@@ -160,6 +160,11 @@ function migrateRun(obj) {
     state.talentLevels = {};
     for (const id of [...idsOf(state.passive), ...idsOf(state.active)]) state.talentLevels[id] = 1;
   }
+  // v5：三流派局内进度；旧档不补发收益，只建立安全空状态。
+  if (!state.schoolState || typeof state.schoolState !== 'object') {
+    state.schoolState = { type: '', knowledge: 0, knowledgeTriggered: false, inspirationAccumulator: 0,
+      qishiTalentDropObtained: false, battleSeq: 0, settledBattleIds: [] };
+  }
   return { v: RUN_SAVE_VERSION, savedAt: Number(obj.savedAt) || Date.now(), state };
 }
 
@@ -257,6 +262,16 @@ export function deserializeRun(rawObj, cfg) {
   out.talentState = (out.talentState && typeof out.talentState === 'object') ? out.talentState : { triggers: {}, flags: {} };
   out.talentState.triggers = (out.talentState.triggers && typeof out.talentState.triggers === 'object') ? out.talentState.triggers : {};
   out.talentState.flags = (out.talentState.flags && typeof out.talentState.flags === 'object') ? out.talentState.flags : {};
+  out.schoolState = (out.schoolState && typeof out.schoolState === 'object') ? out.schoolState : {};
+  const schoolAliases = { tongru: 'bowen', cizong: 'cizong_bi', shixian: 'bowen', liansheng: 'bowen' };
+  if (schoolAliases[out.school && out.school.id]) {
+    const target = (cfg.schools || []).find(x => x.id === schoolAliases[out.school.id]);
+    if (target) out.school = target;
+  }
+  out.schoolState.type = out.schoolState.type || (out.school && out.school.id) || '';
+  out.schoolState.knowledge = Math.max(0, Number(out.schoolState.knowledge) || 0);
+  out.schoolState.inspirationAccumulator = Math.max(0, Number(out.schoolState.inspirationAccumulator) || 0);
+  out.schoolState.settledBattleIds = Array.isArray(out.schoolState.settledBattleIds) ? out.schoolState.settledBattleIds.slice(-40) : [];
   out.npcMech = (out.npcMech && typeof out.npcMech === 'object') ? out.npcMech : { history: {}, palace: {} };
   out.battle = (out.battle && typeof out.battle === 'object') ? out.battle : { win: 0, draw: 0, loss: 0, streak: 0, maxStreak: 0, upsets: 0, winsByStyle: { shi: 0, ci: 0, lian: 0 } };
   out.events = (out.events && typeof out.events === 'object') ? out.events : { total: 0, rare: 0, legend: 0, talents: 0, items: 0 };

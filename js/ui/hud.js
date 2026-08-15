@@ -65,6 +65,7 @@ export class Hud {
             <div id="radar"></div>
             <div class="attr-list" id="attrList"></div>
           </div>
+          <div id="schoolProgress" class="school-progress"></div>
         </div></div>
       </div>
 
@@ -112,6 +113,7 @@ export class Hud {
     this.el = {
       radar: root.querySelector('#radar'),
       list: root.querySelector('#attrList'),
+      schoolProgress: root.querySelector('#schoolProgress'),
       inspNum: root.querySelector('#inspNum'),
       inspMax: root.querySelector('#inspMax'),
       inspInk: root.querySelector('#inspInk'),
@@ -163,6 +165,24 @@ export class Hud {
         row.classList.remove('bump'); void row.offsetWidth; row.classList.add('bump');
       }
       this.prev[k] = v;
+    }
+
+    // 三派成长进度：把核心循环做成 HUD 可见反馈。
+    const mech = (s.school && s.school.schoolMechanics) || {};
+    const ss = s.schoolState || {};
+    if (this.el.schoolProgress) {
+      if (mech.type === 'bowen') {
+        const need = Number(mech.knowledgeThreshold) || 2;
+        this.el.schoolProgress.innerHTML = `<span class="school-progress-name">博闻·开卷</span><span>知识 ${Math.min(need, Number(ss.knowledge) || 0)}/${need}</span>`;
+      } else if (mech.type === 'qishi') {
+        const acc = Math.round((Number(ss.inspirationAccumulator) || 0) * 100) / 100;
+        this.el.schoolProgress.innerHTML = `<span class="school-progress-name">奇士·灵机</span><span>额外灵感累积 ${acc}</span>`;
+      } else if (mech.type === 'cizong_bi') {
+        const bp = ss.basicProgress || {};
+        const key = ['bi', 'xue', 'si'].slice().sort((a, b) => (s.attrs[a] || 0) - (s.attrs[b] || 0))[0];
+        const need = Number(mech.basicMinThreshold) || 4;
+        this.el.schoolProgress.innerHTML = `<span class="school-progress-name">辞宗·一战一得</span><span>${ATTR_NAMES[key]}成长 ${Number(bp[key]) || 0}/${need}</span>`;
+      } else this.el.schoolProgress.textContent = '';
     }
 
     // 灵感
