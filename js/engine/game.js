@@ -535,6 +535,11 @@ export class Game {
 
     // 回合开始：灵感为 0 → 封笔
     if (s.inspiration <= 0) return this.endGame('fengbi');
+
+    // 首回合开始前：弹窗说明当朝文风（风潮）及其效果（续玩存档 turn>0 不触发）
+    if (s.turn === 0 && typeof this.ui.showZeitgeist === 'function') {
+      await this.ui.showZeitgeist(s.zeitgeist);
+    }
     s.turn++;
     if (s.turn > TURN_LIMIT) return this.endGame('turnlimit');
 

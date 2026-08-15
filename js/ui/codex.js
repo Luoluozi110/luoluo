@@ -303,7 +303,7 @@ export class CodexUI {
       : lv === 1
         ? '初识其面，但知其有拿手好戏与可乘之隙，尚无实证。'
         : lv === 2
-          ? '交手中渐知其常法，行动路数已了然于胸。'
+          ? '已通晓其长短，破绽反制之法了然于胸——击败此僚后，克制之策尽显于图鉴。'
           : '已亲手破其拿手好戏，破绽所在与克制之法皆心中有数。';
     return `<div class="cx-cog"><div class="cx-cog-track">${steps}</div>${stat}
       <div class="cx-hint2">${esc(tip)}</div></div>`;
@@ -317,8 +317,15 @@ export class CodexUI {
    * 无 mech 的对手：平铺说明，无机制可循。
    */
   _foeMechHtml(tier, npc) {
+    const st = Codex.getFoeStats(tier.id, npc.name);
+    const defeated = !!(st && st.w > 0);
+    const defeatedBadge = defeated ? `<span class="cog-badge lv2">已击败</span>` : '';
     if (!npc.mech) {
-      return `<div class="cx-hint2">此人不具特殊机制，唯凭才学取胜，无招牌破绽可循。</div>`;
+      const tac = defeated
+        ? `<div class="cx-weakness-explain"><div class="cx-we-title">战术 · 明确说明<span class="cx-we-tag">已击败</span></div>
+             <div class="cx-we-body">此僚虽无招牌破绽，然其以所长立身——宜攻其短，或避其锋芒、另辟蹊径。</div></div>`
+        : '';
+      return `<div class="cx-hint2">此人不具特殊机制，唯凭才学取胜，无招牌破绽可循。${defeated ? ' 已击败。' : ''}</div>${tac}`;
     }
     const lv = Codex.getFoeCognition(foeId(tier, npc)).level;
     const mech = npc.mech;
@@ -328,20 +335,27 @@ export class CodexUI {
     const ctx = { styleNames: STYLE_NAMES, mannerNames: (this.cfg.affinity && this.cfg.affinity.mannerNames) || {} };
     const rows = [];
     rows.push(`<div class="cx-mech-row"><span class="cx-mech-k">招牌</span><span class="cx-mech-v">${esc(sig.name || '招牌')}</span></div>`);
-    rows.push(`<div class="cx-mech-row"><span class="cx-mech-k">破绽</span><span class="cx-mech-v">${esc(wea.name || '破绽')}</span></div>`);
+    rows.push(`<div class="cx-mech-row"><span class="cx-mech-k">破绽</span><span class="cx-mech-v">${esc(wea.name || '破绽')}${defeatedBadge}</span></div>`);
     if (lv >= 2) {
       const intentText = intent.description || Mech.intentTemplateName(intent.template) || '打法';
       rows.push(`<div class="cx-mech-row"><span class="cx-mech-k">意图</span><span class="cx-mech-v">${esc(intentText)}</span></div>`);
     } else {
       rows.push(`<div class="cx-mech-row cx-mech-locked"><span class="cx-mech-k">意图</span><span class="cx-mech-v">？？（需更深交手方知其打法）</span></div>`);
     }
-    let counter = '';
+    // lv2 起（击败或交锋≥3）：明示破绽反制之法——即「弱点的明确说明」
+    let explain = '';
     if (lv >= 2) {
       const hint = Mech.weaknessHint(mech, ctx);
-      if (hint) counter = `<div class="cx-mech-counter">${esc(hint)}</div>`;
+      if (hint) {
+        const tag = defeated ? '已击败 · 克制之法已明' : '交手已深 · 克制之法已明';
+        explain = `<div class="cx-weakness-explain">
+            <div class="cx-we-title">破绽 · 明确说明<span class="cx-we-tag">${esc(tag)}</span></div>
+            <div class="cx-we-body">${esc(hint)}</div>
+          </div>`;
+      }
     }
     const broken = lv >= 3 ? `<span class="cog-badge lv3">已破招</span>` : '';
-    return `<div class="cx-mech">${rows.join('')}${counter}${broken}</div>`;
+    return `<div class="cx-mech">${rows.join('')}${explain}${broken}</div>`;
   }
 
   /** 在配置里按 tierId + name 定位对手（两者组合唯一） */

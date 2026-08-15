@@ -1017,6 +1017,43 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
   font-size: 13px; color: #2c3b3c; line-height: 1.7;
 }
 
+/* --- 图鉴·弱点明确说明（击败/深交后明示破绽反制之法） --- */
+.cx-weakness-explain {
+  margin-top: 8px; padding: 10px 13px; border-radius: 9px;
+  background: rgba(178,58,46,.07); border: 1px solid rgba(178,58,46,.32);
+  border-left: 4px solid var(--zhu);
+}
+.cx-we-title {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 5px;
+  font-family: var(--font-kai); font-size: 15px; color: var(--zhu); letter-spacing: .08em;
+}
+.cx-we-tag {
+  font-size: 11px; color: #fff; background: var(--qing); border-radius: 5px;
+  padding: 1px 7px; letter-spacing: .03em; font-family: var(--font-song);
+}
+.cx-we-body { font-size: 13px; color: #3d3229; line-height: 1.75; }
+
+/* --- 当朝文风开场弹窗 --- */
+.zg-card { border-color: #b2965f; }
+.zg-card .kind {
+  text-align: center; font-size: 12px; letter-spacing: .35em; color: var(--mo-1);
+  font-family: var(--font-kai); margin-bottom: 2px;
+}
+.zg-row {
+  display: grid; grid-template-columns: 76px 1fr; grid-template-areas: "k v" "k d";
+  gap: 2px 12px; align-items: center; text-align: left;
+  padding: 10px 14px; margin: 10px 0; border-radius: 9px;
+  background: rgba(255, 252, 246, .7); border: 1px solid rgba(120,100,70,.28);
+}
+.zg-row .zg-k { grid-area: k; align-self: center; font-family: var(--font-kai); font-size: 14px; color: var(--mo-1); letter-spacing: .1em; }
+.zg-row .zg-v { grid-area: v; font-size: 18px; color: var(--zhu); font-family: var(--font-song); font-weight: 700; }
+.zg-row .zg-d { grid-area: d; font-size: 13px; color: var(--mo-2); line-height: 1.5; }
+.zg-row .zg-d .up { color: #1f8a4c; font-weight: 700; }
+.zg-note {
+  margin-top: 6px; font-size: 13px; color: var(--mo-2); line-height: 1.7;
+  background: rgba(47,139,144,.08); border-radius: 8px; padding: 8px 12px;
+}
+
 /* --- 图鉴·文心升级信息 --- */
 .cx-up-head { display: flex; align-items: center; gap: 8px; margin: 6px 0 4px; }
 .cx-up-lv { font-size: 12px; color: var(--mo-2); }

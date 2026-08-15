@@ -323,6 +323,39 @@ export class Modals {
     this.close(ov);
   }
 
+  /* ---------------------------------------------------- 当朝文风（风潮） */
+  /** 首回合开始前弹窗：说明本局当朝文风（风潮）及其效果 */
+  async showZeitgeist(z) {
+    const af = this.cfg.affinity || {};
+    const themeNames = af.themeNames || {};
+    const mannerNames = af.mannerNames || {};
+    const themeBonus = Math.round((af.zeitgeistThemeBonus ?? 0) * 100);
+    const mannerBonus = Math.round((af.zeitgeistMannerBonus ?? 0) * 100);
+    const themeName = themeNames[(z && z.theme)] || (z && z.theme) || '某题材';
+    const mannerName = mannerNames[(z && z.manner)] || (z && z.manner) || '某文体';
+    const ov = this.open(`
+      <div class="modal scroll-frame paper zg-card" style="width:min(560px,92vw);text-align:center">
+        <div class="kind">当 朝 文 风</div>
+        <div class="title-ink" style="font-size:38px">风 潮 既 起</div>
+        <hr class="hr-ink"/>
+        <p style="font-size:15px;line-height:1.9;color:var(--mo-2);margin:0 0 12px">本局科场，文运所钟于二事。临场择题用体，可顺势而行：</p>
+        <div class="zg-row">
+          <div class="zg-k">热点题材</div>
+          <div class="zg-v">「${esc(themeName)}」</div>
+          <div class="zg-d">凡涉此题材之论战，不论用何文体，得分 <b class="up">+${themeBonus}%</b></div>
+        </div>
+        <div class="zg-row">
+          <div class="zg-k">得势文体</div>
+          <div class="zg-v">「${esc(mannerName)}」</div>
+          <div class="zg-d">无论何题材，凡用此文体者，得分 <b class="up">+${mannerBonus}%</b></div>
+        </div>
+        <div class="zg-note">若某场题目恰为热点题材、又用得势文体，二者<b>叠加</b>生效。文运在手，善用之可事半功倍。</div>
+        <div class="btn-row"><button class="btn btn-primary" data-ok>谨记于心</button></div>
+      </div>`, 'zeitgeist-intro');
+    await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', r));
+    this.close(ov);
+  }
+
   /* ---------------------------------------------------- 殿试开场 */
   async showPalaceIntro(themes, names) {
     // 圈数、殿试场次、金榜奖励分全部从配置读取；殿试题材由主考官配置决定

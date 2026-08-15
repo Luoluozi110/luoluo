@@ -146,7 +146,8 @@ export function recordFoeCognition(foeId, result, weaknessHit) {
   const rec = c.foeCognition[foeId] || { level: 1, meets: 0, weaknessHits: 0 };
   rec.meets++;
   if (weaknessHit) rec.weaknessHits++;
-  // 等级推进：相遇=1 相识；交锋≥3 次=2 察意；命中破绽=3 破招（最高）
+  // 等级推进：相遇=1 相识；击败（win）=2 察意（破绽反制之法即明示）；交锋≥3 次=2 察意；命中破绽=3 破招（最高）
+  if (result === 'win') rec.level = Math.max(rec.level, 2);
   if (rec.meets >= 3) rec.level = Math.max(rec.level, 2);
   if (weaknessHit) rec.level = Math.max(rec.level, 3);
   rec.level = Math.max(1, Math.min(3, rec.level));
