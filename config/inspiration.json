@@ -1,6 +1,6 @@
 {
-  "initial": 32,
-  "max": 54,
+  "initial": 40,
+  "max": 66,
   "pingCell": 1,
   "scenicCost": 8,
   "battleCost": -2,

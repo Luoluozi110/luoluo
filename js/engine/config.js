@@ -63,7 +63,7 @@ export async function loadCloudUrl() {
 export function applyProjectOverride(baseCfg, project) {
   if (!project || typeof project !== 'object') return baseCfg;
   const next = Object.assign({}, baseCfg);
-  for (const key of ['questions', 'events', 'talents', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics']) {
+  for (const key of ['questions', 'events', 'talents', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics', 'sky']) {
     if (project[key] !== undefined && project[key] !== null) next[key] = project[key];
   }
   return normalize(next);

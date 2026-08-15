@@ -4,6 +4,7 @@
  * 配置（config/leaderboard.json 或 window.LEADERBOARD_CFG）：
  *   { "backend": "github", "repo": "owner/repo", "path": "leaderboard.json", "branch": "main", "githubToken": "ghp_xxx" }
  *   { "backend": "supabase", "supabaseUrl": "...", "supabaseAnonKey": "...", "table": "leaderboard" }
+ *   —— Supabase 走原生 fetch 直连其 PostgREST 接口（不加载第三方库），避免 esm.sh 等 CDN 在部分地区不可达导致榜单静默失效。
  *   { "backend": "cf", "workerUrl": "https://<your-worker>.workers.dev" }   // 推荐：token 留在 Worker 端，前端零密钥
  *
  * GitHub 方案：
@@ -23,7 +24,6 @@
 
 let modalsInst = null;
 let cfg = null;
-let client = null;              // Supabase 客户端（仅 supabase 后端）
 let ready = false;
 let openOv = null;              // 当前已打开的排行榜弹窗（用于提交后刷新）
 
@@ -74,12 +74,10 @@ export const Leaderboard = {
     cfg.backend = cfg.backend || (cfg.supabaseUrl ? 'supabase' : (cfg.repo ? 'github' : 'github'));
 
     if (cfg.backend === 'supabase' && cfg.supabaseUrl && cfg.supabaseAnonKey) {
-      try {
-        const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
-        client = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
-        cfg.table = cfg.table || 'leaderboard';
-        ready = true;
-      } catch (_) { ready = false; }
+      // Supabase 走原生 fetch 直连 PostgREST，无需加载第三方库——
+      // 规避 esm.sh / supabase-js 在部分地区被墙/超时导致榜单静默失效。
+      cfg.table = cfg.table || 'leaderboard';
+      ready = true;
     } else if (cfg.backend === 'github' && cfg.repo && cfg.path && cfg.githubToken) {
       cfg.branch = cfg.branch || 'main';
       ready = true;
@@ -219,18 +217,34 @@ async function cfSubmit(name, score) {
   return { ok: true, rows: j.rows || null };
 }
 
-/* ====================================================== Supabase 后端 */
+/* ====================================================== Supabase 后端（原生 fetch 直连 PostgREST，不依赖 supabase-js） */
+function supaHeaders(extra) {
+  return Object.assign({
+    apikey: cfg.supabaseAnonKey,
+    Authorization: 'Bearer ' + cfg.supabaseAnonKey
+  }, extra || {});
+}
+
 async function supaFetchTop() {
-  const { data, error } = await client
-    .from(cfg.table).select('name,score,ts').order('score', { ascending: false }).limit(200);
-  if (error) return { ok: false, error: error.message };
-  return { ok: true, list: normalize(data) };
+  const url = `${cfg.supabaseUrl}/rest/v1/${cfg.table}?select=name,score,ts&order=score.desc&limit=200`;
+  const r = await fetch(url, { headers: supaHeaders(), cache: 'no-store' });
+  if (!r.ok) return { ok: false, error: '读取失败 HTTP ' + r.status };
+  let data; try { data = await r.json(); } catch (_) { return { ok: false, error: '榜单数据格式错误' }; }
+  return { ok: true, list: normalize(Array.isArray(data) ? data : []) };
 }
 
 async function supaSubmit(name, score) {
-  const { error } = await client
-    .from(cfg.table).insert({ name: cleanName(name), score: Number(score) || 0, ts: new Date().toISOString() });
-  if (error) return { ok: false, error: error.message };
+  const url = `${cfg.supabaseUrl}/rest/v1/${cfg.table}`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: supaHeaders({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify({ name: cleanName(name), score: Number(score) || 0, ts: new Date().toISOString() })
+  });
+  if (!r.ok) {
+    let m = '';
+    try { m = (await r.json()).message || ''; } catch (_) {}
+    return { ok: false, error: m || ('写入失败 HTTP ' + r.status) };
+  }
   if (openOv) refresh(openOv);
   return { ok: true };
 }
