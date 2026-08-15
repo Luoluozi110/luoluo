@@ -1649,5 +1649,18 @@
         }
       }
     ]
+  },
+  "T034": {
+    "quality": "legend",
+    "maxLevel": 6,
+    "upCost": [9, 13, 18, 24, 31],
+    "levels": [
+      { "effect": { "type": "reincarnate", "inspThreshold": 40, "attrRatio": 0.80 } },
+      { "effect": { "type": "reincarnate", "inspThreshold": 36, "attrRatio": 0.84 } },
+      { "effect": { "type": "reincarnate", "inspThreshold": 32, "attrRatio": 0.88 } },
+      { "effect": { "type": "reincarnate", "inspThreshold": 28, "attrRatio": 0.92 } },
+      { "effect": { "type": "reincarnate", "inspThreshold": 24, "attrRatio": 0.96 } },
+      { "effect": { "type": "reincarnate", "inspThreshold": 20, "attrRatio": 1.00 } }
+    ]
   }
 }

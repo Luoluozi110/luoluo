@@ -468,6 +468,7 @@ export function talentEffectText(t) {
     case 'insp_on_quiz': return `答对/完成抉择额外 +${e.value || 0} 灵感（每局最多 ${e.maxTriggers || 0} 次）`;
     case 'insp_battle_recover': return `战后灵感 ≤${e.threshold || 0} 时恢复 ${e.value || 0}（每局最多 ${e.maxTriggers || 0} 次）`;
     case 'insp_max': return `获得时，本局灵感上限永久 +${e.value || 0}（同类扩容互斥）`;
+    case 'reincarnate': return `殿试结算时若剩余灵感 ≥ ${Number(e.inspThreshold) || 0}，下一局继承本局属性的 ${Math.round((Number(e.attrRatio) || 0) * 100)}%`;
     default: return t.desc || '效果由配置定义';
   }
 }

@@ -23,6 +23,57 @@ function stableFoeId(npc) {
  */
 const PALACE_KEY = '__palace__';
 
+/**
+ * 照我传灯·跨局传承：殿试结算后，若持有传说文心「照我传灯」且剩余灵感达标，
+ * 记录「传承火种」到本地存储（内存兜底，便于无头测试），供「下一局」开局时继承本局属性。
+ * 仅生效一次（消费即清除）。reincarnate 效果字段：
+ *   inspThreshold 殿试结算所需剩余灵感；attrRatio 下局继承本局属性的比例（0~1，随等级升高）。
+ */
+export const REINCARNATE_KEY = 'feihua_reincarnate_v1';
+export const Reincarnate = {
+  _mem: null,
+  _read() {
+    try {
+      if (typeof localStorage !== 'undefined' && localStorage) {
+        const raw = localStorage.getItem(REINCARNATE_KEY);
+        if (raw) return JSON.parse(raw);
+      }
+    } catch (e) { /* 存储不可用 → 内存兜底 */ }
+    return this._mem;
+  },
+  _write(obj) {
+    this._mem = obj;
+    try {
+      if (typeof localStorage !== 'undefined' && localStorage) {
+        if (obj) localStorage.setItem(REINCARNATE_KEY, JSON.stringify(obj));
+        else localStorage.removeItem(REINCARNATE_KEY);
+      }
+    } catch (e) { /* 存储不可用 → 内存兜底 */ }
+  },
+  /** 殿试结算时尝试点亮传承：成功返回 true（已记录火种） */
+  pend(game, talentId) {
+    const s = game.s;
+    const t = (s.passive || []).find(x => x.id === talentId) || (s.active || []).find(x => x.id === talentId);
+    if (!t || !t.effect || t.effect.type !== 'reincarnate') return false;
+    const threshold = Number(t.effect.inspThreshold) || 0;
+    const ratio = Number(t.effect.attrRatio) || 0;
+    if (s.inspiration < threshold || ratio <= 0) return false;
+    const attrs = {};
+    for (const k of R.ATTR_KEYS) attrs[k] = Math.floor((Number(s.attrs[k]) || 0) * ratio);
+    this._write({ talentId, talentName: t.name || talentId, ratio, attrs, ts: (typeof Date !== 'undefined' ? Date.now() : 0) });
+    return true;
+  },
+  /** 新局开局时消费传承：返回 { talentId, talentName, ratio, attrs } 或 null（一次性，消费即清除） */
+  consume() {
+    const obj = this._read();
+    if (!obj || !obj.attrs) return null;
+    this._write(null);
+    return obj;
+  },
+  peek() { return this._read(); },
+  reset() { this._write(null); }
+};
+
 export class Game {
   constructor(cfg, ui, rand = Math.random) {
     this.cfg = cfg;
@@ -41,6 +92,17 @@ export class Game {
     const school = cfg.schools.find(s => s.id === schoolId) || cfg.schools[0];
     const attrs = { ...cfg.attrs.initial };
     attrs[school.attr] = (attrs[school.attr] || 0) + (cfg.attrs.schoolBonus ?? 3);
+
+    // 照我传灯·跨局传承：消费上一局点亮的「传承火种」，继承其 80%~100% 属性（一次性）
+    const _inherit = Reincarnate.consume();
+    if (_inherit && _inherit.attrs) {
+      const _added = {};
+      for (const k of R.ATTR_KEYS) {
+        const v = Math.floor(Number(_inherit.attrs[k]) || 0);
+        if (v > 0) { attrs[k] = (Number(attrs[k]) || 0) + v; _added[k] = v; }
+      }
+      if (Object.keys(_added).length) this._inheritApplied = { ..._inherit, added: _added };
+    }
 
     // 玩家自起之名：留空（或默认）则叙事维持第二人称「你」；截断到 12 字防误输入
     const playerName = (opts.name != null ? String(opts.name).trim().slice(0, 12) : '') || '';
@@ -75,6 +137,14 @@ export class Game {
     if (t0) this.grantTalent(t0, { silent: true });
     this.push(`选择「${school.name}」，${R.ATTR_NAMES[school.attr]} +${cfg.attrs.schoolBonus ?? 3}`);
     this.applyLoadout(opts.loadout || []);
+
+    // 照我传灯·跨局传承：若开局消费了传承，落日志 + 提示
+    if (this._inheritApplied) {
+      const a = this._inheritApplied;
+      const detail = R.ATTR_KEYS.filter(k => a.added[k]).map(k => `${R.ATTR_NAMES[k]} +${a.added[k]}`).join('、');
+      this.push(`照我传灯·传承：继承「${a.talentName}」前世修为（${Math.round(a.ratio * 100)}%），${detail}`);
+      if (this.ui && this.ui.toast) this.ui.toast(`✦ 照我传灯·传承生效：${detail}`);
+    }
     return this.s;
   }
 
@@ -1475,7 +1545,22 @@ export class Game {
       });
     }
     if (s.palaceWins >= n) this.ui.toast('殿试全胜——金榜题名！');
+    // 照我传灯·跨局传承：殿试结算时尝试点亮下一局传承火种
+    this._maybePendReincarnate();
     await this.endGame(s.palaceWins >= n ? 'jinbang' : 'palace');
+  }
+
+  /** 殿试结算：若持有「照我传灯」且剩余灵感达标，点亮下一局传承火种 */
+  _maybePendReincarnate() {
+    const t = [...(this.s.passive || []), ...(this.s.active || [])]
+      .find(x => x.effect && x.effect.type === 'reincarnate');
+    if (!t) return;
+    const okPend = Reincarnate.pend(this, t.id);
+    if (okPend) {
+      this.push(`文心「${t.name}」感应：殿试功成，余灵 ${this.s.inspiration} 足可传灯——下一局将继承此刻修为。`);
+    } else {
+      this.push(`文心「${t.name}」：殿试虽毕，余灵未足（需 ≥ ${Number(t.effect.inspThreshold) || 0}），传灯未亮。`);
+    }
   }
 
   /* ------------------------------------------------------ 结算 */
