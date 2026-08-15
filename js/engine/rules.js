@@ -432,69 +432,107 @@ export function signatureTriggered(ctx) {
  * }
  * @param {object} ctx { mech, templates, npcStyle, playerMove, playerHistory, result, relativeMargin }
  */
-export function weaknessResolution(ctx) {
-  const raw = ctx && ctx.mech;
-  const mech = (raw && raw.mech) ? raw.mech : (raw || {});
-  const nullR = { hit: false, retention: 1, shutdownLevel: 'none', playerBonus: 0, refundInsp: 0, infoBonus: 0, extraInspCost: 0 };
-  if (!mech || Object.keys(mech).length === 0) return nullR;
-  const wea = mech.weakness;
-  const tmplLib = (ctx.templates || {}).weaknessTemplates || {};
-  const pm = ctx.playerMove || {};
-  const hist = ctx.playerHistory || {};
-  const weaT = tmplLib[wea && wea.template];
-  if (!wea || !weaT) return nullR;
-  // 标记本次判定的破绽模板（结果型破绽需在算出双方分后二次判定，game.js 靠此识别）
-  nullR.template = wea.template;
-  const npcStyle = ctx.npcStyle;
+/**
+ * 殿试跨场适应阻尼：把「破绽收益」按已叠加的适应层数递减，但保留至少一半。
+ * - benefitMult = max(minWeaknessRetention, 1 - weaknessDampen * layers)
+ * - 作用在「破绽压制量」(1 - retention) 与玩家额外加分 playerBonus 上；
+ *   retention 越小（压制越狠=收益越大）被削弱越多，逼近 1（不压制）时几乎无损。
+ * 仅当 layers>0 且有阻尼参数时生效；非命中破绽（retention=1, playerBonus=0）原样返回。
+ * @param {object} r weaknessResolution 的命中结果
+ * @param {object|null} pa { layers, weaknessDampen, minWeaknessRetention }
+ */
+function applyPalaceDampen(r, pa) {
+  if (!r || !pa) return r;
+  const layers = Number(pa.layers) || 0;
+  if (layers <= 0) return r;
+  const dampen = Number(pa.weaknessDampen) || 0;
+  const minRet = Number(pa.minWeaknessRetention) || 0;
+  if (dampen <= 0 && minRet <= 0) return r;
+  const benefitMult = clamp(Math.max(minRet, 1 - dampen * layers), 0, 1);
+  const shutdown = 1 - (r.retention ?? 1);
+  const effShutdown = clamp(shutdown * benefitMult, 0, 1);
+  const effRet = 1 - effShutdown;
+  const effBonus = (r.playerBonus || 0) * benefitMult;
+  let level = 'none';
+  if (effShutdown > 0.001) level = effRet <= 0.3 ? 'full' : 'partial';
+  return { ...r, retention: effRet, playerBonus: effBonus, shutdownLevel: level };
+}
 
-  const fullRet = () => {
-    const r = Number(wea.retention ?? 0);
-    return clamp(r, 0, 1);
+/**
+ * 合并多个破绽判定结果（NPC 可配置多个 weakness 时）。
+ * - hit：任一命中即为命中
+ * - retention：取最强压制（最小 retention）
+ * - playerBonus / extraInspCost / flatPenalty：累加
+ * - layerReduce / refundInsp / infoBonus：取较大值
+ * - cancelAlt：任一置位即为真
+ */
+function mergeWeakness(a, b) {
+  const retention = Math.min(a.retention ?? 1, b.retention ?? 1);
+  const shutdownLevel = retention <= 0.3 ? 'full' : (retention < 1 ? 'partial' : 'none');
+  const template = (a.template && b.template && a.template !== b.template) ? (a.template + '+' + b.template) : (a.template || b.template);
+  return {
+    hit: a.hit || b.hit,
+    retention,
+    shutdownLevel,
+    playerBonus: (a.playerBonus || 0) + (b.playerBonus || 0),
+    refundInsp: Math.max(a.refundInsp || 0, b.refundInsp || 0),
+    extraInspCost: (a.extraInspCost || 0) + (b.extraInspCost || 0),
+    flatPenalty: (a.flatPenalty || 0) + (b.flatPenalty || 0),
+    infoBonus: Math.max(a.infoBonus || 0, b.infoBonus || 0),
+    cancelAlt: !!(a.cancelAlt || b.cancelAlt),
+    layerReduce: Math.max(a.layerReduce || 0, b.layerReduce || 0),
+    template
   };
+}
+
+/** 单个破绽模板的判定（不含殿试跨场适应阻尼，阻尼在合并后统一施加） */
+function resolveSingleWeakness(ctx, wea, tmplLib, pm, hist, npcStyle) {
+  const nullR = { hit: false, retention: 1, shutdownLevel: 'none', playerBonus: 0, refundInsp: 0, infoBonus: 0, extraInspCost: 0 };
+  const fullRet = () => clamp(Number(wea.retention ?? 0), 0, 1);
+  const out = (extra) => ({ ...nullR, ...extra, template: wea.template });
 
   switch (wea.template) {
     case 'wea_use_other_style': {
-      // wea 参数化：style=专精文体；fullClose=完全关闭的文体；partialReduction={style[],retention} 部分削弱
       const fullClose = (wea.fullClose && wea.fullClose.includes('*')) || (Array.isArray(wea.fullClose) && wea.fullClose.includes(pm.style)) || (wea.fullClose === '*' && pm.style !== npcStyle);
       const pr = wea.partialReduction;
       const inPartial = pr && pr.style && Array.isArray(pr.style) && pr.style.includes(pm.style);
       if (pm.style && pm.style !== npcStyle) {
-        if (fullClose) return { ...nullR, hit: true, retention: 0, shutdownLevel: 'full', reason: '改用他体' };
+        if (fullClose) return out({ hit: true, retention: 0, shutdownLevel: 'full', reason: '改用他体' });
         if (inPartial) {
           const retention = clamp(Number(pr.retention ?? 0.5), 0, 1);
-          return { ...nullR, hit: true, retention, shutdownLevel: retention <= 0.3 ? 'full' : 'partial', reason: '部分削弱' };
+          return out({ hit: true, retention, shutdownLevel: retention <= 0.3 ? 'full' : 'partial', reason: '部分削弱' });
         }
-        // 未列出的他体：默认完全关闭（改用他体是教学主破绽）
-        return { ...nullR, hit: true, retention: 0, shutdownLevel: 'full', reason: '改用他体' };
+        return out({ hit: true, retention: 0, shutdownLevel: 'full', reason: '改用他体' });
       }
       return nullR;
     }
     case 'wea_switch_style': {
       if (hist.lastStyle && pm.style && pm.style !== hist.lastStyle) {
-        return { ...nullR, hit: true, retention: 0, shutdownLevel: 'full', infoBonus: wea.infoBonus ? Number(wea.infoBonus.intentPrecision) || 0 : 0 };
+        return out({ hit: true, retention: 0, shutdownLevel: 'full', infoBonus: wea.infoBonus ? Number(wea.infoBonus.intentPrecision) || 0 : 0 });
       }
-      if (!hist.lastStyle) return { ...nullR, hit: true, retention: 1, shutdownLevel: 'partial', reason: '无历史，仅提升信息' };
+      if (!hist.lastStyle) return out({ hit: true, retention: 1, shutdownLevel: 'partial', reason: '无历史，仅提升信息' });
       return nullR;
     }
     case 'wea_base_dice_only': {
       if ((pm.extraDice || 0) === 0) {
-        // 关闭响应招牌 + 失去 stable 分（flat 负值）
         const flat = Number(wea.flat) || 0;
-        return { ...nullR, hit: true, retention: 0, shutdownLevel: 'full', extraInspCost: 0, flatPenalty: -flat };
+        return out({ hit: true, retention: 0, shutdownLevel: 'full', extraInspCost: 0, flatPenalty: -flat });
       }
       return nullR;
     }
     case 'wea_style_manner_combo': {
       const ms = wea.manners || [];
-      if (wea.style === pm.style && ms.includes(pm.manner)) {
+      // style 缺省或为 'any' 时，不限定文体（仅按文风判定），便于主考官配置「跨文体定势」破绽
+      const styleOk = !wea.style || wea.style === 'any' || wea.style === pm.style;
+      if (styleOk && ms.includes(pm.manner)) {
         const ret = fullRet();
-        return { ...nullR, hit: true, retention: ret, shutdownLevel: ret <= 0.3 ? 'full' : 'partial', playerBonus: Number(wea.playerBonus) || 0 };
+        return out({ hit: true, retention: ret, shutdownLevel: ret <= 0.3 ? 'full' : 'partial', playerBonus: Number(wea.playerBonus) || 0 });
       }
       return nullR;
     }
     case 'wea_crushing_win': {
       if (ctx.result === 'win' && ctx.relativeMargin != null && ctx.relativeMargin >= (Number(wea.threshold) || 0)) {
-        return { ...nullR, hit: true, retention: 0, shutdownLevel: 'full', refundInsp: Number(wea.refund) || 0 };
+        return out({ hit: true, retention: 0, shutdownLevel: 'full', refundInsp: Number(wea.refund) || 0 });
       }
       return nullR;
     }
@@ -502,26 +540,49 @@ export function weaknessResolution(ctx) {
       const ms = wea.manners || [];
       if (ms.includes(pm.manner)) {
         const ret = fullRet();
-        return { ...nullR, hit: true, retention: ret, shutdownLevel: ret <= 0.3 ? 'full' : 'partial' };
+        return out({ hit: true, retention: ret, shutdownLevel: ret <= 0.3 ? 'full' : 'partial' });
       }
       return nullR;
     }
     case 'wea_counter_intent': {
       if (pm.matchesIntent === true) {
         const ret = fullRet();
-        return { ...nullR, hit: true, retention: ret, shutdownLevel: ret >= 1 ? 'none' : 'partial', cancelAlt: true };
+        return out({ hit: true, retention: ret, shutdownLevel: ret >= 1 ? 'none' : 'partial', cancelAlt: true });
       }
       return nullR;
     }
     case 'wea_cross_battle_shift': {
       if (ctx.strategyChanged) {
-        return { ...nullR, hit: true, retention: 1, shutdownLevel: 'partial', layerReduce: Number(wea.layerReduce) || 1 };
+        return out({ hit: true, retention: 1, shutdownLevel: 'partial', layerReduce: Number(wea.layerReduce) || 1 });
       }
       return nullR;
     }
     default:
       return nullR;
   }
+}
+
+export function weaknessResolution(ctx) {
+  const raw = ctx && ctx.mech;
+  const mech = (raw && raw.mech) ? raw.mech : (raw || {});
+  const nullR = { hit: false, retention: 1, shutdownLevel: 'none', playerBonus: 0, refundInsp: 0, infoBonus: 0, extraInspCost: 0 };
+  if (!mech || Object.keys(mech).length === 0) return nullR;
+  const tmplLib = (ctx.templates || {}).weaknessTemplates || {};
+  const pm = ctx.playerMove || {};
+  const hist = ctx.playerHistory || {};
+  const npcStyle = ctx.npcStyle;
+  // 支持 NPC 配置多个破绽（数组）；单破绽自动包装。殿试主考官即此：换策消层 + 可被利用的破绽并存。
+  const weaList = Array.isArray(mech.weakness) ? mech.weakness : (mech.weakness ? [mech.weakness] : []);
+  let merged = null;
+  for (const wea of weaList) {
+    const weaT = tmplLib[wea && wea.template];
+    if (!wea || !weaT) continue;
+    const one = resolveSingleWeakness(ctx, wea, tmplLib, pm, hist, npcStyle);
+    merged = merged ? mergeWeakness(merged, one) : one;
+  }
+  if (!merged) return nullR;
+  // 殿试跨场适应：重复破绽收益按层数递减（sig_palace_adapt 的 weaknessDampen），合并后统一施加
+  return applyPalaceDampen(merged, ctx.palaceAdapt);
 }
 
 /**

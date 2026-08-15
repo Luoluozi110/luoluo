@@ -33,9 +33,15 @@ export function signatureName(mech) {
   return '招牌';
 }
 
-export function weaknessName(mech) {
+/** 破绽列表：兼容单破绽（对象）与多破绽（数组）两种配置 */
+export function weaknessList(mech) {
   const w = mech && mech.weakness;
-  return (w && w.name) ? w.name : '破绽';
+  return Array.isArray(w) ? w : (w ? [w] : []);
+}
+
+export function weaknessName(mech) {
+  const names = weaknessList(mech).map(w => w && w.name).filter(Boolean);
+  return names.length ? names.join('·') : '破绽';
 }
 
 /** 意图模板 id 缺省名映射（rollIntention 未披露模板名时兜底） */
@@ -115,13 +121,20 @@ export function intentHint(npc, intentLocked, ctx) {
  * @returns {string|null} 破绽提示文案（null 表示无机制）
  */
 export function weaknessHint(mech, ctx) {
-  const w = mech && mech.weakness;
-  if (!w || !w.template) return null;
+  const list = weaknessList(mech);
+  if (!list.length) return null;
   const styleNames = ctx && ctx.styleNames || {};
   const mannerNames = ctx && ctx.mannerNames || {};
   const sigName = signatureName(mech);
-  const weaName = w.name || '破绽';
+  // 多破绽：逐条给出方向性提示，以「；」连接（主考官可同时有多处可乘之隙）
+  const hints = list.map(w => weaknessHintOne(w, ctx, styleNames, mannerNames, sigName, mech)).filter(Boolean);
+  return hints.length ? hints.join('；') : null;
+}
 
+/** 单条破绽的方向性提示（weaknessHint 逐个破绽调用） */
+function weaknessHintOne(w, ctx, styleNames, mannerNames, sigName, mech) {
+  if (!w || !w.template) return null;
+  const weaName = w.name || '破绽';
   switch (w.template) {
     case 'wea_use_other_style': {
       const full = Array.isArray(w.fullClose) && w.fullClose[0] !== '*'
@@ -177,7 +190,7 @@ export function settleLines(npc, mechOut, ctx) {
   const wea = mechOut.wea || {};
   const mods = mechOut.mods || {};
   const sigName = tri.key || signatureName(mech) || '招牌';
-  const weaName = mech.weakness && mech.weakness.name || '破绽';
+  const weaName = weaknessName(mech);
   const styleNames = ctx && ctx.styleNames || {};
   const lines = [];
 

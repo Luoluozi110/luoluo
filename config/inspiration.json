@@ -10,5 +10,7 @@
   "quizWrong": -1,
   "quizCorrectInsp": 1,
   "lowWarning": 5,
-  "eventCellCost": -1
+  "eventCellCost": -1,
+  "extraDiceCost": 8,
+  "maxExtraDice": 2
 }

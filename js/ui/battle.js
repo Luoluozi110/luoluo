@@ -221,16 +221,18 @@ export class BattleStage {
         armTimer(() => finish());                       // 进入追加阶段：再给一整段时限，超时自动结算
       };
 
+      const extraCost = this.cfg && this.cfg.inspiration ? (Number(this.cfg.inspiration.extraDiceCost) || 3) : 3;
+      const extraCap = this.cfg && this.cfg.inspiration ? (Number(this.cfg.inspiration.maxExtraDice) || 4) : 4;
       const renderExtra = () => {
         const total = pips.reduce((a, b) => a + b, 0);
         const score = total * dm;
-        const canExtra = !hasFixed() && session.inspiration >= 3;
+        const canExtra = !hasFixed() && session.inspiration >= extraCost && pips.length - 1 < extraCap;
         const pipHtml = pips.map(n => `<span class="dice-pip">${'①②③④⑤⑥'[n - 1]}</span>`).join('');
         panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → 临场发挥 ${score} 分${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
           <div class="dice-pips">${pipHtml}</div>
           <div class="pick-row">
             ${canExtra
-              ? `<button class="pick" id="btExtra"><div class="pn">➕ 多掷一枚</div><div class="pv">灵感 −3（可叠加）</div></button>`
+              ? `<button class="pick" id="btExtra"><div class="pn">➕ 多掷一枚</div><div class="pv">灵感 −${extraCost}（可叠加）</div></button>`
               : `<button class="pick" disabled><div class="pn">${hasFixed() ? '固定骰·不可叠' : '灵感不足'}</div></button>`}
             <button class="pick" id="btConfirm"><div class="pn">确定得分</div><div class="pv">以 ${pips.length} 枚结算</div></button>
           </div>`;
@@ -239,8 +241,8 @@ export class BattleStage {
       };
 
       const addExtra = () => {
-        if (done || session.inspiration < 3 || hasFixed()) return;
-        session.spendInspiration(3, '追加灵感骰');
+        if (done || session.inspiration < extraCost || hasFixed() || pips.length - 1 >= extraCap) return;
+        session.spendInspiration(extraCost, '追加灵感骰');
         const n = 1 + Math.floor(Math.random() * 6);
         pips.push(n);
         play('dice'); sting('dice');
@@ -248,7 +250,7 @@ export class BattleStage {
         armTimer(() => finish());
       };
 
-      panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">1d6 × ${dm}（${dm}～${dm * 6} 分）；消耗 3 点灵感可多掷一枚，能持续叠加　·　限时 ${this.seconds} 秒</span></div>
+      panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">1d6 × ${dm}（${dm}～${dm * 6} 分）；每枚耗 ${extraCost} 灵感，最多可追加 ${extraCap} 枚　·　限时 ${this.seconds} 秒</span></div>
         <div class="pick-row"><button class="pick" id="btRoll" style="min-width:180px"><div class="pn">掷 骰</div>
         <div class="pv">听天由命，也听人事</div></button></div>`;
       panel.querySelector('#btRoll').addEventListener('click', () => doRoll(false));

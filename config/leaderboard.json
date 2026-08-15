@@ -1,7 +1,7 @@
 {
-  "_comment": "云端排行榜配置。backend=github 时走 GitHub Contents API：读公开 raw 地址、写需一枚有 contents:write 的 token（内嵌于此，静态站点无解故会暴露，建议用细粒度 PAT 仅授权该仓库）。数据文件 leaderboard.json 由玩家提交创建，部署脚本会像 feihua-content.json 一样保留它（不会被清空）。backend=supabase 时走 Supabase（见 supabase-leaderboard.sql）。当前 githubToken 已按安全要求移除——push protection 禁止内嵌字面 token，前端将显示「排行榜未配置」并优雅降级（不写回）；如需恢复云端写回，请改用细粒度 PAT 或 Supabase anon key。",
-  "backend": "github",
-  "repo": "Luoluozi110/luoluo",
-  "path": "leaderboard.json",
-  "branch": "main"
+  "_comment": "云端排行榜配置（backend=supabase）。Supabase 的 anon/publishable key 本就是设计给前端公开使用的密钥——真正的权限由数据库 RLS 控制（见 supabase-leaderboard.sql）：匿名可读、可插入，不可改/删。因此该 key 直接随 GitHub Pages / CloudStudio 部署公开，不会被任何密钥扫描拦截，也不存在前端泄露风险（这正是改用 Supabase 优于内嵌 GitHub token 的原因）。使用前请在 Supabase 控制台 SQL Editor 执行 supabase-leaderboard.sql 建表并开放 RLS。backend=github / backend=cf 分支仍保留备用（见 cloudflare-leaderboard-worker/）。",
+  "backend": "supabase",
+  "supabaseUrl": "https://lfvgiswabvgaefceoste.supabase.co",
+  "supabaseAnonKey": "sb_publishable_ETni9VlRXeoq96makNXPDw_2B77a0U2",
+  "table": "leaderboard"
 }

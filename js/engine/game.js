@@ -16,6 +16,13 @@ function stableFoeId(npc) {
   return npc.id ? npc.id : npc.name;
 }
 
+/**
+ * 殿试跨场适应状态键：殿试三场视作同一「考官席」互通声气地跨场适应，
+ * 故层数按整段殿试（而非单个考官 foeId）分桶。sig_palace_adapt 的
+ * weaknessDampen / minWeaknessRetention / maxLayers 皆由此键下的 palaceAdapt 驱动。
+ */
+const PALACE_KEY = '__palace__';
+
 export class Game {
   constructor(cfg, ui, rand = Math.random) {
     this.cfg = cfg;
@@ -252,6 +259,22 @@ export class Game {
       return lastStyle !== style || lastManner !== manner;
     } catch (e) {
       // 存档异常时安全降级：不判定换策（E1）
+      return false;
+    }
+  }
+
+  /**
+   * 殿试序列级「换策」判定（跨场适应专用）：不按单个考官分桶，而按整段殿试
+   * 上一场的战法比较——考官席互通声气，玩家是否换了文体/文风/资源打法。
+   * 首场（无 palaceLast）返回 false，与逐考官判定语义一致。
+   */
+  _palaceStrategyChanged(style, manner) {
+    try {
+      const nm = this.s.npcMech || {};
+      const last = nm.palaceLast;
+      if (!last || !last.style) return false;             // 首场无前一战
+      return last.style !== style || last.manner !== manner;
+    } catch (e) {
       return false;
     }
   }
@@ -730,7 +753,7 @@ export class Game {
       // 殿试跨场适应层数（若本场为殿试且这是机制主考官）：供 UI 出「场间评语」
       palaceLayers: (() => {
         if (!opts.isPalace || !(npc && npc.mech)) return 0;
-        const pal = (s.npcMech && s.npcMech.palace && s.npcMech.palace[stableFoeId(npc)]) || null;
+        const pal = (s.npcMech && s.npcMech.palace && s.npcMech.palace[PALACE_KEY]) || null;
         return pal ? (Number(pal.layers) || 0) : 0;
       })(),
       playerAttrs: this.effectiveAttrs(),
@@ -898,6 +921,8 @@ export class Game {
     let mechOut = null;
     // 提升到块外，供 wea_crushing_win 二次判定复用（matchesIntent/strategyChanged）
     let pm = null, matchesIntent = false, strategyChanged = false;
+    // 殿试跨场适应参数（sig_palace_adapt）：函数级作用域，供首轮与结果型二次判定共用。
+    let palaceAdapt = null;
     if (npcMech) {
       const tplLib = this.cfg['npc-mechanics'] || {};
       // 意图反制破绽：玩家出战是否与 NPC 本场锁定意图一致（供 wea_counter_intent 使用）
@@ -905,8 +930,19 @@ export class Game {
       matchesIntent = !!(il && style === il.style && manner === il.manner);
       pm = { style, manner, extraDice, matchesIntent };
       const playerHistory = this._mechHistoryForNpc(stableFoeId(session.npc));
-      // 跨场换策破绽：与上一场同考官的战法相比，本轮是否换策（供 wea_cross_battle_shift 使用）
-      strategyChanged = this._strategyChangedSinceLast(session.npc, style, manner);
+      // 跨场换策破绽：殿试按整段序列（考官席互通）判换策；普通战按逐考官历史判
+      strategyChanged = session.isPalace
+        ? this._palaceStrategyChanged(style, manner)
+        : this._strategyChangedSinceLast(session.npc, style, manner);
+      // 殿试跨场适应参数（sig_palace_adapt）：仅本局殿试配置了该机制时生效，
+      // 层数取自整段殿试桶（PALACE_KEY），使三场共享、maxLayers 可达。
+      palaceAdapt = (session.isPalace && this.s.npcMech && this.s.npcMech.palaceAdapt)
+        ? {
+            layers: ((this.s.npcMech.palace && this.s.npcMech.palace[PALACE_KEY]) || { layers: 0 }).layers || 0,
+            weaknessDampen: Number(this.s.npcMech.palaceAdapt.weaknessDampen) || 0,
+            minWeaknessRetention: Number(this.s.npcMech.palaceAdapt.minWeaknessRetention) || 0
+          }
+        : null;
       // 破绽（先）
       const wea = R.weaknessResolution({
         mech: npcMech, npcStyle,
@@ -915,7 +951,8 @@ export class Game {
         npcManner,
         templates: tplLib,
         result: null, relativeMargin: null,
-        strategyChanged
+        strategyChanged,
+        palaceAdapt
       });
       // 招牌（后）
       const tri = R.signatureTriggered({
@@ -961,8 +998,14 @@ export class Game {
     const upset = result === 'win'
       && R.expectedScore(npcAttrs, npcStyle) > R.expectedScore(session.playerAttrs, style);
 
-    // 结果型破绽（高分差压卷）：需在算出双方分后按相对分差二次判定，并据此重算 NPC 修正与胜负
-    if (mechOut && mechOut.wea && mechOut.wea.template === 'wea_crushing_win') {
+    // 结果型破绽（高分差压卷）：需在算出双方分后按相对分差二次判定，并据此重算 NPC 修正与胜负。
+    // 注意：首轮破绽调用传入 result:null，wea_crushing_win 必不命中且其结果无 template 字段，
+    // 故此处须按「NPC 配置是否含该模板」判定，而非依赖首轮 mechOut.wea.template（重构多破绽后尤为关键）。
+    const hasCrushingWin = npcMech && (() => {
+      const wl = Array.isArray(npcMech.weakness) ? npcMech.weakness : (npcMech.weakness ? [npcMech.weakness] : []);
+      return wl.some(w => w && w.template === 'wea_crushing_win');
+    })();
+    if (mechOut && hasCrushingWin) {
       const hi = Math.max(selfCalc.total, oppCalc.total);
       const relMarg = hi > 0 ? (selfCalc.total - oppCalc.total) / hi : 0;
       const pm2 = { style, manner, extraDice, matchesIntent };
@@ -971,7 +1014,8 @@ export class Game {
         playerMove: pm2,
         playerHistory: this._mechHistoryForNpc(stableFoeId(session.npc)), npcManner,
         templates: this.cfg['npc-mechanics'] || {},
-        result, relativeMargin: relMarg, strategyChanged
+        result, relativeMargin: relMarg, strategyChanged,
+        palaceAdapt
       });
       const mods2 = R.signatureScoreMods(mechOut.tri, wea2, npcMech.signature, { extraDice, npcSi: npcAttrs.si || 0, npcExpected });
       if (mods2 !== mechOut.mods) {
@@ -1131,12 +1175,21 @@ export class Game {
         }
       }
 
-      // ③ 殿试跨场适应：主考官每场至多叠一层，三层封顶 2 层
-      if (session.isPalace) {
+      // ③ 殿试跨场适应：考官席每场基础叠一层（maxLayers 封顶）；
+      //    玩家「跨场换策」命中 wea_cross_battle_shift 时，该场净变化 = 1 - layerReduce
+      //    （layerReduce 默认 1 → 本场持平，不再叠加），使换策真实抵消适应、收益回升。
+      //    层数按整段殿试分桶（PALACE_KEY），三场共享，maxLayers 因而可达。
+      if (session.isPalace && s.npcMech.palaceAdapt) {
+        const pa = s.npcMech.palaceAdapt;
+        const maxLayers = Number(pa.maxLayers) || 2;
         if (!s.npcMech.palace) s.npcMech.palace = {};
-        const pal = s.npcMech.palace[foeId] || { layers: 0 };
-        pal.layers = Math.min(2, pal.layers + 1);
-        s.npcMech.palace[foeId] = pal;
+        const pal = s.npcMech.palace[PALACE_KEY] || { layers: 0 };
+        let layers = Number(pal.layers) || 0;
+        const layerReduce = (mechOut && mechOut.wea && mechOut.wea.layerReduce) ? Number(mechOut.wea.layerReduce) : 0;
+        const delta = layerReduce ? (1 - layerReduce) : 1;     // 每场基础 +1；换策抵消
+        layers = Math.max(0, Math.min(maxLayers, layers + delta));
+        s.npcMech.palace[PALACE_KEY] = { layers };
+        s.npcMech.palaceLast = { style: out.style, manner: out.manner };
       }
     }
 
@@ -1222,6 +1275,29 @@ export class Game {
     } else {
       for (let i = 0; i < n; i++) palaceFoes.push(this.pickNpc(true));
     }
+
+    // 殿试跨场适应参数：取自本局殿试池中携带 sig_palace_adapt 的主考官配置，
+    // 使三场「考官席互通声气」地随玩家战法调整意图（重复破绽收益递减、换策可消层）。
+    // 仅当殿试池里存在该机制时开启；层数按整段殿试（PALACE_KEY）分桶，三场共享。
+    const adaptFoe = palaceFoes.find(f => {
+      const sg = f && f.mech && (f.mech.signature && (f.mech.signature.main || f.mech.signature));
+      return sg && sg.template === 'sig_palace_adapt';
+    });
+    if (adaptFoe && adaptFoe.mech && adaptFoe.mech.signature) {
+      const sg = adaptFoe.mech.signature.main || adaptFoe.mech.signature;
+      if (sg.template === 'sig_palace_adapt') {
+        s.npcMech = s.npcMech || { history: {}, palace: {} };
+        s.npcMech.palaceAdapt = {
+          maxLayers: Number(sg.maxLayers) || 2,
+          weaknessDampen: Number(sg.weaknessDampen) || 0.25,
+          minWeaknessRetention: Number(sg.minWeaknessRetention) || 0.5
+        };
+        s.npcMech.palace = s.npcMech.palace || {};
+        s.npcMech.palace[PALACE_KEY] = { layers: 0 };
+        s.npcMech.palaceLast = null;
+      }
+    }
+
     for (let i = 0; i < n; i++) {
       if (s.inspiration <= 0) {
         this.ui.toast('灵感枯竭，余下场次弃权记负');

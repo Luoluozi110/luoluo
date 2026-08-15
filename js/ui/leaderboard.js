@@ -1,15 +1,21 @@
 /**
- * leaderboard.js —— 云端排行榜（后端可切换：GitHub Contents API / Supabase）
+ * leaderboard.js —— 云端排行榜（后端可切换：GitHub Contents API / Supabase / Cloudflare Worker 代理）
  *
  * 配置（config/leaderboard.json 或 window.LEADERBOARD_CFG）：
  *   { "backend": "github", "repo": "owner/repo", "path": "leaderboard.json", "branch": "main", "githubToken": "ghp_xxx" }
  *   { "backend": "supabase", "supabaseUrl": "...", "supabaseAnonKey": "...", "table": "leaderboard" }
+ *   { "backend": "cf", "workerUrl": "https://<your-worker>.workers.dev" }   // 推荐：token 留在 Worker 端，前端零密钥
  *
  * GitHub 方案：
  *   - 读：公开 raw 地址 https://raw.githubusercontent.com/{repo}/{branch}/{path}（无需 token，CDN 缓存）。
  *   - 写：GitHub Contents API（PUT）。需一枚有 contents:write 的 token，内嵌于配置（静态站点无解，token 会暴露，
  *         故仅适合自有/低风险仓库；建议用细粒度 PAT 仅授权该仓库）。写入带 SHA 乐观锁，冲突自动重试。
  *   - 数据文件 leaderboard.json 由玩家提交创建/更新，部署脚本会像 feihua-content.json 一样保留，不被清空。
+ *
+ * Cloudflare Worker 方案（cf，推荐用于 GitHub Pages 等公开静态站）：
+ *   - 前端不持有任何 token；只调用 Worker 的 GET/POST（见 cloudflare-leaderboard-worker/worker.js）。
+ *   - Worker 服务端持有 GITHUB_TOKEN（secret），代理读写仓库根 leaderboard.json，并做去重/排序/Top50 与 SHA 乐观锁。
+ *   - 这样 GitHub Pages 也能安全联网上榜，且 token 不落前端、不进公开仓库历史。
  *
  * 查询接口（菜单「云端排行榜」）：fetchTop(50) 取数后前端 normalize 去重（每人最高分、同分先到优先、昵称稳定排序）取前 50。
  * 实时更新：打开弹窗即拉最新；通关提交后若弹窗开着自动刷新。
@@ -77,6 +83,9 @@ export const Leaderboard = {
     } else if (cfg.backend === 'github' && cfg.repo && cfg.path && cfg.githubToken) {
       cfg.branch = cfg.branch || 'main';
       ready = true;
+    } else if (cfg.backend === 'cf' && cfg.workerUrl) {
+      cfg.workerUrl = String(cfg.workerUrl).replace(/\/+$/, '');   // 去尾部斜杠，便于拼接 ?_cb=
+      ready = true;
     }
     return ready;
   },
@@ -87,12 +96,14 @@ export const Leaderboard = {
   /** 查询接口：返回 { ok, list:[{name,score,ts}], error }。list 已去重置顶 50。 */
   async fetchTop() {
     if (!ready) return { ok: false, error: '排行榜未配置' };
+    if (cfg.backend === 'cf') return cfFetchTop();
     return cfg.backend === 'supabase' ? supaFetchTop() : githubFetchTop();
   },
 
   /** 提交分数（通关时调用）。返回 { ok, error }。 */
   async submit(name, score) {
     if (!ready) return { ok: false, error: '排行榜未配置' };
+    if (cfg.backend === 'cf') return cfSubmit(name, score);
     return cfg.backend === 'supabase' ? supaSubmit(name, score) : githubSubmit(name, score);
   },
 
@@ -182,6 +193,32 @@ async function githubSubmit(name, score) {
   return { ok: false, error: '并发写入冲突，请稍后重试' };
 }
 
+/* ====================================================== Cloudflare Worker 后端 */
+async function cfFetchTop() {
+  const r = await fetch(`${cfg.workerUrl}?_cb=${Date.now()}`, { cache: 'no-store' });
+  if (!r.ok) return { ok: false, error: 'Worker 读取失败 HTTP ' + r.status };
+  let j;
+  try { j = await r.json(); } catch (_) { return { ok: false, error: '榜单数据格式错误' }; }
+  const rows = Array.isArray(j) ? j : (j.rows || []);
+  return { ok: true, list: normalize(rows) };
+}
+
+async function cfSubmit(name, score) {
+  const r = await fetch(cfg.workerUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: cleanName(name), score: Number(score) || 0 }),
+  });
+  if (!r.ok) {
+    let m = '';
+    try { m = (await r.json()).error || ''; } catch (_) {}
+    return { ok: false, error: m || ('Worker 写入失败 HTTP ' + r.status) };
+  }
+  const j = await r.json().catch(() => ({}));
+  if (openOv) refresh(openOv);
+  return { ok: true, rows: j.rows || null };
+}
+
 /* ====================================================== Supabase 后端 */
 async function supaFetchTop() {
   const { data, error } = await client
@@ -203,7 +240,7 @@ async function refresh(ov) {
   const body = ov.querySelector('#lbBody');
   if (!body) return;
   if (!ready) {
-    body.innerHTML = '<div class="lb-empty">排行榜未配置（缺少 GitHub token / Supabase 密钥）。<br/>请在 config/leaderboard.json 中填入后重新部署。</div>';
+    body.innerHTML = '<div class="lb-empty">排行榜未配置（缺少 GitHub token / Supabase 密钥 / Cloudflare Worker 地址）。<br/>请在 config/leaderboard.json 中填入后重新部署。</div>';
     return;
   }
   body.innerHTML = '<div class="lb-empty">读取中…</div>';

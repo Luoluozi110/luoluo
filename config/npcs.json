@@ -1151,11 +1151,21 @@
             "weaknessDampen": 0.25,
             "minWeaknessRetention": 0.5
           },
-          "weakness": {
-            "name": "跨场换策",
-            "template": "wea_cross_battle_shift",
-            "layerReduce": 1
-          },
+          "weakness": [
+            {
+              "name": "跨场换策",
+              "template": "wea_cross_battle_shift",
+              "layerReduce": 1
+            },
+            {
+              "name": "定势可乘",
+              "template": "wea_style_manner_combo",
+              "style": "any",
+              "manners": ["wanyue", "haofang"],
+              "retention": 0.3,
+              "playerBonus": 0.06
+            }
+          ],
           "intent": {
             "template": "int_palace_adapt",
             "style": "shi",
