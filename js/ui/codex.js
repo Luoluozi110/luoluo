@@ -8,11 +8,13 @@
  */
 import * as Codex from '../engine/codex.js';
 import * as Album from '../engine/album.js';
-import { talentEffectText } from './modals.js';
+import { talentEffectText, skyEffectText } from './modals.js';
+import * as Mech from './mechHints.js';
 import { ATTR_NAMES } from '../engine/rules.js';
 
 const ATTR_KEYS = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
 const STYLE_NAMES = { shi: '诗', ci: '词', lian: '联', bi: '笔', xue: '学', si: '思' };
+const QUALITY_NAMES = { common: '普通', rare: '稀有', epic: '史诗', legend: '传说' };
 
 /** 该 NPC 在引擎结算中使用的稳定标识：机制 NPC 用具名 id，普通 NPC 用档位 id */
 function foeId(tier, npc) {
@@ -68,6 +70,8 @@ export class CodexUI {
     const talGot = tal.filter(t => c.talents.includes(t.id)).length;
     const syn = this.cfg.synergies || [];
     const synGot = syn.filter(s => c.synergies.includes(s.id)).length;
+    const sky = this.cfg.sky || [];
+    const skyGot = sky.filter(s => Codex.hasSky(s.id)).length;
 
     this.el.innerHTML = `
       <div class="cx-inner scroll-frame paper">
@@ -79,6 +83,7 @@ export class CodexUI {
             <button class="cx-tab ${this.tab === 'album' ? 'on' : ''}" data-tab="album">传世名篇 <span class="cx-ct">${abGot}/${ab.length}</span></button>
             <button class="cx-tab ${this.tab === 'tal' ? 'on' : ''}" data-tab="tal">文心 <span class="cx-ct">${talGot}/${tal.length}</span></button>
             <button class="cx-tab ${this.tab === 'syn' ? 'on' : ''}" data-tab="syn">羁绊 <span class="cx-ct">${synGot}/${syn.length}</span></button>
+            <button class="cx-tab ${this.tab === 'sky' ? 'on' : ''}" data-tab="sky">天象 <span class="cx-ct">${skyGot}/${sky.length}</span></button>
           </div>
         </div>
         <div class="cx-scroll">
@@ -106,6 +111,7 @@ export class CodexUI {
     if (this.tab === 'album') return this._album(store);
     if (this.tab === 'tal') return this._talents(c);
     if (this.tab === 'syn') return this._synergies(c);
+    if (this.tab === 'sky') return this._sky(c);
     return this._foes(c);
   }
 
@@ -185,9 +191,27 @@ export class CodexUI {
     return tal.map(t => {
       const got = c.talents.includes(t.id);
       if (got) {
+        const up = (this.cfg['talent-upgrade'] || {})[t.id];
+        let upHtml = '';
+        if (up) {
+          const q = QUALITY_NAMES[up.quality] || up.quality || '未知';
+          const lvMax = Number(up.maxLevel) || (up.levels ? up.levels.length : 1);
+          const badge = `<span class="rarity-tag r-${up.quality}">${esc(q)}</span>`;
+          const head = `<div class="cx-up-head">${badge}<span class="cx-up-lv">可升至 Lv${lvMax}</span></div>`;
+          const levels = (up.levels || []).slice(1); // 跳过 Lv1（= 基础效果）
+          const lvlHtml = levels.length ? `<div class="cx-up-levels">` + levels.map((lv, i) => {
+            const n = i + 2;
+            const cost = (up.upCost && up.upCost[i] != null) ? `耗灵感 ${up.upCost[i]}` : '';
+            return `<div class="cx-up-lv-row"><span class="cx-up-lv-n">Lv${n}</span>` +
+              `<span class="cx-up-lv-ef">${talentEffectText({ effect: lv.effect })}</span>` +
+              (cost ? `<span class="cx-up-lv-cost">${esc(cost)}</span>` : '') + `</div>`;
+          }).join('') + `</div>` : '';
+          upHtml = head + lvlHtml;
+        }
         return `<div class="album-card unlocked">
           <div class="ac-name">${esc(t.name)} <span class="ac-badge">${t.kind === 'active' ? '主动' : '被动'}</span></div>
           <div class="efx cx-efx">${talentEffectText(t)}</div>
+          ${upHtml}
           <div class="ac-text">${esc(firstSentence(t.text))}</div>
         </div>`;
       }
@@ -237,6 +261,32 @@ export class CodexUI {
     }).join("");
   }
 
+  /* ================================================ 天象 */
+
+  _sky(c) {
+    const sky = this.cfg.sky || [];
+    if (!sky.length) return `<div class="cx-empty">尚无天象数据</div>`;
+    return sky.map(card => {
+      if (Codex.hasSky(card.id)) {
+        const icon = card.icon || '✦';
+        const dur = card.turns || card.duration || '?';
+        const scope = card.scope === 'self' ? '仅己身' : '全盘';
+        return `<div class="album-card unlocked sky-card">
+          <div class="sky-icon">${esc(icon)}</div>
+          <div class="ac-name">${esc(card.name)}</div>
+          <div class="efx cx-efx">${skyEffectText(card)}</div>
+          <div class="ac-text">${esc(firstSentence(card.text))}</div>
+          <div class="ac-cond done">持续 ${dur} 回合　·　${scope}</div>
+        </div>`;
+      }
+      return `<div class="album-card locked">
+        <div class="ac-silhouette">？</div>
+        <div class="ac-name" style="font-size:14px;letter-spacing:.2em">未 邂 逅</div>
+        <div class="ac-cond">于局中逢此天象，方入此册</div>
+      </div>`;
+    }).join('');
+  }
+
   /* ================================================ 对手详情浮层 */
 
   /** 认知深浅区块（阶段 B）：四级进度 + 交手/破绽统计 + 附机制战术注释 */
@@ -257,6 +307,41 @@ export class CodexUI {
           : '已亲手破其拿手好戏，破绽所在与克制之法皆心中有数。';
     return `<div class="cx-cog"><div class="cx-cog-track">${steps}</div>${stat}
       <div class="cx-hint2">${esc(tip)}</div></div>`;
+  }
+
+  /**
+   * 对手三机制展示（依据四级认知逐级披露）：
+   *   lv1 相识：仅披露招牌名 / 破绽名（知其有，无实证）
+   *   lv2 察意：加披露意图方向 + 破绽反制方向（临题有人言）
+   *   lv3 破招：同察意，并标记「已破招」
+   * 无 mech 的对手：平铺说明，无机制可循。
+   */
+  _foeMechHtml(tier, npc) {
+    if (!npc.mech) {
+      return `<div class="cx-hint2">此人不具特殊机制，唯凭才学取胜，无招牌破绽可循。</div>`;
+    }
+    const lv = Codex.getFoeCognition(foeId(tier, npc)).level;
+    const mech = npc.mech;
+    const sig = mech.signature || {};
+    const wea = mech.weakness || {};
+    const intent = mech.intent || {};
+    const ctx = { styleNames: STYLE_NAMES, mannerNames: (this.cfg.affinity && this.cfg.affinity.mannerNames) || {} };
+    const rows = [];
+    rows.push(`<div class="cx-mech-row"><span class="cx-mech-k">招牌</span><span class="cx-mech-v">${esc(sig.name || '招牌')}</span></div>`);
+    rows.push(`<div class="cx-mech-row"><span class="cx-mech-k">破绽</span><span class="cx-mech-v">${esc(wea.name || '破绽')}</span></div>`);
+    if (lv >= 2) {
+      const intentText = intent.description || Mech.intentTemplateName(intent.template) || '打法';
+      rows.push(`<div class="cx-mech-row"><span class="cx-mech-k">意图</span><span class="cx-mech-v">${esc(intentText)}</span></div>`);
+    } else {
+      rows.push(`<div class="cx-mech-row cx-mech-locked"><span class="cx-mech-k">意图</span><span class="cx-mech-v">？？（需更深交手方知其打法）</span></div>`);
+    }
+    let counter = '';
+    if (lv >= 2) {
+      const hint = Mech.weaknessHint(mech, ctx);
+      if (hint) counter = `<div class="cx-mech-counter">${esc(hint)}</div>`;
+    }
+    const broken = lv >= 3 ? `<span class="cog-badge lv3">已破招</span>` : '';
+    return `<div class="cx-mech">${rows.join('')}${counter}${broken}</div>`;
   }
 
   /** 在配置里按 tierId + name 定位对手（两者组合唯一） */
@@ -328,6 +413,10 @@ export class CodexUI {
         <div class="cx-detail-sec">
           <div class="cx-sec-t">你所识其深浅<span class="cx-sec-sub">（未识 → 相识 → 察意 → 破招）</span></div>
           ${this._cognitionHtml(tier, npc)}
+        </div>
+        <div class="cx-detail-sec">
+          <div class="cx-sec-t">拿手与破绽<span class="cx-sec-sub">（随认知深浅逐级披露）</span></div>
+          ${this._foeMechHtml(tier, npc)}
         </div>
         <div class="cx-detail-sec">
           <div class="cx-sec-t">款位说明</div>

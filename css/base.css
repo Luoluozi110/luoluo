@@ -63,6 +63,7 @@
 
   --rarity-common: #9a9186;
   --rarity-rare:   #4a7fc1;
+  --rarity-epic:   #b06fc9;
   --rarity-legend: #d8a930;
 
   --ease-back: cubic-bezier(.34, 1.56, .64, 1);

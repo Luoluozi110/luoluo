@@ -1000,3 +1000,31 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
   font-size: 14px; color: #3d3229; line-height: 1.7; text-align: center;
   box-shadow: 0 2px 0 rgba(178,58,46,.18), inset 0 1px 0 rgba(255,255,255,.7);
 }
+
+/* --- 图鉴·品质徽标（史诗补齐全档） --- */
+.rarity-tag.r-epic { background: var(--rarity-epic); }
+.event-card.r-epic { border: 3px solid var(--rarity-epic); box-shadow: 0 16px 40px rgba(0,0,0,.5), 0 0 28px rgba(176,111,201,.55); }
+
+/* --- 图鉴·对手三机制（按认知披露） --- */
+.cx-mech { display: flex; flex-direction: column; gap: 6px; }
+.cx-mech-row { display: flex; gap: 10px; align-items: baseline; font-size: 14px; line-height: 1.6; }
+.cx-mech-k { flex: 0 0 42px; color: var(--mo-1); font-family: var(--font-kai); letter-spacing: .15em; }
+.cx-mech-v { color: #3d3229; }
+.cx-mech-locked .cx-mech-v { color: #a89c8c; font-style: italic; }
+.cx-mech-counter {
+  margin-top: 4px; padding: 7px 11px; border-radius: 7px;
+  background: rgba(47,139,144,.10); border-left: 3px solid var(--qing);
+  font-size: 13px; color: #2c3b3c; line-height: 1.7;
+}
+
+/* --- 图鉴·文心升级信息 --- */
+.cx-up-head { display: flex; align-items: center; gap: 8px; margin: 6px 0 4px; }
+.cx-up-lv { font-size: 12px; color: var(--mo-2); }
+.cx-up-levels { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+.cx-up-lv-row { display: flex; gap: 8px; align-items: baseline; font-size: 13px; line-height: 1.5; }
+.cx-up-lv-n { flex: 0 0 38px; color: var(--zhu); font-family: var(--font-song); font-weight: 700; }
+.cx-up-lv-ef { flex: 1; color: #3d3229; }
+.cx-up-lv-cost { flex: 0 0 auto; color: var(--mo-2); font-size: 12px; }
+
+/* --- 图鉴·天象卡图标 --- */
+.sky-icon { font-size: 30px; text-align: center; line-height: 1.2; margin-bottom: 2px; }

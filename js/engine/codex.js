@@ -39,7 +39,7 @@ function hasLS() {
 }
 
 export function emptyCodex() {
-  return { v: CODEX_VERSION, foes: [], foeStats: {}, talents: [], synergies: [], foeCognition: {} };
+  return { v: CODEX_VERSION, foes: [], foeStats: {}, talents: [], synergies: [], foeCognition: {}, sky: [] };
 }
 
 /** 容错归一：坏数据不至于让游戏起不来 */
@@ -49,6 +49,8 @@ export function normalizeCodex(raw) {
   base.foes = Array.isArray(raw.foes) ? raw.foes.filter(x => typeof x === 'string') : [];
   base.talents = Array.isArray(raw.talents) ? raw.talents.filter(x => typeof x === 'string') : [];
   base.synergies = Array.isArray(raw.synergies) ? raw.synergies.filter(x => typeof x === 'string') : [];
+  // 天象：兼容旧档（无 sky 字段）时回落为空数组
+  base.sky = Array.isArray(raw.sky) ? raw.sky.filter(x => typeof x === 'string') : [];
   // 对手战绩：兼容旧档（无 foeStats 字段）时回落为空对象
   if (raw.foeStats && typeof raw.foeStats === 'object') {
     for (const [k, v] of Object.entries(raw.foeStats)) {
@@ -194,4 +196,19 @@ export function recordSynergy(id) {
 
 export function hasSynergy(id) {
   return loadCodex().synergies.includes(id);
+}
+
+/** 记录一张曾邂逅的天象卡；返回是否为「新发现」（跨局累计收集进度） */
+export function recordSky(id) {
+  if (!id) return false;
+  const c = loadCodex();
+  if (c.sky.includes(id)) return false;
+  c.sky.push(id);
+  saveCodex(c);
+  return true;
+}
+
+/** 是否已邂逅过某天象卡 */
+export function hasSky(id) {
+  return loadCodex().sky.includes(id);
 }

@@ -757,6 +757,7 @@ export class Game {
       else this.s.sky.push({ card, left: turns });
     }
     await this.ui.showSky(card);
+    Codex.recordSky(card.id); // 图鉴：记录本次邂逅的天象（跨局累计收集）
     this.ui.onState(this.s);
   }
 
