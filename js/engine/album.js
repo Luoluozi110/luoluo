@@ -16,12 +16,135 @@ export const ALBUM_KEY = 'feihua_album';
 export const SAVECODE_KEY = 'feihua_savecode';
 export const REINCARNATE_KEY = 'feihua_reincarnate_v1';
 export const LOADOUT_MAX = 2;
-export const STORE_VERSION = 1;
+export const STORE_VERSION = 2;          // v2: 新增 mastery（流派熟练度）
 export const SAVECODE_VERSION = 2;
 export const SAVECODE_PREFIX = 'FHQS2';
 const SAVECODE_MAX_CHARS = 6 * 1024 * 1024;
 
 const STYLES = ['shi', 'ci', 'lian'];
+
+/* -------------------------------------------------- 流派熟练度
+ * 每流派独立、跨局永久累积。xp 累加；达阈值升 level（1→5）。
+ * 等级影响开局主属性（每级主力 +2）与流派特殊效果增强。
+ */
+export const MASTERY_LEVELS = 5;
+export const MASTERY_THRESHOLDS = [0, 40, 100, 200, 340];   // 累计需 xp
+export const MASTERY_LEVEL_NAMES = ['初学乍练', '渐入佳境', '通达晓畅', '炉火纯青', '登峰造极'];
+export const MASTERY_ATTR_PER_LEVEL = 2;                    // 每级主属性额外 +2（Lv5 累计 +9）
+export const MASTERY_XP_FINISH = 12;                        // 完成一局（结算）基础 xp，胜负同等
+export const MASTERY_XP_CLEAR = 20;                         // 该局殿试通关额外 xp
+export const MASTERY_XP_WENZONG = 8;                        // 该局评为文宗（tier≥4）额外 xp
+/** 新流派等级名（等级从 1 起） */
+export function masteryLevelName(level) {
+  const i = Math.max(1, Math.min(MASTERY_LEVELS, Number(level) || 1)) - 1;
+  return MASTERY_LEVEL_NAMES[i];
+}
+/** 由累计 xp 求等级（1..MASTERY_LEVELS） */
+export function masteryLevelFromXp(xp) {
+  const x = Math.max(0, Number(xp) || 0);
+  let lv = 1;
+  for (let i = 0; i < MASTERY_LEVELS; i++) if (x >= MASTERY_THRESHOLDS[i]) lv = i + 1;
+  return lv;
+}
+/** 累计 xp + 对应等级；封装一条熟练度记录 */
+export function masteryEntry(xp = 0) {
+  const v = Math.max(0, Number(xp) || 0);
+  return { xp: v, level: masteryLevelFromXp(v) };
+}
+/** 空 mastery（三派默认 Lv1） */
+export function emptyMastery() {
+  return { bowen: masteryEntry(0), qishi: masteryEntry(0), cizong_bi: masteryEntry(0) };
+}
+/** 容错归一 mastery；任何缺字段补默认，坏数据不至于让熟练度系统起不来 */
+export function normalizeMastery(raw) {
+  const base = emptyMastery();
+  if (!raw || typeof raw !== 'object') return base;
+  for (const k of Object.keys(base)) {
+    const e = raw[k];
+    const xp = e && typeof e === 'object' ? e.xp : Number(e) || 0;
+    base[k] = masteryEntry(xp);
+  }
+  return base;
+}
+
+/* 流派机制按等级增强表（等级 1 = 现网基线，不增强）。
+ * 方向贴合各派性格、给深度而不整体膨胀；Lv5 有单点"质变"。
+ */
+const MASTERY_MECH = {
+  bowen: {
+    // knowledgeThreshold: 2→1 于 Lv4 开始（阈值不能低于 1，Lv4/5 共享）
+    perLv: { 4: { knowledgeThreshold: 1 }, 5: { knowledgeThreshold: 1 } },
+    // Lv5 专属：知识转化 ×1.1
+    apex: { 5: { knowledgeRewardMult: 1.1 } }
+  },
+  qishi: {
+    // inspirationBonusRate: 0.35→0.40/0.45/0.50/0.55
+    perLv: {
+      2: { inspirationBonusRate: 0.40 },
+      3: { inspirationBonusRate: 0.45 },
+      4: { inspirationBonusRate: 0.50 },
+      5: { inspirationBonusRate: 0.55 }
+    },
+    // Lv5 专属：升级成本折扣 0.65→0.55
+    apex: { 5: { upgradeCostRate: 0.55 } }
+  },
+  cizong_bi: {
+    // creativeDicePlus: 2→3/4/5/5（Lv4 触及 freeDiceCap=5，Lv5 维持 5）
+    perLv: { 2: { creativeDicePlus: 3 }, 3: { creativeDicePlus: 4 }, 4: { creativeDicePlus: 5 }, 5: { creativeDicePlus: 5 } },
+    // Lv5 专属：创作骰 cap 5→6（突破常人笔力上限）
+    apex: { 5: { freeDiceCap: 6 } }
+  }
+};
+
+/**
+ * 将 base 机制按流派熟练度等级 lv 增强，返回浅拷贝后的新机制对象。
+ * 纯函数：不修改入参；未知流派/等级 1 返回 base 原引用（即不增强）。
+ */
+export function applyMasteryMechanics(base, schoolId, lv) {
+  if (!base || !schoolId || !(lv >= 2)) return base;
+  const tbl = MASTERY_MECH[schoolId];
+  if (!tbl) return base;
+  const out = { ...base };
+  const per = (tbl.perLv && tbl.perLv[lv]) || null;
+  const apex = (tbl.apex && tbl.apex[lv]) || null;
+  if (per) Object.assign(out, per);
+  if (apex) Object.assign(out, apex);
+  return out;
+}
+
+/** 单条熟练度记录的人类可读摘要：如 "Lv3 通达晓畅 · 100/200" */
+export function masterySummary(entry) {
+  const e = masteryEntry(entry && entry.xp);
+  const next = e.level < MASTERY_LEVELS ? MASTERY_THRESHOLDS[e.level] : null;
+  return next == null
+    ? `Lv${e.level} ${masteryLevelName(e.level)}（已满级）`
+    : `Lv${e.level} ${masteryLevelName(e.level)} · ${e.xp}/${next}`;
+}
+
+/**
+ * 结算一局后，按 run 累加该流派的熟练度。
+ * 完成一局（结算）即 +MASTERY_XP_FINISH（胜负同等）；殿试通关 +MASTERY_XP_CLEAR；
+ * 评语为文宗（tier≥4）再 +MASTERY_XP_WENZONG。
+ * 就地修改 store.mastery[schoolId] 并存储，返回 { before, after, gained, leveledUp }。
+ * 未知流派（保护性）：不写入，返回 null。
+ */
+export function addMasteryXp(store, schoolId, run = {}) {
+  if (!store.mastery) store.mastery = emptyMastery();
+  if (!schoolId || !store.mastery[schoolId]) return null;
+  let xp = MASTERY_XP_FINISH;
+  if (run.reachedEnd) xp += MASTERY_XP_CLEAR;
+  if (Number(run.wenzong) || (run.tier != null && Number(run.tier) >= 4)) xp += MASTERY_XP_WENZONG;
+  const before = masteryEntry(store.mastery[schoolId].xp);
+  const newEntry = masteryEntry(before.xp + xp);
+  store.mastery[schoolId] = newEntry;
+  saveStore(store);
+  return {
+    before,
+    after: newEntry,
+    gained: xp,
+    leveledUp: newEntry.level > before.level
+  };
+}
 
 /** 无 localStorage 时的内存兜底（Node 环境） */
 let memoryStore = null;
@@ -45,7 +168,8 @@ export function emptyStore() {
       styleWins: { shi: 0, ci: 0, lian: 0 }
     },
     unlocked: [],
-    loadout: []
+    loadout: [],
+    mastery: emptyMastery()
   };
 }
 
@@ -68,6 +192,7 @@ export function normalizeStore(raw) {
   base.loadout = Array.isArray(raw.loadout)
     ? raw.loadout.filter(x => typeof x === 'string' && base.unlocked.includes(x)).slice(0, LOADOUT_MAX)
     : [];
+  base.mastery = normalizeMastery(raw.mastery);
   return base;
 }
 

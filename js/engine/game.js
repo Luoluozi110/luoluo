@@ -82,8 +82,16 @@ export class Game {
     this.d6 = () => 1 + Math.floor(this.rand() * 6);
   }
 
+  /**
+   * 由流派熟练度等级增强后的机制（基准为 school.schoolMechanics）。
+   * 所有机制消费点统一走本方法 → 改一处即全游戏生效。
+   * 等级 1 = 与现网完全一致；等级越高，机制越贴合该派性格。
+   */
   schoolMechanics(school = this.s && this.s.school) {
-    return (school && school.schoolMechanics) || {};
+    const base = (school && school.schoolMechanics) || {};
+    const lv = Math.max(1, Math.min(Album.MASTERY_LEVELS, Number(this.masteryLevel) || 1));
+    if (lv <= 1 || !school) return base;
+    return Album.applyMasteryMechanics(base, school.id, lv);
   }
 
   async gainBowenKnowledge(reason) {
@@ -141,6 +149,16 @@ export class Game {
     const attrs = { ...cfg.attrs.initial };
     attrs[school.attr] = (attrs[school.attr] || 0) + (cfg.attrs.schoolBonus ?? 3);
 
+    // 流派熟练度：读该派跨局积累的等级，叠加主属性（每级 +MASTERY_ATTR_PER_LEVEL）
+    const mastery = Album.loadStore().mastery || {};
+    const mEntry = mastery[school.id] || Album.masteryEntry(0);
+    this.masteryLevel = mEntry.level || 1;
+    const masterAttrGain = (this.masteryLevel - 1) * Album.MASTERY_ATTR_PER_LEVEL;
+    if (masterAttrGain > 0) {
+      attrs[school.attr] = (attrs[school.attr] || 0) + masterAttrGain;
+    }
+    const _masteryGain = masterAttrGain;   // 供下方日志
+
     // 照我传灯·跨局传承：消费上一局点亮的「传承火种」，继承其 80%~100% 属性（一次性）
     const _inherit = Reincarnate.consume();
     if (_inherit && _inherit.attrs) {
@@ -160,6 +178,7 @@ export class Game {
       schoolState: this.createSchoolState(school),
       playerName,
       attrs,
+      masteryLevel: this.masteryLevel,     // 开局所用流派熟练度等级（供结算/HUD 留痕）
       inspiration: cfg.inspiration.initial,
       inspirationMax: cfg.inspiration.max,
       passive: [], active: [],
@@ -185,6 +204,10 @@ export class Game {
     const t0 = cfg.talentById.get(school.talent);
     if (t0) this.grantTalent(t0, { silent: true });
     this.push(`选择「${school.name}」，${R.ATTR_NAMES[school.attr]} +${cfg.attrs.schoolBonus ?? 3}`);
+    if (_masteryGain > 0) {
+      this.push(`流派造诣·${Album.masteryLevelName(this.masteryLevel)}：${R.ATTR_NAMES[school.attr]} +${_masteryGain}`);
+      if (this.ui && this.ui.toast) this.ui.toast(`◆ ${school.name}造诣 ${Album.masteryLevelName(this.masteryLevel)}，${R.ATTR_NAMES[school.attr]} +${_masteryGain}`);
+    }
     this.applyLoadout(opts.loadout || []);
 
     // 照我传灯·跨局传承：若开局消费了传承，落日志 + 提示
@@ -1722,6 +1745,22 @@ export class Game {
     }[reason] || '对局结束';
     summary.state = s;
     Object.assign(summary, this.commitAlbum(summary));
+    // 流派熟练度：结算后按本局结果累加（完成即加、通关/文宗额外）
+    try {
+      const st = s;
+      const runForMastery = {
+        reachedEnd: !!st.reachedEnd,
+        wenzong: !!(summary.grade && summary.grade.id === 'wenzong'),
+        schoolId: st.school && st.school.id
+      };
+      const mres = Album.addMasteryXp(
+        Album.loadStore(), runForMastery.schoolId, runForMastery
+      );
+      if (mres) {
+        summary.mastery = mres;
+        if (mres.leveledUp) this.push(`流派造诣精进：${Album.masteryLevelName(mres.after.level)}！`);
+      }
+    } catch (e) { /* 熟练度累计失败不阻断结算 */ }
     // 通关（金榜题名）→ 提交分数到云端排行榜（解耦：由 app.js 注入 onVictory）
     if (summary.reason === 'jinbang' && typeof this.onVictory === 'function') {
       try { this.onVictory((s.playerName || '无名氏'), summary.total); } catch (_) { /* 提交失败不阻断结算 */ }

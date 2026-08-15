@@ -53,12 +53,11 @@ export class BattleStage {
 
     const panel = el.querySelector('#btPanel');
 
-    /* ① 遭遇 */
+    /* ① 遭遇：介绍弹窗，等待玩家「开始对决」确认后再推进（不再自动快跳） */
     panel.innerHTML = `<div class="ph">① 遭遇</div>
       <div style="font-size:17px;line-height:1.8">「${esc(session.npc.fullName || session.npc.name)}」${esc(session.npc.title || '')}拦路请教，愿以文会友。${session.npc.style ? `<span style="color:var(--zhu)">（此人偏${STYLE_NAMES[session.npc.style] || ''}）</span>` : ''}</div>`;
-    await sleep(750);
 
-    /* ①½ 研判卡：机制 NPC 的意图行藏 + 长短可读提示（阶段 B） */
+    /* ①½ 研判卡：机制 NPC 的意图行藏 + 长短可读提示（阶段 B），一并展示后统一确认 */
     const mechCtx = { styleNames: STYLE_NAMES, mannerNames: session.mannerNames || {} };
     if (session.npc && session.npc.mech) {
       const hints = intentHint(session.npc, session.intentLocked, mechCtx);
@@ -69,9 +68,16 @@ export class BattleStage {
              <span class="jt-body">${esc(h.body)}</span></div>`).join('');
         panel.insertAdjacentHTML('beforeend', `<div class="ph" style="margin-top:8px">硏 判 <span style="font-size:11px;color:var(--mo-3)">交手可明彼之长短</span></div>
           <div class="jt-row">${card}</div>`);
-        await sleep(720);
       }
     }
+    /* 介绍 + 研判卡全部展示后，挂「开始对决」确认按钮，点击才放行进入审题 */
+    await new Promise(resolve => {
+      const btn = document.createElement('button');
+      btn.className = 'pick meet-confirm';
+      btn.textContent = '开始对决 →';
+      btn.addEventListener('click', () => { btn.disabled = true; resolve(); });
+      panel.appendChild(btn);
+    });
 
     /* ② 审题 */
     el.querySelector('#btTopic').textContent = session.topic;

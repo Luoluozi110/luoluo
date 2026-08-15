@@ -439,6 +439,16 @@
 .pick:disabled { opacity: .45; cursor: not-allowed; }
 .pick:disabled .pv { color: var(--zhu); }
 .pick .home { display: inline-block; font-size: 11px; color: #fff; background: var(--taohua-deep); border-radius: 6px; padding: 1px 6px; margin-top: 4px; }
+/* NPC 相遇介绍「开始对决」确认按钮 */
+.meet-confirm {
+  display: block; width: 100%; max-width: 260px; margin: 14px auto 2px; padding: 13px 16px;
+  border-radius: 12px; cursor: pointer; font-size: 18px; letter-spacing: .2em;
+  background: linear-gradient(160deg, #fbe3d0, #f3c7a3); border: 2px solid var(--zhu); color: var(--zhu-deep, #8c2f14);
+  font-family: var(--font-song); box-shadow: 0 4px 14px rgba(140,50,20,.18);
+  transition: transform .18s var(--ease-back), box-shadow .18s;
+}
+.meet-confirm:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(140,50,20,.28); }
+.meet-confirm:disabled { opacity: .5; cursor: default; }
 .pick .mom { font-size: 11px; color: var(--jin); margin-top: 3px; }
 /* 多枚灵感骰：已掷骰子点数展示 */
 .dice-pips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 6px 0 2px; }

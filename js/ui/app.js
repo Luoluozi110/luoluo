@@ -189,21 +189,37 @@ function autoSaveRun(g, force = false) {
 }
 
 function buildSchoolScreen() {
+  const store = Album.loadStore();
+  const masteryOf = sch => (store.mastery && store.mastery[sch.id]) || { xp: 0, level: 1 };
   const cards = cfg.schools.map(sch => {
     const tal = (cfg.talents || []).find(t => t.id === sch.talent);
     const bonusTxt = `入门 ${ATTR_NAMES[sch.attr]} +${cfg.attrs.schoolBonus ?? 3} · 初授文心「${tal ? tal.name : '—'}」`;
+    const m = masteryOf(sch);
+    const isMax = m.level >= Album.MASTERY_LEVELS;
+    const next = isMax ? null : Album.MASTERY_THRESHOLDS[m.level];
+    const prev = Album.MASTERY_THRESHOLDS[m.level - 1];
+    const widthPct = next == null ? 100 : Math.min(100, Math.max(0, ((m.xp - prev) / (next - prev)) * 100));
+    const masteryLine = isMax
+      ? `<div style="color:var(--zhu);font-size:12px;letter-spacing:.08em">造诣 ${Album.masteryLevelName(m.level)}</div>`
+      : `<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mo-3);letter-spacing:.06em">
+           <span>造诣 Lv${m.level} ${Album.masteryLevelName(m.level)}</span>
+           <span style="flex:1;min-width:40px;height:4px;background:rgba(128,112,96,.15);border-radius:2px;overflow:hidden">
+             <span style="display:block;height:100%;width:${widthPct.toFixed(1)}%;background:var(--zhu)"></span>
+           </span>
+           <span>${m.xp}/${next}</span>
+         </div>`;
     return `
       <button class="school-card" data-id="${sch.id}">
         <div class="emblem">${SCHOOL_EMBLEM[sch.attr] || ''}</div>
         <h3>${sch.name}</h3>
         ${sch.motto ? `<div class="motto">${sch.motto}</div>` : ''}
         ${sch.flavor ? `<div class="flavor">${sch.flavor}</div>` : ''}
+        ${masteryLine}
         <div class="meta">${esc(bonusTxt)}</div>
       </button>`;
   }).join('');
 
   const src = Object.entries(configSource).map(([k, v]) => `${k}←${v}`).join('　');
-  const store = Album.loadStore();
   const canContinue = hasRun();
   // 续玩存档摘要：槽位（手动/自动）+ 回合 + 时间
   const contRun = canContinue
@@ -697,6 +713,21 @@ async function showResult(sum) {
   // 主角名号：有则显「「名」」，否则「你」
   const pname = (game && game.s && game.s.playerName) || '';
 
+  // 流派熟练度：本局获得 + 是否升级
+  const mk = sum.mastery;
+  const masteryBlock = mk ? (() => {
+    const schId = sum.state && sum.state.school && sum.state.school.id;
+    const sch = (cfg.schools || []).find(x => x.id === schId);
+    const schName = sch ? sch.name : (schId || '');
+    const lvName = Album.masteryLevelName(mk.after.level);
+    const upmark = mk.leveledUp ? `<span style="color:var(--zhu);font-weight:bold"> 精进！→ Lv${mk.after.level} ${Album.masteryLevelName(mk.after.level)}</span>` : '';
+    return `<div class="result-mastery paper" style="margin-top:10px;padding:10px 14px;font-size:13px;letter-spacing:.1em">
+      <div style="font-size:14px;letter-spacing:.16em;color:var(--mo-2);margin-bottom:4px">流派造诣 · ${schName}</div>
+      <div>本局习得 <span style="color:var(--zhu);font-weight:bold">+${mk.gained}</span> 熟练度
+        <span style="color:var(--mo-3)">（${Album.masterySummary(mk.before)} → Lv${mk.after.level} ${lvName}）</span>${upmark}</div>
+    </div>`;
+  })() : '';
+
   // 两列紧凑网格：六维一屏看全（Critic V3）。明细每维最多列 3 条，余者折为「其余 N 项」
   const PARTS_SHOWN = 3;
   const dims = sum.dims.map((d, i) => {
@@ -755,6 +786,7 @@ async function showResult(sum) {
           <div style="font-size:16px;letter-spacing:.16em;margin-bottom:6px">六维评分</div>
           <div class="dim-grid">${dims}</div>
           ${unlockBlock}
+          ${masteryBlock}
         </div>
       </div>
       <div class="result-actions">
