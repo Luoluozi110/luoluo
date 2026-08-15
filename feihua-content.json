@@ -2577,8 +2577,8 @@
         },
         {
           "name": "康尔玉",
-          "title": "联胜有继",
-          "style": "ci",
+          "title": "联圣有继",
+          "style": "lian",
           "attrs": {
             "shi": 16,
             "ci": 18,
@@ -2676,6 +2676,145 @@
     "momentumPer": 0.02,
     "momentumMax": 5
   },
+  "synergies": [
+    {
+      "id": "S01",
+      "name": "诗酒剑气",
+      "desc": "斗酒而诗思泉涌，梦笔而花光艳发——诗与灵交映，论战得分 +5%。",
+      "members": [
+        "T001",
+        "T007"
+      ],
+      "effects": [
+        {
+          "type": "syn_pct",
+          "value": 0.05
+        }
+      ]
+    },
+    {
+      "id": "S02",
+      "name": "倚声双绝",
+      "desc": "倚声填词，复得入木三分——词笔相成，以词取胜时词力额外 +1。",
+      "members": [
+        "T002",
+        "T006"
+      ],
+      "effects": [
+        {
+          "type": "on_win_bonus",
+          "style": "ci",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "S03",
+      "name": "联坛霸才",
+      "desc": "对对如流，更兼天马行空——联坛机锋愈利，灵感波动 +1。",
+      "members": [
+        "T003",
+        "T010"
+      ],
+      "effects": [
+        {
+          "type": "dice_plus",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "S04",
+      "name": "思涌笔健",
+      "desc": "文思泉涌，急智生风——临场偶得妙手，12% 概率得分 ×1.4。",
+      "members": [
+        "T016",
+        "T005"
+      ],
+      "effects": [
+        {
+          "type": "crit",
+          "chance": 0.12,
+          "mult": 1.4
+        }
+      ]
+    },
+    {
+      "id": "S05",
+      "name": "通儒蕴藉",
+      "desc": "博览群书，囊萤映雪——学养深厚，满盘皆稳，论战得分 +5%。",
+      "members": [
+        "T004",
+        "T009"
+      ],
+      "effects": [
+        {
+          "type": "syn_pct",
+          "value": 0.05
+        }
+      ]
+    },
+    {
+      "id": "S06",
+      "name": "文运亨通",
+      "desc": "春风得意马蹄疾，曲水流觞雅集深——攻守俱得文运，论战得分 +4%。",
+      "members": [
+        "T017",
+        "T018"
+      ],
+      "effects": [
+        {
+          "type": "syn_pct",
+          "value": 0.04
+        }
+      ]
+    },
+    {
+      "id": "S07",
+      "name": "梦笔泉涌",
+      "desc": "梦笔生花，文思不绝——创作两绝相济，灵感波动 +1。",
+      "members": [
+        "T007",
+        "T016"
+      ],
+      "effects": [
+        {
+          "type": "dice_plus",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "S08",
+      "name": "笔墨相宣",
+      "desc": "入木三分，字字推敲——笔力思力交润，论战得分 +4%。",
+      "members": [
+        "T006",
+        "T008"
+      ],
+      "effects": [
+        {
+          "type": "syn_pct",
+          "value": 0.04
+        }
+      ]
+    },
+    {
+      "id": "S09",
+      "name": "洛阳才调",
+      "desc": "春风得意，洛阳纸贵——灵源不竭而才名远播，论战得分 +4%。",
+      "members": [
+        "T017",
+        "T019"
+      ],
+      "effects": [
+        {
+          "type": "syn_pct",
+          "value": 0.04
+        }
+      ]
+    }
+  ],
   "board": {
     "laps": 2,
     "sides": [
