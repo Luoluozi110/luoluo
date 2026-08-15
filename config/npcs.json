@@ -554,7 +554,7 @@
       0.5,
       0.75
     ],
-    "desc": "会试中坚。六维总预算提升至 100，偏科优势更明确；开始要求玩家利用相性与破绽，而非只靠属性碾压。",
+    "desc": "会试中坚。六维总预算提升至 90，偏科优势更明确；开始要求玩家利用相性与破绽，而非只靠属性碾压。",
     "npcs": [
       {
         "id": "fan_jieyuan",
@@ -562,12 +562,12 @@
         "title": "乡试解元",
         "style": "shi",
         "attrs": {
-          "shi": 30,
-          "ci": 15,
-          "lian": 12,
-          "bi": 15,
-          "xue": 14,
-          "si": 14
+          "shi": 27,
+          "ci": 14,
+          "lian": 11,
+          "bi": 14,
+          "xue": 13,
+          "si": 11
         },
         "mech": {
           "version": 1,
@@ -607,12 +607,12 @@
         "title": "公车举人",
         "style": "ci",
         "attrs": {
-          "shi": 14,
-          "ci": 30,
-          "lian": 12,
-          "bi": 14,
-          "xue": 15,
-          "si": 15
+          "shi": 13,
+          "ci": 27,
+          "lian": 11,
+          "bi": 13,
+          "xue": 14,
+          "si": 12
         },
         "mech": {
           "version": 1,
@@ -653,12 +653,12 @@
         "title": "鹿鸣宴客",
         "style": "lian",
         "attrs": {
-          "shi": 14,
-          "ci": 15,
-          "lian": 30,
-          "bi": 12,
-          "xue": 14,
-          "si": 15
+          "shi": 13,
+          "ci": 14,
+          "lian": 27,
+          "bi": 11,
+          "xue": 13,
+          "si": 12
         },
         "mech": {
           "version": 1,
@@ -696,12 +696,12 @@
         "title": "乙榜举人",
         "style": "bi",
         "attrs": {
-          "shi": 14,
-          "ci": 14,
-          "lian": 12,
-          "bi": 30,
-          "xue": 15,
-          "si": 15
+          "shi": 13,
+          "ci": 13,
+          "lian": 11,
+          "bi": 27,
+          "xue": 14,
+          "si": 12
         },
         "mech": {
           "version": 1,
@@ -735,12 +735,12 @@
         "title": "孝廉举人",
         "style": "xue",
         "attrs": {
-          "shi": 15,
-          "ci": 14,
-          "lian": 14,
-          "bi": 13,
-          "xue": 30,
-          "si": 14
+          "shi": 14,
+          "ci": 13,
+          "lian": 13,
+          "bi": 12,
+          "xue": 27,
+          "si": 11
         },
         "mech": {
           "version": 1,
@@ -778,12 +778,12 @@
         "title": "秋闱中式",
         "style": "si",
         "attrs": {
-          "shi": 14,
-          "ci": 15,
-          "lian": 14,
-          "bi": 13,
-          "xue": 14,
-          "si": 30
+          "shi": 13,
+          "ci": 14,
+          "lian": 13,
+          "bi": 12,
+          "xue": 11,
+          "si": 27
         },
         "mech": {
           "version": 1,
@@ -830,7 +830,7 @@
       0.75,
       1
     ],
-    "desc": "高阶名家。六维总预算提升至 138，并强化招牌能力；需要稳定构筑与资源规划，低级档不随之上涨。",
+    "desc": "高阶名家。六维总预算提升至 117，并强化招牌能力；需要稳定构筑与资源规划，低级档不随之上涨。",
     "npcs": [
       {
         "id": "ouyang_han",
@@ -838,12 +838,12 @@
         "title": "殿前进士",
         "style": "shi",
         "attrs": {
-          "shi": 38,
-          "ci": 19,
-          "lian": 18,
-          "bi": 21,
-          "xue": 21,
-          "si": 21
+          "shi": 33,
+          "ci": 17,
+          "lian": 15,
+          "bi": 17,
+          "xue": 17,
+          "si": 18
         },
         "mech": {
           "version": 1,
@@ -885,12 +885,12 @@
         "title": "同进士出身",
         "style": "ci",
         "attrs": {
-          "shi": 21,
-          "ci": 38,
-          "lian": 18,
-          "bi": 20,
-          "xue": 21,
-          "si": 20
+          "shi": 18,
+          "ci": 33,
+          "lian": 15,
+          "bi": 17,
+          "xue": 17,
+          "si": 17
         },
         "mech": {
           "version": 1,
@@ -929,12 +929,12 @@
         "title": "进士及第",
         "style": "lian",
         "attrs": {
-          "shi": 21,
-          "ci": 21,
-          "lian": 38,
-          "bi": 18,
-          "xue": 20,
-          "si": 20
+          "shi": 17,
+          "ci": 17,
+          "lian": 33,
+          "bi": 15,
+          "xue": 17,
+          "si": 18
         },
         "mech": {
           "version": 1,
@@ -978,12 +978,12 @@
         "title": "翰林庶吉士",
         "style": "bi",
         "attrs": {
-          "shi": 21,
-          "ci": 20,
-          "lian": 20,
-          "bi": 38,
-          "xue": 20,
-          "si": 19
+          "shi": 17,
+          "ci": 17,
+          "lian": 15,
+          "bi": 33,
+          "xue": 17,
+          "si": 18
         },
         "mech": {
           "version": 1,
@@ -1017,12 +1017,12 @@
         "title": "赐进士出身",
         "style": "xue",
         "attrs": {
-          "shi": 21,
-          "ci": 21,
-          "lian": 20,
-          "bi": 20,
-          "xue": 38,
-          "si": 18
+          "shi": 18,
+          "ci": 17,
+          "lian": 17,
+          "bi": 15,
+          "xue": 33,
+          "si": 17
         },
         "mech": {
           "version": 1,
@@ -1060,12 +1060,12 @@
         "title": "甲科进士",
         "style": "si",
         "attrs": {
-          "shi": 21,
-          "ci": 21,
-          "lian": 20,
-          "bi": 20,
-          "xue": 19,
-          "si": 37
+          "shi": 17,
+          "ci": 18,
+          "lian": 17,
+          "bi": 15,
+          "xue": 17,
+          "si": 33
         },
         "mech": {
           "version": 1,
@@ -1118,14 +1118,7 @@
       1,
       1
     ],
-    "desc": "殿试三场终极大考。六维总预算提升至 174，关键能力进一步强化；三位考官各偏诗、词、笔，仍保留可读破绽与换策空间。",
-    "isFinal": true,
-    "battles": 3,
-    "themes": [
-      "yongwu",
-      "songbie",
-      "huaigu"
-    ],
+    "desc": "殿试三场终极大考。六维总预算 148，关键能力进一步强化；三位考官各偏诗、词、笔，仍保留可读破绽与换策空间。",
     "npcs": [
       {
         "id": "wang_shilang",
@@ -1133,12 +1126,12 @@
         "title": "礼部侍郎",
         "style": "shi",
         "attrs": {
-          "shi": 55,
-          "ci": 24,
-          "lian": 24,
-          "bi": 24,
-          "xue": 24,
-          "si": 23
+          "shi": 46,
+          "ci": 20,
+          "lian": 20,
+          "bi": 20,
+          "xue": 20,
+          "si": 22
         },
         "mech": {
           "version": 1,
@@ -1184,12 +1177,12 @@
         "title": "翰林学士",
         "style": "ci",
         "attrs": {
-          "shi": 26,
-          "ci": 55,
-          "lian": 23,
-          "bi": 23,
-          "xue": 24,
-          "si": 23
+          "shi": 22,
+          "ci": 46,
+          "lian": 20,
+          "bi": 20,
+          "xue": 20,
+          "si": 20
         },
         "mech": {
           "version": 1,
@@ -1235,12 +1228,12 @@
         "title": "国子监祭酒",
         "style": "bi",
         "attrs": {
-          "shi": 24,
-          "ci": 24,
-          "lian": 23,
-          "bi": 55,
-          "xue": 24,
-          "si": 24
+          "shi": 20,
+          "ci": 20,
+          "lian": 20,
+          "bi": 46,
+          "xue": 20,
+          "si": 22
         },
         "mech": {
           "version": 1,
@@ -1267,7 +1260,50 @@
             "description": "本场求稳，严守经义法度"
           }
         }
+      },
+      {
+        "id": "",
+        "name": "康尔玉",
+        "title": "联圣有继",
+        "style": "lian",
+        "weight": 10,
+        "attrs": {
+          "shi": 18,
+          "ci": 18,
+          "lian": 50,
+          "bi": 18,
+          "xue": 58,
+          "si": 18
+        },
+        "mech": {
+          "signature": {
+            "name": "偏联力专精",
+            "template": "sig_style_mastery",
+            "style": "lian",
+            "pct": 0.06
+          },
+          "weakness": {
+            "name": "改用他体",
+            "template": "wea_use_other_style",
+            "npcStyle": "lian",
+            "fullClose": []
+          },
+          "intent": {
+            "template": "int_preferred_style",
+            "style": "lian",
+            "bias": 1.4,
+            "bottom": 0.85,
+            "description": "本场准备使用联力体"
+          }
+        }
       }
+    ],
+    "isFinal": true,
+    "battles": 3,
+    "themes": [
+      "yongwu",
+      "songbie",
+      "huaigu"
     ]
   }
 ]

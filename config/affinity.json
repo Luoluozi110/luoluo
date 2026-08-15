@@ -1,41 +1,74 @@
 {
-  "themes": ["yongwu", "songbie", "shanshui", "biansai", "huaigu", "jieling"],
-  "manners": ["wanyue", "haofang", "zheli", "qingya", "chenyu", "qili"],
-  "themeNames": { "yongwu": "咏物", "songbie": "送别", "shanshui": "山水", "biansai": "边塞", "huaigu": "怀古", "jieling": "节令" },
-  "mannerNames": { "wanyue": "婉约", "haofang": "豪放", "zheli": "哲理", "qingya": "清雅", "chenyu": "沉郁", "qili": "绮丽" },
-
-  "_design": "相性2.0·文风扩充版：六文风(婉约/豪放/哲理/清雅/沉郁/绮丽)正交且互不支配，构成完整中国诗文风骨谱系。矩阵每题材唯一契合、每文风各1契合+2相得+少量相左(制造下注风险)；门派文风/当朝风潮/气势连捷三层叠加不变。文风维度从3→6使每场抉择的真实取舍空间与重玩变化性成倍提升。",
-
+  "themes": [
+    "yongwu",
+    "songbie",
+    "shanshui",
+    "biansai",
+    "huaigu",
+    "jieling"
+  ],
+  "manners": [
+    "wanyue",
+    "haofang",
+    "zheli",
+    "qingya",
+    "chenyu",
+    "qili"
+  ],
+  "themeNames": {
+    "yongwu": "咏物",
+    "songbie": "送别",
+    "shanshui": "山水",
+    "biansai": "边塞",
+    "huaigu": "怀古",
+    "jieling": "节令"
+  },
+  "mannerNames": {
+    "wanyue": "婉约",
+    "haofang": "豪放",
+    "zheli": "哲理",
+    "qingya": "清雅",
+    "chenyu": "沉郁",
+    "qili": "绮丽"
+  },
   "matrix": {
     "wanyue.yongwu": 0.06,
     "wanyue.songbie": 0.12,
+    "wanyue.shanshui": 0,
     "wanyue.biansai": -0.08,
+    "wanyue.huaigu": 0,
     "wanyue.jieling": 0.06,
-
+    "haofang.yongwu": 0,
     "haofang.songbie": 0.06,
     "haofang.shanshui": 0.06,
     "haofang.biansai": 0.12,
-
+    "haofang.huaigu": 0.06,
+    "haofang.jieling": -0.08,
+    "zheli.yongwu": 0.12,
+    "zheli.songbie": 0,
     "zheli.shanshui": 0.06,
+    "zheli.biansai": 0,
     "zheli.huaigu": 0.06,
-    "zheli.jieling": 0.12,
-
+    "zheli.jieling": -0.08,
     "qingya.yongwu": 0.06,
+    "qingya.songbie": 0,
     "qingya.shanshui": 0.12,
+    "qingya.biansai": -0.08,
+    "qingya.huaigu": 0,
     "qingya.jieling": 0.06,
-
+    "chenyu.yongwu": 0.06,
     "chenyu.songbie": 0.06,
+    "chenyu.shanshui": 0,
     "chenyu.biansai": 0.06,
     "chenyu.huaigu": 0.12,
-    "chenyu.jieling": -0.08,
-
-    "qili.yongwu": 0.12,
-    "qili.songbie": 0.06,
+    "chenyu.jieling": 0,
+    "qili.yongwu": 0,
+    "qili.songbie": 0.12,
+    "qili.shanshui": 0.06,
     "qili.biansai": -0.08,
+    "qili.huaigu": 0,
     "qili.jieling": 0.06
   },
-
-  "_knobs": "全部为旋钮，可单独下调以削弱某一层强度；缺省即整层关闭。",
   "homeMannerBonus": 0.04,
   "homeAdaptiveBonus": 0.04,
   "zeitgeistThemeBonus": 0.04,

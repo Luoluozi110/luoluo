@@ -3,61 +3,61 @@
     "id": "T001",
     "name": "斗酒诗百篇",
     "kind": "passive",
-    "school": "",
     "text": "「李白斗酒诗百篇，长安市上酒家眠。」——杜甫《饮中八仙歌》。以诗出战获胜时，诗力额外 +1。",
     "effect": {
       "type": "on_win_bonus",
       "style": "shi",
       "value": 1
-    }
+    },
+    "school": "shixian"
   },
   {
     "id": "T002",
     "name": "倚声填词",
     "kind": "passive",
-    "school": "",
     "text": "词本倚声而作，先有腔调后有文字。填词日久，声律入骨——以词出战获胜时，词力额外 +1。",
     "effect": {
       "type": "on_win_bonus",
       "style": "ci",
       "value": 1
-    }
+    },
+    "school": "cizong"
   },
   {
     "id": "T003",
     "name": "对对如流",
     "kind": "passive",
-    "school": "",
     "text": "属对之才，出口成双。相传解缙幼时应对如流，一座皆惊——以联出战获胜时，联力额外 +1。",
     "effect": {
       "type": "on_win_bonus",
       "style": "lian",
       "value": 1
-    }
+    },
+    "school": "liansheng"
   },
   {
     "id": "T004",
     "name": "博览",
     "kind": "passive",
-    "school": "bowen",
     "text": "「读书破万卷，下笔如有神。」——杜甫《奉赠韦左丞丈二十二韵》。腹笥既广，学力常驻 +2。",
     "effect": {
       "type": "attr_flat",
       "attrs": {
         "xue": 2
       }
-    }
+    },
+    "school": "tongru"
   },
   {
     "id": "T005",
     "name": "急智",
     "kind": "passive",
-    "school": "",
     "text": "临场生风，机锋不落。每场论战的灵感骰点数 +1。",
     "effect": {
       "type": "dice_plus",
       "value": 1
-    }
+    },
+    "school": "qishi"
   },
   {
     "id": "T006",
@@ -183,89 +183,89 @@
     "id": "T099",
     "name": "三元及第",
     "kind": "passive",
-    "source": "album",
     "text": "解元、会元、状元连中三元，本朝数百年不过数人。图鉴「连中三元」解锁后可装配：殿试三场得分各 +5%。",
     "effect": {
       "type": "palace_pct",
       "value": 0.05
-    }
+    },
+    "source": "album"
   },
   {
     "id": "TA01",
     "name": "七步成诗",
     "kind": "active",
-    "cost": 1,
     "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」跳过审题与选风格，本场灵感波动锁定为固定 +15。",
     "effect": {
       "type": "fixed_dice",
       "value": 15
-    }
+    },
+    "cost": 1
   },
   {
     "id": "TA02",
     "name": "夺胎换骨",
     "kind": "active",
-    "cost": 1,
     "text": "惠洪《冷斋夜话》记黄庭坚论诗：不易其意而造其语，谓之换骨法；窥入其意而形容之，谓之夺胎法。本场复制对手所选风格的相性加成。",
     "effect": {
       "type": "copy_affinity"
-    }
+    },
+    "cost": 1
   },
   {
     "id": "TA03",
     "name": "语不惊人",
     "kind": "active",
-    "cost": 2,
     "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。本场灵感波动改为 1d6×8，高风险高回报。",
     "effect": {
       "type": "dice_mult",
       "value": 8
-    }
+    },
+    "cost": 2
   },
   {
     "id": "TA04",
     "name": "笔落惊风雨",
     "kind": "active",
-    "cost": 2,
     "text": "「笔落惊风雨，诗成泣鬼神。」——杜甫《寄李十二白二十韵》。本场 35% 概率触发灵光爆发，得分 ×1.5。",
     "effect": {
       "type": "crit",
       "chance": 0.35,
       "mult": 1.5
-    }
+    },
+    "cost": 2
   },
   {
     "id": "TA05",
     "name": "一气呵成",
     "kind": "active",
-    "cost": 1,
     "text": "行文如一线贯珠，中无断续。本场灵感骰点数 +3。",
     "effect": {
       "type": "dice_plus",
       "value": 3
-    }
+    },
+    "cost": 1
   },
   {
     "id": "TA06",
     "name": "倚马可待",
     "kind": "active",
-    "cost": 2,
     "text": "《世说新语·文学》载袁虎倚马前，须臾作露布文七纸，殊可观。本场灵感波动锁定为固定 +18。",
     "effect": {
       "type": "fixed_dice",
       "value": 18
-    }
+    },
+    "cost": 2
   },
   {
     "id": "TA07",
     "name": "点铁成金",
     "kind": "active",
-    "cost": 2,
     "text": "黄庭坚《答洪驹父书》：古之能为文章者……虽取古人之陈言入于翰墨，如灵丹一粒，点铁成金也。本场灵感波动改为 1d6×7。",
     "effect": {
       "type": "dice_mult",
       "value": 7
-    }
+    },
+    "cost": 2
   },
   {
     "id": "T017",
@@ -398,7 +398,7 @@
     "text": "苏轼《文与可画筼筜谷偃竹记》：故画竹必先得成竹于胸中。谋定后动，临阵不慌——获得此文心时，灵感 +6。",
     "effect": {
       "type": "start_insp",
-      "value": 6
+      "value": 12
     }
   },
   {
@@ -476,6 +476,110 @@
       "type": "reincarnate",
       "inspThreshold": 40,
       "attrRatio": 0.8
+    },
+    "upgrade": {
+      "quality": "legend",
+      "maxLevel": 6,
+      "upCost": [
+        9,
+        13,
+        18,
+        24,
+        31
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "reincarnate",
+            "inspThreshold": 36,
+            "attrRatio": 0.84
+          }
+        },
+        {
+          "effect": {
+            "type": "reincarnate",
+            "inspThreshold": 32,
+            "attrRatio": 0.88
+          }
+        },
+        {
+          "effect": {
+            "type": "reincarnate",
+            "inspThreshold": 28,
+            "attrRatio": 0.92
+          }
+        },
+        {
+          "effect": {
+            "type": "reincarnate",
+            "inspThreshold": 24,
+            "attrRatio": 0.96
+          }
+        },
+        {
+          "effect": {
+            "type": "reincarnate",
+            "inspThreshold": 20,
+            "attrRatio": 1
+          }
+        }
+      ],
+      "levelStyles": [
+        {
+          "fontFamily": "",
+          "fontSize": 0,
+          "color": "",
+          "lineHeight": 0,
+          "textAlign": "",
+          "textIndent": 0,
+          "marginBottom": 0
+        },
+        {
+          "fontFamily": "",
+          "fontSize": 0,
+          "color": "",
+          "lineHeight": 0,
+          "textAlign": "",
+          "textIndent": 0,
+          "marginBottom": 0
+        },
+        {
+          "fontFamily": "",
+          "fontSize": 0,
+          "color": "",
+          "lineHeight": 0,
+          "textAlign": "",
+          "textIndent": 0,
+          "marginBottom": 0
+        },
+        {
+          "fontFamily": "",
+          "fontSize": 0,
+          "color": "",
+          "lineHeight": 0,
+          "textAlign": "",
+          "textIndent": 0,
+          "marginBottom": 0
+        },
+        {
+          "fontFamily": "",
+          "fontSize": 0,
+          "color": "",
+          "lineHeight": 0,
+          "textAlign": "",
+          "textIndent": 0,
+          "marginBottom": 0
+        },
+        {
+          "fontFamily": "",
+          "fontSize": 0,
+          "color": "",
+          "lineHeight": 0,
+          "textAlign": "",
+          "textIndent": 0,
+          "marginBottom": 0
+        }
+      ]
     }
   }
 ]

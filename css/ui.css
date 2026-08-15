@@ -209,7 +209,7 @@
 }
 
 /* ==================================================== 通用模态 */
-.modal { width: min(680px, 90vw); max-height: 88vh; overflow: auto; animation: popIn .44s var(--ease-back); }
+.modal { width: min(680px, 90vw); max-height: 88vh; overflow: auto; animation: popIn .44s var(--ease-back); border: 1.5px solid rgba(120,100,70,.5); }
 .modal .mtitle { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
 .modal .mtitle h2 { margin: 0; font-family: var(--font-kai); font-size: 24px; letter-spacing: .16em; }
 .modal .mtag { font-size: 12px; padding: 3px 10px; border-radius: 12px; background: rgba(120,100,70,.16); color: var(--mo-2); letter-spacing: .1em; }
@@ -711,6 +711,14 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 
 /* 兼容旧版图鉴弹层（如仍被引用） */
 .album-inner { max-width: min(1040px, 94vw); max-height: 92vh; overflow: auto; border-radius: 14px; padding: 26px 30px; }
+
+/* --- 开局起名弹窗 --- */
+.name-prompt {
+  border-radius: 14px;
+  border: 2px solid rgba(120,100,70,.55);
+  box-shadow: 0 14px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.45);
+  padding: 22px 24px 20px;
+}
 .album-stats { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: center; margin: 12px 0 4px; font-size: 12px; color: var(--mo-3); }
 .album-actions { display: flex; gap: 12px; justify-content: center; margin-top: 18px; }
 

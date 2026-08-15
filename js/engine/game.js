@@ -655,7 +655,8 @@ export class Game {
   }
 
   /**
-   * 抽一枚玩家尚未持有的文心（图鉴专属文心不参与随机掉落）。
+   * 抽一枚玩家尚未持有的文心（图鉴专属与 reincarnate 传承文心不参与随机掉落，
+   * 后者只能经由指定奇遇——如「留人古寺」——的抉择获得）。
    */
   randomTalent(kind) {
     const s = this.s;
@@ -678,6 +679,7 @@ export class Game {
       !have.has(t.id)
       && (!kind || t.kind === kind)
       && t.source !== 'album'
+      && !(t.effect && t.effect.type === 'reincarnate')
       && eligible(t));
     if (!pool.length) return null;
     return pool[Math.floor(this.rand() * pool.length)];
