@@ -4174,7 +4174,13 @@
       {
         "id": 42,
         "type": "mingjing",
-        "name": "御花园"
+        "name": "春在堂",
+        "effect": {
+          "attrs": {
+            "xue": 2
+          },
+          "inspiration": 2
+        }
       },
       {
         "id": 43,
@@ -4194,7 +4200,10 @@
       {
         "id": 46,
         "type": "ze",
-        "name": "舟中吟"
+        "name": "一叶舟",
+        "effect": {
+          "inspiration": 2
+        }
       },
       {
         "id": 47,
@@ -4224,7 +4233,7 @@
       {
         "id": 52,
         "type": "sky",
-        "name": "风露台"
+        "name": "舞雩台"
       },
       {
         "id": 53,
