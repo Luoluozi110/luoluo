@@ -74,8 +74,8 @@ const MASTERY_MECH = {
   bowen: {
     // knowledgeThreshold: 2→1 于 Lv4 开始（阈值不能低于 1，Lv4/5 共享）
     perLv: { 4: { knowledgeThreshold: 1 }, 5: { knowledgeThreshold: 1 } },
-    // Lv5 专属：知识转化 ×1.1
-    apex: { 5: { knowledgeRewardMult: 1.1 } }
+    // Lv5 专属：每次博闻触发，额外 +1 学力（「厚积薄发」点睛；仿真校准：+2 会让博闻满级 xue 成长≈奇士 2 倍，收敛为 +1）
+    apex: { 5: { knowledgeBonusGain: 1 } }
   },
   qishi: {
     // inspirationBonusRate: 0.35→0.40/0.45/0.50/0.55

@@ -121,6 +121,12 @@ export class Game {
       st.bowenBroad = true;
       this.push(`博闻·兼收并蓄：三体各 +1${reason ? `（${reason}）` : ''}`);
     }
+    // 博闻 Lv5 宗师点睛：每次触发额外沉淀 +知识BonusGain 学力（厚积薄发）
+    const bonusGain = Number(mech.knowledgeBonusGain) || 0;
+    if (bonusGain > 0) {
+      this.addAttrs({ xue: bonusGain }, { noSchoolGrowth: true });
+      this.push(`博闻·宗师沉潜：学力 +${bonusGain}`);
+    }
     this.ui.toast(`博闻抉择已兑现：${choice === 'focus' ? '专攻一体' : choice === 'battle' ? '以学驭战' : '兼收并蓄'}`);
     return true;
   }
