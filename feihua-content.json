@@ -2427,6 +2427,110 @@
         "type": "reincarnate",
         "inspThreshold": 40,
         "attrRatio": 0.8
+      },
+      "upgrade": {
+        "quality": "legend",
+        "maxLevel": 6,
+        "upCost": [
+          9,
+          13,
+          18,
+          24,
+          31
+        ],
+        "levels": [
+          {
+            "effect": {
+              "type": "reincarnate",
+              "inspThreshold": 36,
+              "attrRatio": 0.84
+            }
+          },
+          {
+            "effect": {
+              "type": "reincarnate",
+              "inspThreshold": 32,
+              "attrRatio": 0.88
+            }
+          },
+          {
+            "effect": {
+              "type": "reincarnate",
+              "inspThreshold": 28,
+              "attrRatio": 0.92
+            }
+          },
+          {
+            "effect": {
+              "type": "reincarnate",
+              "inspThreshold": 24,
+              "attrRatio": 0.96
+            }
+          },
+          {
+            "effect": {
+              "type": "reincarnate",
+              "inspThreshold": 20,
+              "attrRatio": 1
+            }
+          }
+        ],
+        "levelStyles": [
+          {
+            "fontFamily": "",
+            "fontSize": 0,
+            "color": "",
+            "lineHeight": 0,
+            "textAlign": "",
+            "textIndent": 0,
+            "marginBottom": 0
+          },
+          {
+            "fontFamily": "",
+            "fontSize": 0,
+            "color": "",
+            "lineHeight": 0,
+            "textAlign": "",
+            "textIndent": 0,
+            "marginBottom": 0
+          },
+          {
+            "fontFamily": "",
+            "fontSize": 0,
+            "color": "",
+            "lineHeight": 0,
+            "textAlign": "",
+            "textIndent": 0,
+            "marginBottom": 0
+          },
+          {
+            "fontFamily": "",
+            "fontSize": 0,
+            "color": "",
+            "lineHeight": 0,
+            "textAlign": "",
+            "textIndent": 0,
+            "marginBottom": 0
+          },
+          {
+            "fontFamily": "",
+            "fontSize": 0,
+            "color": "",
+            "lineHeight": 0,
+            "textAlign": "",
+            "textIndent": 0,
+            "marginBottom": 0
+          },
+          {
+            "fontFamily": "",
+            "fontSize": 0,
+            "color": "",
+            "lineHeight": 0,
+            "textAlign": "",
+            "textIndent": 0,
+            "marginBottom": 0
+          }
+        ]
       }
     }
   ],
@@ -3690,6 +3794,42 @@
               "bias": 1.2,
               "bottom": 0.75,
               "description": "本场求稳，严守经义法度"
+            }
+          }
+        },
+        {
+          "id": "",
+          "name": "康尔玉",
+          "title": "联圣有继",
+          "style": "lian",
+          "weight": 10,
+          "attrs": {
+            "shi": 18,
+            "ci": 18,
+            "lian": 50,
+            "bi": 18,
+            "xue": 58,
+            "si": 18
+          },
+          "mech": {
+            "signature": {
+              "name": "偏联力专精",
+              "template": "sig_style_mastery",
+              "style": "lian",
+              "pct": 0.06
+            },
+            "weakness": {
+              "name": "改用他体",
+              "template": "wea_use_other_style",
+              "npcStyle": "lian",
+              "fullClose": []
+            },
+            "intent": {
+              "template": "int_preferred_style",
+              "style": "lian",
+              "bias": 1.4,
+              "bottom": 0.85,
+              "description": "本场准备使用联力体"
             }
           }
         }
