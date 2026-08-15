@@ -37,7 +37,6 @@ const T034 = cfg.talentById.get('T034');
 // 用它们做跨局继承断言不会被「流派入门加成」污染 shi/诗力。
 const S_BOWEN = 'bowen';  // attr=xue
 const S_QISHI = 'qishi';  // attr=si
-const schoolBonus = cfg.attrs.schoolBonus ?? 3;
 Reincarnate.reset();
 
 console.log('== 结构：T034 传说 / Lv6 / 逐级门槛递减·比例递增 ==');
@@ -75,12 +74,11 @@ const inheritGained = g2.s.attrs.shi - baseShi;
 ok(inheritGained === 40, '开局继承：诗力 +40（来自上局 50×0.8，无视新流派）');
 ok(g2.s.attrs.bi === cfg.attrs.initial.bi + 16, '开局继承：笔力 +16（本局基础 5 + 传承 16，bi 非流派属性）');
 ok(Reincarnate.peek() === null, '传承消费后已清除（一次性）');
-// 再开一局（换 qishi/si）不应重复继承——si 仅吃到流派入门加成，无继承带来的 shi
+// 再开一局（换 qishi）不应重复继承——shi 对任何流派均为非流派属性，保持纯初始即证无传承
 const g3 = new Game(cfg, makeUI(), rng);
 g3.start(S_QISHI, { name: '丙' });
-const baseSi3 = cfg.attrs.initial.si;
-ok(g3.s.attrs.si === baseSi3 + schoolBonus && g3.s.attrs.shi === cfg.attrs.initial.shi,
-  '第三局不再继承（火种已耗尽，si 仅基础+流派加成，诗力无继承）');
+ok(g3.s.attrs.shi === cfg.attrs.initial.shi,
+  '第三局不再继承（火种已耗尽，诗力无任何加成叠加）');
 
 console.log('\n== 门槛：余灵不足不点亮 ==');
 Reincarnate.reset();
