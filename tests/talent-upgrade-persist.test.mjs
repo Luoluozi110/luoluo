@@ -5,7 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Game } from '../js/engine/game.js';
-import { saveRun, loadRun, loadBestRun, deserializeRun, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY, RUN_SAVE_VERSION } from '../js/engine/save.js';
+import { saveRun, loadRun, loadBestRun, serializeRun, deserializeRun, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY, RUN_SAVE_VERSION } from '../js/engine/save.js';
 
 // ---- mock Web Storage（须在调用 saveRun 前就绪）----
 function makeStorage() {
@@ -85,6 +85,36 @@ ok(r2.ok && r2.level === 2, 'T004 升级至 Lv2');
 const best2 = loadBestRun(); // 优先手动槽
 const de2 = deserializeRun(best2.obj, cfg);
 ok(de2.state.talentLevels.T004 === 2, '继续上局（手动槽优先）重载后 = Lv2（手动槽已同步升级）');
+
+console.log('== 跨场会话快照：本场锁定、下一场更新、重载后继续更新 ==');
+const g3 = new Game(cfg, makeUI(), rng);
+g3.start('shixian', { name: '测' });
+g3.s.inspiration = 99; g3.s.inspirationMax = 99;
+const TA03 = cfg.talentById.get('TA03');
+await g3.grantTalent(TA03, { silent: true });
+const lv1Value = cfg.talentUpgradeById.get('TA03').levels[0].effect.value;
+const beforeSession = g3.createSession({ npc: g3.pickNpc(false), label: '升级前会话' });
+ok(beforeSession.activeTalents.find(t => t.id === 'TA03').effect.value === lv1Value, '升级前会话锁定 TA03 Lv1 效果');
+const r3 = g3.upgradeTalent('TA03');
+const lv2Value = cfg.talentUpgradeById.get('TA03').levels[1].effect.value;
+ok(r3.ok && r3.level === 2, 'TA03 升级至 Lv2');
+ok(beforeSession.activeTalents.find(t => t.id === 'TA03').effect.value === lv1Value, '已建立会话不被升级原地改写');
+ok(beforeSession.activeTalents.find(t => t.id === 'TA03') !== g3.s.active.find(t => t.id === 'TA03'), '会话文心与全局持有副本不共享对象');
+const nextSession = g3.createSession({ npc: g3.pickNpc(false), label: '升级后下一场' });
+ok(nextSession.activeTalents.find(t => t.id === 'TA03').effect.value === lv2Value, '升级后下一场采用 Lv2 效果');
+const reloaded3 = deserializeRun(serializeRun(g3), cfg);
+const g4 = new Game(cfg, makeUI(), rng); g4.s = reloaded3.state; g4.rehydrate();
+const afterReloadSession = g4.createSession({ npc: g4.pickNpc(false), label: '重载后下一场' });
+ok(afterReloadSession.activeTalents.find(t => t.id === 'TA03').effect.value === lv2Value, '存档重载后的下一场仍采用 Lv2 效果');
+
+console.log('== 异常存档等级归一：状态等级与生效副本保持一致 ==');
+const badBlob = serializeRun(g4);
+badBlob.state.talentLevels.TA03 = 999;
+const fixed = deserializeRun(badBlob, cfg);
+const maxTA03 = cfg.talentUpgradeById.get('TA03').maxLevel;
+ok(fixed.ok && fixed.state.talentLevels.TA03 === maxTA03, '越界等级钳制后同步回写状态等级');
+ok(fixed.state.active.find(t => t.id === 'TA03').effect.value === cfg.talentUpgradeById.get('TA03').levels[maxTA03 - 1].effect.value, '钳制后的等级与生效副本严格一致');
+ok(fixed.warnings.some(w => w.includes('TA03') && w.includes('归一')), '等级归一产生可诊断警告');
 
 console.log(`\n升级持久化测试：${fail === 0 ? '全部通过 ✓' : fail + ' 项失败 ✗'}（RUN_SAVE_VERSION=${RUN_SAVE_VERSION}）`);
 process.exit(fail ? 1 : 0);

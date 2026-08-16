@@ -618,12 +618,12 @@ export class Game {
 
     s.talentLevels[id] = newLevel;
     Codex.recordTalentLevel && Codex.recordTalentLevel(id, newLevel);
+    this.push(`文心「${t.name}」精进至 Lv${newLevel}`);
     this.ui.onState(s);
-    // 升级效果立即与存档绑定：触发强制落盘，使「存档重载 / 继续上局」都能还原到升级后状态，
+    // 升级效果与日志一并立即落盘，使「存档重载 / 继续上局」都能还原到升级后状态，
     // 不会因升级后到下一回合存档点前重载而回退到升级前。（onForceSave 由 UI 挂接，无 UI 时安全空转）
     if (typeof this.onForceSave === 'function') this.onForceSave();
     else if (typeof this.onSavePoint === 'function') this.onSavePoint();
-    this.push(`文心「${t.name}」精进至 Lv${newLevel}`);
     return { ok: true, level: newLevel, max: up.maxLevel, cost };
   }
 
@@ -1146,7 +1146,10 @@ export class Game {
       })(),
       playerAttrs: this.effectiveAttrs(),
       lianUnlocked: this.lianUnlocked,
-      activeTalents: s.active.slice(),
+      // 文心属于「入场快照」：本场建立后即锁定 effect/cost，后续状态变化只影响下一场。
+      // 深克隆避免 HUD 详情页升级原地替换持有副本时，意外改写已创建的战斗会话。
+      passiveTalents: s.passive.map(t => ({ ...t, effect: t.effect ? JSON.parse(JSON.stringify(t.effect)) : t.effect })),
+      activeTalents: s.active.map(t => ({ ...t, effect: t.effect ? JSON.parse(JSON.stringify(t.effect)) : t.effect })),
       usedActive: [],
       plannedDice: null,       // 「布局谋篇」预先指定的下一枚灵感骰点数
       plannedDiceCost: 0,
@@ -1178,7 +1181,7 @@ export class Game {
       },
       /** 当前主动文心本局下一次使用的灵感成本（布局谋篇会随全局使用次数递增）。 */
       activeCost(id) {
-        const t = s.active.find(x => x.id === id);
+        const t = this.activeTalents.find(x => x.id === id);
         if (!t) return 0;
         const ef = t.effect || {};
         const ts = s.talentState || {};
@@ -1190,9 +1193,9 @@ export class Game {
         }
         return Math.max(1, Number(t.cost) || 1);
       },
-      /** 使用主动文心：扣灵感并登记；planned_dice 可在一局内重复使用，其他主动仍为每场一次。 */
+      /** 使用主动文心：按本场入场快照扣灵感并登记；其他状态写入仍落在全局本局状态。 */
       useActive(id, plannedValue = 6) {
-        const t = s.active.find(x => x.id === id);
+        const t = this.activeTalents.find(x => x.id === id);
         if (!t) return false;
         const ef = t.effect || {};
         const repeatable = ef.type === 'planned_dice';
@@ -1277,7 +1280,7 @@ export class Game {
     const mom = R.momentumPct(s.affStreak, manner, af) * (session.streakMult || 1);
     if (mom !== 0) pct.push({ source: 'momentum', label: `气势连捷·${s.affStreak.n}连`, value: mom });
 
-    for (const t of s.passive) {
+    for (const t of (session.passiveTalents || s.passive)) {
       const ef = t.effect || {};
       if (ef.type === 'dice_plus') dicePlus += Number(ef.value) || 0;
       if (ef.type === 'crit' && this.rand() < (Number(ef.chance) || 0)) critMult = Math.max(critMult, Number(ef.mult) || 1);
@@ -1477,6 +1480,7 @@ export class Game {
   /** 应用战斗奖惩（UI 播完算分动画后调用） */
   async settleBattle(session, out) {
     const s = this.s;
+    const battlePassives = session.passiveTalents || s.passive;
     const insp = this.cfg.inspiration;
     const schoolMech = this.schoolMechanics();
     const schoolState = s.schoolState || (s.schoolState = this.createSchoolState(s.school));
@@ -1508,7 +1512,7 @@ export class Game {
       const lo = Math.min(Number(range[0]) || 2, Number(range[1]) || 3);
       const hi = Math.max(Number(range[0]) || 2, Number(range[1]) || 3);
       let gain = lo + Math.floor(this.rand() * (hi - lo + 1));
-      for (const t of s.passive) {
+      for (const t of battlePassives) {
         const ef = t.effect || {};
         if (ef.type === 'on_win_bonus' && (ef.style === out.style || ef.style === 'any')) gain += Number(ef.value) || 0;
         if (ef.type === 'insp_on_win') this.addInspiration(Number(ef.value) || 0, `文心·${t.name}`);
@@ -1544,11 +1548,11 @@ export class Game {
       }
     } else if (out.result === 'draw') {
       s.battle.draw++; s.battle.streak = 0;
-      this.applyStudyGain(this.cfg.attrs.battleDrawGain, `与「${session.npc.fullName || session.npc.name}」平分秋色`, out.style);
+      this.applyStudyGain(this.cfg.attrs.battleDrawGain, `与「${session.npc.fullName || session.npc.name}」平分秋色`, out.style, battlePassives);
       // 文心「曲水流觞」：平局时出战文体额外 +1
-      for (const t of s.passive) {
+      for (const t of battlePassives) {
         const ef = t.effect || {};
-        if (ef.type === 'draw_bonus') this.applyStudyGain({ [out.style]: Number(ef.value) || 0 }, `「曲水流觞」助益`, out.style);
+        if (ef.type === 'draw_bonus') this.applyStudyGain({ [out.style]: Number(ef.value) || 0 }, `「曲水流觞」助益`, out.style, battlePassives);
       }
       this.push(`与「${session.npc.fullName || session.npc.name}」平分秋色`);
     } else {
@@ -1562,7 +1566,7 @@ export class Game {
        * 同时满足「三档中位」与「sd ≤ 500」（Fisher 上界 2.35 < 需求 2.89）。
        * 故让属性成长与胜负「脱钩」——败者也长，只是长得慢；胜负改由战绩分体现。
        * 文化上亦有出处：败于名家而有所悟，正是「转益多师是汝师」。 */
-      this.applyStudyGain(this.cfg.attrs.battleLoseGain, `败于「${session.npc.fullName || session.npc.name}」而有所悟`, out.style);
+      this.applyStudyGain(this.cfg.attrs.battleLoseGain, `败于「${session.npc.fullName || session.npc.name}」而有所悟`, out.style, battlePassives);
       this.push(`不敌「${session.npc.fullName || session.npc.name}」`);
     }
     if (session.isPalace) s.palaceDone++;
@@ -1581,7 +1585,7 @@ export class Game {
 
     // 文心「退笔成冢」：每场结算后灵感托底至下限（仅补足，不削弱惩罚，避免封笔螺旋）
     let floor = 0;
-    for (const t of s.passive) {
+    for (const t of battlePassives) {
       const ef = t.effect || {};
       if (ef.type === 'insp_floor') floor = Math.max(floor, Number(ef.value) || 0);
     }
@@ -1659,7 +1663,7 @@ export class Game {
 
     // 限次战后恢复放在所有战斗/NPC机制资源结算之后，防止先托底再被文债扣穿。
     // 每局次数写入 talentState；灵感已满时不消耗触发次数。
-    for (const t of s.passive) {
+    for (const t of battlePassives) {
       const ef = t.effect || {};
       if (ef.type === 'insp_battle_recover' && s.inspiration <= (Number(ef.threshold) || 0)) {
         this.triggerTalentLimited(t, `文心·${t.name}`);
@@ -1675,7 +1679,7 @@ export class Game {
    * @param {object|null} gain config/attrs.json 的 battleLoseGain / battleDrawGain
    * @param {string} label 飘字与吐司文案
    */
-  applyStudyGain(gain, label, style) {
+  applyStudyGain(gain, label, style, passiveTalents = this.s.passive || []) {
     if (!gain) return;
     const delta = {};
     for (const [k, v] of Object.entries(gain)) {
@@ -1685,7 +1689,7 @@ export class Game {
     }
     // 文心「转益多师」：败中有得 / 平局补偿的属性额外 +value（落在同一门上）
     let extra = 0;
-    for (const t of (this.s.passive || [])) {
+    for (const t of passiveTalents) {
       const ef = t.effect || {};
       if (ef.type === 'study_bonus') extra += Number(ef.value) || 0;
     }

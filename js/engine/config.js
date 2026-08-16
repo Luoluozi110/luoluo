@@ -60,13 +60,13 @@ export async function loadCloudUrl() {
 
 /**
  * 运行时配置覆盖：把「内容编辑器」导出的工程文件（feihua-content.json）合并进已加载的 cfg。
- * project 形如 { _type:'feihua-content', questions, events, talents, npcs, affinity }（部分键可缺省）。
- * 只覆盖存在的键；board/attrs/schools/grades 等不在编辑器范围内，保持原值。返回合并并重新归一化后的新对象。
+ * project 形如 { _type:'feihua-content', questions, events, talents, 'talent-upgrade', npcs, affinity }（部分键可缺省）。
+ * 只覆盖存在的键；文心与升级表作为同一内容契约同步，其他未提供配置保持原值。返回合并并重新归一化后的新对象。
  */
 export function applyProjectOverride(baseCfg, project) {
   if (!project || typeof project !== 'object') return baseCfg;
   const next = Object.assign({}, baseCfg);
-  for (const key of ['questions', 'events', 'talents', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics', 'sky', 'album']) {
+  for (const key of ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics', 'sky', 'album']) {
     if (project[key] !== undefined && project[key] !== null) next[key] = project[key];
   }
   return normalize(next);

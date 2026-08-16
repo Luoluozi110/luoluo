@@ -18,7 +18,7 @@ import * as Album from '../engine/album.js';
 import * as Codex from '../engine/codex.js';
 import { initAudio } from './audio.js';
 import { setScene, setTension, setStage } from './music.js';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_MANUAL_KEY } from '../engine/save.js';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js';
 import { Leaderboard } from './leaderboard.js';
 import { personalize } from './namefmt.js';
 
@@ -635,8 +635,8 @@ function openCustomConfig() {
     try { obj = JSON.parse(ta.value); }
     catch (err) { setMsg('JSON 解析失败：' + err.message, true); return; }
     const proj = (obj && typeof obj === 'object') ? obj : null;
-    const keys = ['questions', 'events', 'talents', 'npcs', 'affinity', 'synergies', 'board', 'sky', 'album'].filter(k => proj && proj[k] !== undefined);
-    if (!keys.length) { setMsg('文件中未找到 questions / events / talents / npcs / affinity / synergies / board / sky / album 任一键。', true); return; }
+    const keys = ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'sky', 'album'].filter(k => proj && proj[k] !== undefined);
+    if (!keys.length) { setMsg('文件中未找到 questions / events / talents / talent-upgrade / npcs / affinity / synergies / board / sky / album 任一键。', true); return; }
     try { cfg = applyProjectOverride(cfg, proj); }
     catch (err) { setMsg('合并失败：' + err.message, true); return; }
     localStorage.setItem('feihua_custom_config', JSON.stringify(proj));

@@ -223,28 +223,37 @@ export class Modals {
     const id = t.id;
     const up = (this.cfg.talentUpgradeById && this.cfg.talentUpgradeById.get(id)) || null;
     const QLABEL = { common: '普通', rare: '稀有', epic: '史诗', legend: '传说' };
+    const heldTalent = () => {
+      const s = this.game && this.game.s;
+      return (s && [...(s.passive || []), ...(s.active || [])].find(x => x.id === id)) || t;
+    };
     const lvlOf = () => (this.game && this.game.s.talentLevels[id]) || 1;
 
     const render = () => {
+      // HUD 会在升级时重绘并替换槽位数组；详情页必须每次从 game.s 取当前持有副本，
+      // 不能继续使用打开弹窗时传入的旧对象，否则 effect/cost 会停在升级前。
+      const current = heldTalent();
       const level = lvlOf();
       const max = up ? up.maxLevel : 1;
       const insp = this.game ? this.game.s.inspiration : Infinity;
-      const isActive = t.kind === 'active';
+      const isActive = current.kind === 'active';
       const kindLine = isActive
-        ? `主动文心　消耗灵感 ${t.cost != null ? t.cost : 1}`
+        ? `主动文心　消耗灵感 ${current.cost != null ? current.cost : 1}`
         : '被动文心　常驻生效';
       const lvlLine = up ? `　·　${QLABEL[up.quality] || up.quality}　Lv ${level}/${max}` : '';
 
       let nextHtml = '';
       let btnHtml = `<div class="btn-row"><button class="btn btn-ink" data-ok>知道了</button></div>`;
       if (up && level < max) {
-        const nEff = JSON.parse(JSON.stringify(up.levels[level].effect));
+        const nextEntry = up.levels[level] || {};
+        const nEff = JSON.parse(JSON.stringify(nextEntry.effect || current.effect || {}));
         const nCost = up.upCost[level - 1];
         const can = insp >= nCost;
+        const nextActiveCost = isActive && nextEntry.cost != null ? `　·　发动消耗 ${nextEntry.cost}` : '';
         nextHtml = `
           <div class="up-next">
-            <div class="up-next-h">下一级（Lv${level + 1}）· 消耗灵感 ${nCost}</div>
-            <div class="efx up-next-efx">${talentEffectText({ ...t, effect: nEff })}</div>
+            <div class="up-next-h">下一级（Lv${level + 1}）· 升级消耗灵感 ${nCost}${nextActiveCost}</div>
+            <div class="efx up-next-efx">${talentEffectText({ ...current, effect: nEff, cost: nextEntry.cost ?? current.cost })}</div>
           </div>`;
         const disabled = can ? '' : 'disabled style="opacity:.45;cursor:not-allowed"';
         const label = can ? `升级（消耗灵感 ${nCost}）` : `灵感不足（需 ${nCost}）`;
@@ -260,10 +269,10 @@ export class Modals {
       return `
         <div class="talent-card paper ${isActive ? 'act' : ''}">
           <div class="kind">${kindLine}${lvlLine}</div>
-          <h3>${esc(t.name)}${up ? `　<span class="lvbadge">Lv ${level}/${max}</span>` : ''}</h3>
-          <div class="efx">${talentEffectText(t)}</div>
+          <h3>${esc(current.name)}${up ? `　<span class="lvbadge">Lv ${level}/${max}</span>` : ''}</h3>
+          <div class="efx">${talentEffectText(current)}</div>
           ${nextHtml}
-          <div class="dianggu">${esc(personalize(t.text || '', this.playerName))}</div>
+          <div class="dianggu">${esc(personalize(current.text || '', this.playerName))}</div>
           ${btnHtml}
         </div>`;
     };
@@ -277,12 +286,13 @@ export class Modals {
         if (!this.game) return;
         const res = await this.game.upgradeTalent(id);
         if (res.ok) {
-          this.game.ui.onState(this.game.s);                 // 刷新 HUD（灵感/属性/上限）
-          // 原地重渲染弹窗内容（保留不关闭），让玩家看到新等级与下一级预览
+          this.game.ui.onState(this.game.s);                 // 刷新 HUD（灵感/属性/上限/文心槽）
+          // 原地重渲染弹窗内容（保留不关闭），并重新读取当前副本，支持连续升级。
           const card = ov.querySelector('.talent-card');
           if (card) card.outerHTML = render().trim();
           rebind();
-          if (this.game.ui.toast) this.game.ui.toast(`「${esc(t.name)}」精进至 Lv${res.level}`);
+          const current = heldTalent();
+          if (this.game.ui.toast) this.game.ui.toast(`「${current.name}」精进至 Lv${res.level}`);
         } else {
           if (this.game.ui.toast) this.game.ui.toast(res.reason || '无法升级');
         }
@@ -291,7 +301,7 @@ export class Modals {
     rebind();
     return new Promise(resolve => {
       // 仅「知道了」关闭弹窗；升级成功后保持打开以便连续升级
-      const obs = new MutationObserver(() => { if (!ov.isConnected) resolve(); });
+      const obs = new MutationObserver(() => { if (!ov.isConnected) { obs.disconnect(); resolve(); } });
       obs.observe(this.layer, { childList: true });
     });
   }

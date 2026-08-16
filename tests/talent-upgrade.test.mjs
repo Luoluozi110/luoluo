@@ -5,6 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Game } from '../js/engine/game.js';
+import { applyProjectOverride } from '../js/engine/config.js';
 import { serializeRun, deserializeRun, RUN_SAVE_VERSION } from '../js/engine/save.js';
 
 const CFG_DIR = path.join(process.cwd(), 'config');
@@ -60,6 +61,13 @@ for (const t of cfg.talents) {
   assert(u.levels[0].effect != null, `${t.id} Lv1 含 effect`);
   if (t.kind === 'active') assert(u.levels[0].cost != null, `${t.id} 主动含 cost`);
 }
+
+console.log('\n== 云端工程：talents 与 talent-upgrade 同步覆盖 ==');
+const cloudUpgrade = JSON.parse(JSON.stringify(up));
+cloudUpgrade.TA03.levels[0].cost = 77;
+const cloudCfg = applyProjectOverride(cfg, { talents: cfg.talents, 'talent-upgrade': cloudUpgrade });
+assert(cloudCfg.talentUpgradeById.get('TA03').levels[0].cost === 77, '工程内 talent-upgrade 覆盖并重建 talentUpgradeById');
+assert(cloudCfg.talentById.size === cfg.talentById.size, '同步覆盖后文心目录完整');
 
 console.log('\n== 引擎：grantTalent 落 Lv1 生效副本 ==');
 const game = new Game(cfg, makeUI(), rng);

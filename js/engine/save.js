@@ -212,15 +212,21 @@ export function deserializeRun(rawObj, cfg) {
   // 天赋：按 ID 重新关联，并以存档中的等级重建「生效副本」（effect 取自升级表对应等级）。
   // 旧档 talentLevels 缺失 → 全部按 Lv1；等级越界（>maxLevel 或 <1）钳制，保证读档不崩。
   const lostTalents = [];
-  const levels = (st.talentLevels && typeof st.talentLevels === 'object') ? { ...st.talentLevels } : {};
-  for (const id of [...(st.passive || []), ...(st.active || [])]) if (!(id in levels)) levels[id] = 1;
+  const rawLevels = (st.talentLevels && typeof st.talentLevels === 'object') ? { ...st.talentLevels } : {};
+  const levels = {};
+  const ownedIds = [...(st.passive || []), ...(st.active || [])];
   const upById = cfg.talentUpgradeById || new Map();
+  for (const id of ownedIds) {
+    const maxL = Math.max(1, Number((upById.get(id) || {}).maxLevel) || 1);
+    const raw = Number(rawLevels[id]);
+    const lvl = Math.max(1, Math.min(Number.isFinite(raw) ? Math.floor(raw) : 1, maxL));
+    levels[id] = lvl;
+    if (rawLevels[id] != null && raw !== lvl) warnings.push(`文心「${id}」等级 ${rawLevels[id]} 已按当前配置归一为 Lv${lvl}`);
+  }
   const relink = ids => (Array.isArray(ids) ? ids : []).map(id => {
     const t = cfg.talentById && cfg.talentById.get(id);
-    if (!t) { lostTalents.push(id); return null; }
-    const maxL = (upById.get(id) || {}).maxLevel || 1;
-    const lvl = Math.max(1, Math.min(Number(levels[id]) || 1, maxL));
-    return leveledClone(cfg, id, lvl);
+    if (!t) { lostTalents.push(id); delete levels[id]; return null; }
+    return leveledClone(cfg, id, levels[id] || 1);
   }).filter(Boolean);
   out.passive = relink(st.passive);
   out.active = relink(st.active);

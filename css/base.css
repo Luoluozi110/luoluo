@@ -102,6 +102,7 @@ button, input, textarea, select { font-family: inherit; }
 
 html, body {
   margin: 0; padding: 0; height: 100%;
+  min-height: 100vh;
   min-height: 100dvh;
   font-family: var(--font-song);
   color: var(--mo);
@@ -114,12 +115,14 @@ html, body {
   font-synthesis: weight style;
 }
 
-/* 以动态视口高度取代仅依赖 100vh，浏览器地址栏与键盘收起/弹出时仍保持全屏层可达。 */
+/* 以动态视口高度取代仅依赖 100vh：先提供旧浏览器回退，再由 100dvh 覆盖，
+   地址栏与键盘收起/弹出时不会被旧单位反向撑高。 */
 #app {
   position: fixed;
   inset: 0;
+  height: 100vh;
   height: 100dvh;
-  min-height: 100vh;
+  min-height: 0;
   overflow: hidden;
 }
 
