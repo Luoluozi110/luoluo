@@ -270,7 +270,7 @@ export class BattleStage {
 
   activeRow(session) {
     if (!session.activeTalents.length) return '';
-    const btns = session.activeTalents.map(t => {
+    const btns = session.activeTalents.filter(t => (t.effect || {}).type !== 'planned_dice').map(t => {
       const used = session.usedActive.some(x => x.id === t.id);
       const repeatable = (t.effect || {}).type === 'planned_dice';
       const cost = typeof session.activeCost === 'function' ? session.activeCost(t.id) : (t.cost || 1);

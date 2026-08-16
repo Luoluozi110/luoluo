@@ -200,6 +200,32 @@ export class Modals {
     });
   }
 
+  /* ---------------------------------------------------- 布局谋篇·地图移动骰 */
+  showPlannedMovePrompt(game) {
+    return new Promise(resolve => {
+      const t = game && game.s && game.s.active && game.s.active.find(x => (x.effect || {}).type === 'planned_dice');
+      if (!t) { resolve(false); return; }
+      const ef = t.effect || {};
+      const cost = typeof game.plannedMoveCost === 'function' ? game.plannedMoveCost() : Math.max(1, Number(ef.baseCost ?? t.cost) || 1);
+      const afford = Number(game.s.inspiration) >= cost;
+      const max = Math.max(1, Number(ef.maxValue) || 6);
+      const options = Array.from({ length: max }, (_, i) => `<option value="${i + 1}">${i + 1} 格</option>`).join('');
+      const ov = this.open(`<div class="modal paper compact-modal">
+        <div class="mtitle"><h2>布局谋篇</h2><span class="mtag">回合移动定策</span></div>
+        <div class="dianggu">胸中先有丘壑，落笔方能从容。可指定本回合移动骰点数。</div>
+        <div style="text-align:center;margin:16px 0"><select data-move-dice aria-label="指定本回合移动骰">${options}</select></div>
+        <div style="text-align:center;color:var(--mo-3);font-size:13px">本局第 ${Number((game.s.talentState && game.s.talentState.activeUses && game.s.talentState.activeUses[t.id]) || 0) + 1} 次使用，消耗灵感 ${cost}</div>
+        <div class="btn-row"><button class="btn btn-primary" data-plan ${afford ? '' : 'disabled'}>定策并掷骰</button><button class="btn btn-ink" data-skip>放弃本次</button></div>
+      </div>`, 'planned-move-modal');
+      const finish = ok => { this.close(ov); resolve(ok); };
+      ov.querySelector('[data-plan]')?.addEventListener('click', () => {
+        const value = Number(ov.querySelector('[data-move-dice]')?.value) || max;
+        finish(game.planMoveDice(value));
+      });
+      ov.querySelector('[data-skip]')?.addEventListener('click', () => finish(false));
+    });
+  }
+
   /* ---------------------------------------------------- 文心卡 */
   async showTalentGain(t) {
     const ov = this.open(`
@@ -535,7 +561,7 @@ export function talentEffectText(t) {
   switch (e.type) {
     case 'on_win_bonus': return `${S[e.style] || e.style}战获胜，额外 +${e.value} ${ATTR_NAMES[e.style] || '对应属性'}`;
     case 'fixed_dice': return `本场灵感骰固定为 ${e.value} 分，不受运气左右`;
-    case 'planned_dice': return `可指定下次灵感骰为 1—${e.maxValue || 6} 点；本局每次使用消耗递增（首用 ${e.baseCost || 5}，每次 +${e.costStep || 2}）`;
+    case 'planned_dice': return `回合掷移动骰前可指定 1—${e.maxValue || 6} 格；本局每次使用消耗递增（首用 ${e.baseCost || 5}，每次 +${e.costStep || 2}）`;
     case 'dice_mult': return `本场灵感骰倍率 ×${e.value}（高风险高回报）`;
     case 'dice_plus': return `灵感骰点数 +${e.value}`;
     case 'copy_affinity': return '复制对手本场风格的相性加成';

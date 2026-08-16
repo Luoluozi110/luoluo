@@ -337,6 +337,7 @@ function makeUi() {
     onState(s) { hud.render(s); },
     skyExpired(card) { hud.toast(`${card.name} 之效已散`); },
     showDice: d => board.showDice(d),
+    showPlannedMovePrompt: gameRef => modals.showPlannedMovePrompt(gameRef),
     movePiece: s => board.movePiece(s),
     toast: t => hud.toast(t),
     showChoiceEcho: echo => hud.choiceEcho({

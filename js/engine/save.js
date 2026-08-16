@@ -26,7 +26,7 @@ const LOG_KEEP = 150;  // 截断后保留最近条数
 const STATE_KEYS = [
   'school', 'playerName', 'attrs', 'inspiration', 'inspirationMax',
   'passive', 'active', 'track', 'pos', 'branchId', 'branchIndex',
-  'lap', 'turn', 'phase',   'sky', 'nextBattlePct', 'battle', 'events',
+  'lap', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
   'quiz', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
   'zeitgeist', 'prologueSeen', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
   'talentLevels', 'schoolState', 'over', 'reachedEnd', 'endReason', 'log'

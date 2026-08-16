@@ -201,6 +201,7 @@ export class Game {
       synergies: [],                                 // 当前已激活的文心羁绊（id/name/desc/members）
       talentLevels: {},                              // 文心等级：{ [talentId]: level }（Lv1 起，存档持久化）
       talentState: { triggers: {}, flags: {}, activeUses: {} }, // 文心局内触发次数/主动使用次数/一次性互斥标记（存档持久化）
+      plannedMoveDice: null,                         // 布局谋篇待作用的下一枚地图移动骰（瞬时状态）
       npcMech: { history: {}, palace: {} },          // NPC 三机制跨场状态
       loadout: [], titles: [],
       over: false, reachedEnd: false, endReason: '',
@@ -700,6 +701,37 @@ export class Game {
     return real > 0;
   }
 
+  /** 布局谋篇：当前棋局下一枚移动骰的发动成本；递增次数只属于本局，不影响下一局新开局。 */
+  plannedMoveCost() {
+    const t = this.s.active.find(x => x.id === 'TA08');
+    const ef = t && t.effect || {};
+    if (!t || ef.type !== 'planned_dice') return 0;
+    const used = Number((this.s.talentState && this.s.talentState.activeUses || {})[t.id]) || 0;
+    const base = Math.max(1, Number(ef.baseCost ?? t.cost) || 1);
+    const step = Math.max(0, Number(ef.costStep) || 0);
+    return base + used * step;
+  }
+
+  /** 在地图回合掷移动骰前发动布局谋篇；每次仅锁定紧接着的一枚移动骰。 */
+  planMoveDice(value = 6) {
+    const t = this.s.active.find(x => x.id === 'TA08');
+    const ef = t && t.effect || {};
+    if (!t || ef.type !== 'planned_dice') return false;
+    if (this.s.plannedMoveDice != null) return false;
+    const cost = this.plannedMoveCost();
+    if (this.s.inspiration < cost) return false;
+    const max = Math.max(1, Number(ef.maxValue) || 6);
+    const planned = Math.max(1, Math.min(max, Number(value) || 6));
+    this.addInspiration(-cost, `文心·${t.name}`);
+    const ts = this.s.talentState || (this.s.talentState = { triggers: {}, flags: {}, activeUses: {} });
+    ts.activeUses = ts.activeUses || {};
+    ts.activeUses[t.id] = (Number(ts.activeUses[t.id]) || 0) + 1;
+    this.s.plannedMoveDice = planned;
+    this.push(`文心「${t.name}」定策，本回合移动骰为 ${planned} 点（消耗 ${cost} 灵感）`);
+    this.ui.onState(this.s);
+    return true;
+  }
+
   /** 当前已激活的文心羁绊：拥有 members 全部 id 即激活（战斗时实时重算，无持久状态需回滚）。 */
   synergySet() {
     const have = new Set([...this.s.passive, ...this.s.active].map(t => t.id));
@@ -731,13 +763,21 @@ export class Game {
     const previousPhase = s.phase;
     s.phase = s.lap >= 2 ? 'lap2' : 'lap1';
     this.ui.onState(s);
+    if (typeof this.ui.showPlannedMovePrompt === 'function' && this.s.active.some(t => (t.effect || {}).type === 'planned_dice')) {
+      await this.ui.showPlannedMovePrompt(this);
+    }
     if (s.phase === 'lap2' && previousPhase !== 'lap2' && typeof this.ui.showLap2Intro === 'function') {
       await this.ui.showLap2Intro();
       this.ui.onState(s);
     }
 
-    const dice = this.d6();
+    const dice = s.plannedMoveDice != null
+      ? Math.max(1, Math.min(6, Number(s.plannedMoveDice) || 6))
+      : this.d6();
+    const plannedMove = s.plannedMoveDice != null;
+    s.plannedMoveDice = null;
     await this.ui.showDice(dice);
+    if (plannedMove) this.ui.toast(`布局谋篇生效：本回合移动 ${dice} 格`);
     const arrived = await this.moveSteps(dice);
     if (s.over) return;
 
@@ -1149,7 +1189,8 @@ export class Game {
       // 文心属于「入场快照」：本场建立后即锁定 effect/cost，后续状态变化只影响下一场。
       // 深克隆避免 HUD 详情页升级原地替换持有副本时，意外改写已创建的战斗会话。
       passiveTalents: s.passive.map(t => ({ ...t, effect: t.effect ? JSON.parse(JSON.stringify(t.effect)) : t.effect })),
-      activeTalents: s.active.map(t => ({ ...t, effect: t.effect ? JSON.parse(JSON.stringify(t.effect)) : t.effect })),
+      // 布局谋篇属于地图回合移动骰，不进入论战主动文心栏；其余主动文心保留在本场快照。
+      activeTalents: s.active.filter(t => (t.effect || {}).type !== 'planned_dice').map(t => ({ ...t, effect: t.effect ? JSON.parse(JSON.stringify(t.effect)) : t.effect })),
       usedActive: [],
       plannedDice: null,       // 「布局谋篇」预先指定的下一枚灵感骰点数
       plannedDiceCost: 0,
@@ -1179,26 +1220,19 @@ export class Game {
       styleHint(style) {
         return style === 'lian' && !g.lianUnlocked ? '联力尚浅，先积淀对仗功底（需联力 ≥8）' : '';
       },
-      /** 当前主动文心本局下一次使用的灵感成本（布局谋篇会随全局使用次数递增）。 */
+      /** 当前战斗内主动文心成本；布局谋篇已移至地图移动骰，不在论战中显示。 */
       activeCost(id) {
         const t = this.activeTalents.find(x => x.id === id);
         if (!t) return 0;
-        const ef = t.effect || {};
-        const ts = s.talentState || {};
-        const used = Number(ts.activeUses && ts.activeUses[id]) || 0;
-        if (ef.type === 'planned_dice') {
-          const baseCost = Math.max(1, Number(ef.baseCost ?? t.cost) || 1);
-          const step = Math.max(0, Number(ef.costStep) || 0);
-          return baseCost + used * step;
-        }
         return Math.max(1, Number(t.cost) || 1);
       },
-      /** 使用主动文心：按本场入场快照扣灵感并登记；其他状态写入仍落在全局本局状态。 */
+      /** 使用论战主动文心；布局谋篇不属于论战阶段。 */
       useActive(id, plannedValue = 6) {
         const t = this.activeTalents.find(x => x.id === id);
         if (!t) return false;
         const ef = t.effect || {};
-        const repeatable = ef.type === 'planned_dice';
+        if (ef.type === 'planned_dice') return false;
+        const repeatable = false;
         if (this.usedActive.some(x => x.id === id)) return false;
         if (repeatable && this.plannedDice != null) return false;
         if (repeatable) this.plannedDiceChoice = Math.max(1, Math.min(Number(ef.maxValue) || 6, Number(plannedValue) || 6));
