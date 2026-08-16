@@ -1290,7 +1290,8 @@
               "si": 3
             },
             "inspiration": -5
-          }
+          },
+          "resultText": "五色光从指间一点点退去。你重新铺纸，第一笔落得很慢，却终于不再借谁的声名。"
         },
         {
           "text": "强留彩笔，搜尽枯肠再赋一篇",
@@ -1299,7 +1300,8 @@
               "bi": 4
             },
             "inspiration": -7
-          }
+          },
+          "resultText": "你攥住彩笔，连夜搜尽枯肠。天亮时文章成了，墨色却像从骨头里榨出来的。"
         }
       ]
     },
@@ -1318,7 +1320,8 @@
               "si": 2
             },
             "inspiration": 1
-          }
+          },
+          "resultText": "你依言换去那一字。纸上仍是昨夜的雪，枝头却忽然只剩一朵早梅；对方看罢，向你还了一礼。"
         },
         {
           "text": "自恃己见，仍用原句",
@@ -1327,7 +1330,8 @@
               "bi": 2
             },
             "inspiration": -3
-          }
+          },
+          "resultText": "你把原字重新誊了一遍，墨痕在灯下慢慢干透。对方没有再劝，只把那一点迟疑留在了你的纸上。"
         }
       ]
     },
@@ -1401,11 +1405,13 @@
               "xue": 4
             },
             "inspiration": -6
-          }
+          },
+          "resultText": "灯芯爆了一声，油面只剩薄薄一层。待你读完最后一页，窗纸恰好泛白。"
         },
         {
           "text": "熄灯就寝，明日再来",
-          "effect": {}
+          "effect": {},
+          "resultText": "你合上书，在页脚夹了一片枯叶，记下明日要从哪一句重新开始。灯灭后，那一页仍在心里亮着。"
         }
       ]
     },
@@ -1424,7 +1430,8 @@
               "si": 2
             },
             "inspiration": 2
-          }
+          },
+          "resultText": "两舟系在一处，诗句一句接一句，直到河汉西斜。今夜你先认得了他的诗，后来才问他的姓名。"
         },
         {
           "text": "赠他一册诗稿，各自上路",
@@ -1433,7 +1440,8 @@
               "bi": 2
             },
             "inspiration": 3
-          }
+          },
+          "resultText": "你把诗稿递过去。两舟分开后，那人仍在灯下翻读；水声渐远，吟哦却还断断续续地传来。"
         }
       ]
     },
@@ -1451,11 +1459,13 @@
               "si": 3
             },
             "inspiration": -5
-          }
+          },
+          "resultText": "三日里，纸上尽是圈点与涂痕。那个字终于落定时，门外的风声仿佛也有了轻重。"
         },
         {
           "text": "两字皆可，掷笔而去",
-          "effect": {}
+          "effect": {},
+          "resultText": "你把「推」与「敲」一并圈去，搁笔出门。走出几步，胸中那口滞气反倒先散了。"
         }
       ]
     },
@@ -1473,7 +1483,8 @@
               "shi": 2
             },
             "inspiration": 2
-          }
+          },
+          "resultText": "老丈拍开泥封，你当街饮了一碗。酒气未散，横竖撇捺已经比方才多了几分放达。"
         },
         {
           "text": "分文不取，只当练笔",
@@ -1482,7 +1493,8 @@
               "lian": 1,
               "bi": 2
             }
-          }
+          },
+          "resultText": "你替乡人写完最后一封家书，没收一文。墨迹未干，围观的人已经默默替你添好下一张纸。"
         }
       ]
     },
@@ -1527,7 +1539,8 @@
               "si": 1
             },
             "inspiration": -3
-          }
+          },
+          "resultText": "你把文书逐句讲明，直到乡邻也能念出要紧的几处。日头偏西时，有人正小声教后来的人。"
         },
         {
           "text": "念完便走，赶路要紧",
@@ -1536,7 +1549,8 @@
               "xue": 1
             },
             "inspiration": -2
-          }
+          },
+          "resultText": "你念完要紧的几句，收起行囊继续赶路。走出田埂后，老农又问身边人：「方才第三句是什么意思？」"
         }
       ]
     },
@@ -1554,13 +1568,15 @@
               "si": 2
             },
             "inspiration": -4
-          }
+          },
+          "resultText": "雨点打透衣襟，你仍拄杖向前。走过最急的一阵，竹杖点在石上，声声都比先前从容。"
         },
         {
           "text": "檐下避雨，看了一场好雨",
           "effect": {
             "inspiration": 2
-          }
+          },
+          "resultText": "你在檐下坐定，看雨线把远山一层层洗净。檐水将断未断时，方才没有的句子也有了。"
         }
       ]
     },
@@ -1628,7 +1644,8 @@
               "si": 1
             },
             "inspiration": -3
-          }
+          },
+          "resultText": "你踏过跳板，与陌生同道谈到河汉西斜。灯芯烧短一截，临别时，你们各自记下了对方的一句。"
         },
         {
           "text": "隔水听着，也自成趣",
@@ -1637,7 +1654,8 @@
               "ci": 1
             },
             "inspiration": 2
-          }
+          },
+          "resultText": "你没有过舟，只隔水听着。邻舟灯灭以后，那段吟哦仍在心里续着，迟迟没有收韵。"
         }
       ]
     },
@@ -1655,7 +1673,8 @@
               "shi": 3
             },
             "inspiration": -4
-          }
+          },
+          "resultText": "你在榜下铺开纸，把这一夜的愁写了进去。榜墙上的名字没有改变，纸上却留下了不肯沉默的一笔。"
         },
         {
           "text": "收拾行囊，来年再来",
@@ -1664,7 +1683,8 @@
               "xue": 1
             },
             "inspiration": 2
-          }
+          },
+          "resultText": "你收好落第的行囊，也收好尚未答完的卷。离开榜墙时，晨风正把旧榜吹得沙沙作响。"
         }
       ]
     },
@@ -1737,7 +1757,8 @@
               "ci": 2
             },
             "inspiration": 1
-          }
+          },
+          "resultText": "你在窗边小酌一盏。酒未喝尽，词已写成；青帘仍在窗外翻动，句子却比来时松快。"
         },
         {
           "text": "过门不入，留清醒赶路",
@@ -1746,7 +1767,8 @@
               "si": 1
             },
             "inspiration": 1
-          }
+          },
+          "resultText": "你拢紧衣襟，从酒旗下走过。身后杯盏喧闹，脚下的石板路却一块块清楚起来。"
         }
       ]
     },
@@ -1779,13 +1801,15 @@
               "bi": 3
             },
             "inspiration": -6
-          }
+          },
+          "resultText": "你披衣研墨，把梦里的半联抢在清醒前写下。纸上的字歪斜得很，那句话总算没有跟着梦散去。"
         },
         {
           "text": "先养好身子，句子会再来的",
           "effect": {
             "inspiration": 3
-          }
+          },
+          "resultText": "你闭眼睡去，没有再追那句诗。天亮时身体轻了些，枕边只剩一点似曾听过的余韵。"
         }
       ]
     },
@@ -1830,7 +1854,8 @@
               "si": 2
             },
             "inspiration": -3
-          }
+          },
+          "resultText": "你乘舟而去，在门外站了片刻，听见屋内灯花轻爆，便笑着转身。来路已经被新雪覆住。"
         },
         {
           "text": "叩门相见，围炉夜话",
@@ -1838,7 +1863,8 @@
             "attrs": {
               "ci": 2
             }
-          }
+          },
+          "resultText": "门扉一开，炉火与笑声一同涌出来。你们说到深夜，窗外的雪把来时的脚印全盖住了。"
         }
       ]
     },
@@ -1934,7 +1960,8 @@
               "si": 5
             },
             "inspiration": 5
-          }
+          },
+          "resultText": "你双手接过旧经。书页没有异香，也没有金光，指腹只触到几处虫蛀；翻开第一篇时，寺钟恰好响了。"
         },
         {
           "text": "连声推辞，待方丈叹息一声，说一句“你与佛间尚有因果未了”后，你生起了日后归来的念头",
@@ -1944,7 +1971,8 @@
             },
             "inspiration": 2,
             "talent": "T034"
-          }
+          },
+          "resultText": "你终究没有接下经书。方丈收回手，只道一句「因果未尽」；下山后，松风一路都像在重复这四个字。"
         }
       ]
     }
@@ -2547,6 +2575,1751 @@
       }
     }
   ],
+  "talent-upgrade": {
+    "T001": {
+      "quality": "common",
+      "maxLevel": 3,
+      "upCost": [
+        6,
+        10
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "shi",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "shi",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "shi",
+            "value": 2
+          }
+        }
+      ]
+    },
+    "T002": {
+      "quality": "common",
+      "maxLevel": 3,
+      "upCost": [
+        6,
+        10
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "ci",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "ci",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "ci",
+            "value": 2
+          }
+        }
+      ]
+    },
+    "T003": {
+      "quality": "common",
+      "maxLevel": 3,
+      "upCost": [
+        6,
+        10
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "lian",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "lian",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "lian",
+            "value": 2
+          }
+        }
+      ]
+    },
+    "T004": {
+      "quality": "common",
+      "maxLevel": 3,
+      "upCost": [
+        6,
+        10
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "xue": 2
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "xue": 3
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "xue": 4
+            }
+          }
+        }
+      ]
+    },
+    "T005": {
+      "quality": "common",
+      "maxLevel": 3,
+      "upCost": [
+        6,
+        10
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_plus",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_plus",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_plus",
+            "value": 2
+          }
+        }
+      ]
+    },
+    "T006": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "bi": 3
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "bi": 4
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "bi": 5
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "bi": 6
+            }
+          }
+        }
+      ]
+    },
+    "T007": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        8,
+        12,
+        17,
+        23
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.16,
+            "mult": 1.45
+          }
+        },
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.19,
+            "mult": 1.475
+          }
+        },
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.22,
+            "mult": 1.5
+          }
+        },
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.25,
+            "mult": 1.525
+          }
+        },
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.28,
+            "mult": 1.55
+          }
+        }
+      ]
+    },
+    "T008": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "si": 3
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "si": 4
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "si": 5
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "si": 6
+            }
+          }
+        }
+      ]
+    },
+    "T009": {
+      "quality": "common",
+      "maxLevel": 3,
+      "upCost": [
+        6,
+        10
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "xue": 2
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "xue": 3
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "xue": 4
+            }
+          }
+        }
+      ]
+    },
+    "T010": {
+      "quality": "common",
+      "maxLevel": 3,
+      "upCost": [
+        6,
+        10
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_plus",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_plus",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_plus",
+            "value": 2
+          }
+        }
+      ]
+    },
+    "T011": {
+      "quality": "legend",
+      "maxLevel": 6,
+      "upCost": [
+        9,
+        13,
+        18,
+        24,
+        31
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "copy_affinity",
+            "ratio": 0.55
+          }
+        },
+        {
+          "effect": {
+            "type": "copy_affinity",
+            "ratio": 0.7
+          }
+        },
+        {
+          "effect": {
+            "type": "copy_affinity",
+            "ratio": 0.85
+          }
+        },
+        {
+          "effect": {
+            "type": "copy_affinity",
+            "ratio": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "copy_affinity",
+            "ratio": 1.15
+          }
+        },
+        {
+          "effect": {
+            "type": "copy_affinity",
+            "ratio": 1.3
+          }
+        }
+      ]
+    },
+    "T012": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "shi",
+            "value": 2
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "shi",
+            "value": 2
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "shi",
+            "value": 3
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "shi",
+            "value": 4
+          }
+        }
+      ]
+    },
+    "T013": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "ci",
+            "value": 2
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "ci",
+            "value": 2
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "ci",
+            "value": 3
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "ci",
+            "value": 4
+          }
+        }
+      ]
+    },
+    "T014": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "lian",
+            "value": 2
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "lian",
+            "value": 2
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "lian",
+            "value": 3
+          }
+        },
+        {
+          "effect": {
+            "type": "on_win_bonus",
+            "style": "lian",
+            "value": 4
+          }
+        }
+      ]
+    },
+    "T015": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        8,
+        12,
+        17,
+        23
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.12,
+            "mult": 1.55
+          }
+        },
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.15,
+            "mult": 1.5875
+          }
+        },
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.18,
+            "mult": 1.625
+          }
+        },
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.21,
+            "mult": 1.6625
+          }
+        },
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.24,
+            "mult": 1.7
+          }
+        }
+      ]
+    },
+    "T016": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        8,
+        12,
+        17,
+        23
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 5.4
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 5.6
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 5.8
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 6
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 6.2
+          }
+        }
+      ]
+    },
+    "T099": {
+      "quality": "legend",
+      "maxLevel": 6,
+      "upCost": [
+        9,
+        13,
+        18,
+        24,
+        31
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "palace_pct",
+            "value": 0.03
+          }
+        },
+        {
+          "effect": {
+            "type": "palace_pct",
+            "value": 0.04
+          }
+        },
+        {
+          "effect": {
+            "type": "palace_pct",
+            "value": 0.05
+          }
+        },
+        {
+          "effect": {
+            "type": "palace_pct",
+            "value": 0.06
+          }
+        },
+        {
+          "effect": {
+            "type": "palace_pct",
+            "value": 0.07
+          }
+        },
+        {
+          "effect": {
+            "type": "palace_pct",
+            "value": 0.08
+          }
+        }
+      ]
+    },
+    "TA01": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "fixed_dice",
+            "value": 13
+          },
+          "cost": 3
+        },
+        {
+          "effect": {
+            "type": "fixed_dice",
+            "value": 14
+          },
+          "cost": 3
+        },
+        {
+          "effect": {
+            "type": "fixed_dice",
+            "value": 15
+          },
+          "cost": 3
+        },
+        {
+          "effect": {
+            "type": "fixed_dice",
+            "value": 17
+          },
+          "cost": 3
+        }
+      ]
+    },
+    "TA02": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "copy_affinity",
+            "ratio": 0.7
+          },
+          "cost": 3
+        },
+        {
+          "effect": {
+            "type": "copy_affinity",
+            "ratio": 0.85
+          },
+          "cost": 3
+        },
+        {
+          "effect": {
+            "type": "copy_affinity",
+            "ratio": 1
+          },
+          "cost": 3
+        },
+        {
+          "effect": {
+            "type": "copy_affinity",
+            "ratio": 1.15
+          },
+          "cost": 3
+        }
+      ]
+    },
+    "TA03": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        8,
+        12,
+        17,
+        23
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 6.5
+          },
+          "cost": 4
+        },
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 6.925
+          },
+          "cost": 4
+        },
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 7.35
+          },
+          "cost": 4
+        },
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 7.775
+          },
+          "cost": 4
+        },
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 8.2
+          },
+          "cost": 4
+        }
+      ]
+    },
+    "TA04": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        8,
+        12,
+        17,
+        23
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.3,
+            "mult": 1.45
+          },
+          "cost": 3
+        },
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.3425,
+            "mult": 1.475
+          },
+          "cost": 3
+        },
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.385,
+            "mult": 1.5
+          },
+          "cost": 3
+        },
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.4275,
+            "mult": 1.525
+          },
+          "cost": 3
+        },
+        {
+          "effect": {
+            "type": "crit",
+            "chance": 0.47,
+            "mult": 1.55
+          },
+          "cost": 3
+        }
+      ]
+    },
+    "TA05": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_plus",
+            "value": 3
+          },
+          "cost": 2
+        },
+        {
+          "effect": {
+            "type": "dice_plus",
+            "value": 4
+          },
+          "cost": 2
+        },
+        {
+          "effect": {
+            "type": "dice_plus",
+            "value": 5
+          },
+          "cost": 2
+        },
+        {
+          "effect": {
+            "type": "dice_plus",
+            "value": 6
+          },
+          "cost": 2
+        }
+      ]
+    },
+    "TA06": {
+      "quality": "legend",
+      "maxLevel": 6,
+      "upCost": [
+        9,
+        13,
+        18,
+        24,
+        31
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "fixed_dice",
+            "value": 16
+          },
+          "cost": 4
+        },
+        {
+          "effect": {
+            "type": "fixed_dice",
+            "value": 17
+          },
+          "cost": 4
+        },
+        {
+          "effect": {
+            "type": "fixed_dice",
+            "value": 19
+          },
+          "cost": 4
+        },
+        {
+          "effect": {
+            "type": "fixed_dice",
+            "value": 20
+          },
+          "cost": 4
+        },
+        {
+          "effect": {
+            "type": "fixed_dice",
+            "value": 22
+          },
+          "cost": 4
+        },
+        {
+          "effect": {
+            "type": "fixed_dice",
+            "value": 24
+          },
+          "cost": 4
+        }
+      ]
+    },
+    "TA07": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 6
+          },
+          "cost": 3
+        },
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 6
+          },
+          "cost": 3
+        },
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 6
+          },
+          "cost": 3
+        },
+        {
+          "effect": {
+            "type": "dice_mult",
+            "value": 7
+          },
+          "cost": 3
+        }
+      ]
+    },
+    "TA08": {
+      "quality": "common",
+      "maxLevel": 3,
+      "upCost": [
+        6,
+        10
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "planned_dice",
+            "baseCost": 5,
+            "costStep": 2,
+            "maxValue": 6
+          },
+          "cost": 5
+        },
+        {
+          "effect": {
+            "type": "planned_dice",
+            "baseCost": 5,
+            "costStep": 2,
+            "maxValue": 6
+          },
+          "cost": 5
+        },
+        {
+          "effect": {
+            "type": "planned_dice",
+            "baseCost": 5,
+            "costStep": 2,
+            "maxValue": 6
+          },
+          "cost": 5
+        }
+      ]
+    },
+    "T017": {
+      "quality": "common",
+      "maxLevel": 3,
+      "upCost": [
+        6,
+        10
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "insp_on_win",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_on_win",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_on_win",
+            "value": 2
+          }
+        }
+      ]
+    },
+    "T018": {
+      "quality": "common",
+      "maxLevel": 3,
+      "upCost": [
+        6,
+        10
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "draw_bonus",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "draw_bonus",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "draw_bonus",
+            "value": 2
+          }
+        }
+      ]
+    },
+    "T019": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "insp_on_talent",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_on_talent",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_on_talent",
+            "value": 2
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_on_talent",
+            "value": 3
+          }
+        }
+      ]
+    },
+    "T020": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "style_pct",
+            "style": "shi",
+            "value": 0.04
+          }
+        },
+        {
+          "effect": {
+            "type": "style_pct",
+            "style": "shi",
+            "value": 0.0533
+          }
+        },
+        {
+          "effect": {
+            "type": "style_pct",
+            "style": "shi",
+            "value": 0.0667
+          }
+        },
+        {
+          "effect": {
+            "type": "style_pct",
+            "style": "shi",
+            "value": 0.08
+          }
+        }
+      ]
+    },
+    "T021": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "theme_pct",
+            "theme": "yongwu",
+            "value": 0.05
+          }
+        },
+        {
+          "effect": {
+            "type": "theme_pct",
+            "theme": "yongwu",
+            "value": 0.0667
+          }
+        },
+        {
+          "effect": {
+            "type": "theme_pct",
+            "theme": "yongwu",
+            "value": 0.0833
+          }
+        },
+        {
+          "effect": {
+            "type": "theme_pct",
+            "theme": "yongwu",
+            "value": 0.1
+          }
+        }
+      ]
+    },
+    "T022": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "streak_mult",
+            "value": 0.2
+          }
+        },
+        {
+          "effect": {
+            "type": "streak_mult",
+            "value": 0.3
+          }
+        },
+        {
+          "effect": {
+            "type": "streak_mult",
+            "value": 0.4
+          }
+        },
+        {
+          "effect": {
+            "type": "streak_mult",
+            "value": 0.5
+          }
+        }
+      ]
+    },
+    "T023": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        8,
+        12,
+        17,
+        23
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "insp_floor",
+            "value": 6
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_floor",
+            "value": 7
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_floor",
+            "value": 8
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_floor",
+            "value": 9
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_floor",
+            "value": 10
+          }
+        }
+      ]
+    },
+    "T024": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        8,
+        12,
+        17,
+        23
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "lucky_six",
+            "mult": 1.18
+          }
+        },
+        {
+          "effect": {
+            "type": "lucky_six",
+            "mult": 1.2225
+          }
+        },
+        {
+          "effect": {
+            "type": "lucky_six",
+            "mult": 1.265
+          }
+        },
+        {
+          "effect": {
+            "type": "lucky_six",
+            "mult": 1.3075
+          }
+        },
+        {
+          "effect": {
+            "type": "lucky_six",
+            "mult": 1.35
+          }
+        }
+      ]
+    },
+    "T025": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        8,
+        12,
+        17,
+        23
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "comeback",
+            "value": 0.08,
+            "threshold": 10
+          }
+        },
+        {
+          "effect": {
+            "type": "comeback",
+            "value": 0.1,
+            "threshold": 10
+          }
+        },
+        {
+          "effect": {
+            "type": "comeback",
+            "value": 0.12,
+            "threshold": 11
+          }
+        },
+        {
+          "effect": {
+            "type": "comeback",
+            "value": 0.14,
+            "threshold": 11
+          }
+        },
+        {
+          "effect": {
+            "type": "comeback",
+            "value": 0.16,
+            "threshold": 12
+          }
+        }
+      ]
+    },
+    "T026": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        8,
+        12,
+        17,
+        23
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "armory_pct",
+            "step": 4,
+            "value": 0.02
+          }
+        },
+        {
+          "effect": {
+            "type": "armory_pct",
+            "step": 3,
+            "value": 0.025
+          }
+        },
+        {
+          "effect": {
+            "type": "armory_pct",
+            "step": 3,
+            "value": 0.03
+          }
+        },
+        {
+          "effect": {
+            "type": "armory_pct",
+            "step": 3,
+            "value": 0.035
+          }
+        },
+        {
+          "effect": {
+            "type": "armory_pct",
+            "step": 3,
+            "value": 0.04
+          }
+        }
+      ]
+    },
+    "T027": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "study_bonus",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "study_bonus",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "study_bonus",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "study_bonus",
+            "value": 2
+          }
+        }
+      ]
+    },
+    "T028": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        8,
+        12,
+        17,
+        23
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "palace_insp",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "palace_insp",
+            "value": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "palace_insp",
+            "value": 2
+          }
+        },
+        {
+          "effect": {
+            "type": "palace_insp",
+            "value": 3
+          }
+        },
+        {
+          "effect": {
+            "type": "palace_insp",
+            "value": 4
+          }
+        }
+      ]
+    },
+    "T029": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "start_insp",
+            "value": 3
+          }
+        },
+        {
+          "effect": {
+            "type": "start_insp",
+            "value": 4
+          }
+        },
+        {
+          "effect": {
+            "type": "start_insp",
+            "value": 5
+          }
+        },
+        {
+          "effect": {
+            "type": "start_insp",
+            "value": 6
+          }
+        }
+      ]
+    },
+    "T030": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "insp_on_quiz",
+            "value": 1,
+            "maxTriggers": 2
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_on_quiz",
+            "value": 1,
+            "maxTriggers": 2
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_on_quiz",
+            "value": 1,
+            "maxTriggers": 3
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_on_quiz",
+            "value": 2,
+            "maxTriggers": 4
+          }
+        }
+      ]
+    },
+    "T031": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        8,
+        12,
+        17,
+        23
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "insp_battle_recover",
+            "value": 1,
+            "threshold": 12,
+            "maxTriggers": 2
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_battle_recover",
+            "value": 1,
+            "threshold": 13,
+            "maxTriggers": 2
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_battle_recover",
+            "value": 1,
+            "threshold": 14,
+            "maxTriggers": 3
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_battle_recover",
+            "value": 1,
+            "threshold": 15,
+            "maxTriggers": 3
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_battle_recover",
+            "value": 2,
+            "threshold": 16,
+            "maxTriggers": 4
+          }
+        }
+      ]
+    },
+    "T032": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        8,
+        12,
+        17,
+        23
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "insp_max",
+            "value": 4,
+            "group": "inspiration_capacity"
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_max",
+            "value": 5,
+            "group": "inspiration_capacity"
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_max",
+            "value": 6,
+            "group": "inspiration_capacity"
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_max",
+            "value": 7,
+            "group": "inspiration_capacity"
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_max",
+            "value": 8,
+            "group": "inspiration_capacity"
+          }
+        }
+      ]
+    },
+    "T033": {
+      "quality": "legend",
+      "maxLevel": 6,
+      "upCost": [
+        9,
+        13,
+        18,
+        24,
+        31
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "insp_max",
+            "value": 5,
+            "group": "inspiration_capacity"
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_max",
+            "value": 6,
+            "group": "inspiration_capacity"
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_max",
+            "value": 8,
+            "group": "inspiration_capacity"
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_max",
+            "value": 10,
+            "group": "inspiration_capacity"
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_max",
+            "value": 12,
+            "group": "inspiration_capacity"
+          }
+        },
+        {
+          "effect": {
+            "type": "insp_max",
+            "value": 14,
+            "group": "inspiration_capacity"
+          }
+        }
+      ]
+    },
+    "T034": {
+      "quality": "legend",
+      "maxLevel": 6,
+      "upCost": [
+        9,
+        13,
+        18,
+        24,
+        31
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "reincarnate",
+            "inspThreshold": 40,
+            "attrRatio": 0.8
+          }
+        },
+        {
+          "effect": {
+            "type": "reincarnate",
+            "inspThreshold": 36,
+            "attrRatio": 0.84
+          }
+        },
+        {
+          "effect": {
+            "type": "reincarnate",
+            "inspThreshold": 32,
+            "attrRatio": 0.88
+          }
+        },
+        {
+          "effect": {
+            "type": "reincarnate",
+            "inspThreshold": 28,
+            "attrRatio": 0.92
+          }
+        },
+        {
+          "effect": {
+            "type": "reincarnate",
+            "inspThreshold": 24,
+            "attrRatio": 0.96
+          }
+        },
+        {
+          "effect": {
+            "type": "reincarnate",
+            "inspThreshold": 20,
+            "attrRatio": 1
+          }
+        }
+      ]
+    }
+  },
   "npcs": [
     {
       "id": "tongsheng",
@@ -3938,11 +5711,11 @@
     {
       "id": "S01",
       "name": "诗酒剑气",
-      "desc": "斗酒而诗思泉涌，梦笔而花光艳发——诗与灵交映，论战得分 +5%。",
       "members": [
         "T001",
         "T007"
       ],
+      "desc": "斗酒而诗思泉涌，梦笔而花光艳发——诗与灵交映，论战得分 +5%。",
       "effects": [
         {
           "type": "syn_pct",
@@ -3953,11 +5726,11 @@
     {
       "id": "S02",
       "name": "倚声双绝",
-      "desc": "倚声填词，复得入木三分——词笔相成，以词取胜时词力额外 +1。",
       "members": [
         "T002",
         "T006"
       ],
+      "desc": "倚声填词，复得入木三分——词笔相成，以词取胜时词力额外 +1。",
       "effects": [
         {
           "type": "on_win_bonus",
@@ -3969,11 +5742,11 @@
     {
       "id": "S03",
       "name": "联坛霸才",
-      "desc": "对对如流，更兼天马行空——联坛机锋愈利，灵感波动 +1。",
       "members": [
         "T003",
         "T010"
       ],
+      "desc": "对对如流，更兼天马行空——联坛机锋愈利，灵感波动 +1。",
       "effects": [
         {
           "type": "dice_plus",
@@ -3984,11 +5757,11 @@
     {
       "id": "S04",
       "name": "思涌笔健",
-      "desc": "文思泉涌，急智生风——临场偶得妙手，12% 概率得分 ×1.4。",
       "members": [
         "T016",
         "T005"
       ],
+      "desc": "文思泉涌，急智生风——临场偶得妙手，12% 概率得分 ×1.4。",
       "effects": [
         {
           "type": "crit",
@@ -4000,11 +5773,11 @@
     {
       "id": "S05",
       "name": "通儒蕴藉",
-      "desc": "博览群书，囊萤映雪——学养深厚，满盘皆稳，论战得分 +5%。",
       "members": [
         "T004",
         "T009"
       ],
+      "desc": "博览群书，囊萤映雪——学养深厚，满盘皆稳，论战得分 +5%。",
       "effects": [
         {
           "type": "syn_pct",
@@ -4015,11 +5788,11 @@
     {
       "id": "S06",
       "name": "文运亨通",
-      "desc": "春风得意马蹄疾，曲水流觞雅集深——攻守俱得文运，论战得分 +4%。",
       "members": [
         "T017",
         "T018"
       ],
+      "desc": "春风得意马蹄疾，曲水流觞雅集深——攻守俱得文运，论战得分 +4%。",
       "effects": [
         {
           "type": "syn_pct",
@@ -4030,11 +5803,11 @@
     {
       "id": "S07",
       "name": "梦笔泉涌",
-      "desc": "梦笔生花，文思不绝——创作两绝相济，灵感波动 +1。",
       "members": [
         "T007",
         "T016"
       ],
+      "desc": "梦笔生花，文思不绝——创作两绝相济，灵感波动 +1。",
       "effects": [
         {
           "type": "dice_plus",
@@ -4045,11 +5818,11 @@
     {
       "id": "S08",
       "name": "笔墨相宣",
-      "desc": "入木三分，字字推敲——笔力思力交润，论战得分 +4%。",
       "members": [
         "T006",
         "T008"
       ],
+      "desc": "入木三分，字字推敲——笔力思力交润，论战得分 +4%。",
       "effects": [
         {
           "type": "syn_pct",
@@ -4060,11 +5833,11 @@
     {
       "id": "S09",
       "name": "洛阳才调",
-      "desc": "春风得意，洛阳纸贵——灵源不竭而才名远播，论战得分 +4%。",
       "members": [
         "T017",
         "T019"
       ],
+      "desc": "春风得意，洛阳纸贵——灵源不竭而才名远播，论战得分 +4%。",
       "effects": [
         {
           "type": "syn_pct",
@@ -4524,273 +6297,5 @@
         "name": "沧溟志"
       }
     ]
-  },
-  "sky": [
-    {
-      "id": "SK01",
-      "name": "月圆之夜",
-      "text": "海上生明月，天涯共此时。清辉遍照棋盘，人人心头都涌起句子——今夜诗兴，比平日高出一截。",
-      "duration": 6,
-      "turns": 6,
-      "scope": "all",
-      "effect": {
-        "type": "attr_pct",
-        "attr": "si",
-        "value": 0.2
-      },
-      "icon": "🌕"
-    },
-    {
-      "id": "SK02",
-      "name": "寒窗雪",
-      "text": "十年寒窗无人问。窗外大雪封门，屋内灯火不熄，笔耕之功比平日更见长进。",
-      "duration": 6,
-      "turns": 6,
-      "scope": "all",
-      "effect": {
-        "type": "basic_gain_plus",
-        "value": 1,
-        "attrs": [
-          "bi",
-          "xue",
-          "si"
-        ]
-      },
-      "icon": "❄️"
-    },
-    {
-      "id": "SK03",
-      "name": "科场风起",
-      "text": "贡院号舍风声鹤唳，主司严苛、士子相轧。此六回合内论战胜负所系，倍于寻常。",
-      "duration": 6,
-      "turns": 6,
-      "scope": "all",
-      "effect": {
-        "type": "battle_reward_mult",
-        "value": 2
-      },
-      "icon": "🌪️"
-    },
-    {
-      "id": "SK04",
-      "name": "文曲星动",
-      "text": "夜观天象，文曲一星光芒大盛。传说此星动时，天下读书人下笔如有神助。",
-      "duration": 6,
-      "turns": 6,
-      "scope": "all",
-      "effect": {
-        "type": "quiz_bonus",
-        "value": 1
-      },
-      "icon": "⭐"
-    },
-    {
-      "id": "SK05",
-      "name": "梅雨愁绪",
-      "text": "一川烟草，满城风絮，梅子黄时雨。愁绪缠身，连平韵的清风也吹不散胸中郁结。",
-      "duration": 6,
-      "turns": 6,
-      "scope": "all",
-      "effect": {
-        "type": "no_ping_recover",
-        "value": 0
-      },
-      "icon": "🌧️"
-    },
-    {
-      "id": "SK06",
-      "name": "金榜题名时",
-      "text": "久旱逢甘雨，他乡遇故知；洞房花烛夜，金榜题名时。天大的喜气临头，下一场论战人人超常发挥。",
-      "duration": 1,
-      "turns": 1,
-      "scope": "all",
-      "effect": {
-        "type": "next_battle_pct",
-        "value": 0.1
-      },
-      "icon": "🏆"
-    }
-  ],
-  "album": [
-    {
-      "id": "A001",
-      "name": "仰天大笑",
-      "unlock": {
-        "type": "styleWins",
-        "min": 10,
-        "style": "shi"
-      },
-      "reward": {
-        "type": "attr",
-        "attr": "shi",
-        "value": 2
-      },
-      "rewardDesc": "开局诗力 +2",
-      "text": "「仰天大笑出门去，我辈岂是蓬蒿人。」——李白《南陵别儿童入京》。以诗出战十捷，笑声可裂金石。"
-    },
-    {
-      "id": "A002",
-      "name": "一字之师",
-      "unlock": {
-        "type": "quizzes",
-        "min": 30
-      },
-      "reward": {
-        "type": "attr",
-        "attr": "xue",
-        "value": 2
-      },
-      "rewardDesc": "开局学力 +2",
-      "text": "郑谷改齐己《早梅》「数枝开」为「一枝开」，齐己下拜，时人谓之一字师。积三十答之功，方知一字千金。"
-    },
-    {
-      "id": "A003",
-      "name": "江郎才尽·悔",
-      "unlock": {
-        "type": "fengbi",
-        "min": 1
-      },
-      "reward": {
-        "type": "inspiration",
-        "value": 2
-      },
-      "rewardDesc": "开局灵感 +2",
-      "text": "江淹夜梦郭璞索还五色笔，尔后为诗绝无美句。才尽者未必无才，只是墨干；知墨会干，才懂惜墨。"
-    },
-    {
-      "id": "A004",
-      "name": "连中三元",
-      "unlock": {
-        "type": "palaceSweep",
-        "min": 1
-      },
-      "reward": {
-        "type": "talent",
-        "talent": "T099",
-        "name": "三元及第",
-        "desc": "殿试得分 +5%"
-      },
-      "rewardDesc": "装配文心「三元及第」：殿试三场得分各 +5%",
-      "text": "乡试解元、会试会元、殿试状元，三试皆第一，谓之连中三元。有唐至清，得者不过十数人。"
-    },
-    {
-      "id": "A005",
-      "name": "桃李满园",
-      "unlock": {
-        "type": "wins",
-        "min": 50
-      },
-      "reward": {
-        "type": "title",
-        "title": "桃李先生"
-      },
-      "rewardDesc": "称号「桃李先生」",
-      "text": "「桃李不言，下自成蹊。」——《史记·李将军列传》。与四方文友对坐争锋而胜出者，门庭自然成蹊。"
-    },
-    {
-      "id": "A006",
-      "name": "倚马千言",
-      "unlock": {
-        "type": "wins",
-        "min": 25
-      },
-      "reward": {
-        "type": "attr",
-        "attr": "si",
-        "value": 2
-      },
-      "rewardDesc": "开局思力 +2",
-      "text": "袁虎倚马前作露布文七纸，手不辍笔。二十五战之后，下笔已不须寻思。"
-    },
-    {
-      "id": "A007",
-      "name": "行万里路",
-      "unlock": {
-        "type": "events",
-        "min": 40
-      },
-      "reward": {
-        "type": "attr",
-        "attr": "bi",
-        "value": 2
-      },
-      "rewardDesc": "开局笔力 +2",
-      "text": "「读万卷书，行万里路。」——董其昌《画禅室随笔》。四十番奇遇入怀，山川草木皆成笔底烟云。"
-    },
-    {
-      "id": "A008",
-      "name": "铁杵成针",
-      "unlock": {
-        "type": "games",
-        "min": 5
-      },
-      "reward": {
-        "type": "inspiration",
-        "value": 2
-      },
-      "rewardDesc": "开局灵感 +2",
-      "text": "李白见老媪磨杵，问之，曰欲作针。白感其言，还卒业。五局不辍者，已得此媪三分意思。"
-    },
-    {
-      "id": "A009",
-      "name": "两句三年得",
-      "unlock": {
-        "type": "styleWins",
-        "min": 10,
-        "style": "ci"
-      },
-      "reward": {
-        "type": "attr",
-        "attr": "ci",
-        "value": 2
-      },
-      "rewardDesc": "开局词力 +2",
-      "text": "「两句三年得，一吟双泪流。」——贾岛《题诗后》。以词十捷，字字皆是熬出来的。"
-    },
-    {
-      "id": "A010",
-      "name": "属对如流",
-      "unlock": {
-        "type": "styleWins",
-        "min": 10,
-        "style": "lian"
-      },
-      "reward": {
-        "type": "attr",
-        "attr": "lian",
-        "value": 2
-      },
-      "rewardDesc": "开局联力 +2",
-      "text": "解缙幼有奇才，应对如流，一座尽惊。以联十捷，上下句已在唇齿之间。"
-    },
-    {
-      "id": "A011",
-      "name": "洛阳纸贵",
-      "unlock": {
-        "type": "maxTotal",
-        "min": 2200
-      },
-      "reward": {
-        "type": "inspiration",
-        "value": 2
-      },
-      "rewardDesc": "开局灵感 +2",
-      "text": "左思十年而成《三都赋》，豪贵之家竞相传写，洛阳为之纸贵。单局总评臻于探花之境，方知一纸难求。"
-    },
-    {
-      "id": "A012",
-      "name": "韦编三绝",
-      "unlock": {
-        "type": "quizzes",
-        "min": 80
-      },
-      "reward": {
-        "type": "attr",
-        "attr": "xue",
-        "value": 2
-      },
-      "rewardDesc": "开局学力 +2",
-      "text": "孔子晚而喜《易》，读之韦编三绝。八十答之功非一日可就，简册磨断处，学问始入骨。"
-    }
-  ]
+  }
 }
