@@ -5,19 +5,20 @@ import { play } from './audio.js';
 import { sting } from './music.js';
 
 const UNIT = 46;        // 单元格间距
-const GRID = 21;        // 主环 21×21 外圈 = 4×(21-1) = 80 格（扩图：原 16×16=60 格，周长 +33%）
+const GRID = 21;        // 兼容旧单环；三圈布局按各 ring.grid 计算
 const PAD = 3;          // 外扩单位（浮岛边框留白）
 const CELL = 42;        // 格子边长
 
 export const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-/** 主环 id → 网格坐标（底边→左边→顶边→右边，对应春/夏/秋/冬） */
-export function mainCoord(id) {
-  const n = GRID - 1;                       // 20
-  if (id < 20) return { col: n - id, row: n, season: 'spring', edge: '乡试之路' };
-  if (id < 40) return { col: 0, row: n - (id - 20), season: 'summer', edge: '会试之路' };
-  if (id < 60) return { col: id - 40, row: 0, season: 'autumn', edge: '殿试之路' };
-  return { col: n, row: id - 60, season: 'winter', edge: '归舟之路' };
+/** 单环 id → 网格坐标（底边→左边→顶边→右边，对应春/夏/秋/冬） */
+export function mainCoord(id, grid = GRID) {
+  const n = grid - 1;
+  const side = n;
+  if (id < side) return { col: n - id, row: n, season: 'spring', edge: '乡试之路' };
+  if (id < side * 2) return { col: 0, row: n - (id - side), season: 'summer', edge: '会试之路' };
+  if (id < side * 3) return { col: id - side * 2, row: 0, season: 'autumn', edge: '殿试之路' };
+  return { col: n, row: id - side * 3, season: 'winter', edge: '归舟之路' };
 }
 
 // 平面模式主环：四边对应春/夏/秋/冬，由 mainCoord 统一映射，无支线。
@@ -42,7 +43,9 @@ export class BoardView {
   build() {
     ensureDefs();   // 注入共享体积渐变/柔影（格子图标/名胜/徽记引用）
     const cfg = this.cfg;
-    const span = (GRID + PAD * 2) * UNIT;
+    const isSpiral = cfg.board.layout === 'concentric_spiral';
+    const maxGrid = isSpiral ? Math.max(...(cfg.board.rings || []).map(r => Number(r.grid) || 0), GRID) : GRID;
+    const span = (maxGrid + PAD * 2) * UNIT;
 
     this.root.innerHTML = `
       <div class="far-hills">${FAR_HILLS}</div>
@@ -80,10 +83,21 @@ export class BoardView {
     ttl.innerHTML = `<div class="big">桃花島</div><div class="sm">詩詞楹聯飛花棋</div>`;
     board.appendChild(ttl);
 
-    // 主环格子
-    for (const cell of cfg.board.mainRing) {
-      const c = mainCoord(cell.id);
-      this.addCell(board, cell, c.col, c.row, c.season);
+    // 主环或三圈同心方环格子
+    if (isSpiral) {
+      for (const ring of cfg.board.rings || []) {
+        const grid = Number(ring.grid) || GRID;
+        const offset = Math.floor((maxGrid - grid) / 2);
+        for (const cell of ring.cells || []) {
+          const c = mainCoord(cell.ringIndex ?? cell.id, grid);
+          this.addCell(board, cell, c.col + offset, c.row + offset, c.season, false);
+        }
+      }
+    } else {
+      for (const cell of cfg.board.mainRing) {
+        const c = mainCoord(cell.id);
+        this.addCell(board, cell, c.col, c.row, c.season);
+      }
     }
 
     // 棋子
@@ -118,7 +132,9 @@ export class BoardView {
   }
 
   fit() {
-    const span = (GRID + PAD * 2) * UNIT;
+    const maxGrid = this.cfg.board.layout === 'concentric_spiral'
+      ? Math.max(...(this.cfg.board.rings || []).map(r => Number(r.grid) || 0), GRID) : GRID;
+    const span = (maxGrid + PAD * 2) * UNIT;
     const w = this.root.clientWidth, h = this.root.clientHeight;
     // 平面模式：整盘铺满可视区（留 ~5% 边距），不再做俯视纵向压缩
     const s = Math.min(w / (span * 1.05), h / (span * 1.05));
@@ -138,7 +154,9 @@ export class BoardView {
 
   /** 仅按当前视口重算基准缩放，保留用户平移 / 缩放手势状态（动态适配用） */
   rescale() {
-    const span = (GRID + PAD * 2) * UNIT;
+    const maxGrid = this.cfg.board.layout === 'concentric_spiral'
+      ? Math.max(...(this.cfg.board.rings || []).map(r => Number(r.grid) || 0), GRID) : GRID;
+    const span = (maxGrid + PAD * 2) * UNIT;
     const w = this.root.clientWidth, h = this.root.clientHeight;
     const s = Math.min(w / (span * 1.05), h / (span * 1.05));
     this.bscale = Math.max(0.4, Math.min(1.1, s));   // 下限 0.4：手机端默认适度放大（不过大），字体可辨，可拖动/双指缩放看全盘
@@ -172,7 +190,9 @@ export class BoardView {
 
     /** 平移范围随当前缩放扩大：放大后可拖到棋盘边角，全盘可见时锁在中心 */
     const panBounds = () => {
-      const span = (GRID + PAD * 2) * UNIT;
+      const maxGrid = this.cfg.board.layout === 'concentric_spiral'
+        ? Math.max(...(this.cfg.board.rings || []).map(r => Number(r.grid) || 0), GRID) : GRID;
+      const span = (maxGrid + PAD * 2) * UNIT;
       const sc = this.bscale * this.view.zoom;
       const margin = 60;
       return {
@@ -273,7 +293,7 @@ export class BoardView {
   }
 
   cellIdOf(state) {
-    return state.pos;
+    return this.cfg.board.layout === 'concentric_spiral' ? (state.routeIndex ?? state.pos) : state.pos;
   }
 
   setPiecePos(cellId) {
@@ -303,9 +323,14 @@ export class BoardView {
   /** 掷骰前提示 1–6 落点光圈 */
   hintRange(state) {
     this.cellEls.forEach(e => e.classList.remove('hint'));
-    const ring = this.cfg.board.ringSize;
+    const ring = this.cfg.board.layout === 'concentric_spiral' ? this.cfg.board.routeSize : this.cfg.board.ringSize;
+    const current = this.cfg.board.layout === 'concentric_spiral'
+      ? (Number(state.routeIndex) || 0)
+      : (Number(state.pos) || 0);
     for (let i = 1; i <= 6; i++) {
-      const id = (state.pos + i) % ring;
+      const id = this.cfg.board.layout === 'concentric_spiral'
+        ? Math.min(current + i, Math.max(0, ring - 1))
+        : (current + i) % ring;
       const el = this.cellEls.get(id);
       if (el) el.classList.add('hint');
     }

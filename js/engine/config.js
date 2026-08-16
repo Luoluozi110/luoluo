@@ -75,6 +75,11 @@ export function applyProjectOverride(baseCfg, project) {
 /** 归一化：补齐派生结构，容忍内容方省略可选字段 */
 function normalize(cfg) {
   const board = cfg.board;
+  board.layout = board.layout || 'single_ring';
+  board.route = Array.isArray(board.route) && board.route.length
+    ? board.route.map((x, i) => ({ ring: x.ring || 'outer', cellId: Number(x.cellId ?? x.id ?? i) }))
+    : (board.mainRing || []).map((c, i) => ({ ring: c.ring || 'main', cellId: Number(c.id ?? i) }));
+  board.phaseGates = Array.isArray(board.phaseGates) ? board.phaseGates : [];
 
   // 支线格类型：优先用 branchCells，否则按契约 "ping/quiz/event/battle/landmark" 顺序推导
   const BRANCH_TYPES = ['ping', 'quiz', 'event', 'battle', 'landmark'];
@@ -100,10 +105,17 @@ function normalize(cfg) {
     });
   }
   board.cellById = byId;
+  board.routeCells = board.route.map((step, i) => {
+    const cell = byId.get(step.cellId) || board.mainRing[i];
+    return cell ? { ...cell, id: i, routeIndex: i, ring: step.ring || cell.ring || 'main' } : null;
+  }).filter(Boolean);
+  board.routeSize = board.routeCells.length;
+  board.ringOfRouteIndex = new Map(board.routeCells.map(c => [c.routeIndex, c.ring]));
   board.gateOf = {};
   for (const [gid, bid] of Object.entries(board.branchGates || {})) board.gateOf[bid] = Number(gid);
   board.laps = Number(board.laps) || 2;
   board.ringSize = board.mainRing.length;
+  board.routeSize = board.routeSize || board.mainRing.length;
 
   // 题库：只保留 enabled !== false
   cfg.questions = (cfg.questions || []).filter(q => q.enabled !== false);

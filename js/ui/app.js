@@ -352,6 +352,7 @@ function makeUi() {
     showSky: c => modals.showSky(c),
     showPrologue: () => modals.showPrologue(),
     showLap2Intro: () => modals.showLap2Intro(),
+    showStageChange: gate => modals.showStageChange ? modals.showStageChange(gate) : Promise.resolve(),
     showZeitgeist: z => modals.showZeitgeist(z),
     askScenic: (cell, cost, curInsp) => modals.askScenic(cell, cost, curInsp),
     runBattle: async sess => {

@@ -754,7 +754,7 @@ export const DEFAULT_GRADES = {
     yuanman: { name: '圆满分', reach: 200, perInspiration: 5,
       swift: { maxTurns: 32, bonus: 150, label: '捷才' },
       steady: { maxTurns: 38, minInspiration: 5, bonus: 100, label: '从容' },
-      palaceSweep: 150 }
+      palaceSweep: 150, finalWin: 150 }
   },
   tiers: [
     { name: '童生', min: 0, max: 599 }, { name: '秀才', min: 600, max: 1099 },
@@ -878,7 +878,11 @@ export function adaptGradesConfig(raw) {
       put(d, 'steady.minInspiration', (b.cond || {}).inspirationMin);
       put(d, 'steady.bonus', b.score); put(d, 'steady.label', b.name);
     }
-    if (c) put(d, 'palaceSweep', c.score);
+    if (c) {
+      put(d, 'finalWin', c.score);
+      // 旧配置兼容：若调用方仍读取 palaceSweep，保留同一奖励值。
+      put(d, 'palaceSweep', c.score);
+    }
   }
 
   if (Object.keys(dims).length) out.dims = dims;
@@ -920,7 +924,7 @@ export function normalizeGrades(cfg) {
  *  attrs   {shi,ci,lian,bi,xue,si}
  *  battle  {win,draw,loss,maxStreak,upsets,winsByStyle:{shi,ci,lian}}
  *  events  {total,rare,legend,talents,items}
- *  finish  {reached,inspirationLeft,turns,palaceSweep}
+ *  finish  {reached,inspirationLeft,turns,finalWin}（旧配置兼容 palaceSweep）
  * @param {object} cfgRaw config/grades.json
  */
 export function sixDimScore(s, cfgRaw) {
@@ -929,7 +933,8 @@ export function sixDimScore(s, cfgRaw) {
   const a = s.attrs || {};
   const b = Object.assign({ win: 0, draw: 0, loss: 0, maxStreak: 0, upsets: 0, winsByStyle: {} }, s.battle);
   const e = Object.assign({ total: 0, rare: 0, legend: 0, talents: 0, items: 0 }, s.events);
-  const f = Object.assign({ reached: false, inspirationLeft: 0, turns: 0, palaceSweep: false }, s.finish);
+  const f = Object.assign({ reached: false, inspirationLeft: 0, turns: 0, finalWin: false, palaceSweep: false }, s.finish);
+  if (f.finalWin == null) f.finalWin = !!f.palaceSweep;
   const n = (k) => Math.max(0, Number(a[k]) || 0);
 
   /* 维度 1 文采分 */
@@ -1029,7 +1034,7 @@ export function sixDimScore(s, cfgRaw) {
     p6.push({ label: `${y.swift.label}：${f.turns} 回合抵达 ≤${y.swift.maxTurns}`, value: y.swift.bonus });
   else if (f.reached && f.turns > 0 && f.turns <= y.steady.maxTurns && f.inspirationLeft >= y.steady.minInspiration)
     p6.push({ label: `${y.steady.label}：≤${y.steady.maxTurns} 回合且灵感 ≥${y.steady.minInspiration}`, value: y.steady.bonus });
-  if (f.palaceSweep) p6.push({ label: '金榜题名：殿试三连胜', value: y.palaceSweep });
+  if (f.finalWin || f.palaceSweep) p6.push({ label: '金榜题名：殿试夺魁', value: y.finalWin ?? y.palaceSweep });
   if (!p6.length) p6.push({ label: '中道封笔，圆满无从谈起', value: 0 });
 
   const dims = [

@@ -225,7 +225,8 @@ export class Hud {
     this.el.log.scrollTop = this.el.log.scrollHeight;
 
     this.el.turn.textContent = s.turn;
-    this.el.phase.textContent = s.phase === 'palace' ? '殿试' : s.phase === 'lap2' ? '会试圈' : '乡试圈';
+    const phaseNames = { child: '童生', xiucai: '秀才', juren: '举人', jinshi: '进士', palace: '殿试', lap1: '乡试圈', lap2: '会试圈' };
+    this.el.phase.textContent = phaseNames[s.phase] || '童生';
     if (this.el.pname) this.el.pname.textContent = s.playerName ? `　「${s.playerName}」` : '';
   }
 

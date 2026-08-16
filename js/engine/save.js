@@ -26,7 +26,7 @@ const LOG_KEEP = 150;  // 截断后保留最近条数
 const STATE_KEYS = [
   'school', 'playerName', 'attrs', 'inspiration', 'inspirationMax',
   'passive', 'active', 'track', 'pos', 'branchId', 'branchIndex',
-  'lap', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
+  'lap', 'routeIndex', 'ringId', 'phaseGateSeen', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
   'quiz', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
   'zeitgeist', 'prologueSeen', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
   'talentLevels', 'schoolState', 'over', 'reachedEnd', 'endReason', 'log'
@@ -196,6 +196,11 @@ export function deserializeRun(rawObj, cfg) {
 
   const warnings = [];
   const st = obj.state;
+  // 三圈路线与旧单环坐标不是同一空间；旧档缺少 routeIndex 时必须阻断，
+  // 不能把旧 pos 静默当作新路线位置，否则玩家会被传送到错误阶段/格子。
+  if (cfg && cfg.board && cfg.board.layout === 'concentric_spiral' && st.routeIndex == null) {
+    return { ok: false, state: null, warnings: [], error: '这是旧单环存档，无法直接续玩三圈地图；请开始新局。' };
+  }
   const out = {};
   for (const k of STATE_KEYS) {
     if (k in st) out[k] = decodeValue(st[k]);
@@ -259,6 +264,10 @@ export function deserializeRun(rawObj, cfg) {
     Number.isFinite(Number(out.inspiration)) ? Number(out.inspiration) : baseInsp));
   out.track = out.track === 'branch' ? 'branch' : 'main';
   out.pos = Math.max(0, Number(out.pos) || 0);
+  const routeMax = Math.max(0, Number(cfg.board && cfg.board.routeSize) - 1);
+  out.routeIndex = Math.max(0, Math.min(routeMax || Number.MAX_SAFE_INTEGER, Number(out.routeIndex ?? out.pos) || 0));
+  out.ringId = String(out.ringId || (cfg.board && cfg.board.ringOfRouteIndex && cfg.board.ringOfRouteIndex.get(out.routeIndex)) || 'outer');
+  out.phaseGateSeen = (out.phaseGateSeen && typeof out.phaseGateSeen === 'object') ? out.phaseGateSeen : {};
   out.branchIndex = Number.isFinite(Number(out.branchIndex)) ? Number(out.branchIndex) : -1;
   out.lap = Math.max(1, Number(out.lap) || 1);
   out.turn = Math.max(0, Number(out.turn) || 0);

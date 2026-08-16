@@ -255,7 +255,7 @@ export function conditionText(card, stats) {
     quizzes: `累计答对 ${need} 题`,
     events: `累计触发奇遇 ${need} 次`,
     fengbi: `触发封笔 ${need} 次`,
-    palaceSweep: `单局殿试三连胜 ${need} 次`,
+    palaceSweep: `单局殿试取胜 ${need} 次`,
     games: `完成 ${need} 局对弈`,
     multiplayer: `多人局获胜 ${need} 次`,
     maxTotal: `单局总评达到 ${need} 分`

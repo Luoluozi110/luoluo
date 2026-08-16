@@ -79,6 +79,8 @@ export class Game {
     this.cfg = cfg;
     this.ui = ui;
     this.rand = rand;
+    // 运行时兜底：即使调用方传入的是旧格式 session，也不能对同一对象重复结算。
+    this._settledBattleSessions = new WeakSet();
     this.d6 = () => 1 + Math.floor(this.rand() * 6);
   }
 
@@ -188,8 +190,8 @@ export class Game {
       inspiration: cfg.inspiration.initial,
       inspirationMax: cfg.inspiration.max,
       passive: [], active: [],
-      track: 'main', pos: 0, branchId: null, branchIndex: -1,
-      lap: 1, turn: 0, phase: 'lap1',
+      track: 'main', pos: 0, routeIndex: 0, ringId: cfg.board.routeCells?.[0]?.ring || 'outer', branchId: null, branchIndex: -1,
+      lap: 1, turn: 0, phase: cfg.board.layout === 'concentric_spiral' ? 'child' : 'lap1', phaseGateSeen: {},
       sky: [], nextBattlePct: 0,
       battle: { win: 0, draw: 0, loss: 0, streak: 0, maxStreak: 0, upsets: 0, winsByStyle: { shi: 0, ci: 0, lian: 0 } },
       events: { total: 0, rare: 0, legend: 0, talents: 0, items: 0 },
@@ -314,12 +316,37 @@ export class Game {
 
   skyActive(type) { return this.s.sky.find(sk => (sk.card.effect || {}).type === type) || null; }
 
-  /** 整体进度 0–1（两圈 = 120 格），用于 NPC 取档 */
+  /** 整体进度 0–1；三圈路线使用 routeIndex，旧单环配置继续使用 lap/pos。 */
   progress() {
-    const ring = this.cfg.board.ringSize;
-    const laps = this.cfg.board.laps;
+    const board = this.cfg.board;
+    if (board.layout === 'concentric_spiral' && board.routeSize) {
+      return R.clamp((Number(this.s.routeIndex) || 0) / board.routeSize, 0, 0.999);
+    }
+    const ring = board.ringSize;
+    const laps = board.laps;
     const p = ((this.s.lap - 1) * ring + this.s.pos) / (ring * laps);
     return R.clamp(p, 0, 0.999);
+  }
+
+  routeCell(index = this.s.routeIndex) {
+    const board = this.cfg.board;
+    if (board.layout === 'concentric_spiral') {
+      const cells = board.routeCells?.length ? board.routeCells : (board.mainRing || []);
+      return cells[index] || null;
+    }
+    return this.currentCell();
+  }
+
+  routeLength() {
+    const board = this.cfg.board;
+    return Number(board.routeSize) || (board.routeCells?.length || board.mainRing?.length || 0);
+  }
+
+  phaseForRoute(index = this.s.routeIndex) {
+    const gates = this.cfg.board.phaseGates || [];
+    let phase = 'child';
+    for (const gate of gates) if (index >= Number(gate.at)) phase = gate.phase || phase;
+    return phase;
   }
 
   /**
@@ -442,7 +469,10 @@ export class Game {
     }
     return this.cfg.board.cellById.get(pos);
   }
-  currentCell() { return this.cellAt(this.s.track, this.s.pos, this.s.branchId, this.s.branchIndex); }
+  currentCell() {
+    if (this.cfg.board.layout === 'concentric_spiral') return this.cfg.board.routeCells?.[this.s.routeIndex] || null;
+    return this.cellAt(this.s.track, this.s.pos, this.s.branchId, this.s.branchIndex);
+  }
 
   /* ------------------------------------------------------ 数值变更 */
   /**
@@ -761,12 +791,12 @@ export class Game {
 
     this.tickSky();
     const previousPhase = s.phase;
-    s.phase = s.lap >= 2 ? 'lap2' : 'lap1';
+    s.phase = this.cfg.board.layout === 'concentric_spiral' ? this.phaseForRoute() : (s.lap >= 2 ? 'lap2' : 'lap1');
     this.ui.onState(s);
     if (typeof this.ui.showPlannedMovePrompt === 'function' && this.s.active.some(t => (t.effect || {}).type === 'planned_dice')) {
       await this.ui.showPlannedMovePrompt(this);
     }
-    if (s.phase === 'lap2' && previousPhase !== 'lap2' && typeof this.ui.showLap2Intro === 'function') {
+    if (this.cfg.board.layout !== 'concentric_spiral' && s.phase === 'lap2' && previousPhase !== 'lap2' && typeof this.ui.showLap2Intro === 'function') {
       await this.ui.showLap2Intro();
       this.ui.onState(s);
     }
@@ -799,10 +829,21 @@ export class Game {
     s.sky = keep;
   }
 
-  /** 逐格前进；返回 'palace' 表示第二圈抵达起点 */
+  /** 逐格前进；三圈路线抵达 routeSize 后进入单场殿试。 */
   async moveSteps(steps) {
     const s = this.s;
     const board = this.cfg.board;
+
+    if (board.layout === 'concentric_spiral') {
+      for (let i = 0; i < steps; i++) {
+        if (s.routeIndex + 1 >= board.routeSize) { await this.ui.movePiece(s); return 'palace'; }
+        s.routeIndex++;
+        s.pos = s.routeIndex;
+        s.ringId = board.routeCells[s.routeIndex]?.ring || s.ringId;
+        await this.ui.movePiece(s);
+      }
+      return 'ok';
+    }
 
     for (let i = 0; i < steps; i++) {
       if (s.track === 'branch') {
@@ -840,6 +881,7 @@ export class Game {
       case 'quiz': await this.doQuiz(cell); break;
       case 'event': await this.doEvent(cell); break;
       case 'battle': await this.doBattleCell(cell); break;
+      case 'gate': await this.doBattleCell(cell); break;
       case 'sky': await this.doSky(cell); break;
       case 'mingjing': await this.doScenic(cell); break;
       default: break;
@@ -1079,6 +1121,17 @@ export class Game {
   /* ====================================================== 战斗 */
   async doBattleCell(cell) {
     if (this.s.inspiration <= 0) { this.ui.toast('灵感枯竭，无力应战'); return; }
+    const gate = cell.phaseGate;
+    if (this.cfg.board.layout === 'concentric_spiral' && gate && !this.s.phaseGateSeen[gate.phase]) {
+      this.s.phaseGateSeen[gate.phase] = true;
+      this.s.phase = gate.phase;
+      if (typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gate);
+      const tier = (this.cfg.npcs || []).find(n => n.id === gate.exam);
+      const pick = tier ? this._npcFromPick(tier, R.pickNpcByWeight(tier.npcs || [], this.rand) || (tier.npcs || [])[0] || tier) : this.pickNpc(false);
+      await this.doBattle({ npc: pick, label: `晋阶试·${gate.phase === 'xiucai' ? '秀才' : gate.phase === 'juren' ? '举人' : '进士'}` });
+      if (gate.transition) this.s.ringId = gate.transition;
+      return;
+    }
     await this.doBattle({ npc: this.pickNpc(false), label: cell.name });
   }
 
@@ -1137,7 +1190,11 @@ export class Game {
       ? { style: npcIntent.style, manner: npcIntent.manner, styleDisclosed: npcIntent.styleDisclosed, mannerDisclosed: npcIntent.mannerDisclosed }
       : null;
 
+    // 为会话分配确定性的单场标识。结算可能因 UI 重试/读档恢复被再次调用，
+    // 标识绑定“回合 + 结算前序号 + 场景标签”，不能随着 settleBattle 内 battleSeq 自增而变化。
+    const battleId = `${s.turn}:${Number((s.schoolState || {}).battleSeq) || 0}:${opts.label || '挥毫论道'}`;
     const session = {
+      battleId,
       label: opts.label || '挥毫论道',
       npc,
       // 本场是否以完整机制运行（模板缺失已整套降级旧行为，供结算侧复用判定）
@@ -1518,8 +1575,14 @@ export class Game {
     const insp = this.cfg.inspiration;
     const schoolMech = this.schoolMechanics();
     const schoolState = s.schoolState || (s.schoolState = this.createSchoolState(s.school));
-    const battleId = `${s.turn}:${schoolState.battleSeq || 0}:${session.label || ''}`;
+    // 结算幂等：优先复用 createSession 生成的 ID；旧测试/旧调用没有 ID 时，
+    // 仍用当前序号作为兼容兜底，但不再在检查后改变用于本次判断的 ID。
+    const battleId = session && session.battleId
+      ? session.battleId
+      : `${s.turn}:${schoolState.battleSeq || 0}:${session && session.label || ''}`;
+    if (session && this._settledBattleSessions.has(session)) return;
     if (schoolState.settledBattleIds && schoolState.settledBattleIds.includes(battleId)) return;
+    if (session) this._settledBattleSessions.add(session);
     schoolState.battleSeq = (Number(schoolState.battleSeq) || 0) + 1;
     schoolState.settledBattleIds = [...(schoolState.settledBattleIds || []), battleId].slice(-40);
 
@@ -1582,12 +1645,16 @@ export class Game {
       }
     } else if (out.result === 'draw') {
       s.battle.draw++; s.battle.streak = 0;
-      this.applyStudyGain(this.cfg.attrs.battleDrawGain, `与「${session.npc.fullName || session.npc.name}」平分秋色`, out.style, battlePassives);
-      // 文心「曲水流觞」：平局时出战文体额外 +1
+      // 平局的基础补偿与文心 draw_bonus 先合并，再只走一次 applyStudyGain。
+      // 否则每次单独调用都会重复套用 study_bonus，造成同一场文体异常增长。
+      const drawGain = { ...(this.cfg.attrs.battleDrawGain || {}) };
       for (const t of battlePassives) {
         const ef = t.effect || {};
-        if (ef.type === 'draw_bonus') this.applyStudyGain({ [out.style]: Number(ef.value) || 0 }, `「曲水流觞」助益`, out.style, battlePassives);
+        if (ef.type === 'draw_bonus') {
+          drawGain[out.style] = (Number(drawGain[out.style]) || 0) + (Number(ef.value) || 0);
+        }
       }
+      this.applyStudyGain(drawGain, `与「${session.npc.fullName || session.npc.name}」平分秋色`, out.style, battlePassives);
       this.push(`与「${session.npc.fullName || session.npc.name}」平分秋色`);
     } else {
       s.battle.loss++; s.battle.streak = 0;
@@ -1738,7 +1805,7 @@ export class Game {
    */
   lateVal(base, late) {
     if (late === undefined || late === null) return Number(base) || 0;
-    const isLate = this.s.phase === 'lap2' || this.s.phase === 'palace' || this.s.lap >= 2;
+    const isLate = this.s.phase === 'lap2' || this.s.phase === 'juren' || this.s.phase === 'jinshi' || this.s.phase === 'palace' || this.s.lap >= 2;
     return Number(isLate ? late : base) || 0;
   }
 
@@ -1758,6 +1825,7 @@ export class Game {
     const s = this.s;
     s.phase = 'palace';
     s.reachedEnd = true;
+    if (this.cfg.board.layout === 'concentric_spiral') s.ringId = 'palace';
     this.ui.onState(s);
     // 后续由 showPalaceIntro 展示殿试阶段说明，避免重复弹窗。
 
@@ -1769,8 +1837,8 @@ export class Game {
     const names = themes.map(t => themeNames[t] || t);
     await this.ui.showPalaceIntro(themes, names);
 
-    const n = themes.length;
-    // 殿试三场对手：从主考官具名池「按出战权重加权、不重复抽取 n 个」（幂等去重，防止撞同名考官）。
+    const n = this.cfg.board.layout === 'concentric_spiral' ? 1 : themes.length;
+    // 殿试对手：三圈正式配置为单场；旧配置仍按 themes.length 兼容。「按出战权重加权、不重复抽取 n 个」（幂等去重，防止撞同名考官）。
     // weight 省略=默认 100，weight=0=本阶段不出战；池不足 n 时按实际返回，余下场次退化为独立抽取，
     // 池为 0 时退化为档内随机。注意：场次仍以主考官档优先，若主考官档全被 weight=0 关停则退化为档内随机兜底。
     const zkPool = Array.isArray(zk.npcs) ? zk.npcs : null;
@@ -1857,7 +1925,8 @@ export class Game {
         reached: s.reachedEnd,
         inspirationLeft: s.inspiration,
         turns: s.turn,
-        palaceSweep: s.palaceWins >= 3
+        finalWin: this.cfg.board.layout === 'concentric_spiral' ? s.palaceWins >= 1 : s.palaceWins >= 3,
+        palaceSweep: this.cfg.board.layout === 'concentric_spiral' ? s.palaceWins >= 1 : s.palaceWins >= 3
       }
     }, this.cfg.grades);
 
@@ -1866,7 +1935,7 @@ export class Game {
       fengbi: '灵感耗尽，就此封笔——江郎才尽·悔',
       turnlimit: '岁月不居，六十回合已尽',
       palace: '殿试已毕，静候放榜',
-      jinbang: '殿试三连捷，金榜题名！'
+      jinbang: this.cfg.board.layout === 'concentric_spiral' ? '殿试一决夺魁，金榜题名！' : '殿试三连捷，金榜题名！'
     }[reason] || '对局结束';
     summary.state = s;
     Object.assign(summary, this.commitAlbum(summary));
@@ -1909,7 +1978,8 @@ export class Game {
         events: s.events,
         quizRight: s.quiz ? s.quiz.right : 0,
         endReason: s.endReason,
-        palaceSweep: s.palaceWins >= 3,
+        finalWin: this.cfg.board.layout === 'concentric_spiral' ? s.palaceWins >= 1 : s.palaceWins >= 3,
+        palaceSweep: this.cfg.board.layout === 'concentric_spiral' ? s.palaceWins >= 1 : s.palaceWins >= 3,
         reachedEnd: s.reachedEnd,
         total: summary.total
       });

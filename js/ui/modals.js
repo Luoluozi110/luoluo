@@ -417,6 +417,26 @@ export class Modals {
   async showLap2Intro() {
     return this.showStageIntro('会试圈 · 再入科场', '童生圈的试炼渐远，你已不再只是初入科场的稚子。\n\n棋盘上的路重新展开，题目更深，对手也将换作秀才与举人之间的较量。前方的每一步，都在检验十年寒窗积下的根基。\n\n收束心神，继续向前；待绕过会试圈，金殿之门便会在尽头开启。', '进入会试圈');
   }
+  async showStageChange(gate = {}) {
+    const names = { xiucai: '秀才', juren: '举人', jinshi: '进士' };
+    const name = names[gate.phase] || gate.phase || '新阶段';
+    const text = gate.transition === 'middle'
+      ? '外圈的试炼已尽。你将踏入中圈，补给不再唾手可得，真正的论战与奇遇正在前方等候。'
+      : gate.transition === 'inner'
+        ? '中圈的取舍已经定稿。内圈只给成熟的构筑留下位置，每一场论战都将逼你证明为何能走到这里。'
+        : '基础功名已立。接下来的道路会逐渐收紧，先前积下的文心与选择，将在新的试场中显出分量。';
+    return this.showStageIntro(`${name}阶段 · 晋阶试`, text, `进入${name}阶段`);
+  }
+  async showStageChange(gate = {}) {
+    const names = { xiucai: '秀才', juren: '举人', jinshi: '进士' };
+    const name = names[gate.phase] || gate.phase || '新阶段';
+    const text = gate.transition === 'middle'
+      ? '外圈的试炼已尽。你将踏入中圈，补给不再唾手可得，真正的论战与奇遇正在前方等候。'
+      : gate.transition === 'inner'
+        ? '中圈的取舍已经定稿。内圈只给成熟的构筑留下位置，每一场论战都将逼你证明为何能走到这里。'
+        : '基础功名已立。接下来的道路会逐渐收紧，先前积下的文心与选择，将在新的试场中显出分量。';
+    return this.showStageIntro(`${name}阶段 · 晋阶试`, text, `进入${name}阶段`);
+  }
 
   /* ---------------------------------------------------- 当朝文风（风潮） */
   /** 首回合开始前弹窗：说明本局当朝文风（风潮）及其效果 */
@@ -454,11 +474,13 @@ export class Modals {
   /* ---------------------------------------------------- 殿试开场 */
   async showPalaceIntro(themes, names) {
     // 圈数、殿试场次、金榜奖励分全部从配置读取；殿试题材由主考官配置决定
-    const laps = (this.cfg.board || {}).laps ?? 2;
+    const boardCfg = this.cfg.board || {};
+    const isSpiral = boardCfg.layout === 'concentric_spiral';
+    const laps = isSpiral ? 3 : (boardCfg.laps ?? 2);
     const grades = this.cfg.grades;
     const dim = ((grades || {}).dimensions || []).find(d => d.key === 'yuanman');
     const jb = ((dim || {}).bonuses || []).find(x => x.id === 'jinbangtiming');
-    const sweepN = (themes && themes.length) ? themes.length : (((jb || {}).cond || {}).value ?? 3);
+    const sweepN = isSpiral ? 1 : ((themes && themes.length) ? themes.length : (((jb || {}).cond || {}).value ?? 3));
     const sweepScore = bonusScore(grades, 'yuanman', 'jinbangtiming', 200);
     const themeLabels = (names && names.length) ? names : (themes || ['咏物', '送别', '怀古']);
     const ov = this.open(`
@@ -466,8 +488,8 @@ export class Modals {
         <div class="title-ink" style="font-size:46px">金 殿 對 策</div>
         <hr class="hr-ink"/>
         <div style="font-size:17px;line-height:2">${laps} 圈科举路已尽，今登金殿。<br/>
-          主考官出题 ${sweepN} 道：<b>${themeLabels.join('</b>、<b>')}</b>，须连场应对。<br/>
-          <span style="color:var(--zhu)">${sweepN} 场全胜，可得「${esc((jb || {}).name || '金榜题名')}」圆满分 +${sweepScore}。</span></div>
+          主考官出题 ${sweepN} 道：<b>${themeLabels.join('</b>、<b>')}</b>${isSpiral ? '，一场定榜。' : '，须连场应对。'}<br/>
+          <span style="color:var(--zhu)">${isSpiral ? '此场取胜' : `${sweepN} 场全胜`}，可得「${esc((jb || {}).name || '金榜题名')}」圆满分 +${sweepScore}。</span></div>
         <div class="btn-row"><button class="btn btn-primary" data-ok>整冠入殿</button></div>
       </div>`, 'palace-intro');
     goldBurst(ov, 40);
