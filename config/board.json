@@ -1,1 +1,4328 @@
-{"version":2,"layout":"concentric_spiral","laps":1,"ringSize":192,"rings":[{"id":"outer","name":"外圈·起势","grid":19,"cells":[{"type":"start","name":"外圈·外圈·童生铺","ring":"outer","ringIndex":0,"routeIndex":0,"id":0},{"type":"event","name":"外圈·外圈·百花洲","ring":"outer","ringIndex":1,"routeIndex":1,"id":1},{"type":"ping","name":"外圈·外圈·归帆影","ring":"outer","ringIndex":2,"routeIndex":2,"id":2},{"type":"ping","name":"外圈·外圈·柳荫渡","ring":"outer","ringIndex":3,"routeIndex":3,"id":3},{"type":"ping","name":"外圈·外圈·芙蓉苑","ring":"outer","ringIndex":4,"routeIndex":4,"id":4},{"type":"sky","name":"外圈·外圈·望气坛","ring":"outer","ringIndex":5,"routeIndex":5,"id":5},{"type":"quiz","name":"外圈·外圈·县考棚","ring":"outer","ringIndex":6,"routeIndex":6,"id":6},{"type":"quiz","name":"外圈·外圈·经义堂","ring":"outer","ringIndex":7,"routeIndex":7,"id":7},{"type":"ping","name":"外圈·外圈·灞桥柳","ring":"outer","ringIndex":8,"routeIndex":8,"id":8},{"type":"event","name":"外圈·外圈·邻舟笛","ring":"outer","ringIndex":9,"routeIndex":9,"id":9},{"type":"ze","name":"外圈·外圈·旧雨楼","ring":"outer","ringIndex":10,"routeIndex":10,"id":10},{"type":"event","name":"外圈·外圈·故人斋","ring":"outer","ringIndex":11,"routeIndex":11,"id":11},{"type":"ping","name":"外圈·外圈·芦花渚","ring":"outer","ringIndex":12,"routeIndex":12,"id":12},{"type":"mingjing","name":"外圈·外圈·春在堂","effect":{"attrs":{"xue":2},"inspiration":2},"ring":"outer","ringIndex":13,"routeIndex":13,"id":13},{"type":"ze","name":"外圈·外圈·翰墨轩","ring":"outer","ringIndex":14,"routeIndex":14,"id":14},{"type":"ping","name":"外圈·外圈·长亭道","ring":"outer","ringIndex":15,"routeIndex":15,"id":15},{"type":"ze","name":"外圈·外圈·寒江钓","ring":"outer","ringIndex":16,"routeIndex":16,"id":16},{"type":"battle","name":"外圈·外圈·社学擂","ring":"outer","ringIndex":17,"routeIndex":17,"id":17},{"type":"event","name":"外圈·外圈·雁塔题名","ring":"outer","ringIndex":18,"routeIndex":18,"id":18},{"type":"quiz","name":"外圈·外圈·府学门","ring":"outer","ringIndex":19,"routeIndex":19,"id":19},{"type":"event","name":"外圈·外圈·古渡遇仙","ring":"outer","ringIndex":20,"routeIndex":20,"id":20},{"type":"sky","name":"外圈·外圈·观星阜","ring":"outer","ringIndex":21,"routeIndex":21,"id":21},{"type":"event","name":"外圈·外圈·古渡遇仙·2","ring":"outer","ringIndex":22,"routeIndex":22,"id":22},{"type":"ze","name":"外圈·外圈·藏书楼","ring":"outer","ringIndex":23,"routeIndex":23,"id":23},{"type":"ping","name":"外圈·外圈·桑麻径","ring":"outer","ringIndex":24,"routeIndex":24,"id":24},{"type":"quiz","name":"外圈·外圈·描红斋","ring":"outer","ringIndex":25,"routeIndex":25,"id":25},{"type":"ping","name":"外圈·外圈·金水桥","ring":"outer","ringIndex":26,"routeIndex":26,"id":26},{"type":"battle","name":"外圈·外圈·沧浪渡","ring":"outer","ringIndex":27,"routeIndex":27,"id":27},{"type":"ping","name":"外圈·外圈·望乡台","ring":"outer","ringIndex":28,"routeIndex":28,"id":28},{"type":"ping","name":"外圈·外圈·芦荻洲","ring":"outer","ringIndex":29,"routeIndex":29,"id":29},{"type":"mingjing","name":"外圈·外圈·白鹿洞","ring":"outer","ringIndex":30,"routeIndex":30,"id":30},{"type":"event","name":"外圈·外圈·沧溟志","ring":"outer","ringIndex":31,"routeIndex":31,"id":31},{"type":"ze","name":"外圈·外圈·抄书阁","ring":"outer","ringIndex":32,"routeIndex":32,"id":32},{"type":"ping","name":"外圈·外圈·松风阁","ring":"outer","ringIndex":33,"routeIndex":33,"id":33},{"type":"ze","name":"外圈·外圈·欸乃曲","ring":"outer","ringIndex":34,"routeIndex":34,"id":34},{"type":"ze","name":"外圈·外圈·白鹭洲","ring":"outer","ringIndex":35,"routeIndex":35,"id":35},{"type":"battle","name":"外圈·外圈·曲江宴","phaseGate":{"at":36,"cellId":36,"phase":"xiucai","exam":"xiucai","transition":null},"ring":"outer","ringIndex":36,"routeIndex":36,"id":36},{"type":"ping","name":"外圈·外圈·芦花雪","ring":"outer","ringIndex":37,"routeIndex":37,"id":37},{"type":"event","name":"外圈·外圈·指南录","ring":"outer","ringIndex":38,"routeIndex":38,"id":38},{"type":"ping","name":"外圈·外圈·御街晓","ring":"outer","ringIndex":39,"routeIndex":39,"id":39},{"type":"ping","name":"外圈·外圈·麦浪坡","ring":"outer","ringIndex":40,"routeIndex":40,"phaseGate":{"at":36,"cellId":36,"phase":"xiucai","exam":"xiucai","transition":null},"id":40},{"type":"ze","name":"外圈·外圈·蓑衣湿","ring":"outer","ringIndex":41,"routeIndex":41,"id":41},{"type":"ping","name":"外圈·外圈·稻花陌","ring":"outer","ringIndex":42,"routeIndex":42,"id":42},{"type":"ze","name":"外圈·外圈·磨墨坡","ring":"outer","ringIndex":43,"routeIndex":43,"id":43},{"type":"quiz","name":"外圈·外圈·秋闱号舍","ring":"outer","ringIndex":44,"routeIndex":44,"id":44},{"type":"sky","name":"外圈·外圈·云津渡","ring":"outer","ringIndex":45,"routeIndex":45,"id":45},{"type":"ping","name":"外圈·外圈·蒙学巷","ring":"outer","ringIndex":46,"routeIndex":46,"id":46},{"type":"ze","name":"外圈·外圈·一叶舟","effect":{"inspiration":2},"ring":"outer","ringIndex":47,"routeIndex":47,"id":47},{"type":"ze","name":"外圈·外圈·寒砧月","ring":"outer","ringIndex":48,"routeIndex":48,"id":48},{"type":"ze","name":"外圈·外圈·洗砚池","ring":"outer","ringIndex":49,"routeIndex":49,"id":49},{"type":"ping","name":"外圈·外圈·暮江吟","ring":"outer","ringIndex":50,"routeIndex":50,"id":50},{"type":"ze","name":"外圈·外圈·磨墨坡·2","ring":"outer","ringIndex":51,"routeIndex":51,"id":51},{"type":"event","name":"外圈·外圈·梅边酌","ring":"outer","ringIndex":52,"routeIndex":52,"id":52},{"type":"ze","name":"外圈·外圈·铁砚斋","ring":"outer","ringIndex":53,"routeIndex":53,"id":53},{"type":"battle","name":"外圈·外圈·论道殿","ring":"outer","ringIndex":54,"routeIndex":54,"id":54},{"type":"mingjing","name":"外圈·外圈·玉门关","ring":"outer","ringIndex":55,"routeIndex":55,"id":55},{"type":"ping","name":"外圈·外圈·孤蓬夜","ring":"outer","ringIndex":56,"routeIndex":56,"id":56},{"type":"sky","name":"外圈·外圈·月华津","ring":"outer","ringIndex":57,"routeIndex":57,"id":57},{"type":"ping","name":"外圈·外圈·蒙学巷·2","ring":"outer","ringIndex":58,"routeIndex":58,"id":58},{"type":"battle","name":"外圈·外圈·采石矶","ring":"outer","ringIndex":59,"routeIndex":59,"id":59},{"type":"battle","name":"外圈·外圈·中流擂","ring":"outer","ringIndex":60,"routeIndex":60,"id":60},{"type":"sky","name":"外圈·外圈·星矅崖","ring":"outer","ringIndex":61,"routeIndex":61,"id":61},{"type":"event","name":"外圈·外圈·卖字摊","ring":"outer","ringIndex":62,"routeIndex":62,"id":62},{"type":"event","name":"外圈·外圈·渔火遇","ring":"outer","ringIndex":63,"routeIndex":63,"id":63},{"type":"ze","name":"外圈·外圈·篷窗雨","ring":"outer","ringIndex":64,"routeIndex":64,"id":64},{"type":"mingjing","name":"外圈·外圈·桃花源","ring":"outer","ringIndex":65,"routeIndex":65,"id":65},{"type":"battle","name":"外圈·外圈·诗社台","ring":"outer","ringIndex":66,"routeIndex":66,"id":66},{"type":"ze","name":"外圈·外圈·临帖廊","ring":"outer","ringIndex":67,"routeIndex":67,"id":67},{"type":"battle","name":"外圈·外圈·江心渡","ring":"outer","ringIndex":68,"routeIndex":68,"id":68},{"type":"ze","name":"外圈·外圈·石渠阁","ring":"outer","ringIndex":69,"routeIndex":69,"id":69},{"type":"event","name":"外圈·外圈·卖字摊·2","ring":"outer","ringIndex":70,"routeIndex":70,"id":70},{"type":"event","name":"外圈·外圈·百花洲·2","ring":"outer","ringIndex":71,"routeIndex":71,"id":71}]},{"id":"middle","name":"中圈·验收","grid":17,"entryFrom":"outer","cells":[{"type":"gate","name":"入中圈·会文门","icon":"start","id":72,"ring":"middle","ringIndex":0,"routeIndex":72,"phaseGate":{"at":72,"cellId":72,"phase":"juren","exam":"juren","transition":"middle"}},{"type":"event","name":"中圈·外圈·卖字摊","ring":"middle","ringIndex":1,"routeIndex":73,"id":73},{"type":"quiz","name":"中圈·中圈·渡口问","ring":"middle","ringIndex":2,"routeIndex":74,"id":74},{"type":"event","name":"中圈·外圈·卖字摊·2","ring":"middle","ringIndex":3,"routeIndex":75,"id":75},{"type":"event","name":"中圈·外圈·雁塔题名","ring":"middle","ringIndex":4,"routeIndex":76,"id":76},{"type":"ping","name":"中圈·外圈·孤蓬夜","ring":"middle","ringIndex":5,"routeIndex":77,"effect":{"inspiration":1},"id":77},{"type":"ping","name":"中圈·外圈·暮江吟","ring":"middle","ringIndex":6,"routeIndex":78,"effect":{"inspiration":1},"id":78},{"type":"event","name":"中圈·外圈·百花洲","ring":"middle","ringIndex":7,"routeIndex":79,"id":79},{"type":"event","name":"中圈·外圈·古渡遇仙","ring":"middle","ringIndex":8,"routeIndex":80,"id":80},{"type":"battle","name":"中圈·外圈·论道殿","ring":"middle","ringIndex":9,"routeIndex":81,"id":81},{"type":"ping","name":"中圈·外圈·归帆影","ring":"middle","ringIndex":10,"routeIndex":82,"effect":{"inspiration":1},"id":82},{"type":"battle","name":"中圈·外圈·江心渡","ring":"middle","ringIndex":11,"routeIndex":83,"id":83},{"type":"battle","name":"中圈·外圈·沧浪渡","ring":"middle","ringIndex":12,"routeIndex":84,"id":84},{"type":"event","name":"中圈·外圈·渔火遇","ring":"middle","ringIndex":13,"routeIndex":85,"id":85},{"type":"event","name":"中圈·外圈·邻舟笛","ring":"middle","ringIndex":14,"routeIndex":86,"id":86},{"type":"battle","name":"中圈·中圈·中流擂","ring":"middle","ringIndex":15,"routeIndex":87,"id":87},{"type":"ze","name":"中圈·外圈·白鹭洲","ring":"middle","ringIndex":16,"routeIndex":88,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":88},{"type":"mingjing","name":"中圈·外圈·玉门关","ring":"middle","ringIndex":17,"routeIndex":89,"id":89},{"type":"ze","name":"中圈·外圈·临帖廊","ring":"middle","ringIndex":18,"routeIndex":90,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":90},{"type":"sky","name":"中圈·外圈·观星阜","ring":"middle","ringIndex":19,"routeIndex":91,"id":91},{"type":"quiz","name":"中圈·中圈·春闱帘","ring":"middle","ringIndex":20,"routeIndex":92,"id":92},{"type":"quiz","name":"中圈·中圈·楚水驿","ring":"middle","ringIndex":21,"routeIndex":93,"id":93},{"type":"quiz","name":"中圈·中圈·故园讯","ring":"middle","ringIndex":22,"routeIndex":94,"id":94},{"type":"quiz","name":"中圈·外圈·府学门","ring":"middle","ringIndex":23,"routeIndex":95,"id":95},{"type":"event","name":"中圈·外圈·古渡遇仙·2","ring":"middle","ringIndex":24,"routeIndex":96,"id":96},{"type":"battle","name":"中圈·外圈·采石矶","ring":"middle","ringIndex":25,"routeIndex":97,"id":97},{"type":"event","name":"中圈·外圈·指南录","ring":"middle","ringIndex":26,"routeIndex":98,"id":98},{"type":"quiz","name":"中圈·中圈·秋闱号舍","ring":"middle","ringIndex":27,"routeIndex":99,"id":99},{"type":"ping","name":"中圈·外圈·望乡台","ring":"middle","ringIndex":28,"routeIndex":100,"effect":{"inspiration":1},"id":100},{"type":"event","name":"中圈·外圈·故人斋","ring":"middle","ringIndex":29,"routeIndex":101,"id":101},{"type":"ping","name":"中圈·外圈·芦花雪","ring":"middle","ringIndex":30,"routeIndex":102,"effect":{"inspiration":1},"id":102},{"type":"sky","name":"中圈·外圈·望气坛","ring":"middle","ringIndex":31,"routeIndex":103,"id":103},{"type":"ze","name":"中圈·外圈·翰墨轩","ring":"middle","ringIndex":32,"routeIndex":104,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":104},{"type":"battle","name":"中圈·中圈·社学擂","ring":"middle","ringIndex":33,"routeIndex":105,"id":105},{"type":"sky","name":"中圈·外圈·云津渡","ring":"middle","ringIndex":34,"routeIndex":106,"id":106},{"type":"event","name":"中圈·外圈·沧溟志","ring":"middle","ringIndex":35,"routeIndex":107,"id":107},{"type":"sky","name":"中圈·外圈·星矅崖","ring":"middle","ringIndex":36,"routeIndex":108,"id":108},{"type":"battle","name":"中圈·外圈·诗社台","ring":"middle","ringIndex":37,"routeIndex":109,"id":109},{"type":"mingjing","name":"中圈·外圈·白鹿洞","ring":"middle","ringIndex":38,"routeIndex":110,"id":110},{"type":"ze","name":"中圈·外圈·石渠阁","ring":"middle","ringIndex":39,"routeIndex":111,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":111},{"type":"event","name":"中圈·外圈·梅边酌","ring":"middle","ringIndex":40,"routeIndex":112,"id":112},{"type":"ping","name":"中圈·外圈·蒙学巷","ring":"middle","ringIndex":41,"routeIndex":113,"effect":{"inspiration":1},"id":113},{"type":"ze","name":"中圈·外圈·篷窗雨","ring":"middle","ringIndex":42,"routeIndex":114,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":114},{"type":"quiz","name":"中圈·中圈·故园问","ring":"middle","ringIndex":43,"routeIndex":115,"id":115},{"type":"battle","name":"中圈·中圈·社学擂·2","ring":"middle","ringIndex":44,"routeIndex":116,"id":116},{"type":"quiz","name":"中圈·外圈·县考棚","ring":"middle","ringIndex":45,"routeIndex":117,"id":117},{"type":"ze","name":"中圈·外圈·蓑衣湿","ring":"middle","ringIndex":46,"routeIndex":118,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":118},{"type":"battle","name":"中圈·外圈·社学擂","ring":"middle","ringIndex":47,"routeIndex":119,"id":119},{"type":"battle","name":"中圈·中圈·诗社台","ring":"middle","ringIndex":48,"routeIndex":120,"id":120},{"type":"quiz","name":"中圈·外圈·描红斋","ring":"middle","ringIndex":49,"routeIndex":121,"id":121},{"type":"battle","name":"中圈·外圈·曲江宴","phaseGate":{"id":"xiucai","phase":"xiucai","exam":"xiucai"},"ring":"middle","ringIndex":50,"routeIndex":122,"id":122},{"type":"ze","name":"中圈·外圈·一叶舟","effect":{"inspiration":3,"attrs":{"bi":1,"xue":1,"si":1}},"ring":"middle","ringIndex":51,"routeIndex":123,"id":123},{"type":"ping","name":"中圈·外圈·桑麻径","ring":"middle","ringIndex":52,"routeIndex":124,"effect":{"inspiration":1},"id":124},{"type":"battle","name":"中圈·中圈·采石矶","ring":"middle","ringIndex":53,"routeIndex":125,"id":125},{"type":"sky","name":"中圈·中圈·观星阜","ring":"middle","ringIndex":54,"routeIndex":126,"id":126},{"type":"ze","name":"中圈·外圈·旧雨楼","ring":"middle","ringIndex":55,"routeIndex":127,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":127},{"type":"event","name":"中圈·外圈·百花洲·2","ring":"middle","ringIndex":56,"routeIndex":128,"id":128},{"type":"sky","name":"中圈·外圈·月华津","ring":"middle","ringIndex":57,"routeIndex":129,"id":129},{"type":"quiz","name":"中圈·中圈·策论斋","ring":"middle","ringIndex":58,"routeIndex":130,"id":130},{"type":"ze","name":"中圈·外圈·抄书阁","ring":"middle","ringIndex":59,"routeIndex":131,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":131},{"type":"quiz","name":"中圈·外圈·经义堂","ring":"middle","ringIndex":60,"routeIndex":132,"id":132},{"type":"battle","name":"中圈·外圈·中流擂","ring":"middle","ringIndex":61,"routeIndex":133,"id":133},{"type":"quiz","name":"中圈·外圈·秋闱号舍","ring":"middle","ringIndex":62,"routeIndex":134,"id":134},{"type":"ping","name":"中圈·外圈·芦荻洲","ring":"middle","ringIndex":63,"routeIndex":135,"effect":{"inspiration":1},"id":135}]},{"id":"inner","name":"内圈·定稿","grid":15,"entryFrom":"middle","cells":[{"type":"gate","name":"入内圈·登第门","icon":"start","id":136,"ring":"inner","ringIndex":0,"routeIndex":136,"phaseGate":{"at":136,"cellId":136,"phase":"jinshi","exam":"jinshi","transition":"inner"}},{"type":"event","name":"内圈·外圈·古渡遇仙·2","ring":"inner","ringIndex":1,"routeIndex":137,"id":137},{"type":"quiz","name":"内圈·外圈·秋闱号舍","ring":"inner","ringIndex":2,"routeIndex":138,"id":138},{"type":"battle","name":"内圈·外圈·江心渡","ring":"inner","ringIndex":3,"routeIndex":139,"id":139},{"type":"battle","name":"内圈·中圈·社学擂·2","ring":"inner","ringIndex":4,"routeIndex":140,"id":140},{"type":"ze","name":"内圈·外圈·临帖廊","ring":"inner","ringIndex":5,"routeIndex":141,"effect":{"inspiration":2,"attrs":{"bi":2,"xue":2,"si":2}},"id":141},{"type":"quiz","name":"内圈·中圈·春闱帘","ring":"inner","ringIndex":6,"routeIndex":142,"id":142},{"type":"ping","name":"内圈·外圈·孤蓬夜","ring":"inner","ringIndex":7,"routeIndex":143,"effect":{"inspiration":2},"id":143},{"type":"battle","name":"内圈·中圈·社学擂","ring":"inner","ringIndex":8,"routeIndex":144,"id":144},{"type":"ping","name":"内圈·外圈·归帆影","ring":"inner","ringIndex":9,"routeIndex":145,"effect":{"inspiration":2},"id":145},{"type":"ping","name":"内圈·外圈·桑麻径","ring":"inner","ringIndex":10,"routeIndex":146,"effect":{"inspiration":2},"id":146},{"type":"event","name":"内圈·外圈·雁塔题名","ring":"inner","ringIndex":11,"routeIndex":147,"id":147},{"type":"battle","name":"内圈·中圈·诗社台","ring":"inner","ringIndex":12,"routeIndex":148,"id":148},{"type":"event","name":"内圈·外圈·卖字摊","ring":"inner","ringIndex":13,"routeIndex":149,"id":149},{"type":"sky","name":"内圈·外圈·月华津","ring":"inner","ringIndex":14,"routeIndex":150,"id":150},{"type":"event","name":"内圈·外圈·渔火遇","ring":"inner","ringIndex":15,"routeIndex":151,"id":151},{"type":"quiz","name":"内圈·外圈·府学门","ring":"inner","ringIndex":16,"routeIndex":152,"id":152},{"type":"ping","name":"内圈·外圈·芦荻洲","ring":"inner","ringIndex":17,"routeIndex":153,"effect":{"inspiration":2},"id":153},{"type":"event","name":"内圈·外圈·古渡遇仙","ring":"inner","ringIndex":18,"routeIndex":154,"id":154},{"type":"quiz","name":"内圈·外圈·县考棚","ring":"inner","ringIndex":19,"routeIndex":155,"id":155},{"type":"battle","name":"内圈·中圈·采石矶","ring":"inner","ringIndex":20,"routeIndex":156,"id":156},{"type":"battle","name":"内圈·外圈·采石矶","ring":"inner","ringIndex":21,"routeIndex":157,"id":157},{"type":"event","name":"内圈·外圈·百花洲·2","ring":"inner","ringIndex":22,"routeIndex":158,"id":158},{"type":"battle","name":"内圈·外圈·沧浪渡","ring":"inner","ringIndex":23,"routeIndex":159,"id":159},{"type":"mingjing","name":"内圈·外圈·白鹿洞","ring":"inner","ringIndex":24,"routeIndex":160,"id":160},{"type":"battle","name":"内圈·中圈·中流擂","ring":"inner","ringIndex":25,"routeIndex":161,"id":161},{"type":"battle","name":"内圈·外圈·诗社台","ring":"inner","ringIndex":26,"routeIndex":162,"id":162},{"type":"ping","name":"内圈·外圈·暮江吟","ring":"inner","ringIndex":27,"routeIndex":163,"effect":{"inspiration":2},"id":163},{"type":"ze","name":"内圈·外圈·篷窗雨","ring":"inner","ringIndex":28,"routeIndex":164,"effect":{"inspiration":2,"attrs":{"bi":2,"xue":2,"si":2}},"id":164},{"type":"sky","name":"内圈·外圈·星矅崖","ring":"inner","ringIndex":29,"routeIndex":165,"id":165},{"type":"battle","name":"内圈·外圈·论道殿","ring":"inner","ringIndex":30,"routeIndex":166,"id":166},{"type":"quiz","name":"内圈·中圈·楚水驿","ring":"inner","ringIndex":31,"routeIndex":167,"id":167},{"type":"quiz","name":"内圈·外圈·经义堂","ring":"inner","ringIndex":32,"routeIndex":168,"id":168},{"type":"event","name":"内圈·外圈·百花洲","ring":"inner","ringIndex":33,"routeIndex":169,"id":169},{"type":"event","name":"内圈·外圈·故人斋","ring":"inner","ringIndex":34,"routeIndex":170,"id":170},{"type":"event","name":"内圈·外圈·卖字摊·2","ring":"inner","ringIndex":35,"routeIndex":171,"id":171},{"type":"event","name":"内圈·外圈·沧溟志","ring":"inner","ringIndex":36,"routeIndex":172,"id":172},{"type":"quiz","name":"内圈·中圈·故园讯","ring":"inner","ringIndex":37,"routeIndex":173,"id":173},{"type":"event","name":"内圈·外圈·指南录","ring":"inner","ringIndex":38,"routeIndex":174,"id":174},{"type":"mingjing","name":"内圈·外圈·桃花源","ring":"inner","ringIndex":39,"routeIndex":175,"id":175},{"type":"ze","name":"内圈·外圈·抄书阁","ring":"inner","ringIndex":40,"routeIndex":176,"effect":{"inspiration":2,"attrs":{"bi":2,"xue":2,"si":2}},"id":176},{"type":"event","name":"内圈·外圈·梅边酌","ring":"inner","ringIndex":41,"routeIndex":177,"id":177},{"type":"sky","name":"内圈·外圈·云津渡","ring":"inner","ringIndex":42,"routeIndex":178,"id":178},{"type":"battle","name":"内圈·外圈·中流擂","ring":"inner","ringIndex":43,"routeIndex":179,"id":179},{"type":"mingjing","name":"内圈·外圈·玉门关","ring":"inner","ringIndex":44,"routeIndex":180,"id":180},{"type":"sky","name":"内圈·外圈·望气坛","ring":"inner","ringIndex":45,"routeIndex":181,"id":181},{"type":"battle","name":"内圈·外圈·曲江宴","phaseGate":{"id":"xiucai","phase":"xiucai","exam":"xiucai"},"ring":"inner","ringIndex":46,"routeIndex":182,"id":182},{"type":"sky","name":"内圈·外圈·观星阜","ring":"inner","ringIndex":47,"routeIndex":183,"id":183},{"type":"quiz","name":"内圈·中圈·秋闱号舍","ring":"inner","ringIndex":48,"routeIndex":184,"id":184},{"type":"quiz","name":"内圈·中圈·策论斋","ring":"inner","ringIndex":49,"routeIndex":185,"id":185},{"type":"event","name":"内圈·外圈·邻舟笛","ring":"inner","ringIndex":50,"routeIndex":186,"id":186},{"type":"ze","name":"内圈·外圈·白鹭洲","ring":"inner","ringIndex":51,"routeIndex":187,"effect":{"inspiration":2,"attrs":{"bi":2,"xue":2,"si":2}},"id":187},{"type":"ze","name":"内圈·外圈·旧雨楼","ring":"inner","ringIndex":52,"routeIndex":188,"effect":{"inspiration":2,"attrs":{"bi":2,"xue":2,"si":2}},"id":188},{"type":"battle","name":"内圈·外圈·社学擂","ring":"inner","ringIndex":53,"routeIndex":189,"id":189},{"type":"quiz","name":"内圈·外圈·描红斋","ring":"inner","ringIndex":54,"routeIndex":190,"id":190},{"type":"ze","name":"内圈·外圈·石渠阁","ring":"inner","ringIndex":55,"routeIndex":191,"effect":{"inspiration":2,"attrs":{"bi":2,"xue":2,"si":2}},"id":191}]}],"route":[{"ring":"outer","cellId":0},{"ring":"outer","cellId":1},{"ring":"outer","cellId":2},{"ring":"outer","cellId":3},{"ring":"outer","cellId":4},{"ring":"outer","cellId":5},{"ring":"outer","cellId":6},{"ring":"outer","cellId":7},{"ring":"outer","cellId":8},{"ring":"outer","cellId":9},{"ring":"outer","cellId":10},{"ring":"outer","cellId":11},{"ring":"outer","cellId":12},{"ring":"outer","cellId":13},{"ring":"outer","cellId":14},{"ring":"outer","cellId":15},{"ring":"outer","cellId":16},{"ring":"outer","cellId":17},{"ring":"outer","cellId":18},{"ring":"outer","cellId":19},{"ring":"outer","cellId":20},{"ring":"outer","cellId":21},{"ring":"outer","cellId":22},{"ring":"outer","cellId":23},{"ring":"outer","cellId":24},{"ring":"outer","cellId":25},{"ring":"outer","cellId":26},{"ring":"outer","cellId":27},{"ring":"outer","cellId":28},{"ring":"outer","cellId":29},{"ring":"outer","cellId":30},{"ring":"outer","cellId":31},{"ring":"outer","cellId":32},{"ring":"outer","cellId":33},{"ring":"outer","cellId":34},{"ring":"outer","cellId":35},{"ring":"outer","cellId":36},{"ring":"outer","cellId":37},{"ring":"outer","cellId":38},{"ring":"outer","cellId":39},{"ring":"outer","cellId":40},{"ring":"outer","cellId":41},{"ring":"outer","cellId":42},{"ring":"outer","cellId":43},{"ring":"outer","cellId":44},{"ring":"outer","cellId":45},{"ring":"outer","cellId":46},{"ring":"outer","cellId":47},{"ring":"outer","cellId":48},{"ring":"outer","cellId":49},{"ring":"outer","cellId":50},{"ring":"outer","cellId":51},{"ring":"outer","cellId":52},{"ring":"outer","cellId":53},{"ring":"outer","cellId":54},{"ring":"outer","cellId":55},{"ring":"outer","cellId":56},{"ring":"outer","cellId":57},{"ring":"outer","cellId":58},{"ring":"outer","cellId":59},{"ring":"outer","cellId":60},{"ring":"outer","cellId":61},{"ring":"outer","cellId":62},{"ring":"outer","cellId":63},{"ring":"outer","cellId":64},{"ring":"outer","cellId":65},{"ring":"outer","cellId":66},{"ring":"outer","cellId":67},{"ring":"outer","cellId":68},{"ring":"outer","cellId":69},{"ring":"outer","cellId":70},{"ring":"outer","cellId":71},{"ring":"middle","cellId":72},{"ring":"middle","cellId":73},{"ring":"middle","cellId":74},{"ring":"middle","cellId":75},{"ring":"middle","cellId":76},{"ring":"middle","cellId":77},{"ring":"middle","cellId":78},{"ring":"middle","cellId":79},{"ring":"middle","cellId":80},{"ring":"middle","cellId":81},{"ring":"middle","cellId":82},{"ring":"middle","cellId":83},{"ring":"middle","cellId":84},{"ring":"middle","cellId":85},{"ring":"middle","cellId":86},{"ring":"middle","cellId":87},{"ring":"middle","cellId":88},{"ring":"middle","cellId":89},{"ring":"middle","cellId":90},{"ring":"middle","cellId":91},{"ring":"middle","cellId":92},{"ring":"middle","cellId":93},{"ring":"middle","cellId":94},{"ring":"middle","cellId":95},{"ring":"middle","cellId":96},{"ring":"middle","cellId":97},{"ring":"middle","cellId":98},{"ring":"middle","cellId":99},{"ring":"middle","cellId":100},{"ring":"middle","cellId":101},{"ring":"middle","cellId":102},{"ring":"middle","cellId":103},{"ring":"middle","cellId":104},{"ring":"middle","cellId":105},{"ring":"middle","cellId":106},{"ring":"middle","cellId":107},{"ring":"middle","cellId":108},{"ring":"middle","cellId":109},{"ring":"middle","cellId":110},{"ring":"middle","cellId":111},{"ring":"middle","cellId":112},{"ring":"middle","cellId":113},{"ring":"middle","cellId":114},{"ring":"middle","cellId":115},{"ring":"middle","cellId":116},{"ring":"middle","cellId":117},{"ring":"middle","cellId":118},{"ring":"middle","cellId":119},{"ring":"middle","cellId":120},{"ring":"middle","cellId":121},{"ring":"middle","cellId":122},{"ring":"middle","cellId":123},{"ring":"middle","cellId":124},{"ring":"middle","cellId":125},{"ring":"middle","cellId":126},{"ring":"middle","cellId":127},{"ring":"middle","cellId":128},{"ring":"middle","cellId":129},{"ring":"middle","cellId":130},{"ring":"middle","cellId":131},{"ring":"middle","cellId":132},{"ring":"middle","cellId":133},{"ring":"middle","cellId":134},{"ring":"middle","cellId":135},{"ring":"inner","cellId":136},{"ring":"inner","cellId":137},{"ring":"inner","cellId":138},{"ring":"inner","cellId":139},{"ring":"inner","cellId":140},{"ring":"inner","cellId":141},{"ring":"inner","cellId":142},{"ring":"inner","cellId":143},{"ring":"inner","cellId":144},{"ring":"inner","cellId":145},{"ring":"inner","cellId":146},{"ring":"inner","cellId":147},{"ring":"inner","cellId":148},{"ring":"inner","cellId":149},{"ring":"inner","cellId":150},{"ring":"inner","cellId":151},{"ring":"inner","cellId":152},{"ring":"inner","cellId":153},{"ring":"inner","cellId":154},{"ring":"inner","cellId":155},{"ring":"inner","cellId":156},{"ring":"inner","cellId":157},{"ring":"inner","cellId":158},{"ring":"inner","cellId":159},{"ring":"inner","cellId":160},{"ring":"inner","cellId":161},{"ring":"inner","cellId":162},{"ring":"inner","cellId":163},{"ring":"inner","cellId":164},{"ring":"inner","cellId":165},{"ring":"inner","cellId":166},{"ring":"inner","cellId":167},{"ring":"inner","cellId":168},{"ring":"inner","cellId":169},{"ring":"inner","cellId":170},{"ring":"inner","cellId":171},{"ring":"inner","cellId":172},{"ring":"inner","cellId":173},{"ring":"inner","cellId":174},{"ring":"inner","cellId":175},{"ring":"inner","cellId":176},{"ring":"inner","cellId":177},{"ring":"inner","cellId":178},{"ring":"inner","cellId":179},{"ring":"inner","cellId":180},{"ring":"inner","cellId":181},{"ring":"inner","cellId":182},{"ring":"inner","cellId":183},{"ring":"inner","cellId":184},{"ring":"inner","cellId":185},{"ring":"inner","cellId":186},{"ring":"inner","cellId":187},{"ring":"inner","cellId":188},{"ring":"inner","cellId":189},{"ring":"inner","cellId":190},{"ring":"inner","cellId":191}],"phaseGates":[{"at":36,"cellId":36,"phase":"xiucai","exam":"xiucai","transition":null},{"at":72,"cellId":72,"phase":"juren","exam":"juren","transition":"middle"},{"at":136,"cellId":136,"phase":"jinshi","exam":"jinshi","transition":"inner"}],"routeMeta":{"outer":72,"middle":64,"inner":56,"total":192,"transitions":[72,136]},"sides":[],"mainRing":[{"type":"start","name":"外圈·外圈·童生铺","ring":"outer","ringIndex":0,"routeIndex":0,"id":0},{"type":"event","name":"外圈·外圈·百花洲","ring":"outer","ringIndex":1,"routeIndex":1,"id":1},{"type":"ping","name":"外圈·外圈·归帆影","ring":"outer","ringIndex":2,"routeIndex":2,"id":2},{"type":"ping","name":"外圈·外圈·柳荫渡","ring":"outer","ringIndex":3,"routeIndex":3,"id":3},{"type":"ping","name":"外圈·外圈·芙蓉苑","ring":"outer","ringIndex":4,"routeIndex":4,"id":4},{"type":"sky","name":"外圈·外圈·望气坛","ring":"outer","ringIndex":5,"routeIndex":5,"id":5},{"type":"quiz","name":"外圈·外圈·县考棚","ring":"outer","ringIndex":6,"routeIndex":6,"id":6},{"type":"quiz","name":"外圈·外圈·经义堂","ring":"outer","ringIndex":7,"routeIndex":7,"id":7},{"type":"ping","name":"外圈·外圈·灞桥柳","ring":"outer","ringIndex":8,"routeIndex":8,"id":8},{"type":"event","name":"外圈·外圈·邻舟笛","ring":"outer","ringIndex":9,"routeIndex":9,"id":9},{"type":"ze","name":"外圈·外圈·旧雨楼","ring":"outer","ringIndex":10,"routeIndex":10,"id":10},{"type":"event","name":"外圈·外圈·故人斋","ring":"outer","ringIndex":11,"routeIndex":11,"id":11},{"type":"ping","name":"外圈·外圈·芦花渚","ring":"outer","ringIndex":12,"routeIndex":12,"id":12},{"type":"mingjing","name":"外圈·外圈·春在堂","effect":{"attrs":{"xue":2},"inspiration":2},"ring":"outer","ringIndex":13,"routeIndex":13,"id":13},{"type":"ze","name":"外圈·外圈·翰墨轩","ring":"outer","ringIndex":14,"routeIndex":14,"id":14},{"type":"ping","name":"外圈·外圈·长亭道","ring":"outer","ringIndex":15,"routeIndex":15,"id":15},{"type":"ze","name":"外圈·外圈·寒江钓","ring":"outer","ringIndex":16,"routeIndex":16,"id":16},{"type":"battle","name":"外圈·外圈·社学擂","ring":"outer","ringIndex":17,"routeIndex":17,"id":17},{"type":"event","name":"外圈·外圈·雁塔题名","ring":"outer","ringIndex":18,"routeIndex":18,"id":18},{"type":"quiz","name":"外圈·外圈·府学门","ring":"outer","ringIndex":19,"routeIndex":19,"id":19},{"type":"event","name":"外圈·外圈·古渡遇仙","ring":"outer","ringIndex":20,"routeIndex":20,"id":20},{"type":"sky","name":"外圈·外圈·观星阜","ring":"outer","ringIndex":21,"routeIndex":21,"id":21},{"type":"event","name":"外圈·外圈·古渡遇仙·2","ring":"outer","ringIndex":22,"routeIndex":22,"id":22},{"type":"ze","name":"外圈·外圈·藏书楼","ring":"outer","ringIndex":23,"routeIndex":23,"id":23},{"type":"ping","name":"外圈·外圈·桑麻径","ring":"outer","ringIndex":24,"routeIndex":24,"id":24},{"type":"quiz","name":"外圈·外圈·描红斋","ring":"outer","ringIndex":25,"routeIndex":25,"id":25},{"type":"ping","name":"外圈·外圈·金水桥","ring":"outer","ringIndex":26,"routeIndex":26,"id":26},{"type":"battle","name":"外圈·外圈·沧浪渡","ring":"outer","ringIndex":27,"routeIndex":27,"id":27},{"type":"ping","name":"外圈·外圈·望乡台","ring":"outer","ringIndex":28,"routeIndex":28,"id":28},{"type":"ping","name":"外圈·外圈·芦荻洲","ring":"outer","ringIndex":29,"routeIndex":29,"id":29},{"type":"mingjing","name":"外圈·外圈·白鹿洞","ring":"outer","ringIndex":30,"routeIndex":30,"id":30},{"type":"event","name":"外圈·外圈·沧溟志","ring":"outer","ringIndex":31,"routeIndex":31,"id":31},{"type":"ze","name":"外圈·外圈·抄书阁","ring":"outer","ringIndex":32,"routeIndex":32,"id":32},{"type":"ping","name":"外圈·外圈·松风阁","ring":"outer","ringIndex":33,"routeIndex":33,"id":33},{"type":"ze","name":"外圈·外圈·欸乃曲","ring":"outer","ringIndex":34,"routeIndex":34,"id":34},{"type":"ze","name":"外圈·外圈·白鹭洲","ring":"outer","ringIndex":35,"routeIndex":35,"id":35},{"type":"battle","name":"外圈·外圈·曲江宴","phaseGate":{"at":36,"cellId":36,"phase":"xiucai","exam":"xiucai","transition":null},"ring":"outer","ringIndex":36,"routeIndex":36,"id":36},{"type":"ping","name":"外圈·外圈·芦花雪","ring":"outer","ringIndex":37,"routeIndex":37,"id":37},{"type":"event","name":"外圈·外圈·指南录","ring":"outer","ringIndex":38,"routeIndex":38,"id":38},{"type":"ping","name":"外圈·外圈·御街晓","ring":"outer","ringIndex":39,"routeIndex":39,"id":39},{"type":"ping","name":"外圈·外圈·麦浪坡","ring":"outer","ringIndex":40,"routeIndex":40,"phaseGate":{"at":36,"cellId":36,"phase":"xiucai","exam":"xiucai","transition":null},"id":40},{"type":"ze","name":"外圈·外圈·蓑衣湿","ring":"outer","ringIndex":41,"routeIndex":41,"id":41},{"type":"ping","name":"外圈·外圈·稻花陌","ring":"outer","ringIndex":42,"routeIndex":42,"id":42},{"type":"ze","name":"外圈·外圈·磨墨坡","ring":"outer","ringIndex":43,"routeIndex":43,"id":43},{"type":"quiz","name":"外圈·外圈·秋闱号舍","ring":"outer","ringIndex":44,"routeIndex":44,"id":44},{"type":"sky","name":"外圈·外圈·云津渡","ring":"outer","ringIndex":45,"routeIndex":45,"id":45},{"type":"ping","name":"外圈·外圈·蒙学巷","ring":"outer","ringIndex":46,"routeIndex":46,"id":46},{"type":"ze","name":"外圈·外圈·一叶舟","effect":{"inspiration":2},"ring":"outer","ringIndex":47,"routeIndex":47,"id":47},{"type":"ze","name":"外圈·外圈·寒砧月","ring":"outer","ringIndex":48,"routeIndex":48,"id":48},{"type":"ze","name":"外圈·外圈·洗砚池","ring":"outer","ringIndex":49,"routeIndex":49,"id":49},{"type":"ping","name":"外圈·外圈·暮江吟","ring":"outer","ringIndex":50,"routeIndex":50,"id":50},{"type":"ze","name":"外圈·外圈·磨墨坡·2","ring":"outer","ringIndex":51,"routeIndex":51,"id":51},{"type":"event","name":"外圈·外圈·梅边酌","ring":"outer","ringIndex":52,"routeIndex":52,"id":52},{"type":"ze","name":"外圈·外圈·铁砚斋","ring":"outer","ringIndex":53,"routeIndex":53,"id":53},{"type":"battle","name":"外圈·外圈·论道殿","ring":"outer","ringIndex":54,"routeIndex":54,"id":54},{"type":"mingjing","name":"外圈·外圈·玉门关","ring":"outer","ringIndex":55,"routeIndex":55,"id":55},{"type":"ping","name":"外圈·外圈·孤蓬夜","ring":"outer","ringIndex":56,"routeIndex":56,"id":56},{"type":"sky","name":"外圈·外圈·月华津","ring":"outer","ringIndex":57,"routeIndex":57,"id":57},{"type":"ping","name":"外圈·外圈·蒙学巷·2","ring":"outer","ringIndex":58,"routeIndex":58,"id":58},{"type":"battle","name":"外圈·外圈·采石矶","ring":"outer","ringIndex":59,"routeIndex":59,"id":59},{"type":"battle","name":"外圈·外圈·中流擂","ring":"outer","ringIndex":60,"routeIndex":60,"id":60},{"type":"sky","name":"外圈·外圈·星矅崖","ring":"outer","ringIndex":61,"routeIndex":61,"id":61},{"type":"event","name":"外圈·外圈·卖字摊","ring":"outer","ringIndex":62,"routeIndex":62,"id":62},{"type":"event","name":"外圈·外圈·渔火遇","ring":"outer","ringIndex":63,"routeIndex":63,"id":63},{"type":"ze","name":"外圈·外圈·篷窗雨","ring":"outer","ringIndex":64,"routeIndex":64,"id":64},{"type":"mingjing","name":"外圈·外圈·桃花源","ring":"outer","ringIndex":65,"routeIndex":65,"id":65},{"type":"battle","name":"外圈·外圈·诗社台","ring":"outer","ringIndex":66,"routeIndex":66,"id":66},{"type":"ze","name":"外圈·外圈·临帖廊","ring":"outer","ringIndex":67,"routeIndex":67,"id":67},{"type":"battle","name":"外圈·外圈·江心渡","ring":"outer","ringIndex":68,"routeIndex":68,"id":68},{"type":"ze","name":"外圈·外圈·石渠阁","ring":"outer","ringIndex":69,"routeIndex":69,"id":69},{"type":"event","name":"外圈·外圈·卖字摊·2","ring":"outer","ringIndex":70,"routeIndex":70,"id":70},{"type":"event","name":"外圈·外圈·百花洲·2","ring":"outer","ringIndex":71,"routeIndex":71,"id":71},{"type":"gate","name":"入中圈·会文门","icon":"start","id":72,"ring":"middle","ringIndex":0,"routeIndex":72,"phaseGate":{"at":72,"cellId":72,"phase":"juren","exam":"juren","transition":"middle"}},{"type":"event","name":"中圈·外圈·卖字摊","ring":"middle","ringIndex":1,"routeIndex":73,"id":73},{"type":"quiz","name":"中圈·中圈·渡口问","ring":"middle","ringIndex":2,"routeIndex":74,"id":74},{"type":"event","name":"中圈·外圈·卖字摊·2","ring":"middle","ringIndex":3,"routeIndex":75,"id":75},{"type":"event","name":"中圈·外圈·雁塔题名","ring":"middle","ringIndex":4,"routeIndex":76,"id":76},{"type":"ping","name":"中圈·外圈·孤蓬夜","ring":"middle","ringIndex":5,"routeIndex":77,"effect":{"inspiration":1},"id":77},{"type":"ping","name":"中圈·外圈·暮江吟","ring":"middle","ringIndex":6,"routeIndex":78,"effect":{"inspiration":1},"id":78},{"type":"event","name":"中圈·外圈·百花洲","ring":"middle","ringIndex":7,"routeIndex":79,"id":79},{"type":"event","name":"中圈·外圈·古渡遇仙","ring":"middle","ringIndex":8,"routeIndex":80,"id":80},{"type":"battle","name":"中圈·外圈·论道殿","ring":"middle","ringIndex":9,"routeIndex":81,"id":81},{"type":"ping","name":"中圈·外圈·归帆影","ring":"middle","ringIndex":10,"routeIndex":82,"effect":{"inspiration":1},"id":82},{"type":"battle","name":"中圈·外圈·江心渡","ring":"middle","ringIndex":11,"routeIndex":83,"id":83},{"type":"battle","name":"中圈·外圈·沧浪渡","ring":"middle","ringIndex":12,"routeIndex":84,"id":84},{"type":"event","name":"中圈·外圈·渔火遇","ring":"middle","ringIndex":13,"routeIndex":85,"id":85},{"type":"event","name":"中圈·外圈·邻舟笛","ring":"middle","ringIndex":14,"routeIndex":86,"id":86},{"type":"battle","name":"中圈·中圈·中流擂","ring":"middle","ringIndex":15,"routeIndex":87,"id":87},{"type":"ze","name":"中圈·外圈·白鹭洲","ring":"middle","ringIndex":16,"routeIndex":88,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":88},{"type":"mingjing","name":"中圈·外圈·玉门关","ring":"middle","ringIndex":17,"routeIndex":89,"id":89},{"type":"ze","name":"中圈·外圈·临帖廊","ring":"middle","ringIndex":18,"routeIndex":90,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":90},{"type":"sky","name":"中圈·外圈·观星阜","ring":"middle","ringIndex":19,"routeIndex":91,"id":91},{"type":"quiz","name":"中圈·中圈·春闱帘","ring":"middle","ringIndex":20,"routeIndex":92,"id":92},{"type":"quiz","name":"中圈·中圈·楚水驿","ring":"middle","ringIndex":21,"routeIndex":93,"id":93},{"type":"quiz","name":"中圈·中圈·故园讯","ring":"middle","ringIndex":22,"routeIndex":94,"id":94},{"type":"quiz","name":"中圈·外圈·府学门","ring":"middle","ringIndex":23,"routeIndex":95,"id":95},{"type":"event","name":"中圈·外圈·古渡遇仙·2","ring":"middle","ringIndex":24,"routeIndex":96,"id":96},{"type":"battle","name":"中圈·外圈·采石矶","ring":"middle","ringIndex":25,"routeIndex":97,"id":97},{"type":"event","name":"中圈·外圈·指南录","ring":"middle","ringIndex":26,"routeIndex":98,"id":98},{"type":"quiz","name":"中圈·中圈·秋闱号舍","ring":"middle","ringIndex":27,"routeIndex":99,"id":99},{"type":"ping","name":"中圈·外圈·望乡台","ring":"middle","ringIndex":28,"routeIndex":100,"effect":{"inspiration":1},"id":100},{"type":"event","name":"中圈·外圈·故人斋","ring":"middle","ringIndex":29,"routeIndex":101,"id":101},{"type":"ping","name":"中圈·外圈·芦花雪","ring":"middle","ringIndex":30,"routeIndex":102,"effect":{"inspiration":1},"id":102},{"type":"sky","name":"中圈·外圈·望气坛","ring":"middle","ringIndex":31,"routeIndex":103,"id":103},{"type":"ze","name":"中圈·外圈·翰墨轩","ring":"middle","ringIndex":32,"routeIndex":104,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":104},{"type":"battle","name":"中圈·中圈·社学擂","ring":"middle","ringIndex":33,"routeIndex":105,"id":105},{"type":"sky","name":"中圈·外圈·云津渡","ring":"middle","ringIndex":34,"routeIndex":106,"id":106},{"type":"event","name":"中圈·外圈·沧溟志","ring":"middle","ringIndex":35,"routeIndex":107,"id":107},{"type":"sky","name":"中圈·外圈·星矅崖","ring":"middle","ringIndex":36,"routeIndex":108,"id":108},{"type":"battle","name":"中圈·外圈·诗社台","ring":"middle","ringIndex":37,"routeIndex":109,"id":109},{"type":"mingjing","name":"中圈·外圈·白鹿洞","ring":"middle","ringIndex":38,"routeIndex":110,"id":110},{"type":"ze","name":"中圈·外圈·石渠阁","ring":"middle","ringIndex":39,"routeIndex":111,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":111},{"type":"event","name":"中圈·外圈·梅边酌","ring":"middle","ringIndex":40,"routeIndex":112,"id":112},{"type":"ping","name":"中圈·外圈·蒙学巷","ring":"middle","ringIndex":41,"routeIndex":113,"effect":{"inspiration":1},"id":113},{"type":"ze","name":"中圈·外圈·篷窗雨","ring":"middle","ringIndex":42,"routeIndex":114,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":114},{"type":"quiz","name":"中圈·中圈·故园问","ring":"middle","ringIndex":43,"routeIndex":115,"id":115},{"type":"battle","name":"中圈·中圈·社学擂·2","ring":"middle","ringIndex":44,"routeIndex":116,"id":116},{"type":"quiz","name":"中圈·外圈·县考棚","ring":"middle","ringIndex":45,"routeIndex":117,"id":117},{"type":"ze","name":"中圈·外圈·蓑衣湿","ring":"middle","ringIndex":46,"routeIndex":118,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":118},{"type":"battle","name":"中圈·外圈·社学擂","ring":"middle","ringIndex":47,"routeIndex":119,"id":119},{"type":"battle","name":"中圈·中圈·诗社台","ring":"middle","ringIndex":48,"routeIndex":120,"id":120},{"type":"quiz","name":"中圈·外圈·描红斋","ring":"middle","ringIndex":49,"routeIndex":121,"id":121},{"type":"battle","name":"中圈·外圈·曲江宴","phaseGate":{"id":"xiucai","phase":"xiucai","exam":"xiucai"},"ring":"middle","ringIndex":50,"routeIndex":122,"id":122},{"type":"ze","name":"中圈·外圈·一叶舟","effect":{"inspiration":3,"attrs":{"bi":1,"xue":1,"si":1}},"ring":"middle","ringIndex":51,"routeIndex":123,"id":123},{"type":"ping","name":"中圈·外圈·桑麻径","ring":"middle","ringIndex":52,"routeIndex":124,"effect":{"inspiration":1},"id":124},{"type":"battle","name":"中圈·中圈·采石矶","ring":"middle","ringIndex":53,"routeIndex":125,"id":125},{"type":"sky","name":"中圈·中圈·观星阜","ring":"middle","ringIndex":54,"routeIndex":126,"id":126},{"type":"ze","name":"中圈·外圈·旧雨楼","ring":"middle","ringIndex":55,"routeIndex":127,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":127},{"type":"event","name":"中圈·外圈·百花洲·2","ring":"middle","ringIndex":56,"routeIndex":128,"id":128},{"type":"sky","name":"中圈·外圈·月华津","ring":"middle","ringIndex":57,"routeIndex":129,"id":129},{"type":"quiz","name":"中圈·中圈·策论斋","ring":"middle","ringIndex":58,"routeIndex":130,"id":130},{"type":"ze","name":"中圈·外圈·抄书阁","ring":"middle","ringIndex":59,"routeIndex":131,"effect":{"inspiration":1,"attrs":{"bi":1,"xue":1,"si":1}},"id":131},{"type":"quiz","name":"中圈·外圈·经义堂","ring":"middle","ringIndex":60,"routeIndex":132,"id":132},{"type":"battle","name":"中圈·外圈·中流擂","ring":"middle","ringIndex":61,"routeIndex":133,"id":133},{"type":"quiz","name":"中圈·外圈·秋闱号舍","ring":"middle","ringIndex":62,"routeIndex":134,"id":134},{"type":"ping","name":"中圈·外圈·芦荻洲","ring":"middle","ringIndex":63,"routeIndex":135,"effect":{"inspiration":1},"id":135},{"type":"gate","name":"入内圈·登第门","icon":"start","id":136,"ring":"inner","ringIndex":0,"routeIndex":136,"phaseGate":{"at":136,"cellId":136,"phase":"jinshi","exam":"jinshi","transition":"inner"}},{"type":"event","name":"内圈·外圈·古渡遇仙·2","ring":"inner","ringIndex":1,"routeIndex":137,"id":137},{"type":"quiz","name":"内圈·外圈·秋闱号舍","ring":"inner","ringIndex":2,"routeIndex":138,"id":138},{"type":"battle","name":"内圈·外圈·江心渡","ring":"inner","ringIndex":3,"routeIndex":139,"id":139},{"type":"battle","name":"内圈·中圈·社学擂·2","ring":"inner","ringIndex":4,"routeIndex":140,"id":140},{"type":"ze","name":"内圈·外圈·临帖廊","ring":"inner","ringIndex":5,"routeIndex":141,"effect":{"inspiration":2,"attrs":{"bi":2,"xue":2,"si":2}},"id":141},{"type":"quiz","name":"内圈·中圈·春闱帘","ring":"inner","ringIndex":6,"routeIndex":142,"id":142},{"type":"ping","name":"内圈·外圈·孤蓬夜","ring":"inner","ringIndex":7,"routeIndex":143,"effect":{"inspiration":2},"id":143},{"type":"battle","name":"内圈·中圈·社学擂","ring":"inner","ringIndex":8,"routeIndex":144,"id":144},{"type":"ping","name":"内圈·外圈·归帆影","ring":"inner","ringIndex":9,"routeIndex":145,"effect":{"inspiration":2},"id":145},{"type":"ping","name":"内圈·外圈·桑麻径","ring":"inner","ringIndex":10,"routeIndex":146,"effect":{"inspiration":2},"id":146},{"type":"event","name":"内圈·外圈·雁塔题名","ring":"inner","ringIndex":11,"routeIndex":147,"id":147},{"type":"battle","name":"内圈·中圈·诗社台","ring":"inner","ringIndex":12,"routeIndex":148,"id":148},{"type":"event","name":"内圈·外圈·卖字摊","ring":"inner","ringIndex":13,"routeIndex":149,"id":149},{"type":"sky","name":"内圈·外圈·月华津","ring":"inner","ringIndex":14,"routeIndex":150,"id":150},{"type":"event","name":"内圈·外圈·渔火遇","ring":"inner","ringIndex":15,"routeIndex":151,"id":151},{"type":"quiz","name":"内圈·外圈·府学门","ring":"inner","ringIndex":16,"routeIndex":152,"id":152},{"type":"ping","name":"内圈·外圈·芦荻洲","ring":"inner","ringIndex":17,"routeIndex":153,"effect":{"inspiration":2},"id":153},{"type":"event","name":"内圈·外圈·古渡遇仙","ring":"inner","ringIndex":18,"routeIndex":154,"id":154},{"type":"quiz","name":"内圈·外圈·县考棚","ring":"inner","ringIndex":19,"routeIndex":155,"id":155},{"type":"battle","name":"内圈·中圈·采石矶","ring":"inner","ringIndex":20,"routeIndex":156,"id":156},{"type":"battle","name":"内圈·外圈·采石矶","ring":"inner","ringIndex":21,"routeIndex":157,"id":157},{"type":"event","name":"内圈·外圈·百花洲·2","ring":"inner","ringIndex":22,"routeIndex":158,"id":158},{"type":"battle","name":"内圈·外圈·沧浪渡","ring":"inner","ringIndex":23,"routeIndex":159,"id":159},{"type":"mingjing","name":"内圈·外圈·白鹿洞","ring":"inner","ringIndex":24,"routeIndex":160,"id":160},{"type":"battle","name":"内圈·中圈·中流擂","ring":"inner","ringIndex":25,"routeIndex":161,"id":161},{"type":"battle","name":"内圈·外圈·诗社台","ring":"inner","ringIndex":26,"routeIndex":162,"id":162},{"type":"ping","name":"内圈·外圈·暮江吟","ring":"inner","ringIndex":27,"routeIndex":163,"effect":{"inspiration":2},"id":163},{"type":"ze","name":"内圈·外圈·篷窗雨","ring":"inner","ringIndex":28,"routeIndex":164,"effect":{"inspiration":2,"attrs":{"bi":2,"xue":2,"si":2}},"id":164},{"type":"sky","name":"内圈·外圈·星矅崖","ring":"inner","ringIndex":29,"routeIndex":165,"id":165},{"type":"battle","name":"内圈·外圈·论道殿","ring":"inner","ringIndex":30,"routeIndex":166,"id":166},{"type":"quiz","name":"内圈·中圈·楚水驿","ring":"inner","ringIndex":31,"routeIndex":167,"id":167},{"type":"quiz","name":"内圈·外圈·经义堂","ring":"inner","ringIndex":32,"routeIndex":168,"id":168},{"type":"event","name":"内圈·外圈·百花洲","ring":"inner","ringIndex":33,"routeIndex":169,"id":169},{"type":"event","name":"内圈·外圈·故人斋","ring":"inner","ringIndex":34,"routeIndex":170,"id":170},{"type":"event","name":"内圈·外圈·卖字摊·2","ring":"inner","ringIndex":35,"routeIndex":171,"id":171},{"type":"event","name":"内圈·外圈·沧溟志","ring":"inner","ringIndex":36,"routeIndex":172,"id":172},{"type":"quiz","name":"内圈·中圈·故园讯","ring":"inner","ringIndex":37,"routeIndex":173,"id":173},{"type":"event","name":"内圈·外圈·指南录","ring":"inner","ringIndex":38,"routeIndex":174,"id":174},{"type":"mingjing","name":"内圈·外圈·桃花源","ring":"inner","ringIndex":39,"routeIndex":175,"id":175},{"type":"ze","name":"内圈·外圈·抄书阁","ring":"inner","ringIndex":40,"routeIndex":176,"effect":{"inspiration":2,"attrs":{"bi":2,"xue":2,"si":2}},"id":176},{"type":"event","name":"内圈·外圈·梅边酌","ring":"inner","ringIndex":41,"routeIndex":177,"id":177},{"type":"sky","name":"内圈·外圈·云津渡","ring":"inner","ringIndex":42,"routeIndex":178,"id":178},{"type":"battle","name":"内圈·外圈·中流擂","ring":"inner","ringIndex":43,"routeIndex":179,"id":179},{"type":"mingjing","name":"内圈·外圈·玉门关","ring":"inner","ringIndex":44,"routeIndex":180,"id":180},{"type":"sky","name":"内圈·外圈·望气坛","ring":"inner","ringIndex":45,"routeIndex":181,"id":181},{"type":"battle","name":"内圈·外圈·曲江宴","phaseGate":{"id":"xiucai","phase":"xiucai","exam":"xiucai"},"ring":"inner","ringIndex":46,"routeIndex":182,"id":182},{"type":"sky","name":"内圈·外圈·观星阜","ring":"inner","ringIndex":47,"routeIndex":183,"id":183},{"type":"quiz","name":"内圈·中圈·秋闱号舍","ring":"inner","ringIndex":48,"routeIndex":184,"id":184},{"type":"quiz","name":"内圈·中圈·策论斋","ring":"inner","ringIndex":49,"routeIndex":185,"id":185},{"type":"event","name":"内圈·外圈·邻舟笛","ring":"inner","ringIndex":50,"routeIndex":186,"id":186},{"type":"ze","name":"内圈·外圈·白鹭洲","ring":"inner","ringIndex":51,"routeIndex":187,"effect":{"inspiration":2,"attrs":{"bi":2,"xue":2,"si":2}},"id":187},{"type":"ze","name":"内圈·外圈·旧雨楼","ring":"inner","ringIndex":52,"routeIndex":188,"effect":{"inspiration":2,"attrs":{"bi":2,"xue":2,"si":2}},"id":188},{"type":"battle","name":"内圈·外圈·社学擂","ring":"inner","ringIndex":53,"routeIndex":189,"id":189},{"type":"quiz","name":"内圈·外圈·描红斋","ring":"inner","ringIndex":54,"routeIndex":190,"id":190},{"type":"ze","name":"内圈·外圈·石渠阁","ring":"inner","ringIndex":55,"routeIndex":191,"effect":{"inspiration":2,"attrs":{"bi":2,"xue":2,"si":2}},"id":191}],"branches":{},"branchCells":[],"branchGates":{}}
+{
+  "version": 2,
+  "layout": "concentric_spiral",
+  "laps": 1,
+  "ringSize": 192,
+  "rings": [
+    {
+      "id": "outer",
+      "name": "起势",
+      "grid": 19,
+      "cells": [
+        {
+          "type": "start",
+          "name": "童生铺",
+          "ring": "outer",
+          "ringIndex": 0,
+          "routeIndex": 0,
+          "id": 0
+        },
+        {
+          "type": "event",
+          "name": "百花洲",
+          "ring": "outer",
+          "ringIndex": 1,
+          "routeIndex": 1,
+          "id": 1
+        },
+        {
+          "type": "ping",
+          "name": "归帆影",
+          "ring": "outer",
+          "ringIndex": 2,
+          "routeIndex": 2,
+          "id": 2
+        },
+        {
+          "type": "ping",
+          "name": "柳荫渡",
+          "ring": "outer",
+          "ringIndex": 3,
+          "routeIndex": 3,
+          "id": 3
+        },
+        {
+          "type": "ping",
+          "name": "芙蓉苑",
+          "ring": "outer",
+          "ringIndex": 4,
+          "routeIndex": 4,
+          "id": 4
+        },
+        {
+          "type": "sky",
+          "name": "望气坛",
+          "ring": "outer",
+          "ringIndex": 5,
+          "routeIndex": 5,
+          "id": 5
+        },
+        {
+          "type": "quiz",
+          "name": "县考棚",
+          "ring": "outer",
+          "ringIndex": 6,
+          "routeIndex": 6,
+          "id": 6
+        },
+        {
+          "type": "quiz",
+          "name": "经义堂",
+          "ring": "outer",
+          "ringIndex": 7,
+          "routeIndex": 7,
+          "id": 7
+        },
+        {
+          "type": "ping",
+          "name": "灞桥柳",
+          "ring": "outer",
+          "ringIndex": 8,
+          "routeIndex": 8,
+          "id": 8
+        },
+        {
+          "type": "event",
+          "name": "邻舟笛",
+          "ring": "outer",
+          "ringIndex": 9,
+          "routeIndex": 9,
+          "id": 9
+        },
+        {
+          "type": "ze",
+          "name": "旧雨楼",
+          "ring": "outer",
+          "ringIndex": 10,
+          "routeIndex": 10,
+          "id": 10
+        },
+        {
+          "type": "event",
+          "name": "故人斋",
+          "ring": "outer",
+          "ringIndex": 11,
+          "routeIndex": 11,
+          "id": 11
+        },
+        {
+          "type": "ping",
+          "name": "芦花渚",
+          "ring": "outer",
+          "ringIndex": 12,
+          "routeIndex": 12,
+          "id": 12
+        },
+        {
+          "type": "mingjing",
+          "name": "春在堂",
+          "effect": {
+            "attrs": {
+              "xue": 2
+            },
+            "inspiration": 2
+          },
+          "ring": "outer",
+          "ringIndex": 13,
+          "routeIndex": 13,
+          "id": 13
+        },
+        {
+          "type": "ze",
+          "name": "翰墨轩",
+          "ring": "outer",
+          "ringIndex": 14,
+          "routeIndex": 14,
+          "id": 14
+        },
+        {
+          "type": "ping",
+          "name": "长亭道",
+          "ring": "outer",
+          "ringIndex": 15,
+          "routeIndex": 15,
+          "id": 15
+        },
+        {
+          "type": "ze",
+          "name": "寒江钓",
+          "ring": "outer",
+          "ringIndex": 16,
+          "routeIndex": 16,
+          "id": 16
+        },
+        {
+          "type": "battle",
+          "name": "社学擂",
+          "ring": "outer",
+          "ringIndex": 17,
+          "routeIndex": 17,
+          "id": 17
+        },
+        {
+          "type": "event",
+          "name": "雁塔题名",
+          "ring": "outer",
+          "ringIndex": 18,
+          "routeIndex": 18,
+          "id": 18
+        },
+        {
+          "type": "quiz",
+          "name": "府学门",
+          "ring": "outer",
+          "ringIndex": 19,
+          "routeIndex": 19,
+          "id": 19
+        },
+        {
+          "type": "event",
+          "name": "古渡遇仙",
+          "ring": "outer",
+          "ringIndex": 20,
+          "routeIndex": 20,
+          "id": 20
+        },
+        {
+          "type": "sky",
+          "name": "观星阜",
+          "ring": "outer",
+          "ringIndex": 21,
+          "routeIndex": 21,
+          "id": 21
+        },
+        {
+          "type": "event",
+          "name": "古渡遇仙·2",
+          "ring": "outer",
+          "ringIndex": 22,
+          "routeIndex": 22,
+          "id": 22
+        },
+        {
+          "type": "ze",
+          "name": "藏书楼",
+          "ring": "outer",
+          "ringIndex": 23,
+          "routeIndex": 23,
+          "id": 23
+        },
+        {
+          "type": "ping",
+          "name": "桑麻径",
+          "ring": "outer",
+          "ringIndex": 24,
+          "routeIndex": 24,
+          "id": 24
+        },
+        {
+          "type": "quiz",
+          "name": "描红斋",
+          "ring": "outer",
+          "ringIndex": 25,
+          "routeIndex": 25,
+          "id": 25
+        },
+        {
+          "type": "ping",
+          "name": "金水桥",
+          "ring": "outer",
+          "ringIndex": 26,
+          "routeIndex": 26,
+          "id": 26
+        },
+        {
+          "type": "battle",
+          "name": "沧浪渡",
+          "ring": "outer",
+          "ringIndex": 27,
+          "routeIndex": 27,
+          "id": 27
+        },
+        {
+          "type": "ping",
+          "name": "望乡台",
+          "ring": "outer",
+          "ringIndex": 28,
+          "routeIndex": 28,
+          "id": 28
+        },
+        {
+          "type": "ping",
+          "name": "芦荻洲",
+          "ring": "outer",
+          "ringIndex": 29,
+          "routeIndex": 29,
+          "id": 29
+        },
+        {
+          "type": "mingjing",
+          "name": "白鹿洞",
+          "ring": "outer",
+          "ringIndex": 30,
+          "routeIndex": 30,
+          "id": 30
+        },
+        {
+          "type": "event",
+          "name": "沧溟志",
+          "ring": "outer",
+          "ringIndex": 31,
+          "routeIndex": 31,
+          "id": 31
+        },
+        {
+          "type": "ze",
+          "name": "抄书阁",
+          "ring": "outer",
+          "ringIndex": 32,
+          "routeIndex": 32,
+          "id": 32
+        },
+        {
+          "type": "ping",
+          "name": "松风阁",
+          "ring": "outer",
+          "ringIndex": 33,
+          "routeIndex": 33,
+          "id": 33
+        },
+        {
+          "type": "ze",
+          "name": "欸乃曲",
+          "ring": "outer",
+          "ringIndex": 34,
+          "routeIndex": 34,
+          "id": 34
+        },
+        {
+          "type": "ze",
+          "name": "白鹭洲",
+          "ring": "outer",
+          "ringIndex": 35,
+          "routeIndex": 35,
+          "id": 35
+        },
+        {
+          "type": "battle",
+          "name": "曲江宴",
+          "phaseGate": {
+            "at": 36,
+            "cellId": 36,
+            "phase": "xiucai",
+            "exam": "xiucai",
+            "transition": null
+          },
+          "ring": "outer",
+          "ringIndex": 36,
+          "routeIndex": 36,
+          "id": 36
+        },
+        {
+          "type": "ping",
+          "name": "芦花雪",
+          "ring": "outer",
+          "ringIndex": 37,
+          "routeIndex": 37,
+          "id": 37
+        },
+        {
+          "type": "event",
+          "name": "指南录",
+          "ring": "outer",
+          "ringIndex": 38,
+          "routeIndex": 38,
+          "id": 38
+        },
+        {
+          "type": "ping",
+          "name": "御街晓",
+          "ring": "outer",
+          "ringIndex": 39,
+          "routeIndex": 39,
+          "id": 39
+        },
+        {
+          "type": "ping",
+          "name": "麦浪坡",
+          "ring": "outer",
+          "ringIndex": 40,
+          "routeIndex": 40,
+          "phaseGate": {
+            "at": 36,
+            "cellId": 36,
+            "phase": "xiucai",
+            "exam": "xiucai",
+            "transition": null
+          },
+          "id": 40
+        },
+        {
+          "type": "ze",
+          "name": "蓑衣湿",
+          "ring": "outer",
+          "ringIndex": 41,
+          "routeIndex": 41,
+          "id": 41
+        },
+        {
+          "type": "ping",
+          "name": "稻花陌",
+          "ring": "outer",
+          "ringIndex": 42,
+          "routeIndex": 42,
+          "id": 42
+        },
+        {
+          "type": "ze",
+          "name": "磨墨坡",
+          "ring": "outer",
+          "ringIndex": 43,
+          "routeIndex": 43,
+          "id": 43
+        },
+        {
+          "type": "quiz",
+          "name": "秋闱号舍",
+          "ring": "outer",
+          "ringIndex": 44,
+          "routeIndex": 44,
+          "id": 44
+        },
+        {
+          "type": "sky",
+          "name": "云津渡",
+          "ring": "outer",
+          "ringIndex": 45,
+          "routeIndex": 45,
+          "id": 45
+        },
+        {
+          "type": "ping",
+          "name": "蒙学巷",
+          "ring": "outer",
+          "ringIndex": 46,
+          "routeIndex": 46,
+          "id": 46
+        },
+        {
+          "type": "ze",
+          "name": "一叶舟",
+          "effect": {
+            "inspiration": 2
+          },
+          "ring": "outer",
+          "ringIndex": 47,
+          "routeIndex": 47,
+          "id": 47
+        },
+        {
+          "type": "ze",
+          "name": "寒砧月",
+          "ring": "outer",
+          "ringIndex": 48,
+          "routeIndex": 48,
+          "id": 48
+        },
+        {
+          "type": "ze",
+          "name": "洗砚池",
+          "ring": "outer",
+          "ringIndex": 49,
+          "routeIndex": 49,
+          "id": 49
+        },
+        {
+          "type": "ping",
+          "name": "暮江吟",
+          "ring": "outer",
+          "ringIndex": 50,
+          "routeIndex": 50,
+          "id": 50
+        },
+        {
+          "type": "ze",
+          "name": "磨墨坡·2",
+          "ring": "outer",
+          "ringIndex": 51,
+          "routeIndex": 51,
+          "id": 51
+        },
+        {
+          "type": "event",
+          "name": "梅边酌",
+          "ring": "outer",
+          "ringIndex": 52,
+          "routeIndex": 52,
+          "id": 52
+        },
+        {
+          "type": "ze",
+          "name": "铁砚斋",
+          "ring": "outer",
+          "ringIndex": 53,
+          "routeIndex": 53,
+          "id": 53
+        },
+        {
+          "type": "battle",
+          "name": "论道殿",
+          "ring": "outer",
+          "ringIndex": 54,
+          "routeIndex": 54,
+          "id": 54
+        },
+        {
+          "type": "mingjing",
+          "name": "玉门关",
+          "ring": "outer",
+          "ringIndex": 55,
+          "routeIndex": 55,
+          "id": 55
+        },
+        {
+          "type": "ping",
+          "name": "孤蓬夜",
+          "ring": "outer",
+          "ringIndex": 56,
+          "routeIndex": 56,
+          "id": 56
+        },
+        {
+          "type": "sky",
+          "name": "月华津",
+          "ring": "outer",
+          "ringIndex": 57,
+          "routeIndex": 57,
+          "id": 57
+        },
+        {
+          "type": "ping",
+          "name": "蒙学巷·2",
+          "ring": "outer",
+          "ringIndex": 58,
+          "routeIndex": 58,
+          "id": 58
+        },
+        {
+          "type": "battle",
+          "name": "采石矶",
+          "ring": "outer",
+          "ringIndex": 59,
+          "routeIndex": 59,
+          "id": 59
+        },
+        {
+          "type": "battle",
+          "name": "中流擂",
+          "ring": "outer",
+          "ringIndex": 60,
+          "routeIndex": 60,
+          "id": 60
+        },
+        {
+          "type": "sky",
+          "name": "星矅崖",
+          "ring": "outer",
+          "ringIndex": 61,
+          "routeIndex": 61,
+          "id": 61
+        },
+        {
+          "type": "event",
+          "name": "卖字摊",
+          "ring": "outer",
+          "ringIndex": 62,
+          "routeIndex": 62,
+          "id": 62
+        },
+        {
+          "type": "event",
+          "name": "渔火遇",
+          "ring": "outer",
+          "ringIndex": 63,
+          "routeIndex": 63,
+          "id": 63
+        },
+        {
+          "type": "ze",
+          "name": "篷窗雨",
+          "ring": "outer",
+          "ringIndex": 64,
+          "routeIndex": 64,
+          "id": 64
+        },
+        {
+          "type": "mingjing",
+          "name": "桃花源",
+          "ring": "outer",
+          "ringIndex": 65,
+          "routeIndex": 65,
+          "id": 65
+        },
+        {
+          "type": "battle",
+          "name": "诗社台",
+          "ring": "outer",
+          "ringIndex": 66,
+          "routeIndex": 66,
+          "id": 66
+        },
+        {
+          "type": "ze",
+          "name": "临帖廊",
+          "ring": "outer",
+          "ringIndex": 67,
+          "routeIndex": 67,
+          "id": 67
+        },
+        {
+          "type": "battle",
+          "name": "江心渡",
+          "ring": "outer",
+          "ringIndex": 68,
+          "routeIndex": 68,
+          "id": 68
+        },
+        {
+          "type": "ze",
+          "name": "石渠阁",
+          "ring": "outer",
+          "ringIndex": 69,
+          "routeIndex": 69,
+          "id": 69
+        },
+        {
+          "type": "event",
+          "name": "卖字摊·2",
+          "ring": "outer",
+          "ringIndex": 70,
+          "routeIndex": 70,
+          "id": 70
+        },
+        {
+          "type": "event",
+          "name": "百花洲·2",
+          "ring": "outer",
+          "ringIndex": 71,
+          "routeIndex": 71,
+          "id": 71
+        }
+      ]
+    },
+    {
+      "id": "middle",
+      "name": "验收",
+      "grid": 17,
+      "entryFrom": "outer",
+      "cells": [
+        {
+          "type": "gate",
+          "name": "会文门",
+          "icon": "start",
+          "id": 72,
+          "ring": "middle",
+          "ringIndex": 0,
+          "routeIndex": 72,
+          "phaseGate": {
+            "at": 72,
+            "cellId": 72,
+            "phase": "juren",
+            "exam": "juren",
+            "transition": "middle"
+          }
+        },
+        {
+          "type": "event",
+          "name": "卖字摊",
+          "ring": "middle",
+          "ringIndex": 1,
+          "routeIndex": 73,
+          "id": 73
+        },
+        {
+          "type": "quiz",
+          "name": "渡口问",
+          "ring": "middle",
+          "ringIndex": 2,
+          "routeIndex": 74,
+          "id": 74
+        },
+        {
+          "type": "event",
+          "name": "卖字摊·2",
+          "ring": "middle",
+          "ringIndex": 3,
+          "routeIndex": 75,
+          "id": 75
+        },
+        {
+          "type": "event",
+          "name": "雁塔题名",
+          "ring": "middle",
+          "ringIndex": 4,
+          "routeIndex": 76,
+          "id": 76
+        },
+        {
+          "type": "ping",
+          "name": "孤蓬夜",
+          "ring": "middle",
+          "ringIndex": 5,
+          "routeIndex": 77,
+          "effect": {
+            "inspiration": 1
+          },
+          "id": 77
+        },
+        {
+          "type": "ping",
+          "name": "暮江吟",
+          "ring": "middle",
+          "ringIndex": 6,
+          "routeIndex": 78,
+          "effect": {
+            "inspiration": 1
+          },
+          "id": 78
+        },
+        {
+          "type": "event",
+          "name": "百花洲",
+          "ring": "middle",
+          "ringIndex": 7,
+          "routeIndex": 79,
+          "id": 79
+        },
+        {
+          "type": "event",
+          "name": "古渡遇仙",
+          "ring": "middle",
+          "ringIndex": 8,
+          "routeIndex": 80,
+          "id": 80
+        },
+        {
+          "type": "battle",
+          "name": "论道殿",
+          "ring": "middle",
+          "ringIndex": 9,
+          "routeIndex": 81,
+          "id": 81
+        },
+        {
+          "type": "ping",
+          "name": "归帆影",
+          "ring": "middle",
+          "ringIndex": 10,
+          "routeIndex": 82,
+          "effect": {
+            "inspiration": 1
+          },
+          "id": 82
+        },
+        {
+          "type": "battle",
+          "name": "江心渡",
+          "ring": "middle",
+          "ringIndex": 11,
+          "routeIndex": 83,
+          "id": 83
+        },
+        {
+          "type": "battle",
+          "name": "沧浪渡",
+          "ring": "middle",
+          "ringIndex": 12,
+          "routeIndex": 84,
+          "id": 84
+        },
+        {
+          "type": "event",
+          "name": "渔火遇",
+          "ring": "middle",
+          "ringIndex": 13,
+          "routeIndex": 85,
+          "id": 85
+        },
+        {
+          "type": "event",
+          "name": "邻舟笛",
+          "ring": "middle",
+          "ringIndex": 14,
+          "routeIndex": 86,
+          "id": 86
+        },
+        {
+          "type": "battle",
+          "name": "中流擂",
+          "ring": "middle",
+          "ringIndex": 15,
+          "routeIndex": 87,
+          "id": 87
+        },
+        {
+          "type": "ze",
+          "name": "白鹭洲",
+          "ring": "middle",
+          "ringIndex": 16,
+          "routeIndex": 88,
+          "effect": {
+            "inspiration": 1,
+            "attrs": {
+              "bi": 1,
+              "xue": 1,
+              "si": 1
+            }
+          },
+          "id": 88
+        },
+        {
+          "type": "mingjing",
+          "name": "玉门关",
+          "ring": "middle",
+          "ringIndex": 17,
+          "routeIndex": 89,
+          "id": 89
+        },
+        {
+          "type": "ze",
+          "name": "临帖廊",
+          "ring": "middle",
+          "ringIndex": 18,
+          "routeIndex": 90,
+          "effect": {
+            "inspiration": 1,
+            "attrs": {
+              "bi": 1,
+              "xue": 1,
+              "si": 1
+            }
+          },
+          "id": 90
+        },
+        {
+          "type": "sky",
+          "name": "观星阜",
+          "ring": "middle",
+          "ringIndex": 19,
+          "routeIndex": 91,
+          "id": 91
+        },
+        {
+          "type": "quiz",
+          "name": "春闱帘",
+          "ring": "middle",
+          "ringIndex": 20,
+          "routeIndex": 92,
+          "id": 92
+        },
+        {
+          "type": "quiz",
+          "name": "楚水驿",
+          "ring": "middle",
+          "ringIndex": 21,
+          "routeIndex": 93,
+          "id": 93
+        },
+        {
+          "type": "quiz",
+          "name": "故园讯",
+          "ring": "middle",
+          "ringIndex": 22,
+          "routeIndex": 94,
+          "id": 94
+        },
+        {
+          "type": "quiz",
+          "name": "府学门",
+          "ring": "middle",
+          "ringIndex": 23,
+          "routeIndex": 95,
+          "id": 95
+        },
+        {
+          "type": "event",
+          "name": "古渡遇仙·2",
+          "ring": "middle",
+          "ringIndex": 24,
+          "routeIndex": 96,
+          "id": 96
+        },
+        {
+          "type": "battle",
+          "name": "采石矶",
+          "ring": "middle",
+          "ringIndex": 25,
+          "routeIndex": 97,
+          "id": 97
+        },
+        {
+          "type": "event",
+          "name": "指南录",
+          "ring": "middle",
+          "ringIndex": 26,
+          "routeIndex": 98,
+          "id": 98
+        },
+        {
+          "type": "quiz",
+          "name": "秋闱号舍",
+          "ring": "middle",
+          "ringIndex": 27,
+          "routeIndex": 99,
+          "id": 99
+        },
+        {
+          "type": "ping",
+          "name": "望乡台",
+          "ring": "middle",
+          "ringIndex": 28,
+          "routeIndex": 100,
+          "effect": {
+            "inspiration": 1
+          },
+          "id": 100
+        },
+        {
+          "type": "event",
+          "name": "故人斋",
+          "ring": "middle",
+          "ringIndex": 29,
+          "routeIndex": 101,
+          "id": 101
+        },
+        {
+          "type": "ping",
+          "name": "芦花雪",
+          "ring": "middle",
+          "ringIndex": 30,
+          "routeIndex": 102,
+          "effect": {
+            "inspiration": 1
+          },
+          "id": 102
+        },
+        {
+          "type": "sky",
+          "name": "望气坛",
+          "ring": "middle",
+          "ringIndex": 31,
+          "routeIndex": 103,
+          "id": 103
+        },
+        {
+          "type": "ze",
+          "name": "翰墨轩",
+          "ring": "middle",
+          "ringIndex": 32,
+          "routeIndex": 104,
+          "effect": {
+            "inspiration": 1,
+            "attrs": {
+              "bi": 1,
+              "xue": 1,
+              "si": 1
+            }
+          },
+          "id": 104
+        },
+        {
+          "type": "battle",
+          "name": "社学擂",
+          "ring": "middle",
+          "ringIndex": 33,
+          "routeIndex": 105,
+          "id": 105
+        },
+        {
+          "type": "sky",
+          "name": "云津渡",
+          "ring": "middle",
+          "ringIndex": 34,
+          "routeIndex": 106,
+          "id": 106
+        },
+        {
+          "type": "event",
+          "name": "沧溟志",
+          "ring": "middle",
+          "ringIndex": 35,
+          "routeIndex": 107,
+          "id": 107
+        },
+        {
+          "type": "sky",
+          "name": "星矅崖",
+          "ring": "middle",
+          "ringIndex": 36,
+          "routeIndex": 108,
+          "id": 108
+        },
+        {
+          "type": "battle",
+          "name": "诗社台",
+          "ring": "middle",
+          "ringIndex": 37,
+          "routeIndex": 109,
+          "id": 109
+        },
+        {
+          "type": "mingjing",
+          "name": "白鹿洞",
+          "ring": "middle",
+          "ringIndex": 38,
+          "routeIndex": 110,
+          "id": 110
+        },
+        {
+          "type": "ze",
+          "name": "石渠阁",
+          "ring": "middle",
+          "ringIndex": 39,
+          "routeIndex": 111,
+          "effect": {
+            "inspiration": 1,
+            "attrs": {
+              "bi": 1,
+              "xue": 1,
+              "si": 1
+            }
+          },
+          "id": 111
+        },
+        {
+          "type": "event",
+          "name": "梅边酌",
+          "ring": "middle",
+          "ringIndex": 40,
+          "routeIndex": 112,
+          "id": 112
+        },
+        {
+          "type": "ping",
+          "name": "蒙学巷",
+          "ring": "middle",
+          "ringIndex": 41,
+          "routeIndex": 113,
+          "effect": {
+            "inspiration": 1
+          },
+          "id": 113
+        },
+        {
+          "type": "ze",
+          "name": "篷窗雨",
+          "ring": "middle",
+          "ringIndex": 42,
+          "routeIndex": 114,
+          "effect": {
+            "inspiration": 1,
+            "attrs": {
+              "bi": 1,
+              "xue": 1,
+              "si": 1
+            }
+          },
+          "id": 114
+        },
+        {
+          "type": "quiz",
+          "name": "故园问",
+          "ring": "middle",
+          "ringIndex": 43,
+          "routeIndex": 115,
+          "id": 115
+        },
+        {
+          "type": "battle",
+          "name": "社学擂·2",
+          "ring": "middle",
+          "ringIndex": 44,
+          "routeIndex": 116,
+          "id": 116
+        },
+        {
+          "type": "quiz",
+          "name": "县考棚",
+          "ring": "middle",
+          "ringIndex": 45,
+          "routeIndex": 117,
+          "id": 117
+        },
+        {
+          "type": "ze",
+          "name": "蓑衣湿",
+          "ring": "middle",
+          "ringIndex": 46,
+          "routeIndex": 118,
+          "effect": {
+            "inspiration": 1,
+            "attrs": {
+              "bi": 1,
+              "xue": 1,
+              "si": 1
+            }
+          },
+          "id": 118
+        },
+        {
+          "type": "battle",
+          "name": "社学擂",
+          "ring": "middle",
+          "ringIndex": 47,
+          "routeIndex": 119,
+          "id": 119
+        },
+        {
+          "type": "battle",
+          "name": "诗社台",
+          "ring": "middle",
+          "ringIndex": 48,
+          "routeIndex": 120,
+          "id": 120
+        },
+        {
+          "type": "quiz",
+          "name": "描红斋",
+          "ring": "middle",
+          "ringIndex": 49,
+          "routeIndex": 121,
+          "id": 121
+        },
+        {
+          "type": "battle",
+          "name": "曲江宴",
+          "phaseGate": {
+            "id": "xiucai",
+            "phase": "xiucai",
+            "exam": "xiucai"
+          },
+          "ring": "middle",
+          "ringIndex": 50,
+          "routeIndex": 122,
+          "id": 122
+        },
+        {
+          "type": "ze",
+          "name": "一叶舟",
+          "effect": {
+            "inspiration": 3,
+            "attrs": {
+              "bi": 1,
+              "xue": 1,
+              "si": 1
+            }
+          },
+          "ring": "middle",
+          "ringIndex": 51,
+          "routeIndex": 123,
+          "id": 123
+        },
+        {
+          "type": "ping",
+          "name": "桑麻径",
+          "ring": "middle",
+          "ringIndex": 52,
+          "routeIndex": 124,
+          "effect": {
+            "inspiration": 1
+          },
+          "id": 124
+        },
+        {
+          "type": "battle",
+          "name": "采石矶",
+          "ring": "middle",
+          "ringIndex": 53,
+          "routeIndex": 125,
+          "id": 125
+        },
+        {
+          "type": "sky",
+          "name": "观星阜",
+          "ring": "middle",
+          "ringIndex": 54,
+          "routeIndex": 126,
+          "id": 126
+        },
+        {
+          "type": "ze",
+          "name": "旧雨楼",
+          "ring": "middle",
+          "ringIndex": 55,
+          "routeIndex": 127,
+          "effect": {
+            "inspiration": 1,
+            "attrs": {
+              "bi": 1,
+              "xue": 1,
+              "si": 1
+            }
+          },
+          "id": 127
+        },
+        {
+          "type": "event",
+          "name": "百花洲·2",
+          "ring": "middle",
+          "ringIndex": 56,
+          "routeIndex": 128,
+          "id": 128
+        },
+        {
+          "type": "sky",
+          "name": "月华津",
+          "ring": "middle",
+          "ringIndex": 57,
+          "routeIndex": 129,
+          "id": 129
+        },
+        {
+          "type": "quiz",
+          "name": "策论斋",
+          "ring": "middle",
+          "ringIndex": 58,
+          "routeIndex": 130,
+          "id": 130
+        },
+        {
+          "type": "ze",
+          "name": "抄书阁",
+          "ring": "middle",
+          "ringIndex": 59,
+          "routeIndex": 131,
+          "effect": {
+            "inspiration": 1,
+            "attrs": {
+              "bi": 1,
+              "xue": 1,
+              "si": 1
+            }
+          },
+          "id": 131
+        },
+        {
+          "type": "quiz",
+          "name": "经义堂",
+          "ring": "middle",
+          "ringIndex": 60,
+          "routeIndex": 132,
+          "id": 132
+        },
+        {
+          "type": "battle",
+          "name": "中流擂",
+          "ring": "middle",
+          "ringIndex": 61,
+          "routeIndex": 133,
+          "id": 133
+        },
+        {
+          "type": "quiz",
+          "name": "秋闱号舍",
+          "ring": "middle",
+          "ringIndex": 62,
+          "routeIndex": 134,
+          "id": 134
+        },
+        {
+          "type": "ping",
+          "name": "芦荻洲",
+          "ring": "middle",
+          "ringIndex": 63,
+          "routeIndex": 135,
+          "effect": {
+            "inspiration": 1
+          },
+          "id": 135
+        }
+      ]
+    },
+    {
+      "id": "inner",
+      "name": "定稿",
+      "grid": 15,
+      "entryFrom": "middle",
+      "cells": [
+        {
+          "type": "gate",
+          "name": "登第门",
+          "icon": "start",
+          "id": 136,
+          "ring": "inner",
+          "ringIndex": 0,
+          "routeIndex": 136,
+          "phaseGate": {
+            "at": 136,
+            "cellId": 136,
+            "phase": "jinshi",
+            "exam": "jinshi",
+            "transition": "inner"
+          }
+        },
+        {
+          "type": "event",
+          "name": "古渡遇仙·2",
+          "ring": "inner",
+          "ringIndex": 1,
+          "routeIndex": 137,
+          "id": 137
+        },
+        {
+          "type": "quiz",
+          "name": "秋闱号舍",
+          "ring": "inner",
+          "ringIndex": 2,
+          "routeIndex": 138,
+          "id": 138
+        },
+        {
+          "type": "battle",
+          "name": "江心渡",
+          "ring": "inner",
+          "ringIndex": 3,
+          "routeIndex": 139,
+          "id": 139
+        },
+        {
+          "type": "battle",
+          "name": "社学擂·2",
+          "ring": "inner",
+          "ringIndex": 4,
+          "routeIndex": 140,
+          "id": 140
+        },
+        {
+          "type": "ze",
+          "name": "临帖廊",
+          "ring": "inner",
+          "ringIndex": 5,
+          "routeIndex": 141,
+          "effect": {
+            "inspiration": 2,
+            "attrs": {
+              "bi": 2,
+              "xue": 2,
+              "si": 2
+            }
+          },
+          "id": 141
+        },
+        {
+          "type": "quiz",
+          "name": "春闱帘",
+          "ring": "inner",
+          "ringIndex": 6,
+          "routeIndex": 142,
+          "id": 142
+        },
+        {
+          "type": "ping",
+          "name": "孤蓬夜",
+          "ring": "inner",
+          "ringIndex": 7,
+          "routeIndex": 143,
+          "effect": {
+            "inspiration": 2
+          },
+          "id": 143
+        },
+        {
+          "type": "battle",
+          "name": "社学擂",
+          "ring": "inner",
+          "ringIndex": 8,
+          "routeIndex": 144,
+          "id": 144
+        },
+        {
+          "type": "ping",
+          "name": "归帆影",
+          "ring": "inner",
+          "ringIndex": 9,
+          "routeIndex": 145,
+          "effect": {
+            "inspiration": 2
+          },
+          "id": 145
+        },
+        {
+          "type": "ping",
+          "name": "桑麻径",
+          "ring": "inner",
+          "ringIndex": 10,
+          "routeIndex": 146,
+          "effect": {
+            "inspiration": 2
+          },
+          "id": 146
+        },
+        {
+          "type": "event",
+          "name": "雁塔题名",
+          "ring": "inner",
+          "ringIndex": 11,
+          "routeIndex": 147,
+          "id": 147
+        },
+        {
+          "type": "battle",
+          "name": "诗社台",
+          "ring": "inner",
+          "ringIndex": 12,
+          "routeIndex": 148,
+          "id": 148
+        },
+        {
+          "type": "event",
+          "name": "卖字摊",
+          "ring": "inner",
+          "ringIndex": 13,
+          "routeIndex": 149,
+          "id": 149
+        },
+        {
+          "type": "sky",
+          "name": "月华津",
+          "ring": "inner",
+          "ringIndex": 14,
+          "routeIndex": 150,
+          "id": 150
+        },
+        {
+          "type": "event",
+          "name": "渔火遇",
+          "ring": "inner",
+          "ringIndex": 15,
+          "routeIndex": 151,
+          "id": 151
+        },
+        {
+          "type": "quiz",
+          "name": "府学门",
+          "ring": "inner",
+          "ringIndex": 16,
+          "routeIndex": 152,
+          "id": 152
+        },
+        {
+          "type": "ping",
+          "name": "芦荻洲",
+          "ring": "inner",
+          "ringIndex": 17,
+          "routeIndex": 153,
+          "effect": {
+            "inspiration": 2
+          },
+          "id": 153
+        },
+        {
+          "type": "event",
+          "name": "古渡遇仙",
+          "ring": "inner",
+          "ringIndex": 18,
+          "routeIndex": 154,
+          "id": 154
+        },
+        {
+          "type": "quiz",
+          "name": "县考棚",
+          "ring": "inner",
+          "ringIndex": 19,
+          "routeIndex": 155,
+          "id": 155
+        },
+        {
+          "type": "battle",
+          "name": "采石矶",
+          "ring": "inner",
+          "ringIndex": 20,
+          "routeIndex": 156,
+          "id": 156
+        },
+        {
+          "type": "battle",
+          "name": "采石矶",
+          "ring": "inner",
+          "ringIndex": 21,
+          "routeIndex": 157,
+          "id": 157
+        },
+        {
+          "type": "event",
+          "name": "百花洲·2",
+          "ring": "inner",
+          "ringIndex": 22,
+          "routeIndex": 158,
+          "id": 158
+        },
+        {
+          "type": "battle",
+          "name": "沧浪渡",
+          "ring": "inner",
+          "ringIndex": 23,
+          "routeIndex": 159,
+          "id": 159
+        },
+        {
+          "type": "mingjing",
+          "name": "白鹿洞",
+          "ring": "inner",
+          "ringIndex": 24,
+          "routeIndex": 160,
+          "id": 160
+        },
+        {
+          "type": "battle",
+          "name": "中流擂",
+          "ring": "inner",
+          "ringIndex": 25,
+          "routeIndex": 161,
+          "id": 161
+        },
+        {
+          "type": "battle",
+          "name": "诗社台",
+          "ring": "inner",
+          "ringIndex": 26,
+          "routeIndex": 162,
+          "id": 162
+        },
+        {
+          "type": "ping",
+          "name": "暮江吟",
+          "ring": "inner",
+          "ringIndex": 27,
+          "routeIndex": 163,
+          "effect": {
+            "inspiration": 2
+          },
+          "id": 163
+        },
+        {
+          "type": "ze",
+          "name": "篷窗雨",
+          "ring": "inner",
+          "ringIndex": 28,
+          "routeIndex": 164,
+          "effect": {
+            "inspiration": 2,
+            "attrs": {
+              "bi": 2,
+              "xue": 2,
+              "si": 2
+            }
+          },
+          "id": 164
+        },
+        {
+          "type": "sky",
+          "name": "星矅崖",
+          "ring": "inner",
+          "ringIndex": 29,
+          "routeIndex": 165,
+          "id": 165
+        },
+        {
+          "type": "battle",
+          "name": "论道殿",
+          "ring": "inner",
+          "ringIndex": 30,
+          "routeIndex": 166,
+          "id": 166
+        },
+        {
+          "type": "quiz",
+          "name": "楚水驿",
+          "ring": "inner",
+          "ringIndex": 31,
+          "routeIndex": 167,
+          "id": 167
+        },
+        {
+          "type": "quiz",
+          "name": "经义堂",
+          "ring": "inner",
+          "ringIndex": 32,
+          "routeIndex": 168,
+          "id": 168
+        },
+        {
+          "type": "event",
+          "name": "百花洲",
+          "ring": "inner",
+          "ringIndex": 33,
+          "routeIndex": 169,
+          "id": 169
+        },
+        {
+          "type": "event",
+          "name": "故人斋",
+          "ring": "inner",
+          "ringIndex": 34,
+          "routeIndex": 170,
+          "id": 170
+        },
+        {
+          "type": "event",
+          "name": "卖字摊·2",
+          "ring": "inner",
+          "ringIndex": 35,
+          "routeIndex": 171,
+          "id": 171
+        },
+        {
+          "type": "event",
+          "name": "沧溟志",
+          "ring": "inner",
+          "ringIndex": 36,
+          "routeIndex": 172,
+          "id": 172
+        },
+        {
+          "type": "quiz",
+          "name": "故园讯",
+          "ring": "inner",
+          "ringIndex": 37,
+          "routeIndex": 173,
+          "id": 173
+        },
+        {
+          "type": "event",
+          "name": "指南录",
+          "ring": "inner",
+          "ringIndex": 38,
+          "routeIndex": 174,
+          "id": 174
+        },
+        {
+          "type": "mingjing",
+          "name": "桃花源",
+          "ring": "inner",
+          "ringIndex": 39,
+          "routeIndex": 175,
+          "id": 175
+        },
+        {
+          "type": "ze",
+          "name": "抄书阁",
+          "ring": "inner",
+          "ringIndex": 40,
+          "routeIndex": 176,
+          "effect": {
+            "inspiration": 2,
+            "attrs": {
+              "bi": 2,
+              "xue": 2,
+              "si": 2
+            }
+          },
+          "id": 176
+        },
+        {
+          "type": "event",
+          "name": "梅边酌",
+          "ring": "inner",
+          "ringIndex": 41,
+          "routeIndex": 177,
+          "id": 177
+        },
+        {
+          "type": "sky",
+          "name": "云津渡",
+          "ring": "inner",
+          "ringIndex": 42,
+          "routeIndex": 178,
+          "id": 178
+        },
+        {
+          "type": "battle",
+          "name": "中流擂",
+          "ring": "inner",
+          "ringIndex": 43,
+          "routeIndex": 179,
+          "id": 179
+        },
+        {
+          "type": "mingjing",
+          "name": "玉门关",
+          "ring": "inner",
+          "ringIndex": 44,
+          "routeIndex": 180,
+          "id": 180
+        },
+        {
+          "type": "sky",
+          "name": "望气坛",
+          "ring": "inner",
+          "ringIndex": 45,
+          "routeIndex": 181,
+          "id": 181
+        },
+        {
+          "type": "battle",
+          "name": "曲江宴",
+          "phaseGate": {
+            "id": "xiucai",
+            "phase": "xiucai",
+            "exam": "xiucai"
+          },
+          "ring": "inner",
+          "ringIndex": 46,
+          "routeIndex": 182,
+          "id": 182
+        },
+        {
+          "type": "sky",
+          "name": "观星阜",
+          "ring": "inner",
+          "ringIndex": 47,
+          "routeIndex": 183,
+          "id": 183
+        },
+        {
+          "type": "quiz",
+          "name": "秋闱号舍",
+          "ring": "inner",
+          "ringIndex": 48,
+          "routeIndex": 184,
+          "id": 184
+        },
+        {
+          "type": "quiz",
+          "name": "策论斋",
+          "ring": "inner",
+          "ringIndex": 49,
+          "routeIndex": 185,
+          "id": 185
+        },
+        {
+          "type": "event",
+          "name": "邻舟笛",
+          "ring": "inner",
+          "ringIndex": 50,
+          "routeIndex": 186,
+          "id": 186
+        },
+        {
+          "type": "ze",
+          "name": "白鹭洲",
+          "ring": "inner",
+          "ringIndex": 51,
+          "routeIndex": 187,
+          "effect": {
+            "inspiration": 2,
+            "attrs": {
+              "bi": 2,
+              "xue": 2,
+              "si": 2
+            }
+          },
+          "id": 187
+        },
+        {
+          "type": "ze",
+          "name": "旧雨楼",
+          "ring": "inner",
+          "ringIndex": 52,
+          "routeIndex": 188,
+          "effect": {
+            "inspiration": 2,
+            "attrs": {
+              "bi": 2,
+              "xue": 2,
+              "si": 2
+            }
+          },
+          "id": 188
+        },
+        {
+          "type": "battle",
+          "name": "社学擂",
+          "ring": "inner",
+          "ringIndex": 53,
+          "routeIndex": 189,
+          "id": 189
+        },
+        {
+          "type": "quiz",
+          "name": "描红斋",
+          "ring": "inner",
+          "ringIndex": 54,
+          "routeIndex": 190,
+          "id": 190
+        },
+        {
+          "type": "ze",
+          "name": "石渠阁",
+          "ring": "inner",
+          "ringIndex": 55,
+          "routeIndex": 191,
+          "effect": {
+            "inspiration": 2,
+            "attrs": {
+              "bi": 2,
+              "xue": 2,
+              "si": 2
+            }
+          },
+          "id": 191
+        }
+      ]
+    }
+  ],
+  "route": [
+    {
+      "ring": "outer",
+      "cellId": 0
+    },
+    {
+      "ring": "outer",
+      "cellId": 1
+    },
+    {
+      "ring": "outer",
+      "cellId": 2
+    },
+    {
+      "ring": "outer",
+      "cellId": 3
+    },
+    {
+      "ring": "outer",
+      "cellId": 4
+    },
+    {
+      "ring": "outer",
+      "cellId": 5
+    },
+    {
+      "ring": "outer",
+      "cellId": 6
+    },
+    {
+      "ring": "outer",
+      "cellId": 7
+    },
+    {
+      "ring": "outer",
+      "cellId": 8
+    },
+    {
+      "ring": "outer",
+      "cellId": 9
+    },
+    {
+      "ring": "outer",
+      "cellId": 10
+    },
+    {
+      "ring": "outer",
+      "cellId": 11
+    },
+    {
+      "ring": "outer",
+      "cellId": 12
+    },
+    {
+      "ring": "outer",
+      "cellId": 13
+    },
+    {
+      "ring": "outer",
+      "cellId": 14
+    },
+    {
+      "ring": "outer",
+      "cellId": 15
+    },
+    {
+      "ring": "outer",
+      "cellId": 16
+    },
+    {
+      "ring": "outer",
+      "cellId": 17
+    },
+    {
+      "ring": "outer",
+      "cellId": 18
+    },
+    {
+      "ring": "outer",
+      "cellId": 19
+    },
+    {
+      "ring": "outer",
+      "cellId": 20
+    },
+    {
+      "ring": "outer",
+      "cellId": 21
+    },
+    {
+      "ring": "outer",
+      "cellId": 22
+    },
+    {
+      "ring": "outer",
+      "cellId": 23
+    },
+    {
+      "ring": "outer",
+      "cellId": 24
+    },
+    {
+      "ring": "outer",
+      "cellId": 25
+    },
+    {
+      "ring": "outer",
+      "cellId": 26
+    },
+    {
+      "ring": "outer",
+      "cellId": 27
+    },
+    {
+      "ring": "outer",
+      "cellId": 28
+    },
+    {
+      "ring": "outer",
+      "cellId": 29
+    },
+    {
+      "ring": "outer",
+      "cellId": 30
+    },
+    {
+      "ring": "outer",
+      "cellId": 31
+    },
+    {
+      "ring": "outer",
+      "cellId": 32
+    },
+    {
+      "ring": "outer",
+      "cellId": 33
+    },
+    {
+      "ring": "outer",
+      "cellId": 34
+    },
+    {
+      "ring": "outer",
+      "cellId": 35
+    },
+    {
+      "ring": "outer",
+      "cellId": 36
+    },
+    {
+      "ring": "outer",
+      "cellId": 37
+    },
+    {
+      "ring": "outer",
+      "cellId": 38
+    },
+    {
+      "ring": "outer",
+      "cellId": 39
+    },
+    {
+      "ring": "outer",
+      "cellId": 40
+    },
+    {
+      "ring": "outer",
+      "cellId": 41
+    },
+    {
+      "ring": "outer",
+      "cellId": 42
+    },
+    {
+      "ring": "outer",
+      "cellId": 43
+    },
+    {
+      "ring": "outer",
+      "cellId": 44
+    },
+    {
+      "ring": "outer",
+      "cellId": 45
+    },
+    {
+      "ring": "outer",
+      "cellId": 46
+    },
+    {
+      "ring": "outer",
+      "cellId": 47
+    },
+    {
+      "ring": "outer",
+      "cellId": 48
+    },
+    {
+      "ring": "outer",
+      "cellId": 49
+    },
+    {
+      "ring": "outer",
+      "cellId": 50
+    },
+    {
+      "ring": "outer",
+      "cellId": 51
+    },
+    {
+      "ring": "outer",
+      "cellId": 52
+    },
+    {
+      "ring": "outer",
+      "cellId": 53
+    },
+    {
+      "ring": "outer",
+      "cellId": 54
+    },
+    {
+      "ring": "outer",
+      "cellId": 55
+    },
+    {
+      "ring": "outer",
+      "cellId": 56
+    },
+    {
+      "ring": "outer",
+      "cellId": 57
+    },
+    {
+      "ring": "outer",
+      "cellId": 58
+    },
+    {
+      "ring": "outer",
+      "cellId": 59
+    },
+    {
+      "ring": "outer",
+      "cellId": 60
+    },
+    {
+      "ring": "outer",
+      "cellId": 61
+    },
+    {
+      "ring": "outer",
+      "cellId": 62
+    },
+    {
+      "ring": "outer",
+      "cellId": 63
+    },
+    {
+      "ring": "outer",
+      "cellId": 64
+    },
+    {
+      "ring": "outer",
+      "cellId": 65
+    },
+    {
+      "ring": "outer",
+      "cellId": 66
+    },
+    {
+      "ring": "outer",
+      "cellId": 67
+    },
+    {
+      "ring": "outer",
+      "cellId": 68
+    },
+    {
+      "ring": "outer",
+      "cellId": 69
+    },
+    {
+      "ring": "outer",
+      "cellId": 70
+    },
+    {
+      "ring": "outer",
+      "cellId": 71
+    },
+    {
+      "ring": "middle",
+      "cellId": 72
+    },
+    {
+      "ring": "middle",
+      "cellId": 73
+    },
+    {
+      "ring": "middle",
+      "cellId": 74
+    },
+    {
+      "ring": "middle",
+      "cellId": 75
+    },
+    {
+      "ring": "middle",
+      "cellId": 76
+    },
+    {
+      "ring": "middle",
+      "cellId": 77
+    },
+    {
+      "ring": "middle",
+      "cellId": 78
+    },
+    {
+      "ring": "middle",
+      "cellId": 79
+    },
+    {
+      "ring": "middle",
+      "cellId": 80
+    },
+    {
+      "ring": "middle",
+      "cellId": 81
+    },
+    {
+      "ring": "middle",
+      "cellId": 82
+    },
+    {
+      "ring": "middle",
+      "cellId": 83
+    },
+    {
+      "ring": "middle",
+      "cellId": 84
+    },
+    {
+      "ring": "middle",
+      "cellId": 85
+    },
+    {
+      "ring": "middle",
+      "cellId": 86
+    },
+    {
+      "ring": "middle",
+      "cellId": 87
+    },
+    {
+      "ring": "middle",
+      "cellId": 88
+    },
+    {
+      "ring": "middle",
+      "cellId": 89
+    },
+    {
+      "ring": "middle",
+      "cellId": 90
+    },
+    {
+      "ring": "middle",
+      "cellId": 91
+    },
+    {
+      "ring": "middle",
+      "cellId": 92
+    },
+    {
+      "ring": "middle",
+      "cellId": 93
+    },
+    {
+      "ring": "middle",
+      "cellId": 94
+    },
+    {
+      "ring": "middle",
+      "cellId": 95
+    },
+    {
+      "ring": "middle",
+      "cellId": 96
+    },
+    {
+      "ring": "middle",
+      "cellId": 97
+    },
+    {
+      "ring": "middle",
+      "cellId": 98
+    },
+    {
+      "ring": "middle",
+      "cellId": 99
+    },
+    {
+      "ring": "middle",
+      "cellId": 100
+    },
+    {
+      "ring": "middle",
+      "cellId": 101
+    },
+    {
+      "ring": "middle",
+      "cellId": 102
+    },
+    {
+      "ring": "middle",
+      "cellId": 103
+    },
+    {
+      "ring": "middle",
+      "cellId": 104
+    },
+    {
+      "ring": "middle",
+      "cellId": 105
+    },
+    {
+      "ring": "middle",
+      "cellId": 106
+    },
+    {
+      "ring": "middle",
+      "cellId": 107
+    },
+    {
+      "ring": "middle",
+      "cellId": 108
+    },
+    {
+      "ring": "middle",
+      "cellId": 109
+    },
+    {
+      "ring": "middle",
+      "cellId": 110
+    },
+    {
+      "ring": "middle",
+      "cellId": 111
+    },
+    {
+      "ring": "middle",
+      "cellId": 112
+    },
+    {
+      "ring": "middle",
+      "cellId": 113
+    },
+    {
+      "ring": "middle",
+      "cellId": 114
+    },
+    {
+      "ring": "middle",
+      "cellId": 115
+    },
+    {
+      "ring": "middle",
+      "cellId": 116
+    },
+    {
+      "ring": "middle",
+      "cellId": 117
+    },
+    {
+      "ring": "middle",
+      "cellId": 118
+    },
+    {
+      "ring": "middle",
+      "cellId": 119
+    },
+    {
+      "ring": "middle",
+      "cellId": 120
+    },
+    {
+      "ring": "middle",
+      "cellId": 121
+    },
+    {
+      "ring": "middle",
+      "cellId": 122
+    },
+    {
+      "ring": "middle",
+      "cellId": 123
+    },
+    {
+      "ring": "middle",
+      "cellId": 124
+    },
+    {
+      "ring": "middle",
+      "cellId": 125
+    },
+    {
+      "ring": "middle",
+      "cellId": 126
+    },
+    {
+      "ring": "middle",
+      "cellId": 127
+    },
+    {
+      "ring": "middle",
+      "cellId": 128
+    },
+    {
+      "ring": "middle",
+      "cellId": 129
+    },
+    {
+      "ring": "middle",
+      "cellId": 130
+    },
+    {
+      "ring": "middle",
+      "cellId": 131
+    },
+    {
+      "ring": "middle",
+      "cellId": 132
+    },
+    {
+      "ring": "middle",
+      "cellId": 133
+    },
+    {
+      "ring": "middle",
+      "cellId": 134
+    },
+    {
+      "ring": "middle",
+      "cellId": 135
+    },
+    {
+      "ring": "inner",
+      "cellId": 136
+    },
+    {
+      "ring": "inner",
+      "cellId": 137
+    },
+    {
+      "ring": "inner",
+      "cellId": 138
+    },
+    {
+      "ring": "inner",
+      "cellId": 139
+    },
+    {
+      "ring": "inner",
+      "cellId": 140
+    },
+    {
+      "ring": "inner",
+      "cellId": 141
+    },
+    {
+      "ring": "inner",
+      "cellId": 142
+    },
+    {
+      "ring": "inner",
+      "cellId": 143
+    },
+    {
+      "ring": "inner",
+      "cellId": 144
+    },
+    {
+      "ring": "inner",
+      "cellId": 145
+    },
+    {
+      "ring": "inner",
+      "cellId": 146
+    },
+    {
+      "ring": "inner",
+      "cellId": 147
+    },
+    {
+      "ring": "inner",
+      "cellId": 148
+    },
+    {
+      "ring": "inner",
+      "cellId": 149
+    },
+    {
+      "ring": "inner",
+      "cellId": 150
+    },
+    {
+      "ring": "inner",
+      "cellId": 151
+    },
+    {
+      "ring": "inner",
+      "cellId": 152
+    },
+    {
+      "ring": "inner",
+      "cellId": 153
+    },
+    {
+      "ring": "inner",
+      "cellId": 154
+    },
+    {
+      "ring": "inner",
+      "cellId": 155
+    },
+    {
+      "ring": "inner",
+      "cellId": 156
+    },
+    {
+      "ring": "inner",
+      "cellId": 157
+    },
+    {
+      "ring": "inner",
+      "cellId": 158
+    },
+    {
+      "ring": "inner",
+      "cellId": 159
+    },
+    {
+      "ring": "inner",
+      "cellId": 160
+    },
+    {
+      "ring": "inner",
+      "cellId": 161
+    },
+    {
+      "ring": "inner",
+      "cellId": 162
+    },
+    {
+      "ring": "inner",
+      "cellId": 163
+    },
+    {
+      "ring": "inner",
+      "cellId": 164
+    },
+    {
+      "ring": "inner",
+      "cellId": 165
+    },
+    {
+      "ring": "inner",
+      "cellId": 166
+    },
+    {
+      "ring": "inner",
+      "cellId": 167
+    },
+    {
+      "ring": "inner",
+      "cellId": 168
+    },
+    {
+      "ring": "inner",
+      "cellId": 169
+    },
+    {
+      "ring": "inner",
+      "cellId": 170
+    },
+    {
+      "ring": "inner",
+      "cellId": 171
+    },
+    {
+      "ring": "inner",
+      "cellId": 172
+    },
+    {
+      "ring": "inner",
+      "cellId": 173
+    },
+    {
+      "ring": "inner",
+      "cellId": 174
+    },
+    {
+      "ring": "inner",
+      "cellId": 175
+    },
+    {
+      "ring": "inner",
+      "cellId": 176
+    },
+    {
+      "ring": "inner",
+      "cellId": 177
+    },
+    {
+      "ring": "inner",
+      "cellId": 178
+    },
+    {
+      "ring": "inner",
+      "cellId": 179
+    },
+    {
+      "ring": "inner",
+      "cellId": 180
+    },
+    {
+      "ring": "inner",
+      "cellId": 181
+    },
+    {
+      "ring": "inner",
+      "cellId": 182
+    },
+    {
+      "ring": "inner",
+      "cellId": 183
+    },
+    {
+      "ring": "inner",
+      "cellId": 184
+    },
+    {
+      "ring": "inner",
+      "cellId": 185
+    },
+    {
+      "ring": "inner",
+      "cellId": 186
+    },
+    {
+      "ring": "inner",
+      "cellId": 187
+    },
+    {
+      "ring": "inner",
+      "cellId": 188
+    },
+    {
+      "ring": "inner",
+      "cellId": 189
+    },
+    {
+      "ring": "inner",
+      "cellId": 190
+    },
+    {
+      "ring": "inner",
+      "cellId": 191
+    }
+  ],
+  "phaseGates": [
+    {
+      "at": 36,
+      "cellId": 36,
+      "phase": "xiucai",
+      "exam": "xiucai",
+      "transition": null
+    },
+    {
+      "at": 72,
+      "cellId": 72,
+      "phase": "juren",
+      "exam": "juren",
+      "transition": "middle"
+    },
+    {
+      "at": 136,
+      "cellId": 136,
+      "phase": "jinshi",
+      "exam": "jinshi",
+      "transition": "inner"
+    }
+  ],
+  "routeMeta": {
+    "outer": 72,
+    "middle": 64,
+    "inner": 56,
+    "total": 192,
+    "transitions": [
+      72,
+      136
+    ]
+  },
+  "sides": [],
+  "mainRing": [
+    {
+      "type": "start",
+      "name": "童生铺",
+      "ring": "outer",
+      "ringIndex": 0,
+      "routeIndex": 0,
+      "id": 0
+    },
+    {
+      "type": "event",
+      "name": "百花洲",
+      "ring": "outer",
+      "ringIndex": 1,
+      "routeIndex": 1,
+      "id": 1
+    },
+    {
+      "type": "ping",
+      "name": "归帆影",
+      "ring": "outer",
+      "ringIndex": 2,
+      "routeIndex": 2,
+      "id": 2
+    },
+    {
+      "type": "ping",
+      "name": "柳荫渡",
+      "ring": "outer",
+      "ringIndex": 3,
+      "routeIndex": 3,
+      "id": 3
+    },
+    {
+      "type": "ping",
+      "name": "芙蓉苑",
+      "ring": "outer",
+      "ringIndex": 4,
+      "routeIndex": 4,
+      "id": 4
+    },
+    {
+      "type": "sky",
+      "name": "望气坛",
+      "ring": "outer",
+      "ringIndex": 5,
+      "routeIndex": 5,
+      "id": 5
+    },
+    {
+      "type": "quiz",
+      "name": "县考棚",
+      "ring": "outer",
+      "ringIndex": 6,
+      "routeIndex": 6,
+      "id": 6
+    },
+    {
+      "type": "quiz",
+      "name": "经义堂",
+      "ring": "outer",
+      "ringIndex": 7,
+      "routeIndex": 7,
+      "id": 7
+    },
+    {
+      "type": "ping",
+      "name": "灞桥柳",
+      "ring": "outer",
+      "ringIndex": 8,
+      "routeIndex": 8,
+      "id": 8
+    },
+    {
+      "type": "event",
+      "name": "邻舟笛",
+      "ring": "outer",
+      "ringIndex": 9,
+      "routeIndex": 9,
+      "id": 9
+    },
+    {
+      "type": "ze",
+      "name": "旧雨楼",
+      "ring": "outer",
+      "ringIndex": 10,
+      "routeIndex": 10,
+      "id": 10
+    },
+    {
+      "type": "event",
+      "name": "故人斋",
+      "ring": "outer",
+      "ringIndex": 11,
+      "routeIndex": 11,
+      "id": 11
+    },
+    {
+      "type": "ping",
+      "name": "芦花渚",
+      "ring": "outer",
+      "ringIndex": 12,
+      "routeIndex": 12,
+      "id": 12
+    },
+    {
+      "type": "mingjing",
+      "name": "春在堂",
+      "effect": {
+        "attrs": {
+          "xue": 2
+        },
+        "inspiration": 2
+      },
+      "ring": "outer",
+      "ringIndex": 13,
+      "routeIndex": 13,
+      "id": 13
+    },
+    {
+      "type": "ze",
+      "name": "翰墨轩",
+      "ring": "outer",
+      "ringIndex": 14,
+      "routeIndex": 14,
+      "id": 14
+    },
+    {
+      "type": "ping",
+      "name": "长亭道",
+      "ring": "outer",
+      "ringIndex": 15,
+      "routeIndex": 15,
+      "id": 15
+    },
+    {
+      "type": "ze",
+      "name": "寒江钓",
+      "ring": "outer",
+      "ringIndex": 16,
+      "routeIndex": 16,
+      "id": 16
+    },
+    {
+      "type": "battle",
+      "name": "社学擂",
+      "ring": "outer",
+      "ringIndex": 17,
+      "routeIndex": 17,
+      "id": 17
+    },
+    {
+      "type": "event",
+      "name": "雁塔题名",
+      "ring": "outer",
+      "ringIndex": 18,
+      "routeIndex": 18,
+      "id": 18
+    },
+    {
+      "type": "quiz",
+      "name": "府学门",
+      "ring": "outer",
+      "ringIndex": 19,
+      "routeIndex": 19,
+      "id": 19
+    },
+    {
+      "type": "event",
+      "name": "古渡遇仙",
+      "ring": "outer",
+      "ringIndex": 20,
+      "routeIndex": 20,
+      "id": 20
+    },
+    {
+      "type": "sky",
+      "name": "观星阜",
+      "ring": "outer",
+      "ringIndex": 21,
+      "routeIndex": 21,
+      "id": 21
+    },
+    {
+      "type": "event",
+      "name": "古渡遇仙·2",
+      "ring": "outer",
+      "ringIndex": 22,
+      "routeIndex": 22,
+      "id": 22
+    },
+    {
+      "type": "ze",
+      "name": "藏书楼",
+      "ring": "outer",
+      "ringIndex": 23,
+      "routeIndex": 23,
+      "id": 23
+    },
+    {
+      "type": "ping",
+      "name": "桑麻径",
+      "ring": "outer",
+      "ringIndex": 24,
+      "routeIndex": 24,
+      "id": 24
+    },
+    {
+      "type": "quiz",
+      "name": "描红斋",
+      "ring": "outer",
+      "ringIndex": 25,
+      "routeIndex": 25,
+      "id": 25
+    },
+    {
+      "type": "ping",
+      "name": "金水桥",
+      "ring": "outer",
+      "ringIndex": 26,
+      "routeIndex": 26,
+      "id": 26
+    },
+    {
+      "type": "battle",
+      "name": "沧浪渡",
+      "ring": "outer",
+      "ringIndex": 27,
+      "routeIndex": 27,
+      "id": 27
+    },
+    {
+      "type": "ping",
+      "name": "望乡台",
+      "ring": "outer",
+      "ringIndex": 28,
+      "routeIndex": 28,
+      "id": 28
+    },
+    {
+      "type": "ping",
+      "name": "芦荻洲",
+      "ring": "outer",
+      "ringIndex": 29,
+      "routeIndex": 29,
+      "id": 29
+    },
+    {
+      "type": "mingjing",
+      "name": "白鹿洞",
+      "ring": "outer",
+      "ringIndex": 30,
+      "routeIndex": 30,
+      "id": 30
+    },
+    {
+      "type": "event",
+      "name": "沧溟志",
+      "ring": "outer",
+      "ringIndex": 31,
+      "routeIndex": 31,
+      "id": 31
+    },
+    {
+      "type": "ze",
+      "name": "抄书阁",
+      "ring": "outer",
+      "ringIndex": 32,
+      "routeIndex": 32,
+      "id": 32
+    },
+    {
+      "type": "ping",
+      "name": "松风阁",
+      "ring": "outer",
+      "ringIndex": 33,
+      "routeIndex": 33,
+      "id": 33
+    },
+    {
+      "type": "ze",
+      "name": "欸乃曲",
+      "ring": "outer",
+      "ringIndex": 34,
+      "routeIndex": 34,
+      "id": 34
+    },
+    {
+      "type": "ze",
+      "name": "白鹭洲",
+      "ring": "outer",
+      "ringIndex": 35,
+      "routeIndex": 35,
+      "id": 35
+    },
+    {
+      "type": "battle",
+      "name": "曲江宴",
+      "phaseGate": {
+        "at": 36,
+        "cellId": 36,
+        "phase": "xiucai",
+        "exam": "xiucai",
+        "transition": null
+      },
+      "ring": "outer",
+      "ringIndex": 36,
+      "routeIndex": 36,
+      "id": 36
+    },
+    {
+      "type": "ping",
+      "name": "芦花雪",
+      "ring": "outer",
+      "ringIndex": 37,
+      "routeIndex": 37,
+      "id": 37
+    },
+    {
+      "type": "event",
+      "name": "指南录",
+      "ring": "outer",
+      "ringIndex": 38,
+      "routeIndex": 38,
+      "id": 38
+    },
+    {
+      "type": "ping",
+      "name": "御街晓",
+      "ring": "outer",
+      "ringIndex": 39,
+      "routeIndex": 39,
+      "id": 39
+    },
+    {
+      "type": "ping",
+      "name": "麦浪坡",
+      "ring": "outer",
+      "ringIndex": 40,
+      "routeIndex": 40,
+      "phaseGate": {
+        "at": 36,
+        "cellId": 36,
+        "phase": "xiucai",
+        "exam": "xiucai",
+        "transition": null
+      },
+      "id": 40
+    },
+    {
+      "type": "ze",
+      "name": "蓑衣湿",
+      "ring": "outer",
+      "ringIndex": 41,
+      "routeIndex": 41,
+      "id": 41
+    },
+    {
+      "type": "ping",
+      "name": "稻花陌",
+      "ring": "outer",
+      "ringIndex": 42,
+      "routeIndex": 42,
+      "id": 42
+    },
+    {
+      "type": "ze",
+      "name": "磨墨坡",
+      "ring": "outer",
+      "ringIndex": 43,
+      "routeIndex": 43,
+      "id": 43
+    },
+    {
+      "type": "quiz",
+      "name": "秋闱号舍",
+      "ring": "outer",
+      "ringIndex": 44,
+      "routeIndex": 44,
+      "id": 44
+    },
+    {
+      "type": "sky",
+      "name": "云津渡",
+      "ring": "outer",
+      "ringIndex": 45,
+      "routeIndex": 45,
+      "id": 45
+    },
+    {
+      "type": "ping",
+      "name": "蒙学巷",
+      "ring": "outer",
+      "ringIndex": 46,
+      "routeIndex": 46,
+      "id": 46
+    },
+    {
+      "type": "ze",
+      "name": "一叶舟",
+      "effect": {
+        "inspiration": 2
+      },
+      "ring": "outer",
+      "ringIndex": 47,
+      "routeIndex": 47,
+      "id": 47
+    },
+    {
+      "type": "ze",
+      "name": "寒砧月",
+      "ring": "outer",
+      "ringIndex": 48,
+      "routeIndex": 48,
+      "id": 48
+    },
+    {
+      "type": "ze",
+      "name": "洗砚池",
+      "ring": "outer",
+      "ringIndex": 49,
+      "routeIndex": 49,
+      "id": 49
+    },
+    {
+      "type": "ping",
+      "name": "暮江吟",
+      "ring": "outer",
+      "ringIndex": 50,
+      "routeIndex": 50,
+      "id": 50
+    },
+    {
+      "type": "ze",
+      "name": "磨墨坡·2",
+      "ring": "outer",
+      "ringIndex": 51,
+      "routeIndex": 51,
+      "id": 51
+    },
+    {
+      "type": "event",
+      "name": "梅边酌",
+      "ring": "outer",
+      "ringIndex": 52,
+      "routeIndex": 52,
+      "id": 52
+    },
+    {
+      "type": "ze",
+      "name": "铁砚斋",
+      "ring": "outer",
+      "ringIndex": 53,
+      "routeIndex": 53,
+      "id": 53
+    },
+    {
+      "type": "battle",
+      "name": "论道殿",
+      "ring": "outer",
+      "ringIndex": 54,
+      "routeIndex": 54,
+      "id": 54
+    },
+    {
+      "type": "mingjing",
+      "name": "玉门关",
+      "ring": "outer",
+      "ringIndex": 55,
+      "routeIndex": 55,
+      "id": 55
+    },
+    {
+      "type": "ping",
+      "name": "孤蓬夜",
+      "ring": "outer",
+      "ringIndex": 56,
+      "routeIndex": 56,
+      "id": 56
+    },
+    {
+      "type": "sky",
+      "name": "月华津",
+      "ring": "outer",
+      "ringIndex": 57,
+      "routeIndex": 57,
+      "id": 57
+    },
+    {
+      "type": "ping",
+      "name": "蒙学巷·2",
+      "ring": "outer",
+      "ringIndex": 58,
+      "routeIndex": 58,
+      "id": 58
+    },
+    {
+      "type": "battle",
+      "name": "采石矶",
+      "ring": "outer",
+      "ringIndex": 59,
+      "routeIndex": 59,
+      "id": 59
+    },
+    {
+      "type": "battle",
+      "name": "中流擂",
+      "ring": "outer",
+      "ringIndex": 60,
+      "routeIndex": 60,
+      "id": 60
+    },
+    {
+      "type": "sky",
+      "name": "星矅崖",
+      "ring": "outer",
+      "ringIndex": 61,
+      "routeIndex": 61,
+      "id": 61
+    },
+    {
+      "type": "event",
+      "name": "卖字摊",
+      "ring": "outer",
+      "ringIndex": 62,
+      "routeIndex": 62,
+      "id": 62
+    },
+    {
+      "type": "event",
+      "name": "渔火遇",
+      "ring": "outer",
+      "ringIndex": 63,
+      "routeIndex": 63,
+      "id": 63
+    },
+    {
+      "type": "ze",
+      "name": "篷窗雨",
+      "ring": "outer",
+      "ringIndex": 64,
+      "routeIndex": 64,
+      "id": 64
+    },
+    {
+      "type": "mingjing",
+      "name": "桃花源",
+      "ring": "outer",
+      "ringIndex": 65,
+      "routeIndex": 65,
+      "id": 65
+    },
+    {
+      "type": "battle",
+      "name": "诗社台",
+      "ring": "outer",
+      "ringIndex": 66,
+      "routeIndex": 66,
+      "id": 66
+    },
+    {
+      "type": "ze",
+      "name": "临帖廊",
+      "ring": "outer",
+      "ringIndex": 67,
+      "routeIndex": 67,
+      "id": 67
+    },
+    {
+      "type": "battle",
+      "name": "江心渡",
+      "ring": "outer",
+      "ringIndex": 68,
+      "routeIndex": 68,
+      "id": 68
+    },
+    {
+      "type": "ze",
+      "name": "石渠阁",
+      "ring": "outer",
+      "ringIndex": 69,
+      "routeIndex": 69,
+      "id": 69
+    },
+    {
+      "type": "event",
+      "name": "卖字摊·2",
+      "ring": "outer",
+      "ringIndex": 70,
+      "routeIndex": 70,
+      "id": 70
+    },
+    {
+      "type": "event",
+      "name": "百花洲·2",
+      "ring": "outer",
+      "ringIndex": 71,
+      "routeIndex": 71,
+      "id": 71
+    },
+    {
+      "type": "gate",
+      "name": "会文门",
+      "icon": "start",
+      "id": 72,
+      "ring": "middle",
+      "ringIndex": 0,
+      "routeIndex": 72,
+      "phaseGate": {
+        "at": 72,
+        "cellId": 72,
+        "phase": "juren",
+        "exam": "juren",
+        "transition": "middle"
+      }
+    },
+    {
+      "type": "event",
+      "name": "卖字摊",
+      "ring": "middle",
+      "ringIndex": 1,
+      "routeIndex": 73,
+      "id": 73
+    },
+    {
+      "type": "quiz",
+      "name": "渡口问",
+      "ring": "middle",
+      "ringIndex": 2,
+      "routeIndex": 74,
+      "id": 74
+    },
+    {
+      "type": "event",
+      "name": "卖字摊·2",
+      "ring": "middle",
+      "ringIndex": 3,
+      "routeIndex": 75,
+      "id": 75
+    },
+    {
+      "type": "event",
+      "name": "雁塔题名",
+      "ring": "middle",
+      "ringIndex": 4,
+      "routeIndex": 76,
+      "id": 76
+    },
+    {
+      "type": "ping",
+      "name": "孤蓬夜",
+      "ring": "middle",
+      "ringIndex": 5,
+      "routeIndex": 77,
+      "effect": {
+        "inspiration": 1
+      },
+      "id": 77
+    },
+    {
+      "type": "ping",
+      "name": "暮江吟",
+      "ring": "middle",
+      "ringIndex": 6,
+      "routeIndex": 78,
+      "effect": {
+        "inspiration": 1
+      },
+      "id": 78
+    },
+    {
+      "type": "event",
+      "name": "百花洲",
+      "ring": "middle",
+      "ringIndex": 7,
+      "routeIndex": 79,
+      "id": 79
+    },
+    {
+      "type": "event",
+      "name": "古渡遇仙",
+      "ring": "middle",
+      "ringIndex": 8,
+      "routeIndex": 80,
+      "id": 80
+    },
+    {
+      "type": "battle",
+      "name": "论道殿",
+      "ring": "middle",
+      "ringIndex": 9,
+      "routeIndex": 81,
+      "id": 81
+    },
+    {
+      "type": "ping",
+      "name": "归帆影",
+      "ring": "middle",
+      "ringIndex": 10,
+      "routeIndex": 82,
+      "effect": {
+        "inspiration": 1
+      },
+      "id": 82
+    },
+    {
+      "type": "battle",
+      "name": "江心渡",
+      "ring": "middle",
+      "ringIndex": 11,
+      "routeIndex": 83,
+      "id": 83
+    },
+    {
+      "type": "battle",
+      "name": "沧浪渡",
+      "ring": "middle",
+      "ringIndex": 12,
+      "routeIndex": 84,
+      "id": 84
+    },
+    {
+      "type": "event",
+      "name": "渔火遇",
+      "ring": "middle",
+      "ringIndex": 13,
+      "routeIndex": 85,
+      "id": 85
+    },
+    {
+      "type": "event",
+      "name": "邻舟笛",
+      "ring": "middle",
+      "ringIndex": 14,
+      "routeIndex": 86,
+      "id": 86
+    },
+    {
+      "type": "battle",
+      "name": "中流擂",
+      "ring": "middle",
+      "ringIndex": 15,
+      "routeIndex": 87,
+      "id": 87
+    },
+    {
+      "type": "ze",
+      "name": "白鹭洲",
+      "ring": "middle",
+      "ringIndex": 16,
+      "routeIndex": 88,
+      "effect": {
+        "inspiration": 1,
+        "attrs": {
+          "bi": 1,
+          "xue": 1,
+          "si": 1
+        }
+      },
+      "id": 88
+    },
+    {
+      "type": "mingjing",
+      "name": "玉门关",
+      "ring": "middle",
+      "ringIndex": 17,
+      "routeIndex": 89,
+      "id": 89
+    },
+    {
+      "type": "ze",
+      "name": "临帖廊",
+      "ring": "middle",
+      "ringIndex": 18,
+      "routeIndex": 90,
+      "effect": {
+        "inspiration": 1,
+        "attrs": {
+          "bi": 1,
+          "xue": 1,
+          "si": 1
+        }
+      },
+      "id": 90
+    },
+    {
+      "type": "sky",
+      "name": "观星阜",
+      "ring": "middle",
+      "ringIndex": 19,
+      "routeIndex": 91,
+      "id": 91
+    },
+    {
+      "type": "quiz",
+      "name": "春闱帘",
+      "ring": "middle",
+      "ringIndex": 20,
+      "routeIndex": 92,
+      "id": 92
+    },
+    {
+      "type": "quiz",
+      "name": "楚水驿",
+      "ring": "middle",
+      "ringIndex": 21,
+      "routeIndex": 93,
+      "id": 93
+    },
+    {
+      "type": "quiz",
+      "name": "故园讯",
+      "ring": "middle",
+      "ringIndex": 22,
+      "routeIndex": 94,
+      "id": 94
+    },
+    {
+      "type": "quiz",
+      "name": "府学门",
+      "ring": "middle",
+      "ringIndex": 23,
+      "routeIndex": 95,
+      "id": 95
+    },
+    {
+      "type": "event",
+      "name": "古渡遇仙·2",
+      "ring": "middle",
+      "ringIndex": 24,
+      "routeIndex": 96,
+      "id": 96
+    },
+    {
+      "type": "battle",
+      "name": "采石矶",
+      "ring": "middle",
+      "ringIndex": 25,
+      "routeIndex": 97,
+      "id": 97
+    },
+    {
+      "type": "event",
+      "name": "指南录",
+      "ring": "middle",
+      "ringIndex": 26,
+      "routeIndex": 98,
+      "id": 98
+    },
+    {
+      "type": "quiz",
+      "name": "秋闱号舍",
+      "ring": "middle",
+      "ringIndex": 27,
+      "routeIndex": 99,
+      "id": 99
+    },
+    {
+      "type": "ping",
+      "name": "望乡台",
+      "ring": "middle",
+      "ringIndex": 28,
+      "routeIndex": 100,
+      "effect": {
+        "inspiration": 1
+      },
+      "id": 100
+    },
+    {
+      "type": "event",
+      "name": "故人斋",
+      "ring": "middle",
+      "ringIndex": 29,
+      "routeIndex": 101,
+      "id": 101
+    },
+    {
+      "type": "ping",
+      "name": "芦花雪",
+      "ring": "middle",
+      "ringIndex": 30,
+      "routeIndex": 102,
+      "effect": {
+        "inspiration": 1
+      },
+      "id": 102
+    },
+    {
+      "type": "sky",
+      "name": "望气坛",
+      "ring": "middle",
+      "ringIndex": 31,
+      "routeIndex": 103,
+      "id": 103
+    },
+    {
+      "type": "ze",
+      "name": "翰墨轩",
+      "ring": "middle",
+      "ringIndex": 32,
+      "routeIndex": 104,
+      "effect": {
+        "inspiration": 1,
+        "attrs": {
+          "bi": 1,
+          "xue": 1,
+          "si": 1
+        }
+      },
+      "id": 104
+    },
+    {
+      "type": "battle",
+      "name": "社学擂",
+      "ring": "middle",
+      "ringIndex": 33,
+      "routeIndex": 105,
+      "id": 105
+    },
+    {
+      "type": "sky",
+      "name": "云津渡",
+      "ring": "middle",
+      "ringIndex": 34,
+      "routeIndex": 106,
+      "id": 106
+    },
+    {
+      "type": "event",
+      "name": "沧溟志",
+      "ring": "middle",
+      "ringIndex": 35,
+      "routeIndex": 107,
+      "id": 107
+    },
+    {
+      "type": "sky",
+      "name": "星矅崖",
+      "ring": "middle",
+      "ringIndex": 36,
+      "routeIndex": 108,
+      "id": 108
+    },
+    {
+      "type": "battle",
+      "name": "诗社台",
+      "ring": "middle",
+      "ringIndex": 37,
+      "routeIndex": 109,
+      "id": 109
+    },
+    {
+      "type": "mingjing",
+      "name": "白鹿洞",
+      "ring": "middle",
+      "ringIndex": 38,
+      "routeIndex": 110,
+      "id": 110
+    },
+    {
+      "type": "ze",
+      "name": "石渠阁",
+      "ring": "middle",
+      "ringIndex": 39,
+      "routeIndex": 111,
+      "effect": {
+        "inspiration": 1,
+        "attrs": {
+          "bi": 1,
+          "xue": 1,
+          "si": 1
+        }
+      },
+      "id": 111
+    },
+    {
+      "type": "event",
+      "name": "梅边酌",
+      "ring": "middle",
+      "ringIndex": 40,
+      "routeIndex": 112,
+      "id": 112
+    },
+    {
+      "type": "ping",
+      "name": "蒙学巷",
+      "ring": "middle",
+      "ringIndex": 41,
+      "routeIndex": 113,
+      "effect": {
+        "inspiration": 1
+      },
+      "id": 113
+    },
+    {
+      "type": "ze",
+      "name": "篷窗雨",
+      "ring": "middle",
+      "ringIndex": 42,
+      "routeIndex": 114,
+      "effect": {
+        "inspiration": 1,
+        "attrs": {
+          "bi": 1,
+          "xue": 1,
+          "si": 1
+        }
+      },
+      "id": 114
+    },
+    {
+      "type": "quiz",
+      "name": "故园问",
+      "ring": "middle",
+      "ringIndex": 43,
+      "routeIndex": 115,
+      "id": 115
+    },
+    {
+      "type": "battle",
+      "name": "社学擂·2",
+      "ring": "middle",
+      "ringIndex": 44,
+      "routeIndex": 116,
+      "id": 116
+    },
+    {
+      "type": "quiz",
+      "name": "县考棚",
+      "ring": "middle",
+      "ringIndex": 45,
+      "routeIndex": 117,
+      "id": 117
+    },
+    {
+      "type": "ze",
+      "name": "蓑衣湿",
+      "ring": "middle",
+      "ringIndex": 46,
+      "routeIndex": 118,
+      "effect": {
+        "inspiration": 1,
+        "attrs": {
+          "bi": 1,
+          "xue": 1,
+          "si": 1
+        }
+      },
+      "id": 118
+    },
+    {
+      "type": "battle",
+      "name": "社学擂",
+      "ring": "middle",
+      "ringIndex": 47,
+      "routeIndex": 119,
+      "id": 119
+    },
+    {
+      "type": "battle",
+      "name": "诗社台",
+      "ring": "middle",
+      "ringIndex": 48,
+      "routeIndex": 120,
+      "id": 120
+    },
+    {
+      "type": "quiz",
+      "name": "描红斋",
+      "ring": "middle",
+      "ringIndex": 49,
+      "routeIndex": 121,
+      "id": 121
+    },
+    {
+      "type": "battle",
+      "name": "曲江宴",
+      "phaseGate": {
+        "id": "xiucai",
+        "phase": "xiucai",
+        "exam": "xiucai"
+      },
+      "ring": "middle",
+      "ringIndex": 50,
+      "routeIndex": 122,
+      "id": 122
+    },
+    {
+      "type": "ze",
+      "name": "一叶舟",
+      "effect": {
+        "inspiration": 3,
+        "attrs": {
+          "bi": 1,
+          "xue": 1,
+          "si": 1
+        }
+      },
+      "ring": "middle",
+      "ringIndex": 51,
+      "routeIndex": 123,
+      "id": 123
+    },
+    {
+      "type": "ping",
+      "name": "桑麻径",
+      "ring": "middle",
+      "ringIndex": 52,
+      "routeIndex": 124,
+      "effect": {
+        "inspiration": 1
+      },
+      "id": 124
+    },
+    {
+      "type": "battle",
+      "name": "采石矶",
+      "ring": "middle",
+      "ringIndex": 53,
+      "routeIndex": 125,
+      "id": 125
+    },
+    {
+      "type": "sky",
+      "name": "观星阜",
+      "ring": "middle",
+      "ringIndex": 54,
+      "routeIndex": 126,
+      "id": 126
+    },
+    {
+      "type": "ze",
+      "name": "旧雨楼",
+      "ring": "middle",
+      "ringIndex": 55,
+      "routeIndex": 127,
+      "effect": {
+        "inspiration": 1,
+        "attrs": {
+          "bi": 1,
+          "xue": 1,
+          "si": 1
+        }
+      },
+      "id": 127
+    },
+    {
+      "type": "event",
+      "name": "百花洲·2",
+      "ring": "middle",
+      "ringIndex": 56,
+      "routeIndex": 128,
+      "id": 128
+    },
+    {
+      "type": "sky",
+      "name": "月华津",
+      "ring": "middle",
+      "ringIndex": 57,
+      "routeIndex": 129,
+      "id": 129
+    },
+    {
+      "type": "quiz",
+      "name": "策论斋",
+      "ring": "middle",
+      "ringIndex": 58,
+      "routeIndex": 130,
+      "id": 130
+    },
+    {
+      "type": "ze",
+      "name": "抄书阁",
+      "ring": "middle",
+      "ringIndex": 59,
+      "routeIndex": 131,
+      "effect": {
+        "inspiration": 1,
+        "attrs": {
+          "bi": 1,
+          "xue": 1,
+          "si": 1
+        }
+      },
+      "id": 131
+    },
+    {
+      "type": "quiz",
+      "name": "经义堂",
+      "ring": "middle",
+      "ringIndex": 60,
+      "routeIndex": 132,
+      "id": 132
+    },
+    {
+      "type": "battle",
+      "name": "中流擂",
+      "ring": "middle",
+      "ringIndex": 61,
+      "routeIndex": 133,
+      "id": 133
+    },
+    {
+      "type": "quiz",
+      "name": "秋闱号舍",
+      "ring": "middle",
+      "ringIndex": 62,
+      "routeIndex": 134,
+      "id": 134
+    },
+    {
+      "type": "ping",
+      "name": "芦荻洲",
+      "ring": "middle",
+      "ringIndex": 63,
+      "routeIndex": 135,
+      "effect": {
+        "inspiration": 1
+      },
+      "id": 135
+    },
+    {
+      "type": "gate",
+      "name": "登第门",
+      "icon": "start",
+      "id": 136,
+      "ring": "inner",
+      "ringIndex": 0,
+      "routeIndex": 136,
+      "phaseGate": {
+        "at": 136,
+        "cellId": 136,
+        "phase": "jinshi",
+        "exam": "jinshi",
+        "transition": "inner"
+      }
+    },
+    {
+      "type": "event",
+      "name": "古渡遇仙·2",
+      "ring": "inner",
+      "ringIndex": 1,
+      "routeIndex": 137,
+      "id": 137
+    },
+    {
+      "type": "quiz",
+      "name": "秋闱号舍",
+      "ring": "inner",
+      "ringIndex": 2,
+      "routeIndex": 138,
+      "id": 138
+    },
+    {
+      "type": "battle",
+      "name": "江心渡",
+      "ring": "inner",
+      "ringIndex": 3,
+      "routeIndex": 139,
+      "id": 139
+    },
+    {
+      "type": "battle",
+      "name": "社学擂·2",
+      "ring": "inner",
+      "ringIndex": 4,
+      "routeIndex": 140,
+      "id": 140
+    },
+    {
+      "type": "ze",
+      "name": "临帖廊",
+      "ring": "inner",
+      "ringIndex": 5,
+      "routeIndex": 141,
+      "effect": {
+        "inspiration": 2,
+        "attrs": {
+          "bi": 2,
+          "xue": 2,
+          "si": 2
+        }
+      },
+      "id": 141
+    },
+    {
+      "type": "quiz",
+      "name": "春闱帘",
+      "ring": "inner",
+      "ringIndex": 6,
+      "routeIndex": 142,
+      "id": 142
+    },
+    {
+      "type": "ping",
+      "name": "孤蓬夜",
+      "ring": "inner",
+      "ringIndex": 7,
+      "routeIndex": 143,
+      "effect": {
+        "inspiration": 2
+      },
+      "id": 143
+    },
+    {
+      "type": "battle",
+      "name": "社学擂",
+      "ring": "inner",
+      "ringIndex": 8,
+      "routeIndex": 144,
+      "id": 144
+    },
+    {
+      "type": "ping",
+      "name": "归帆影",
+      "ring": "inner",
+      "ringIndex": 9,
+      "routeIndex": 145,
+      "effect": {
+        "inspiration": 2
+      },
+      "id": 145
+    },
+    {
+      "type": "ping",
+      "name": "桑麻径",
+      "ring": "inner",
+      "ringIndex": 10,
+      "routeIndex": 146,
+      "effect": {
+        "inspiration": 2
+      },
+      "id": 146
+    },
+    {
+      "type": "event",
+      "name": "雁塔题名",
+      "ring": "inner",
+      "ringIndex": 11,
+      "routeIndex": 147,
+      "id": 147
+    },
+    {
+      "type": "battle",
+      "name": "诗社台",
+      "ring": "inner",
+      "ringIndex": 12,
+      "routeIndex": 148,
+      "id": 148
+    },
+    {
+      "type": "event",
+      "name": "卖字摊",
+      "ring": "inner",
+      "ringIndex": 13,
+      "routeIndex": 149,
+      "id": 149
+    },
+    {
+      "type": "sky",
+      "name": "月华津",
+      "ring": "inner",
+      "ringIndex": 14,
+      "routeIndex": 150,
+      "id": 150
+    },
+    {
+      "type": "event",
+      "name": "渔火遇",
+      "ring": "inner",
+      "ringIndex": 15,
+      "routeIndex": 151,
+      "id": 151
+    },
+    {
+      "type": "quiz",
+      "name": "府学门",
+      "ring": "inner",
+      "ringIndex": 16,
+      "routeIndex": 152,
+      "id": 152
+    },
+    {
+      "type": "ping",
+      "name": "芦荻洲",
+      "ring": "inner",
+      "ringIndex": 17,
+      "routeIndex": 153,
+      "effect": {
+        "inspiration": 2
+      },
+      "id": 153
+    },
+    {
+      "type": "event",
+      "name": "古渡遇仙",
+      "ring": "inner",
+      "ringIndex": 18,
+      "routeIndex": 154,
+      "id": 154
+    },
+    {
+      "type": "quiz",
+      "name": "县考棚",
+      "ring": "inner",
+      "ringIndex": 19,
+      "routeIndex": 155,
+      "id": 155
+    },
+    {
+      "type": "battle",
+      "name": "采石矶",
+      "ring": "inner",
+      "ringIndex": 20,
+      "routeIndex": 156,
+      "id": 156
+    },
+    {
+      "type": "battle",
+      "name": "采石矶",
+      "ring": "inner",
+      "ringIndex": 21,
+      "routeIndex": 157,
+      "id": 157
+    },
+    {
+      "type": "event",
+      "name": "百花洲·2",
+      "ring": "inner",
+      "ringIndex": 22,
+      "routeIndex": 158,
+      "id": 158
+    },
+    {
+      "type": "battle",
+      "name": "沧浪渡",
+      "ring": "inner",
+      "ringIndex": 23,
+      "routeIndex": 159,
+      "id": 159
+    },
+    {
+      "type": "mingjing",
+      "name": "白鹿洞",
+      "ring": "inner",
+      "ringIndex": 24,
+      "routeIndex": 160,
+      "id": 160
+    },
+    {
+      "type": "battle",
+      "name": "中流擂",
+      "ring": "inner",
+      "ringIndex": 25,
+      "routeIndex": 161,
+      "id": 161
+    },
+    {
+      "type": "battle",
+      "name": "诗社台",
+      "ring": "inner",
+      "ringIndex": 26,
+      "routeIndex": 162,
+      "id": 162
+    },
+    {
+      "type": "ping",
+      "name": "暮江吟",
+      "ring": "inner",
+      "ringIndex": 27,
+      "routeIndex": 163,
+      "effect": {
+        "inspiration": 2
+      },
+      "id": 163
+    },
+    {
+      "type": "ze",
+      "name": "篷窗雨",
+      "ring": "inner",
+      "ringIndex": 28,
+      "routeIndex": 164,
+      "effect": {
+        "inspiration": 2,
+        "attrs": {
+          "bi": 2,
+          "xue": 2,
+          "si": 2
+        }
+      },
+      "id": 164
+    },
+    {
+      "type": "sky",
+      "name": "星矅崖",
+      "ring": "inner",
+      "ringIndex": 29,
+      "routeIndex": 165,
+      "id": 165
+    },
+    {
+      "type": "battle",
+      "name": "论道殿",
+      "ring": "inner",
+      "ringIndex": 30,
+      "routeIndex": 166,
+      "id": 166
+    },
+    {
+      "type": "quiz",
+      "name": "楚水驿",
+      "ring": "inner",
+      "ringIndex": 31,
+      "routeIndex": 167,
+      "id": 167
+    },
+    {
+      "type": "quiz",
+      "name": "经义堂",
+      "ring": "inner",
+      "ringIndex": 32,
+      "routeIndex": 168,
+      "id": 168
+    },
+    {
+      "type": "event",
+      "name": "百花洲",
+      "ring": "inner",
+      "ringIndex": 33,
+      "routeIndex": 169,
+      "id": 169
+    },
+    {
+      "type": "event",
+      "name": "故人斋",
+      "ring": "inner",
+      "ringIndex": 34,
+      "routeIndex": 170,
+      "id": 170
+    },
+    {
+      "type": "event",
+      "name": "卖字摊·2",
+      "ring": "inner",
+      "ringIndex": 35,
+      "routeIndex": 171,
+      "id": 171
+    },
+    {
+      "type": "event",
+      "name": "沧溟志",
+      "ring": "inner",
+      "ringIndex": 36,
+      "routeIndex": 172,
+      "id": 172
+    },
+    {
+      "type": "quiz",
+      "name": "故园讯",
+      "ring": "inner",
+      "ringIndex": 37,
+      "routeIndex": 173,
+      "id": 173
+    },
+    {
+      "type": "event",
+      "name": "指南录",
+      "ring": "inner",
+      "ringIndex": 38,
+      "routeIndex": 174,
+      "id": 174
+    },
+    {
+      "type": "mingjing",
+      "name": "桃花源",
+      "ring": "inner",
+      "ringIndex": 39,
+      "routeIndex": 175,
+      "id": 175
+    },
+    {
+      "type": "ze",
+      "name": "抄书阁",
+      "ring": "inner",
+      "ringIndex": 40,
+      "routeIndex": 176,
+      "effect": {
+        "inspiration": 2,
+        "attrs": {
+          "bi": 2,
+          "xue": 2,
+          "si": 2
+        }
+      },
+      "id": 176
+    },
+    {
+      "type": "event",
+      "name": "梅边酌",
+      "ring": "inner",
+      "ringIndex": 41,
+      "routeIndex": 177,
+      "id": 177
+    },
+    {
+      "type": "sky",
+      "name": "云津渡",
+      "ring": "inner",
+      "ringIndex": 42,
+      "routeIndex": 178,
+      "id": 178
+    },
+    {
+      "type": "battle",
+      "name": "中流擂",
+      "ring": "inner",
+      "ringIndex": 43,
+      "routeIndex": 179,
+      "id": 179
+    },
+    {
+      "type": "mingjing",
+      "name": "玉门关",
+      "ring": "inner",
+      "ringIndex": 44,
+      "routeIndex": 180,
+      "id": 180
+    },
+    {
+      "type": "sky",
+      "name": "望气坛",
+      "ring": "inner",
+      "ringIndex": 45,
+      "routeIndex": 181,
+      "id": 181
+    },
+    {
+      "type": "battle",
+      "name": "曲江宴",
+      "phaseGate": {
+        "id": "xiucai",
+        "phase": "xiucai",
+        "exam": "xiucai"
+      },
+      "ring": "inner",
+      "ringIndex": 46,
+      "routeIndex": 182,
+      "id": 182
+    },
+    {
+      "type": "sky",
+      "name": "观星阜",
+      "ring": "inner",
+      "ringIndex": 47,
+      "routeIndex": 183,
+      "id": 183
+    },
+    {
+      "type": "quiz",
+      "name": "秋闱号舍",
+      "ring": "inner",
+      "ringIndex": 48,
+      "routeIndex": 184,
+      "id": 184
+    },
+    {
+      "type": "quiz",
+      "name": "策论斋",
+      "ring": "inner",
+      "ringIndex": 49,
+      "routeIndex": 185,
+      "id": 185
+    },
+    {
+      "type": "event",
+      "name": "邻舟笛",
+      "ring": "inner",
+      "ringIndex": 50,
+      "routeIndex": 186,
+      "id": 186
+    },
+    {
+      "type": "ze",
+      "name": "白鹭洲",
+      "ring": "inner",
+      "ringIndex": 51,
+      "routeIndex": 187,
+      "effect": {
+        "inspiration": 2,
+        "attrs": {
+          "bi": 2,
+          "xue": 2,
+          "si": 2
+        }
+      },
+      "id": 187
+    },
+    {
+      "type": "ze",
+      "name": "旧雨楼",
+      "ring": "inner",
+      "ringIndex": 52,
+      "routeIndex": 188,
+      "effect": {
+        "inspiration": 2,
+        "attrs": {
+          "bi": 2,
+          "xue": 2,
+          "si": 2
+        }
+      },
+      "id": 188
+    },
+    {
+      "type": "battle",
+      "name": "社学擂",
+      "ring": "inner",
+      "ringIndex": 53,
+      "routeIndex": 189,
+      "id": 189
+    },
+    {
+      "type": "quiz",
+      "name": "描红斋",
+      "ring": "inner",
+      "ringIndex": 54,
+      "routeIndex": 190,
+      "id": 190
+    },
+    {
+      "type": "ze",
+      "name": "石渠阁",
+      "ring": "inner",
+      "ringIndex": 55,
+      "routeIndex": 191,
+      "effect": {
+        "inspiration": 2,
+        "attrs": {
+          "bi": 2,
+          "xue": 2,
+          "si": 2
+        }
+      },
+      "id": 191
+    }
+  ],
+  "branches": {},
+  "branchCells": [],
+  "branchGates": {}
+}

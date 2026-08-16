@@ -1,6 +1,6 @@
 {
   "_type": "feihua-content",
-  "_version": 2,
+  "_version": 5,
   "questions": [
     {
       "id": "Q0001",
@@ -5852,12 +5852,12 @@
     "rings": [
       {
         "id": "outer",
-        "name": "外圈·起势",
+        "name": "起势",
         "grid": 19,
         "cells": [
           {
             "type": "start",
-            "name": "外圈·外圈·童生铺",
+            "name": "童生铺",
             "ring": "outer",
             "ringIndex": 0,
             "routeIndex": 0,
@@ -5865,7 +5865,7 @@
           },
           {
             "type": "event",
-            "name": "外圈·外圈·百花洲",
+            "name": "百花洲",
             "ring": "outer",
             "ringIndex": 1,
             "routeIndex": 1,
@@ -5873,7 +5873,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·归帆影",
+            "name": "归帆影",
             "ring": "outer",
             "ringIndex": 2,
             "routeIndex": 2,
@@ -5881,7 +5881,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·柳荫渡",
+            "name": "柳荫渡",
             "ring": "outer",
             "ringIndex": 3,
             "routeIndex": 3,
@@ -5889,7 +5889,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·芙蓉苑",
+            "name": "芙蓉苑",
             "ring": "outer",
             "ringIndex": 4,
             "routeIndex": 4,
@@ -5897,7 +5897,7 @@
           },
           {
             "type": "sky",
-            "name": "外圈·外圈·望气坛",
+            "name": "望气坛",
             "ring": "outer",
             "ringIndex": 5,
             "routeIndex": 5,
@@ -5905,7 +5905,7 @@
           },
           {
             "type": "quiz",
-            "name": "外圈·外圈·县考棚",
+            "name": "县考棚",
             "ring": "outer",
             "ringIndex": 6,
             "routeIndex": 6,
@@ -5913,7 +5913,7 @@
           },
           {
             "type": "quiz",
-            "name": "外圈·外圈·经义堂",
+            "name": "经义堂",
             "ring": "outer",
             "ringIndex": 7,
             "routeIndex": 7,
@@ -5921,7 +5921,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·灞桥柳",
+            "name": "灞桥柳",
             "ring": "outer",
             "ringIndex": 8,
             "routeIndex": 8,
@@ -5929,7 +5929,7 @@
           },
           {
             "type": "event",
-            "name": "外圈·外圈·邻舟笛",
+            "name": "邻舟笛",
             "ring": "outer",
             "ringIndex": 9,
             "routeIndex": 9,
@@ -5937,7 +5937,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·旧雨楼",
+            "name": "旧雨楼",
             "ring": "outer",
             "ringIndex": 10,
             "routeIndex": 10,
@@ -5945,7 +5945,7 @@
           },
           {
             "type": "event",
-            "name": "外圈·外圈·故人斋",
+            "name": "故人斋",
             "ring": "outer",
             "ringIndex": 11,
             "routeIndex": 11,
@@ -5953,7 +5953,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·芦花渚",
+            "name": "芦花渚",
             "ring": "outer",
             "ringIndex": 12,
             "routeIndex": 12,
@@ -5961,7 +5961,7 @@
           },
           {
             "type": "mingjing",
-            "name": "外圈·外圈·春在堂",
+            "name": "春在堂",
             "effect": {
               "attrs": {
                 "xue": 2
@@ -5975,7 +5975,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·翰墨轩",
+            "name": "翰墨轩",
             "ring": "outer",
             "ringIndex": 14,
             "routeIndex": 14,
@@ -5983,7 +5983,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·长亭道",
+            "name": "长亭道",
             "ring": "outer",
             "ringIndex": 15,
             "routeIndex": 15,
@@ -5991,7 +5991,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·寒江钓",
+            "name": "寒江钓",
             "ring": "outer",
             "ringIndex": 16,
             "routeIndex": 16,
@@ -5999,7 +5999,7 @@
           },
           {
             "type": "battle",
-            "name": "外圈·外圈·社学擂",
+            "name": "社学擂",
             "ring": "outer",
             "ringIndex": 17,
             "routeIndex": 17,
@@ -6007,7 +6007,7 @@
           },
           {
             "type": "event",
-            "name": "外圈·外圈·雁塔题名",
+            "name": "雁塔题名",
             "ring": "outer",
             "ringIndex": 18,
             "routeIndex": 18,
@@ -6015,7 +6015,7 @@
           },
           {
             "type": "quiz",
-            "name": "外圈·外圈·府学门",
+            "name": "府学门",
             "ring": "outer",
             "ringIndex": 19,
             "routeIndex": 19,
@@ -6023,7 +6023,7 @@
           },
           {
             "type": "event",
-            "name": "外圈·外圈·古渡遇仙",
+            "name": "古渡遇仙",
             "ring": "outer",
             "ringIndex": 20,
             "routeIndex": 20,
@@ -6031,7 +6031,7 @@
           },
           {
             "type": "sky",
-            "name": "外圈·外圈·观星阜",
+            "name": "观星阜",
             "ring": "outer",
             "ringIndex": 21,
             "routeIndex": 21,
@@ -6039,7 +6039,7 @@
           },
           {
             "type": "event",
-            "name": "外圈·外圈·古渡遇仙·2",
+            "name": "古渡遇仙·2",
             "ring": "outer",
             "ringIndex": 22,
             "routeIndex": 22,
@@ -6047,7 +6047,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·藏书楼",
+            "name": "藏书楼",
             "ring": "outer",
             "ringIndex": 23,
             "routeIndex": 23,
@@ -6055,7 +6055,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·桑麻径",
+            "name": "桑麻径",
             "ring": "outer",
             "ringIndex": 24,
             "routeIndex": 24,
@@ -6063,7 +6063,7 @@
           },
           {
             "type": "quiz",
-            "name": "外圈·外圈·描红斋",
+            "name": "描红斋",
             "ring": "outer",
             "ringIndex": 25,
             "routeIndex": 25,
@@ -6071,7 +6071,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·金水桥",
+            "name": "金水桥",
             "ring": "outer",
             "ringIndex": 26,
             "routeIndex": 26,
@@ -6079,7 +6079,7 @@
           },
           {
             "type": "battle",
-            "name": "外圈·外圈·沧浪渡",
+            "name": "沧浪渡",
             "ring": "outer",
             "ringIndex": 27,
             "routeIndex": 27,
@@ -6087,7 +6087,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·望乡台",
+            "name": "望乡台",
             "ring": "outer",
             "ringIndex": 28,
             "routeIndex": 28,
@@ -6095,7 +6095,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·芦荻洲",
+            "name": "芦荻洲",
             "ring": "outer",
             "ringIndex": 29,
             "routeIndex": 29,
@@ -6103,7 +6103,7 @@
           },
           {
             "type": "mingjing",
-            "name": "外圈·外圈·白鹿洞",
+            "name": "白鹿洞",
             "ring": "outer",
             "ringIndex": 30,
             "routeIndex": 30,
@@ -6111,7 +6111,7 @@
           },
           {
             "type": "event",
-            "name": "外圈·外圈·沧溟志",
+            "name": "沧溟志",
             "ring": "outer",
             "ringIndex": 31,
             "routeIndex": 31,
@@ -6119,7 +6119,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·抄书阁",
+            "name": "抄书阁",
             "ring": "outer",
             "ringIndex": 32,
             "routeIndex": 32,
@@ -6127,7 +6127,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·松风阁",
+            "name": "松风阁",
             "ring": "outer",
             "ringIndex": 33,
             "routeIndex": 33,
@@ -6135,7 +6135,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·欸乃曲",
+            "name": "欸乃曲",
             "ring": "outer",
             "ringIndex": 34,
             "routeIndex": 34,
@@ -6143,7 +6143,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·白鹭洲",
+            "name": "白鹭洲",
             "ring": "outer",
             "ringIndex": 35,
             "routeIndex": 35,
@@ -6151,7 +6151,7 @@
           },
           {
             "type": "battle",
-            "name": "外圈·外圈·曲江宴",
+            "name": "曲江宴",
             "phaseGate": {
               "at": 36,
               "cellId": 36,
@@ -6166,7 +6166,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·芦花雪",
+            "name": "芦花雪",
             "ring": "outer",
             "ringIndex": 37,
             "routeIndex": 37,
@@ -6174,7 +6174,7 @@
           },
           {
             "type": "event",
-            "name": "外圈·外圈·指南录",
+            "name": "指南录",
             "ring": "outer",
             "ringIndex": 38,
             "routeIndex": 38,
@@ -6182,7 +6182,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·御街晓",
+            "name": "御街晓",
             "ring": "outer",
             "ringIndex": 39,
             "routeIndex": 39,
@@ -6190,7 +6190,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·麦浪坡",
+            "name": "麦浪坡",
             "ring": "outer",
             "ringIndex": 40,
             "routeIndex": 40,
@@ -6205,7 +6205,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·蓑衣湿",
+            "name": "蓑衣湿",
             "ring": "outer",
             "ringIndex": 41,
             "routeIndex": 41,
@@ -6213,7 +6213,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·稻花陌",
+            "name": "稻花陌",
             "ring": "outer",
             "ringIndex": 42,
             "routeIndex": 42,
@@ -6221,7 +6221,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·磨墨坡",
+            "name": "磨墨坡",
             "ring": "outer",
             "ringIndex": 43,
             "routeIndex": 43,
@@ -6229,7 +6229,7 @@
           },
           {
             "type": "quiz",
-            "name": "外圈·外圈·秋闱号舍",
+            "name": "秋闱号舍",
             "ring": "outer",
             "ringIndex": 44,
             "routeIndex": 44,
@@ -6237,7 +6237,7 @@
           },
           {
             "type": "sky",
-            "name": "外圈·外圈·云津渡",
+            "name": "云津渡",
             "ring": "outer",
             "ringIndex": 45,
             "routeIndex": 45,
@@ -6245,7 +6245,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·蒙学巷",
+            "name": "蒙学巷",
             "ring": "outer",
             "ringIndex": 46,
             "routeIndex": 46,
@@ -6253,7 +6253,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·一叶舟",
+            "name": "一叶舟",
             "effect": {
               "inspiration": 2
             },
@@ -6264,7 +6264,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·寒砧月",
+            "name": "寒砧月",
             "ring": "outer",
             "ringIndex": 48,
             "routeIndex": 48,
@@ -6272,7 +6272,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·洗砚池",
+            "name": "洗砚池",
             "ring": "outer",
             "ringIndex": 49,
             "routeIndex": 49,
@@ -6280,7 +6280,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·暮江吟",
+            "name": "暮江吟",
             "ring": "outer",
             "ringIndex": 50,
             "routeIndex": 50,
@@ -6288,7 +6288,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·磨墨坡·2",
+            "name": "磨墨坡·2",
             "ring": "outer",
             "ringIndex": 51,
             "routeIndex": 51,
@@ -6296,7 +6296,7 @@
           },
           {
             "type": "event",
-            "name": "外圈·外圈·梅边酌",
+            "name": "梅边酌",
             "ring": "outer",
             "ringIndex": 52,
             "routeIndex": 52,
@@ -6304,7 +6304,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·铁砚斋",
+            "name": "铁砚斋",
             "ring": "outer",
             "ringIndex": 53,
             "routeIndex": 53,
@@ -6312,7 +6312,7 @@
           },
           {
             "type": "battle",
-            "name": "外圈·外圈·论道殿",
+            "name": "论道殿",
             "ring": "outer",
             "ringIndex": 54,
             "routeIndex": 54,
@@ -6320,7 +6320,7 @@
           },
           {
             "type": "mingjing",
-            "name": "外圈·外圈·玉门关",
+            "name": "玉门关",
             "ring": "outer",
             "ringIndex": 55,
             "routeIndex": 55,
@@ -6328,7 +6328,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·孤蓬夜",
+            "name": "孤蓬夜",
             "ring": "outer",
             "ringIndex": 56,
             "routeIndex": 56,
@@ -6336,7 +6336,7 @@
           },
           {
             "type": "sky",
-            "name": "外圈·外圈·月华津",
+            "name": "月华津",
             "ring": "outer",
             "ringIndex": 57,
             "routeIndex": 57,
@@ -6344,7 +6344,7 @@
           },
           {
             "type": "ping",
-            "name": "外圈·外圈·蒙学巷·2",
+            "name": "蒙学巷·2",
             "ring": "outer",
             "ringIndex": 58,
             "routeIndex": 58,
@@ -6352,7 +6352,7 @@
           },
           {
             "type": "battle",
-            "name": "外圈·外圈·采石矶",
+            "name": "采石矶",
             "ring": "outer",
             "ringIndex": 59,
             "routeIndex": 59,
@@ -6360,7 +6360,7 @@
           },
           {
             "type": "battle",
-            "name": "外圈·外圈·中流擂",
+            "name": "中流擂",
             "ring": "outer",
             "ringIndex": 60,
             "routeIndex": 60,
@@ -6368,7 +6368,7 @@
           },
           {
             "type": "sky",
-            "name": "外圈·外圈·星矅崖",
+            "name": "星矅崖",
             "ring": "outer",
             "ringIndex": 61,
             "routeIndex": 61,
@@ -6376,7 +6376,7 @@
           },
           {
             "type": "event",
-            "name": "外圈·外圈·卖字摊",
+            "name": "卖字摊",
             "ring": "outer",
             "ringIndex": 62,
             "routeIndex": 62,
@@ -6384,7 +6384,7 @@
           },
           {
             "type": "event",
-            "name": "外圈·外圈·渔火遇",
+            "name": "渔火遇",
             "ring": "outer",
             "ringIndex": 63,
             "routeIndex": 63,
@@ -6392,7 +6392,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·篷窗雨",
+            "name": "篷窗雨",
             "ring": "outer",
             "ringIndex": 64,
             "routeIndex": 64,
@@ -6400,7 +6400,7 @@
           },
           {
             "type": "mingjing",
-            "name": "外圈·外圈·桃花源",
+            "name": "桃花源",
             "ring": "outer",
             "ringIndex": 65,
             "routeIndex": 65,
@@ -6408,7 +6408,7 @@
           },
           {
             "type": "battle",
-            "name": "外圈·外圈·诗社台",
+            "name": "诗社台",
             "ring": "outer",
             "ringIndex": 66,
             "routeIndex": 66,
@@ -6416,7 +6416,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·临帖廊",
+            "name": "临帖廊",
             "ring": "outer",
             "ringIndex": 67,
             "routeIndex": 67,
@@ -6424,7 +6424,7 @@
           },
           {
             "type": "battle",
-            "name": "外圈·外圈·江心渡",
+            "name": "江心渡",
             "ring": "outer",
             "ringIndex": 68,
             "routeIndex": 68,
@@ -6432,7 +6432,7 @@
           },
           {
             "type": "ze",
-            "name": "外圈·外圈·石渠阁",
+            "name": "石渠阁",
             "ring": "outer",
             "ringIndex": 69,
             "routeIndex": 69,
@@ -6440,7 +6440,7 @@
           },
           {
             "type": "event",
-            "name": "外圈·外圈·卖字摊·2",
+            "name": "卖字摊·2",
             "ring": "outer",
             "ringIndex": 70,
             "routeIndex": 70,
@@ -6448,7 +6448,7 @@
           },
           {
             "type": "event",
-            "name": "外圈·外圈·百花洲·2",
+            "name": "百花洲·2",
             "ring": "outer",
             "ringIndex": 71,
             "routeIndex": 71,
@@ -6458,13 +6458,13 @@
       },
       {
         "id": "middle",
-        "name": "中圈·验收",
+        "name": "验收",
         "grid": 17,
         "entryFrom": "outer",
         "cells": [
           {
             "type": "gate",
-            "name": "入中圈·会文门",
+            "name": "会文门",
             "icon": "start",
             "id": 72,
             "ring": "middle",
@@ -6480,7 +6480,7 @@
           },
           {
             "type": "event",
-            "name": "中圈·外圈·卖字摊",
+            "name": "卖字摊",
             "ring": "middle",
             "ringIndex": 1,
             "routeIndex": 73,
@@ -6488,7 +6488,7 @@
           },
           {
             "type": "quiz",
-            "name": "中圈·中圈·渡口问",
+            "name": "渡口问",
             "ring": "middle",
             "ringIndex": 2,
             "routeIndex": 74,
@@ -6496,7 +6496,7 @@
           },
           {
             "type": "event",
-            "name": "中圈·外圈·卖字摊·2",
+            "name": "卖字摊·2",
             "ring": "middle",
             "ringIndex": 3,
             "routeIndex": 75,
@@ -6504,7 +6504,7 @@
           },
           {
             "type": "event",
-            "name": "中圈·外圈·雁塔题名",
+            "name": "雁塔题名",
             "ring": "middle",
             "ringIndex": 4,
             "routeIndex": 76,
@@ -6512,7 +6512,7 @@
           },
           {
             "type": "ping",
-            "name": "中圈·外圈·孤蓬夜",
+            "name": "孤蓬夜",
             "ring": "middle",
             "ringIndex": 5,
             "routeIndex": 77,
@@ -6523,7 +6523,7 @@
           },
           {
             "type": "ping",
-            "name": "中圈·外圈·暮江吟",
+            "name": "暮江吟",
             "ring": "middle",
             "ringIndex": 6,
             "routeIndex": 78,
@@ -6534,7 +6534,7 @@
           },
           {
             "type": "event",
-            "name": "中圈·外圈·百花洲",
+            "name": "百花洲",
             "ring": "middle",
             "ringIndex": 7,
             "routeIndex": 79,
@@ -6542,7 +6542,7 @@
           },
           {
             "type": "event",
-            "name": "中圈·外圈·古渡遇仙",
+            "name": "古渡遇仙",
             "ring": "middle",
             "ringIndex": 8,
             "routeIndex": 80,
@@ -6550,7 +6550,7 @@
           },
           {
             "type": "battle",
-            "name": "中圈·外圈·论道殿",
+            "name": "论道殿",
             "ring": "middle",
             "ringIndex": 9,
             "routeIndex": 81,
@@ -6558,7 +6558,7 @@
           },
           {
             "type": "ping",
-            "name": "中圈·外圈·归帆影",
+            "name": "归帆影",
             "ring": "middle",
             "ringIndex": 10,
             "routeIndex": 82,
@@ -6569,7 +6569,7 @@
           },
           {
             "type": "battle",
-            "name": "中圈·外圈·江心渡",
+            "name": "江心渡",
             "ring": "middle",
             "ringIndex": 11,
             "routeIndex": 83,
@@ -6577,7 +6577,7 @@
           },
           {
             "type": "battle",
-            "name": "中圈·外圈·沧浪渡",
+            "name": "沧浪渡",
             "ring": "middle",
             "ringIndex": 12,
             "routeIndex": 84,
@@ -6585,7 +6585,7 @@
           },
           {
             "type": "event",
-            "name": "中圈·外圈·渔火遇",
+            "name": "渔火遇",
             "ring": "middle",
             "ringIndex": 13,
             "routeIndex": 85,
@@ -6593,7 +6593,7 @@
           },
           {
             "type": "event",
-            "name": "中圈·外圈·邻舟笛",
+            "name": "邻舟笛",
             "ring": "middle",
             "ringIndex": 14,
             "routeIndex": 86,
@@ -6601,7 +6601,7 @@
           },
           {
             "type": "battle",
-            "name": "中圈·中圈·中流擂",
+            "name": "中流擂",
             "ring": "middle",
             "ringIndex": 15,
             "routeIndex": 87,
@@ -6609,7 +6609,7 @@
           },
           {
             "type": "ze",
-            "name": "中圈·外圈·白鹭洲",
+            "name": "白鹭洲",
             "ring": "middle",
             "ringIndex": 16,
             "routeIndex": 88,
@@ -6625,7 +6625,7 @@
           },
           {
             "type": "mingjing",
-            "name": "中圈·外圈·玉门关",
+            "name": "玉门关",
             "ring": "middle",
             "ringIndex": 17,
             "routeIndex": 89,
@@ -6633,7 +6633,7 @@
           },
           {
             "type": "ze",
-            "name": "中圈·外圈·临帖廊",
+            "name": "临帖廊",
             "ring": "middle",
             "ringIndex": 18,
             "routeIndex": 90,
@@ -6649,7 +6649,7 @@
           },
           {
             "type": "sky",
-            "name": "中圈·外圈·观星阜",
+            "name": "观星阜",
             "ring": "middle",
             "ringIndex": 19,
             "routeIndex": 91,
@@ -6657,7 +6657,7 @@
           },
           {
             "type": "quiz",
-            "name": "中圈·中圈·春闱帘",
+            "name": "春闱帘",
             "ring": "middle",
             "ringIndex": 20,
             "routeIndex": 92,
@@ -6665,7 +6665,7 @@
           },
           {
             "type": "quiz",
-            "name": "中圈·中圈·楚水驿",
+            "name": "楚水驿",
             "ring": "middle",
             "ringIndex": 21,
             "routeIndex": 93,
@@ -6673,7 +6673,7 @@
           },
           {
             "type": "quiz",
-            "name": "中圈·中圈·故园讯",
+            "name": "故园讯",
             "ring": "middle",
             "ringIndex": 22,
             "routeIndex": 94,
@@ -6681,7 +6681,7 @@
           },
           {
             "type": "quiz",
-            "name": "中圈·外圈·府学门",
+            "name": "府学门",
             "ring": "middle",
             "ringIndex": 23,
             "routeIndex": 95,
@@ -6689,7 +6689,7 @@
           },
           {
             "type": "event",
-            "name": "中圈·外圈·古渡遇仙·2",
+            "name": "古渡遇仙·2",
             "ring": "middle",
             "ringIndex": 24,
             "routeIndex": 96,
@@ -6697,7 +6697,7 @@
           },
           {
             "type": "battle",
-            "name": "中圈·外圈·采石矶",
+            "name": "采石矶",
             "ring": "middle",
             "ringIndex": 25,
             "routeIndex": 97,
@@ -6705,7 +6705,7 @@
           },
           {
             "type": "event",
-            "name": "中圈·外圈·指南录",
+            "name": "指南录",
             "ring": "middle",
             "ringIndex": 26,
             "routeIndex": 98,
@@ -6713,7 +6713,7 @@
           },
           {
             "type": "quiz",
-            "name": "中圈·中圈·秋闱号舍",
+            "name": "秋闱号舍",
             "ring": "middle",
             "ringIndex": 27,
             "routeIndex": 99,
@@ -6721,7 +6721,7 @@
           },
           {
             "type": "ping",
-            "name": "中圈·外圈·望乡台",
+            "name": "望乡台",
             "ring": "middle",
             "ringIndex": 28,
             "routeIndex": 100,
@@ -6732,7 +6732,7 @@
           },
           {
             "type": "event",
-            "name": "中圈·外圈·故人斋",
+            "name": "故人斋",
             "ring": "middle",
             "ringIndex": 29,
             "routeIndex": 101,
@@ -6740,7 +6740,7 @@
           },
           {
             "type": "ping",
-            "name": "中圈·外圈·芦花雪",
+            "name": "芦花雪",
             "ring": "middle",
             "ringIndex": 30,
             "routeIndex": 102,
@@ -6751,7 +6751,7 @@
           },
           {
             "type": "sky",
-            "name": "中圈·外圈·望气坛",
+            "name": "望气坛",
             "ring": "middle",
             "ringIndex": 31,
             "routeIndex": 103,
@@ -6759,7 +6759,7 @@
           },
           {
             "type": "ze",
-            "name": "中圈·外圈·翰墨轩",
+            "name": "翰墨轩",
             "ring": "middle",
             "ringIndex": 32,
             "routeIndex": 104,
@@ -6775,7 +6775,7 @@
           },
           {
             "type": "battle",
-            "name": "中圈·中圈·社学擂",
+            "name": "社学擂",
             "ring": "middle",
             "ringIndex": 33,
             "routeIndex": 105,
@@ -6783,7 +6783,7 @@
           },
           {
             "type": "sky",
-            "name": "中圈·外圈·云津渡",
+            "name": "云津渡",
             "ring": "middle",
             "ringIndex": 34,
             "routeIndex": 106,
@@ -6791,7 +6791,7 @@
           },
           {
             "type": "event",
-            "name": "中圈·外圈·沧溟志",
+            "name": "沧溟志",
             "ring": "middle",
             "ringIndex": 35,
             "routeIndex": 107,
@@ -6799,7 +6799,7 @@
           },
           {
             "type": "sky",
-            "name": "中圈·外圈·星矅崖",
+            "name": "星矅崖",
             "ring": "middle",
             "ringIndex": 36,
             "routeIndex": 108,
@@ -6807,7 +6807,7 @@
           },
           {
             "type": "battle",
-            "name": "中圈·外圈·诗社台",
+            "name": "诗社台",
             "ring": "middle",
             "ringIndex": 37,
             "routeIndex": 109,
@@ -6815,7 +6815,7 @@
           },
           {
             "type": "mingjing",
-            "name": "中圈·外圈·白鹿洞",
+            "name": "白鹿洞",
             "ring": "middle",
             "ringIndex": 38,
             "routeIndex": 110,
@@ -6823,7 +6823,7 @@
           },
           {
             "type": "ze",
-            "name": "中圈·外圈·石渠阁",
+            "name": "石渠阁",
             "ring": "middle",
             "ringIndex": 39,
             "routeIndex": 111,
@@ -6839,7 +6839,7 @@
           },
           {
             "type": "event",
-            "name": "中圈·外圈·梅边酌",
+            "name": "梅边酌",
             "ring": "middle",
             "ringIndex": 40,
             "routeIndex": 112,
@@ -6847,7 +6847,7 @@
           },
           {
             "type": "ping",
-            "name": "中圈·外圈·蒙学巷",
+            "name": "蒙学巷",
             "ring": "middle",
             "ringIndex": 41,
             "routeIndex": 113,
@@ -6858,7 +6858,7 @@
           },
           {
             "type": "ze",
-            "name": "中圈·外圈·篷窗雨",
+            "name": "篷窗雨",
             "ring": "middle",
             "ringIndex": 42,
             "routeIndex": 114,
@@ -6874,7 +6874,7 @@
           },
           {
             "type": "quiz",
-            "name": "中圈·中圈·故园问",
+            "name": "故园问",
             "ring": "middle",
             "ringIndex": 43,
             "routeIndex": 115,
@@ -6882,7 +6882,7 @@
           },
           {
             "type": "battle",
-            "name": "中圈·中圈·社学擂·2",
+            "name": "社学擂·2",
             "ring": "middle",
             "ringIndex": 44,
             "routeIndex": 116,
@@ -6890,7 +6890,7 @@
           },
           {
             "type": "quiz",
-            "name": "中圈·外圈·县考棚",
+            "name": "县考棚",
             "ring": "middle",
             "ringIndex": 45,
             "routeIndex": 117,
@@ -6898,7 +6898,7 @@
           },
           {
             "type": "ze",
-            "name": "中圈·外圈·蓑衣湿",
+            "name": "蓑衣湿",
             "ring": "middle",
             "ringIndex": 46,
             "routeIndex": 118,
@@ -6914,7 +6914,7 @@
           },
           {
             "type": "battle",
-            "name": "中圈·外圈·社学擂",
+            "name": "社学擂",
             "ring": "middle",
             "ringIndex": 47,
             "routeIndex": 119,
@@ -6922,7 +6922,7 @@
           },
           {
             "type": "battle",
-            "name": "中圈·中圈·诗社台",
+            "name": "诗社台",
             "ring": "middle",
             "ringIndex": 48,
             "routeIndex": 120,
@@ -6930,7 +6930,7 @@
           },
           {
             "type": "quiz",
-            "name": "中圈·外圈·描红斋",
+            "name": "描红斋",
             "ring": "middle",
             "ringIndex": 49,
             "routeIndex": 121,
@@ -6938,7 +6938,7 @@
           },
           {
             "type": "battle",
-            "name": "中圈·外圈·曲江宴",
+            "name": "曲江宴",
             "phaseGate": {
               "id": "xiucai",
               "phase": "xiucai",
@@ -6951,7 +6951,7 @@
           },
           {
             "type": "ze",
-            "name": "中圈·外圈·一叶舟",
+            "name": "一叶舟",
             "effect": {
               "inspiration": 3,
               "attrs": {
@@ -6967,7 +6967,7 @@
           },
           {
             "type": "ping",
-            "name": "中圈·外圈·桑麻径",
+            "name": "桑麻径",
             "ring": "middle",
             "ringIndex": 52,
             "routeIndex": 124,
@@ -6978,7 +6978,7 @@
           },
           {
             "type": "battle",
-            "name": "中圈·中圈·采石矶",
+            "name": "采石矶",
             "ring": "middle",
             "ringIndex": 53,
             "routeIndex": 125,
@@ -6986,7 +6986,7 @@
           },
           {
             "type": "sky",
-            "name": "中圈·中圈·观星阜",
+            "name": "观星阜",
             "ring": "middle",
             "ringIndex": 54,
             "routeIndex": 126,
@@ -6994,7 +6994,7 @@
           },
           {
             "type": "ze",
-            "name": "中圈·外圈·旧雨楼",
+            "name": "旧雨楼",
             "ring": "middle",
             "ringIndex": 55,
             "routeIndex": 127,
@@ -7010,7 +7010,7 @@
           },
           {
             "type": "event",
-            "name": "中圈·外圈·百花洲·2",
+            "name": "百花洲·2",
             "ring": "middle",
             "ringIndex": 56,
             "routeIndex": 128,
@@ -7018,7 +7018,7 @@
           },
           {
             "type": "sky",
-            "name": "中圈·外圈·月华津",
+            "name": "月华津",
             "ring": "middle",
             "ringIndex": 57,
             "routeIndex": 129,
@@ -7026,7 +7026,7 @@
           },
           {
             "type": "quiz",
-            "name": "中圈·中圈·策论斋",
+            "name": "策论斋",
             "ring": "middle",
             "ringIndex": 58,
             "routeIndex": 130,
@@ -7034,7 +7034,7 @@
           },
           {
             "type": "ze",
-            "name": "中圈·外圈·抄书阁",
+            "name": "抄书阁",
             "ring": "middle",
             "ringIndex": 59,
             "routeIndex": 131,
@@ -7050,7 +7050,7 @@
           },
           {
             "type": "quiz",
-            "name": "中圈·外圈·经义堂",
+            "name": "经义堂",
             "ring": "middle",
             "ringIndex": 60,
             "routeIndex": 132,
@@ -7058,7 +7058,7 @@
           },
           {
             "type": "battle",
-            "name": "中圈·外圈·中流擂",
+            "name": "中流擂",
             "ring": "middle",
             "ringIndex": 61,
             "routeIndex": 133,
@@ -7066,7 +7066,7 @@
           },
           {
             "type": "quiz",
-            "name": "中圈·外圈·秋闱号舍",
+            "name": "秋闱号舍",
             "ring": "middle",
             "ringIndex": 62,
             "routeIndex": 134,
@@ -7074,7 +7074,7 @@
           },
           {
             "type": "ping",
-            "name": "中圈·外圈·芦荻洲",
+            "name": "芦荻洲",
             "ring": "middle",
             "ringIndex": 63,
             "routeIndex": 135,
@@ -7087,13 +7087,13 @@
       },
       {
         "id": "inner",
-        "name": "内圈·定稿",
+        "name": "定稿",
         "grid": 15,
         "entryFrom": "middle",
         "cells": [
           {
             "type": "gate",
-            "name": "入内圈·登第门",
+            "name": "登第门",
             "icon": "start",
             "id": 136,
             "ring": "inner",
@@ -7109,7 +7109,7 @@
           },
           {
             "type": "event",
-            "name": "内圈·外圈·古渡遇仙·2",
+            "name": "古渡遇仙·2",
             "ring": "inner",
             "ringIndex": 1,
             "routeIndex": 137,
@@ -7117,7 +7117,7 @@
           },
           {
             "type": "quiz",
-            "name": "内圈·外圈·秋闱号舍",
+            "name": "秋闱号舍",
             "ring": "inner",
             "ringIndex": 2,
             "routeIndex": 138,
@@ -7125,7 +7125,7 @@
           },
           {
             "type": "battle",
-            "name": "内圈·外圈·江心渡",
+            "name": "江心渡",
             "ring": "inner",
             "ringIndex": 3,
             "routeIndex": 139,
@@ -7133,7 +7133,7 @@
           },
           {
             "type": "battle",
-            "name": "内圈·中圈·社学擂·2",
+            "name": "社学擂·2",
             "ring": "inner",
             "ringIndex": 4,
             "routeIndex": 140,
@@ -7141,7 +7141,7 @@
           },
           {
             "type": "ze",
-            "name": "内圈·外圈·临帖廊",
+            "name": "临帖廊",
             "ring": "inner",
             "ringIndex": 5,
             "routeIndex": 141,
@@ -7157,7 +7157,7 @@
           },
           {
             "type": "quiz",
-            "name": "内圈·中圈·春闱帘",
+            "name": "春闱帘",
             "ring": "inner",
             "ringIndex": 6,
             "routeIndex": 142,
@@ -7165,7 +7165,7 @@
           },
           {
             "type": "ping",
-            "name": "内圈·外圈·孤蓬夜",
+            "name": "孤蓬夜",
             "ring": "inner",
             "ringIndex": 7,
             "routeIndex": 143,
@@ -7176,7 +7176,7 @@
           },
           {
             "type": "battle",
-            "name": "内圈·中圈·社学擂",
+            "name": "社学擂",
             "ring": "inner",
             "ringIndex": 8,
             "routeIndex": 144,
@@ -7184,7 +7184,7 @@
           },
           {
             "type": "ping",
-            "name": "内圈·外圈·归帆影",
+            "name": "归帆影",
             "ring": "inner",
             "ringIndex": 9,
             "routeIndex": 145,
@@ -7195,7 +7195,7 @@
           },
           {
             "type": "ping",
-            "name": "内圈·外圈·桑麻径",
+            "name": "桑麻径",
             "ring": "inner",
             "ringIndex": 10,
             "routeIndex": 146,
@@ -7206,7 +7206,7 @@
           },
           {
             "type": "event",
-            "name": "内圈·外圈·雁塔题名",
+            "name": "雁塔题名",
             "ring": "inner",
             "ringIndex": 11,
             "routeIndex": 147,
@@ -7214,7 +7214,7 @@
           },
           {
             "type": "battle",
-            "name": "内圈·中圈·诗社台",
+            "name": "诗社台",
             "ring": "inner",
             "ringIndex": 12,
             "routeIndex": 148,
@@ -7222,7 +7222,7 @@
           },
           {
             "type": "event",
-            "name": "内圈·外圈·卖字摊",
+            "name": "卖字摊",
             "ring": "inner",
             "ringIndex": 13,
             "routeIndex": 149,
@@ -7230,7 +7230,7 @@
           },
           {
             "type": "sky",
-            "name": "内圈·外圈·月华津",
+            "name": "月华津",
             "ring": "inner",
             "ringIndex": 14,
             "routeIndex": 150,
@@ -7238,7 +7238,7 @@
           },
           {
             "type": "event",
-            "name": "内圈·外圈·渔火遇",
+            "name": "渔火遇",
             "ring": "inner",
             "ringIndex": 15,
             "routeIndex": 151,
@@ -7246,7 +7246,7 @@
           },
           {
             "type": "quiz",
-            "name": "内圈·外圈·府学门",
+            "name": "府学门",
             "ring": "inner",
             "ringIndex": 16,
             "routeIndex": 152,
@@ -7254,7 +7254,7 @@
           },
           {
             "type": "ping",
-            "name": "内圈·外圈·芦荻洲",
+            "name": "芦荻洲",
             "ring": "inner",
             "ringIndex": 17,
             "routeIndex": 153,
@@ -7265,7 +7265,7 @@
           },
           {
             "type": "event",
-            "name": "内圈·外圈·古渡遇仙",
+            "name": "古渡遇仙",
             "ring": "inner",
             "ringIndex": 18,
             "routeIndex": 154,
@@ -7273,7 +7273,7 @@
           },
           {
             "type": "quiz",
-            "name": "内圈·外圈·县考棚",
+            "name": "县考棚",
             "ring": "inner",
             "ringIndex": 19,
             "routeIndex": 155,
@@ -7281,7 +7281,7 @@
           },
           {
             "type": "battle",
-            "name": "内圈·中圈·采石矶",
+            "name": "采石矶",
             "ring": "inner",
             "ringIndex": 20,
             "routeIndex": 156,
@@ -7289,7 +7289,7 @@
           },
           {
             "type": "battle",
-            "name": "内圈·外圈·采石矶",
+            "name": "采石矶",
             "ring": "inner",
             "ringIndex": 21,
             "routeIndex": 157,
@@ -7297,7 +7297,7 @@
           },
           {
             "type": "event",
-            "name": "内圈·外圈·百花洲·2",
+            "name": "百花洲·2",
             "ring": "inner",
             "ringIndex": 22,
             "routeIndex": 158,
@@ -7305,7 +7305,7 @@
           },
           {
             "type": "battle",
-            "name": "内圈·外圈·沧浪渡",
+            "name": "沧浪渡",
             "ring": "inner",
             "ringIndex": 23,
             "routeIndex": 159,
@@ -7313,7 +7313,7 @@
           },
           {
             "type": "mingjing",
-            "name": "内圈·外圈·白鹿洞",
+            "name": "白鹿洞",
             "ring": "inner",
             "ringIndex": 24,
             "routeIndex": 160,
@@ -7321,7 +7321,7 @@
           },
           {
             "type": "battle",
-            "name": "内圈·中圈·中流擂",
+            "name": "中流擂",
             "ring": "inner",
             "ringIndex": 25,
             "routeIndex": 161,
@@ -7329,7 +7329,7 @@
           },
           {
             "type": "battle",
-            "name": "内圈·外圈·诗社台",
+            "name": "诗社台",
             "ring": "inner",
             "ringIndex": 26,
             "routeIndex": 162,
@@ -7337,7 +7337,7 @@
           },
           {
             "type": "ping",
-            "name": "内圈·外圈·暮江吟",
+            "name": "暮江吟",
             "ring": "inner",
             "ringIndex": 27,
             "routeIndex": 163,
@@ -7348,7 +7348,7 @@
           },
           {
             "type": "ze",
-            "name": "内圈·外圈·篷窗雨",
+            "name": "篷窗雨",
             "ring": "inner",
             "ringIndex": 28,
             "routeIndex": 164,
@@ -7364,7 +7364,7 @@
           },
           {
             "type": "sky",
-            "name": "内圈·外圈·星矅崖",
+            "name": "星矅崖",
             "ring": "inner",
             "ringIndex": 29,
             "routeIndex": 165,
@@ -7372,7 +7372,7 @@
           },
           {
             "type": "battle",
-            "name": "内圈·外圈·论道殿",
+            "name": "论道殿",
             "ring": "inner",
             "ringIndex": 30,
             "routeIndex": 166,
@@ -7380,7 +7380,7 @@
           },
           {
             "type": "quiz",
-            "name": "内圈·中圈·楚水驿",
+            "name": "楚水驿",
             "ring": "inner",
             "ringIndex": 31,
             "routeIndex": 167,
@@ -7388,7 +7388,7 @@
           },
           {
             "type": "quiz",
-            "name": "内圈·外圈·经义堂",
+            "name": "经义堂",
             "ring": "inner",
             "ringIndex": 32,
             "routeIndex": 168,
@@ -7396,7 +7396,7 @@
           },
           {
             "type": "event",
-            "name": "内圈·外圈·百花洲",
+            "name": "百花洲",
             "ring": "inner",
             "ringIndex": 33,
             "routeIndex": 169,
@@ -7404,7 +7404,7 @@
           },
           {
             "type": "event",
-            "name": "内圈·外圈·故人斋",
+            "name": "故人斋",
             "ring": "inner",
             "ringIndex": 34,
             "routeIndex": 170,
@@ -7412,7 +7412,7 @@
           },
           {
             "type": "event",
-            "name": "内圈·外圈·卖字摊·2",
+            "name": "卖字摊·2",
             "ring": "inner",
             "ringIndex": 35,
             "routeIndex": 171,
@@ -7420,7 +7420,7 @@
           },
           {
             "type": "event",
-            "name": "内圈·外圈·沧溟志",
+            "name": "沧溟志",
             "ring": "inner",
             "ringIndex": 36,
             "routeIndex": 172,
@@ -7428,7 +7428,7 @@
           },
           {
             "type": "quiz",
-            "name": "内圈·中圈·故园讯",
+            "name": "故园讯",
             "ring": "inner",
             "ringIndex": 37,
             "routeIndex": 173,
@@ -7436,7 +7436,7 @@
           },
           {
             "type": "event",
-            "name": "内圈·外圈·指南录",
+            "name": "指南录",
             "ring": "inner",
             "ringIndex": 38,
             "routeIndex": 174,
@@ -7444,7 +7444,7 @@
           },
           {
             "type": "mingjing",
-            "name": "内圈·外圈·桃花源",
+            "name": "桃花源",
             "ring": "inner",
             "ringIndex": 39,
             "routeIndex": 175,
@@ -7452,7 +7452,7 @@
           },
           {
             "type": "ze",
-            "name": "内圈·外圈·抄书阁",
+            "name": "抄书阁",
             "ring": "inner",
             "ringIndex": 40,
             "routeIndex": 176,
@@ -7468,7 +7468,7 @@
           },
           {
             "type": "event",
-            "name": "内圈·外圈·梅边酌",
+            "name": "梅边酌",
             "ring": "inner",
             "ringIndex": 41,
             "routeIndex": 177,
@@ -7476,7 +7476,7 @@
           },
           {
             "type": "sky",
-            "name": "内圈·外圈·云津渡",
+            "name": "云津渡",
             "ring": "inner",
             "ringIndex": 42,
             "routeIndex": 178,
@@ -7484,7 +7484,7 @@
           },
           {
             "type": "battle",
-            "name": "内圈·外圈·中流擂",
+            "name": "中流擂",
             "ring": "inner",
             "ringIndex": 43,
             "routeIndex": 179,
@@ -7492,7 +7492,7 @@
           },
           {
             "type": "mingjing",
-            "name": "内圈·外圈·玉门关",
+            "name": "玉门关",
             "ring": "inner",
             "ringIndex": 44,
             "routeIndex": 180,
@@ -7500,7 +7500,7 @@
           },
           {
             "type": "sky",
-            "name": "内圈·外圈·望气坛",
+            "name": "望气坛",
             "ring": "inner",
             "ringIndex": 45,
             "routeIndex": 181,
@@ -7508,7 +7508,7 @@
           },
           {
             "type": "battle",
-            "name": "内圈·外圈·曲江宴",
+            "name": "曲江宴",
             "phaseGate": {
               "id": "xiucai",
               "phase": "xiucai",
@@ -7521,7 +7521,7 @@
           },
           {
             "type": "sky",
-            "name": "内圈·外圈·观星阜",
+            "name": "观星阜",
             "ring": "inner",
             "ringIndex": 47,
             "routeIndex": 183,
@@ -7529,7 +7529,7 @@
           },
           {
             "type": "quiz",
-            "name": "内圈·中圈·秋闱号舍",
+            "name": "秋闱号舍",
             "ring": "inner",
             "ringIndex": 48,
             "routeIndex": 184,
@@ -7537,7 +7537,7 @@
           },
           {
             "type": "quiz",
-            "name": "内圈·中圈·策论斋",
+            "name": "策论斋",
             "ring": "inner",
             "ringIndex": 49,
             "routeIndex": 185,
@@ -7545,7 +7545,7 @@
           },
           {
             "type": "event",
-            "name": "内圈·外圈·邻舟笛",
+            "name": "邻舟笛",
             "ring": "inner",
             "ringIndex": 50,
             "routeIndex": 186,
@@ -7553,7 +7553,7 @@
           },
           {
             "type": "ze",
-            "name": "内圈·外圈·白鹭洲",
+            "name": "白鹭洲",
             "ring": "inner",
             "ringIndex": 51,
             "routeIndex": 187,
@@ -7569,7 +7569,7 @@
           },
           {
             "type": "ze",
-            "name": "内圈·外圈·旧雨楼",
+            "name": "旧雨楼",
             "ring": "inner",
             "ringIndex": 52,
             "routeIndex": 188,
@@ -7585,7 +7585,7 @@
           },
           {
             "type": "battle",
-            "name": "内圈·外圈·社学擂",
+            "name": "社学擂",
             "ring": "inner",
             "ringIndex": 53,
             "routeIndex": 189,
@@ -7593,7 +7593,7 @@
           },
           {
             "type": "quiz",
-            "name": "内圈·外圈·描红斋",
+            "name": "描红斋",
             "ring": "inner",
             "ringIndex": 54,
             "routeIndex": 190,
@@ -7601,7 +7601,7 @@
           },
           {
             "type": "ze",
-            "name": "内圈·外圈·石渠阁",
+            "name": "石渠阁",
             "ring": "inner",
             "ringIndex": 55,
             "routeIndex": 191,
@@ -8425,7 +8425,7 @@
     "mainRing": [
       {
         "type": "start",
-        "name": "外圈·外圈·童生铺",
+        "name": "童生铺",
         "ring": "outer",
         "ringIndex": 0,
         "routeIndex": 0,
@@ -8433,7 +8433,7 @@
       },
       {
         "type": "event",
-        "name": "外圈·外圈·百花洲",
+        "name": "百花洲",
         "ring": "outer",
         "ringIndex": 1,
         "routeIndex": 1,
@@ -8441,7 +8441,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·归帆影",
+        "name": "归帆影",
         "ring": "outer",
         "ringIndex": 2,
         "routeIndex": 2,
@@ -8449,7 +8449,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·柳荫渡",
+        "name": "柳荫渡",
         "ring": "outer",
         "ringIndex": 3,
         "routeIndex": 3,
@@ -8457,7 +8457,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·芙蓉苑",
+        "name": "芙蓉苑",
         "ring": "outer",
         "ringIndex": 4,
         "routeIndex": 4,
@@ -8465,7 +8465,7 @@
       },
       {
         "type": "sky",
-        "name": "外圈·外圈·望气坛",
+        "name": "望气坛",
         "ring": "outer",
         "ringIndex": 5,
         "routeIndex": 5,
@@ -8473,7 +8473,7 @@
       },
       {
         "type": "quiz",
-        "name": "外圈·外圈·县考棚",
+        "name": "县考棚",
         "ring": "outer",
         "ringIndex": 6,
         "routeIndex": 6,
@@ -8481,7 +8481,7 @@
       },
       {
         "type": "quiz",
-        "name": "外圈·外圈·经义堂",
+        "name": "经义堂",
         "ring": "outer",
         "ringIndex": 7,
         "routeIndex": 7,
@@ -8489,7 +8489,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·灞桥柳",
+        "name": "灞桥柳",
         "ring": "outer",
         "ringIndex": 8,
         "routeIndex": 8,
@@ -8497,7 +8497,7 @@
       },
       {
         "type": "event",
-        "name": "外圈·外圈·邻舟笛",
+        "name": "邻舟笛",
         "ring": "outer",
         "ringIndex": 9,
         "routeIndex": 9,
@@ -8505,7 +8505,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·旧雨楼",
+        "name": "旧雨楼",
         "ring": "outer",
         "ringIndex": 10,
         "routeIndex": 10,
@@ -8513,7 +8513,7 @@
       },
       {
         "type": "event",
-        "name": "外圈·外圈·故人斋",
+        "name": "故人斋",
         "ring": "outer",
         "ringIndex": 11,
         "routeIndex": 11,
@@ -8521,7 +8521,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·芦花渚",
+        "name": "芦花渚",
         "ring": "outer",
         "ringIndex": 12,
         "routeIndex": 12,
@@ -8529,7 +8529,7 @@
       },
       {
         "type": "mingjing",
-        "name": "外圈·外圈·春在堂",
+        "name": "春在堂",
         "effect": {
           "attrs": {
             "xue": 2
@@ -8543,7 +8543,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·翰墨轩",
+        "name": "翰墨轩",
         "ring": "outer",
         "ringIndex": 14,
         "routeIndex": 14,
@@ -8551,7 +8551,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·长亭道",
+        "name": "长亭道",
         "ring": "outer",
         "ringIndex": 15,
         "routeIndex": 15,
@@ -8559,7 +8559,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·寒江钓",
+        "name": "寒江钓",
         "ring": "outer",
         "ringIndex": 16,
         "routeIndex": 16,
@@ -8567,7 +8567,7 @@
       },
       {
         "type": "battle",
-        "name": "外圈·外圈·社学擂",
+        "name": "社学擂",
         "ring": "outer",
         "ringIndex": 17,
         "routeIndex": 17,
@@ -8575,7 +8575,7 @@
       },
       {
         "type": "event",
-        "name": "外圈·外圈·雁塔题名",
+        "name": "雁塔题名",
         "ring": "outer",
         "ringIndex": 18,
         "routeIndex": 18,
@@ -8583,7 +8583,7 @@
       },
       {
         "type": "quiz",
-        "name": "外圈·外圈·府学门",
+        "name": "府学门",
         "ring": "outer",
         "ringIndex": 19,
         "routeIndex": 19,
@@ -8591,7 +8591,7 @@
       },
       {
         "type": "event",
-        "name": "外圈·外圈·古渡遇仙",
+        "name": "古渡遇仙",
         "ring": "outer",
         "ringIndex": 20,
         "routeIndex": 20,
@@ -8599,7 +8599,7 @@
       },
       {
         "type": "sky",
-        "name": "外圈·外圈·观星阜",
+        "name": "观星阜",
         "ring": "outer",
         "ringIndex": 21,
         "routeIndex": 21,
@@ -8607,7 +8607,7 @@
       },
       {
         "type": "event",
-        "name": "外圈·外圈·古渡遇仙·2",
+        "name": "古渡遇仙·2",
         "ring": "outer",
         "ringIndex": 22,
         "routeIndex": 22,
@@ -8615,7 +8615,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·藏书楼",
+        "name": "藏书楼",
         "ring": "outer",
         "ringIndex": 23,
         "routeIndex": 23,
@@ -8623,7 +8623,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·桑麻径",
+        "name": "桑麻径",
         "ring": "outer",
         "ringIndex": 24,
         "routeIndex": 24,
@@ -8631,7 +8631,7 @@
       },
       {
         "type": "quiz",
-        "name": "外圈·外圈·描红斋",
+        "name": "描红斋",
         "ring": "outer",
         "ringIndex": 25,
         "routeIndex": 25,
@@ -8639,7 +8639,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·金水桥",
+        "name": "金水桥",
         "ring": "outer",
         "ringIndex": 26,
         "routeIndex": 26,
@@ -8647,7 +8647,7 @@
       },
       {
         "type": "battle",
-        "name": "外圈·外圈·沧浪渡",
+        "name": "沧浪渡",
         "ring": "outer",
         "ringIndex": 27,
         "routeIndex": 27,
@@ -8655,7 +8655,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·望乡台",
+        "name": "望乡台",
         "ring": "outer",
         "ringIndex": 28,
         "routeIndex": 28,
@@ -8663,7 +8663,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·芦荻洲",
+        "name": "芦荻洲",
         "ring": "outer",
         "ringIndex": 29,
         "routeIndex": 29,
@@ -8671,7 +8671,7 @@
       },
       {
         "type": "mingjing",
-        "name": "外圈·外圈·白鹿洞",
+        "name": "白鹿洞",
         "ring": "outer",
         "ringIndex": 30,
         "routeIndex": 30,
@@ -8679,7 +8679,7 @@
       },
       {
         "type": "event",
-        "name": "外圈·外圈·沧溟志",
+        "name": "沧溟志",
         "ring": "outer",
         "ringIndex": 31,
         "routeIndex": 31,
@@ -8687,7 +8687,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·抄书阁",
+        "name": "抄书阁",
         "ring": "outer",
         "ringIndex": 32,
         "routeIndex": 32,
@@ -8695,7 +8695,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·松风阁",
+        "name": "松风阁",
         "ring": "outer",
         "ringIndex": 33,
         "routeIndex": 33,
@@ -8703,7 +8703,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·欸乃曲",
+        "name": "欸乃曲",
         "ring": "outer",
         "ringIndex": 34,
         "routeIndex": 34,
@@ -8711,7 +8711,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·白鹭洲",
+        "name": "白鹭洲",
         "ring": "outer",
         "ringIndex": 35,
         "routeIndex": 35,
@@ -8719,7 +8719,7 @@
       },
       {
         "type": "battle",
-        "name": "外圈·外圈·曲江宴",
+        "name": "曲江宴",
         "phaseGate": {
           "at": 36,
           "cellId": 36,
@@ -8734,7 +8734,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·芦花雪",
+        "name": "芦花雪",
         "ring": "outer",
         "ringIndex": 37,
         "routeIndex": 37,
@@ -8742,7 +8742,7 @@
       },
       {
         "type": "event",
-        "name": "外圈·外圈·指南录",
+        "name": "指南录",
         "ring": "outer",
         "ringIndex": 38,
         "routeIndex": 38,
@@ -8750,7 +8750,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·御街晓",
+        "name": "御街晓",
         "ring": "outer",
         "ringIndex": 39,
         "routeIndex": 39,
@@ -8758,7 +8758,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·麦浪坡",
+        "name": "麦浪坡",
         "ring": "outer",
         "ringIndex": 40,
         "routeIndex": 40,
@@ -8773,7 +8773,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·蓑衣湿",
+        "name": "蓑衣湿",
         "ring": "outer",
         "ringIndex": 41,
         "routeIndex": 41,
@@ -8781,7 +8781,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·稻花陌",
+        "name": "稻花陌",
         "ring": "outer",
         "ringIndex": 42,
         "routeIndex": 42,
@@ -8789,7 +8789,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·磨墨坡",
+        "name": "磨墨坡",
         "ring": "outer",
         "ringIndex": 43,
         "routeIndex": 43,
@@ -8797,7 +8797,7 @@
       },
       {
         "type": "quiz",
-        "name": "外圈·外圈·秋闱号舍",
+        "name": "秋闱号舍",
         "ring": "outer",
         "ringIndex": 44,
         "routeIndex": 44,
@@ -8805,7 +8805,7 @@
       },
       {
         "type": "sky",
-        "name": "外圈·外圈·云津渡",
+        "name": "云津渡",
         "ring": "outer",
         "ringIndex": 45,
         "routeIndex": 45,
@@ -8813,7 +8813,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·蒙学巷",
+        "name": "蒙学巷",
         "ring": "outer",
         "ringIndex": 46,
         "routeIndex": 46,
@@ -8821,7 +8821,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·一叶舟",
+        "name": "一叶舟",
         "effect": {
           "inspiration": 2
         },
@@ -8832,7 +8832,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·寒砧月",
+        "name": "寒砧月",
         "ring": "outer",
         "ringIndex": 48,
         "routeIndex": 48,
@@ -8840,7 +8840,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·洗砚池",
+        "name": "洗砚池",
         "ring": "outer",
         "ringIndex": 49,
         "routeIndex": 49,
@@ -8848,7 +8848,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·暮江吟",
+        "name": "暮江吟",
         "ring": "outer",
         "ringIndex": 50,
         "routeIndex": 50,
@@ -8856,7 +8856,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·磨墨坡·2",
+        "name": "磨墨坡·2",
         "ring": "outer",
         "ringIndex": 51,
         "routeIndex": 51,
@@ -8864,7 +8864,7 @@
       },
       {
         "type": "event",
-        "name": "外圈·外圈·梅边酌",
+        "name": "梅边酌",
         "ring": "outer",
         "ringIndex": 52,
         "routeIndex": 52,
@@ -8872,7 +8872,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·铁砚斋",
+        "name": "铁砚斋",
         "ring": "outer",
         "ringIndex": 53,
         "routeIndex": 53,
@@ -8880,7 +8880,7 @@
       },
       {
         "type": "battle",
-        "name": "外圈·外圈·论道殿",
+        "name": "论道殿",
         "ring": "outer",
         "ringIndex": 54,
         "routeIndex": 54,
@@ -8888,7 +8888,7 @@
       },
       {
         "type": "mingjing",
-        "name": "外圈·外圈·玉门关",
+        "name": "玉门关",
         "ring": "outer",
         "ringIndex": 55,
         "routeIndex": 55,
@@ -8896,7 +8896,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·孤蓬夜",
+        "name": "孤蓬夜",
         "ring": "outer",
         "ringIndex": 56,
         "routeIndex": 56,
@@ -8904,7 +8904,7 @@
       },
       {
         "type": "sky",
-        "name": "外圈·外圈·月华津",
+        "name": "月华津",
         "ring": "outer",
         "ringIndex": 57,
         "routeIndex": 57,
@@ -8912,7 +8912,7 @@
       },
       {
         "type": "ping",
-        "name": "外圈·外圈·蒙学巷·2",
+        "name": "蒙学巷·2",
         "ring": "outer",
         "ringIndex": 58,
         "routeIndex": 58,
@@ -8920,7 +8920,7 @@
       },
       {
         "type": "battle",
-        "name": "外圈·外圈·采石矶",
+        "name": "采石矶",
         "ring": "outer",
         "ringIndex": 59,
         "routeIndex": 59,
@@ -8928,7 +8928,7 @@
       },
       {
         "type": "battle",
-        "name": "外圈·外圈·中流擂",
+        "name": "中流擂",
         "ring": "outer",
         "ringIndex": 60,
         "routeIndex": 60,
@@ -8936,7 +8936,7 @@
       },
       {
         "type": "sky",
-        "name": "外圈·外圈·星矅崖",
+        "name": "星矅崖",
         "ring": "outer",
         "ringIndex": 61,
         "routeIndex": 61,
@@ -8944,7 +8944,7 @@
       },
       {
         "type": "event",
-        "name": "外圈·外圈·卖字摊",
+        "name": "卖字摊",
         "ring": "outer",
         "ringIndex": 62,
         "routeIndex": 62,
@@ -8952,7 +8952,7 @@
       },
       {
         "type": "event",
-        "name": "外圈·外圈·渔火遇",
+        "name": "渔火遇",
         "ring": "outer",
         "ringIndex": 63,
         "routeIndex": 63,
@@ -8960,7 +8960,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·篷窗雨",
+        "name": "篷窗雨",
         "ring": "outer",
         "ringIndex": 64,
         "routeIndex": 64,
@@ -8968,7 +8968,7 @@
       },
       {
         "type": "mingjing",
-        "name": "外圈·外圈·桃花源",
+        "name": "桃花源",
         "ring": "outer",
         "ringIndex": 65,
         "routeIndex": 65,
@@ -8976,7 +8976,7 @@
       },
       {
         "type": "battle",
-        "name": "外圈·外圈·诗社台",
+        "name": "诗社台",
         "ring": "outer",
         "ringIndex": 66,
         "routeIndex": 66,
@@ -8984,7 +8984,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·临帖廊",
+        "name": "临帖廊",
         "ring": "outer",
         "ringIndex": 67,
         "routeIndex": 67,
@@ -8992,7 +8992,7 @@
       },
       {
         "type": "battle",
-        "name": "外圈·外圈·江心渡",
+        "name": "江心渡",
         "ring": "outer",
         "ringIndex": 68,
         "routeIndex": 68,
@@ -9000,7 +9000,7 @@
       },
       {
         "type": "ze",
-        "name": "外圈·外圈·石渠阁",
+        "name": "石渠阁",
         "ring": "outer",
         "ringIndex": 69,
         "routeIndex": 69,
@@ -9008,7 +9008,7 @@
       },
       {
         "type": "event",
-        "name": "外圈·外圈·卖字摊·2",
+        "name": "卖字摊·2",
         "ring": "outer",
         "ringIndex": 70,
         "routeIndex": 70,
@@ -9016,7 +9016,7 @@
       },
       {
         "type": "event",
-        "name": "外圈·外圈·百花洲·2",
+        "name": "百花洲·2",
         "ring": "outer",
         "ringIndex": 71,
         "routeIndex": 71,
@@ -9024,7 +9024,7 @@
       },
       {
         "type": "gate",
-        "name": "入中圈·会文门",
+        "name": "会文门",
         "icon": "start",
         "id": 72,
         "ring": "middle",
@@ -9040,7 +9040,7 @@
       },
       {
         "type": "event",
-        "name": "中圈·外圈·卖字摊",
+        "name": "卖字摊",
         "ring": "middle",
         "ringIndex": 1,
         "routeIndex": 73,
@@ -9048,7 +9048,7 @@
       },
       {
         "type": "quiz",
-        "name": "中圈·中圈·渡口问",
+        "name": "渡口问",
         "ring": "middle",
         "ringIndex": 2,
         "routeIndex": 74,
@@ -9056,7 +9056,7 @@
       },
       {
         "type": "event",
-        "name": "中圈·外圈·卖字摊·2",
+        "name": "卖字摊·2",
         "ring": "middle",
         "ringIndex": 3,
         "routeIndex": 75,
@@ -9064,7 +9064,7 @@
       },
       {
         "type": "event",
-        "name": "中圈·外圈·雁塔题名",
+        "name": "雁塔题名",
         "ring": "middle",
         "ringIndex": 4,
         "routeIndex": 76,
@@ -9072,7 +9072,7 @@
       },
       {
         "type": "ping",
-        "name": "中圈·外圈·孤蓬夜",
+        "name": "孤蓬夜",
         "ring": "middle",
         "ringIndex": 5,
         "routeIndex": 77,
@@ -9083,7 +9083,7 @@
       },
       {
         "type": "ping",
-        "name": "中圈·外圈·暮江吟",
+        "name": "暮江吟",
         "ring": "middle",
         "ringIndex": 6,
         "routeIndex": 78,
@@ -9094,7 +9094,7 @@
       },
       {
         "type": "event",
-        "name": "中圈·外圈·百花洲",
+        "name": "百花洲",
         "ring": "middle",
         "ringIndex": 7,
         "routeIndex": 79,
@@ -9102,7 +9102,7 @@
       },
       {
         "type": "event",
-        "name": "中圈·外圈·古渡遇仙",
+        "name": "古渡遇仙",
         "ring": "middle",
         "ringIndex": 8,
         "routeIndex": 80,
@@ -9110,7 +9110,7 @@
       },
       {
         "type": "battle",
-        "name": "中圈·外圈·论道殿",
+        "name": "论道殿",
         "ring": "middle",
         "ringIndex": 9,
         "routeIndex": 81,
@@ -9118,7 +9118,7 @@
       },
       {
         "type": "ping",
-        "name": "中圈·外圈·归帆影",
+        "name": "归帆影",
         "ring": "middle",
         "ringIndex": 10,
         "routeIndex": 82,
@@ -9129,7 +9129,7 @@
       },
       {
         "type": "battle",
-        "name": "中圈·外圈·江心渡",
+        "name": "江心渡",
         "ring": "middle",
         "ringIndex": 11,
         "routeIndex": 83,
@@ -9137,7 +9137,7 @@
       },
       {
         "type": "battle",
-        "name": "中圈·外圈·沧浪渡",
+        "name": "沧浪渡",
         "ring": "middle",
         "ringIndex": 12,
         "routeIndex": 84,
@@ -9145,7 +9145,7 @@
       },
       {
         "type": "event",
-        "name": "中圈·外圈·渔火遇",
+        "name": "渔火遇",
         "ring": "middle",
         "ringIndex": 13,
         "routeIndex": 85,
@@ -9153,7 +9153,7 @@
       },
       {
         "type": "event",
-        "name": "中圈·外圈·邻舟笛",
+        "name": "邻舟笛",
         "ring": "middle",
         "ringIndex": 14,
         "routeIndex": 86,
@@ -9161,7 +9161,7 @@
       },
       {
         "type": "battle",
-        "name": "中圈·中圈·中流擂",
+        "name": "中流擂",
         "ring": "middle",
         "ringIndex": 15,
         "routeIndex": 87,
@@ -9169,7 +9169,7 @@
       },
       {
         "type": "ze",
-        "name": "中圈·外圈·白鹭洲",
+        "name": "白鹭洲",
         "ring": "middle",
         "ringIndex": 16,
         "routeIndex": 88,
@@ -9185,7 +9185,7 @@
       },
       {
         "type": "mingjing",
-        "name": "中圈·外圈·玉门关",
+        "name": "玉门关",
         "ring": "middle",
         "ringIndex": 17,
         "routeIndex": 89,
@@ -9193,7 +9193,7 @@
       },
       {
         "type": "ze",
-        "name": "中圈·外圈·临帖廊",
+        "name": "临帖廊",
         "ring": "middle",
         "ringIndex": 18,
         "routeIndex": 90,
@@ -9209,7 +9209,7 @@
       },
       {
         "type": "sky",
-        "name": "中圈·外圈·观星阜",
+        "name": "观星阜",
         "ring": "middle",
         "ringIndex": 19,
         "routeIndex": 91,
@@ -9217,7 +9217,7 @@
       },
       {
         "type": "quiz",
-        "name": "中圈·中圈·春闱帘",
+        "name": "春闱帘",
         "ring": "middle",
         "ringIndex": 20,
         "routeIndex": 92,
@@ -9225,7 +9225,7 @@
       },
       {
         "type": "quiz",
-        "name": "中圈·中圈·楚水驿",
+        "name": "楚水驿",
         "ring": "middle",
         "ringIndex": 21,
         "routeIndex": 93,
@@ -9233,7 +9233,7 @@
       },
       {
         "type": "quiz",
-        "name": "中圈·中圈·故园讯",
+        "name": "故园讯",
         "ring": "middle",
         "ringIndex": 22,
         "routeIndex": 94,
@@ -9241,7 +9241,7 @@
       },
       {
         "type": "quiz",
-        "name": "中圈·外圈·府学门",
+        "name": "府学门",
         "ring": "middle",
         "ringIndex": 23,
         "routeIndex": 95,
@@ -9249,7 +9249,7 @@
       },
       {
         "type": "event",
-        "name": "中圈·外圈·古渡遇仙·2",
+        "name": "古渡遇仙·2",
         "ring": "middle",
         "ringIndex": 24,
         "routeIndex": 96,
@@ -9257,7 +9257,7 @@
       },
       {
         "type": "battle",
-        "name": "中圈·外圈·采石矶",
+        "name": "采石矶",
         "ring": "middle",
         "ringIndex": 25,
         "routeIndex": 97,
@@ -9265,7 +9265,7 @@
       },
       {
         "type": "event",
-        "name": "中圈·外圈·指南录",
+        "name": "指南录",
         "ring": "middle",
         "ringIndex": 26,
         "routeIndex": 98,
@@ -9273,7 +9273,7 @@
       },
       {
         "type": "quiz",
-        "name": "中圈·中圈·秋闱号舍",
+        "name": "秋闱号舍",
         "ring": "middle",
         "ringIndex": 27,
         "routeIndex": 99,
@@ -9281,7 +9281,7 @@
       },
       {
         "type": "ping",
-        "name": "中圈·外圈·望乡台",
+        "name": "望乡台",
         "ring": "middle",
         "ringIndex": 28,
         "routeIndex": 100,
@@ -9292,7 +9292,7 @@
       },
       {
         "type": "event",
-        "name": "中圈·外圈·故人斋",
+        "name": "故人斋",
         "ring": "middle",
         "ringIndex": 29,
         "routeIndex": 101,
@@ -9300,7 +9300,7 @@
       },
       {
         "type": "ping",
-        "name": "中圈·外圈·芦花雪",
+        "name": "芦花雪",
         "ring": "middle",
         "ringIndex": 30,
         "routeIndex": 102,
@@ -9311,7 +9311,7 @@
       },
       {
         "type": "sky",
-        "name": "中圈·外圈·望气坛",
+        "name": "望气坛",
         "ring": "middle",
         "ringIndex": 31,
         "routeIndex": 103,
@@ -9319,7 +9319,7 @@
       },
       {
         "type": "ze",
-        "name": "中圈·外圈·翰墨轩",
+        "name": "翰墨轩",
         "ring": "middle",
         "ringIndex": 32,
         "routeIndex": 104,
@@ -9335,7 +9335,7 @@
       },
       {
         "type": "battle",
-        "name": "中圈·中圈·社学擂",
+        "name": "社学擂",
         "ring": "middle",
         "ringIndex": 33,
         "routeIndex": 105,
@@ -9343,7 +9343,7 @@
       },
       {
         "type": "sky",
-        "name": "中圈·外圈·云津渡",
+        "name": "云津渡",
         "ring": "middle",
         "ringIndex": 34,
         "routeIndex": 106,
@@ -9351,7 +9351,7 @@
       },
       {
         "type": "event",
-        "name": "中圈·外圈·沧溟志",
+        "name": "沧溟志",
         "ring": "middle",
         "ringIndex": 35,
         "routeIndex": 107,
@@ -9359,7 +9359,7 @@
       },
       {
         "type": "sky",
-        "name": "中圈·外圈·星矅崖",
+        "name": "星矅崖",
         "ring": "middle",
         "ringIndex": 36,
         "routeIndex": 108,
@@ -9367,7 +9367,7 @@
       },
       {
         "type": "battle",
-        "name": "中圈·外圈·诗社台",
+        "name": "诗社台",
         "ring": "middle",
         "ringIndex": 37,
         "routeIndex": 109,
@@ -9375,7 +9375,7 @@
       },
       {
         "type": "mingjing",
-        "name": "中圈·外圈·白鹿洞",
+        "name": "白鹿洞",
         "ring": "middle",
         "ringIndex": 38,
         "routeIndex": 110,
@@ -9383,7 +9383,7 @@
       },
       {
         "type": "ze",
-        "name": "中圈·外圈·石渠阁",
+        "name": "石渠阁",
         "ring": "middle",
         "ringIndex": 39,
         "routeIndex": 111,
@@ -9399,7 +9399,7 @@
       },
       {
         "type": "event",
-        "name": "中圈·外圈·梅边酌",
+        "name": "梅边酌",
         "ring": "middle",
         "ringIndex": 40,
         "routeIndex": 112,
@@ -9407,7 +9407,7 @@
       },
       {
         "type": "ping",
-        "name": "中圈·外圈·蒙学巷",
+        "name": "蒙学巷",
         "ring": "middle",
         "ringIndex": 41,
         "routeIndex": 113,
@@ -9418,7 +9418,7 @@
       },
       {
         "type": "ze",
-        "name": "中圈·外圈·篷窗雨",
+        "name": "篷窗雨",
         "ring": "middle",
         "ringIndex": 42,
         "routeIndex": 114,
@@ -9434,7 +9434,7 @@
       },
       {
         "type": "quiz",
-        "name": "中圈·中圈·故园问",
+        "name": "故园问",
         "ring": "middle",
         "ringIndex": 43,
         "routeIndex": 115,
@@ -9442,7 +9442,7 @@
       },
       {
         "type": "battle",
-        "name": "中圈·中圈·社学擂·2",
+        "name": "社学擂·2",
         "ring": "middle",
         "ringIndex": 44,
         "routeIndex": 116,
@@ -9450,7 +9450,7 @@
       },
       {
         "type": "quiz",
-        "name": "中圈·外圈·县考棚",
+        "name": "县考棚",
         "ring": "middle",
         "ringIndex": 45,
         "routeIndex": 117,
@@ -9458,7 +9458,7 @@
       },
       {
         "type": "ze",
-        "name": "中圈·外圈·蓑衣湿",
+        "name": "蓑衣湿",
         "ring": "middle",
         "ringIndex": 46,
         "routeIndex": 118,
@@ -9474,7 +9474,7 @@
       },
       {
         "type": "battle",
-        "name": "中圈·外圈·社学擂",
+        "name": "社学擂",
         "ring": "middle",
         "ringIndex": 47,
         "routeIndex": 119,
@@ -9482,7 +9482,7 @@
       },
       {
         "type": "battle",
-        "name": "中圈·中圈·诗社台",
+        "name": "诗社台",
         "ring": "middle",
         "ringIndex": 48,
         "routeIndex": 120,
@@ -9490,7 +9490,7 @@
       },
       {
         "type": "quiz",
-        "name": "中圈·外圈·描红斋",
+        "name": "描红斋",
         "ring": "middle",
         "ringIndex": 49,
         "routeIndex": 121,
@@ -9498,7 +9498,7 @@
       },
       {
         "type": "battle",
-        "name": "中圈·外圈·曲江宴",
+        "name": "曲江宴",
         "phaseGate": {
           "id": "xiucai",
           "phase": "xiucai",
@@ -9511,7 +9511,7 @@
       },
       {
         "type": "ze",
-        "name": "中圈·外圈·一叶舟",
+        "name": "一叶舟",
         "effect": {
           "inspiration": 3,
           "attrs": {
@@ -9527,7 +9527,7 @@
       },
       {
         "type": "ping",
-        "name": "中圈·外圈·桑麻径",
+        "name": "桑麻径",
         "ring": "middle",
         "ringIndex": 52,
         "routeIndex": 124,
@@ -9538,7 +9538,7 @@
       },
       {
         "type": "battle",
-        "name": "中圈·中圈·采石矶",
+        "name": "采石矶",
         "ring": "middle",
         "ringIndex": 53,
         "routeIndex": 125,
@@ -9546,7 +9546,7 @@
       },
       {
         "type": "sky",
-        "name": "中圈·中圈·观星阜",
+        "name": "观星阜",
         "ring": "middle",
         "ringIndex": 54,
         "routeIndex": 126,
@@ -9554,7 +9554,7 @@
       },
       {
         "type": "ze",
-        "name": "中圈·外圈·旧雨楼",
+        "name": "旧雨楼",
         "ring": "middle",
         "ringIndex": 55,
         "routeIndex": 127,
@@ -9570,7 +9570,7 @@
       },
       {
         "type": "event",
-        "name": "中圈·外圈·百花洲·2",
+        "name": "百花洲·2",
         "ring": "middle",
         "ringIndex": 56,
         "routeIndex": 128,
@@ -9578,7 +9578,7 @@
       },
       {
         "type": "sky",
-        "name": "中圈·外圈·月华津",
+        "name": "月华津",
         "ring": "middle",
         "ringIndex": 57,
         "routeIndex": 129,
@@ -9586,7 +9586,7 @@
       },
       {
         "type": "quiz",
-        "name": "中圈·中圈·策论斋",
+        "name": "策论斋",
         "ring": "middle",
         "ringIndex": 58,
         "routeIndex": 130,
@@ -9594,7 +9594,7 @@
       },
       {
         "type": "ze",
-        "name": "中圈·外圈·抄书阁",
+        "name": "抄书阁",
         "ring": "middle",
         "ringIndex": 59,
         "routeIndex": 131,
@@ -9610,7 +9610,7 @@
       },
       {
         "type": "quiz",
-        "name": "中圈·外圈·经义堂",
+        "name": "经义堂",
         "ring": "middle",
         "ringIndex": 60,
         "routeIndex": 132,
@@ -9618,7 +9618,7 @@
       },
       {
         "type": "battle",
-        "name": "中圈·外圈·中流擂",
+        "name": "中流擂",
         "ring": "middle",
         "ringIndex": 61,
         "routeIndex": 133,
@@ -9626,7 +9626,7 @@
       },
       {
         "type": "quiz",
-        "name": "中圈·外圈·秋闱号舍",
+        "name": "秋闱号舍",
         "ring": "middle",
         "ringIndex": 62,
         "routeIndex": 134,
@@ -9634,7 +9634,7 @@
       },
       {
         "type": "ping",
-        "name": "中圈·外圈·芦荻洲",
+        "name": "芦荻洲",
         "ring": "middle",
         "ringIndex": 63,
         "routeIndex": 135,
@@ -9645,7 +9645,7 @@
       },
       {
         "type": "gate",
-        "name": "入内圈·登第门",
+        "name": "登第门",
         "icon": "start",
         "id": 136,
         "ring": "inner",
@@ -9661,7 +9661,7 @@
       },
       {
         "type": "event",
-        "name": "内圈·外圈·古渡遇仙·2",
+        "name": "古渡遇仙·2",
         "ring": "inner",
         "ringIndex": 1,
         "routeIndex": 137,
@@ -9669,7 +9669,7 @@
       },
       {
         "type": "quiz",
-        "name": "内圈·外圈·秋闱号舍",
+        "name": "秋闱号舍",
         "ring": "inner",
         "ringIndex": 2,
         "routeIndex": 138,
@@ -9677,7 +9677,7 @@
       },
       {
         "type": "battle",
-        "name": "内圈·外圈·江心渡",
+        "name": "江心渡",
         "ring": "inner",
         "ringIndex": 3,
         "routeIndex": 139,
@@ -9685,7 +9685,7 @@
       },
       {
         "type": "battle",
-        "name": "内圈·中圈·社学擂·2",
+        "name": "社学擂·2",
         "ring": "inner",
         "ringIndex": 4,
         "routeIndex": 140,
@@ -9693,7 +9693,7 @@
       },
       {
         "type": "ze",
-        "name": "内圈·外圈·临帖廊",
+        "name": "临帖廊",
         "ring": "inner",
         "ringIndex": 5,
         "routeIndex": 141,
@@ -9709,7 +9709,7 @@
       },
       {
         "type": "quiz",
-        "name": "内圈·中圈·春闱帘",
+        "name": "春闱帘",
         "ring": "inner",
         "ringIndex": 6,
         "routeIndex": 142,
@@ -9717,7 +9717,7 @@
       },
       {
         "type": "ping",
-        "name": "内圈·外圈·孤蓬夜",
+        "name": "孤蓬夜",
         "ring": "inner",
         "ringIndex": 7,
         "routeIndex": 143,
@@ -9728,7 +9728,7 @@
       },
       {
         "type": "battle",
-        "name": "内圈·中圈·社学擂",
+        "name": "社学擂",
         "ring": "inner",
         "ringIndex": 8,
         "routeIndex": 144,
@@ -9736,7 +9736,7 @@
       },
       {
         "type": "ping",
-        "name": "内圈·外圈·归帆影",
+        "name": "归帆影",
         "ring": "inner",
         "ringIndex": 9,
         "routeIndex": 145,
@@ -9747,7 +9747,7 @@
       },
       {
         "type": "ping",
-        "name": "内圈·外圈·桑麻径",
+        "name": "桑麻径",
         "ring": "inner",
         "ringIndex": 10,
         "routeIndex": 146,
@@ -9758,7 +9758,7 @@
       },
       {
         "type": "event",
-        "name": "内圈·外圈·雁塔题名",
+        "name": "雁塔题名",
         "ring": "inner",
         "ringIndex": 11,
         "routeIndex": 147,
@@ -9766,7 +9766,7 @@
       },
       {
         "type": "battle",
-        "name": "内圈·中圈·诗社台",
+        "name": "诗社台",
         "ring": "inner",
         "ringIndex": 12,
         "routeIndex": 148,
@@ -9774,7 +9774,7 @@
       },
       {
         "type": "event",
-        "name": "内圈·外圈·卖字摊",
+        "name": "卖字摊",
         "ring": "inner",
         "ringIndex": 13,
         "routeIndex": 149,
@@ -9782,7 +9782,7 @@
       },
       {
         "type": "sky",
-        "name": "内圈·外圈·月华津",
+        "name": "月华津",
         "ring": "inner",
         "ringIndex": 14,
         "routeIndex": 150,
@@ -9790,7 +9790,7 @@
       },
       {
         "type": "event",
-        "name": "内圈·外圈·渔火遇",
+        "name": "渔火遇",
         "ring": "inner",
         "ringIndex": 15,
         "routeIndex": 151,
@@ -9798,7 +9798,7 @@
       },
       {
         "type": "quiz",
-        "name": "内圈·外圈·府学门",
+        "name": "府学门",
         "ring": "inner",
         "ringIndex": 16,
         "routeIndex": 152,
@@ -9806,7 +9806,7 @@
       },
       {
         "type": "ping",
-        "name": "内圈·外圈·芦荻洲",
+        "name": "芦荻洲",
         "ring": "inner",
         "ringIndex": 17,
         "routeIndex": 153,
@@ -9817,7 +9817,7 @@
       },
       {
         "type": "event",
-        "name": "内圈·外圈·古渡遇仙",
+        "name": "古渡遇仙",
         "ring": "inner",
         "ringIndex": 18,
         "routeIndex": 154,
@@ -9825,7 +9825,7 @@
       },
       {
         "type": "quiz",
-        "name": "内圈·外圈·县考棚",
+        "name": "县考棚",
         "ring": "inner",
         "ringIndex": 19,
         "routeIndex": 155,
@@ -9833,7 +9833,7 @@
       },
       {
         "type": "battle",
-        "name": "内圈·中圈·采石矶",
+        "name": "采石矶",
         "ring": "inner",
         "ringIndex": 20,
         "routeIndex": 156,
@@ -9841,7 +9841,7 @@
       },
       {
         "type": "battle",
-        "name": "内圈·外圈·采石矶",
+        "name": "采石矶",
         "ring": "inner",
         "ringIndex": 21,
         "routeIndex": 157,
@@ -9849,7 +9849,7 @@
       },
       {
         "type": "event",
-        "name": "内圈·外圈·百花洲·2",
+        "name": "百花洲·2",
         "ring": "inner",
         "ringIndex": 22,
         "routeIndex": 158,
@@ -9857,7 +9857,7 @@
       },
       {
         "type": "battle",
-        "name": "内圈·外圈·沧浪渡",
+        "name": "沧浪渡",
         "ring": "inner",
         "ringIndex": 23,
         "routeIndex": 159,
@@ -9865,7 +9865,7 @@
       },
       {
         "type": "mingjing",
-        "name": "内圈·外圈·白鹿洞",
+        "name": "白鹿洞",
         "ring": "inner",
         "ringIndex": 24,
         "routeIndex": 160,
@@ -9873,7 +9873,7 @@
       },
       {
         "type": "battle",
-        "name": "内圈·中圈·中流擂",
+        "name": "中流擂",
         "ring": "inner",
         "ringIndex": 25,
         "routeIndex": 161,
@@ -9881,7 +9881,7 @@
       },
       {
         "type": "battle",
-        "name": "内圈·外圈·诗社台",
+        "name": "诗社台",
         "ring": "inner",
         "ringIndex": 26,
         "routeIndex": 162,
@@ -9889,7 +9889,7 @@
       },
       {
         "type": "ping",
-        "name": "内圈·外圈·暮江吟",
+        "name": "暮江吟",
         "ring": "inner",
         "ringIndex": 27,
         "routeIndex": 163,
@@ -9900,7 +9900,7 @@
       },
       {
         "type": "ze",
-        "name": "内圈·外圈·篷窗雨",
+        "name": "篷窗雨",
         "ring": "inner",
         "ringIndex": 28,
         "routeIndex": 164,
@@ -9916,7 +9916,7 @@
       },
       {
         "type": "sky",
-        "name": "内圈·外圈·星矅崖",
+        "name": "星矅崖",
         "ring": "inner",
         "ringIndex": 29,
         "routeIndex": 165,
@@ -9924,7 +9924,7 @@
       },
       {
         "type": "battle",
-        "name": "内圈·外圈·论道殿",
+        "name": "论道殿",
         "ring": "inner",
         "ringIndex": 30,
         "routeIndex": 166,
@@ -9932,7 +9932,7 @@
       },
       {
         "type": "quiz",
-        "name": "内圈·中圈·楚水驿",
+        "name": "楚水驿",
         "ring": "inner",
         "ringIndex": 31,
         "routeIndex": 167,
@@ -9940,7 +9940,7 @@
       },
       {
         "type": "quiz",
-        "name": "内圈·外圈·经义堂",
+        "name": "经义堂",
         "ring": "inner",
         "ringIndex": 32,
         "routeIndex": 168,
@@ -9948,7 +9948,7 @@
       },
       {
         "type": "event",
-        "name": "内圈·外圈·百花洲",
+        "name": "百花洲",
         "ring": "inner",
         "ringIndex": 33,
         "routeIndex": 169,
@@ -9956,7 +9956,7 @@
       },
       {
         "type": "event",
-        "name": "内圈·外圈·故人斋",
+        "name": "故人斋",
         "ring": "inner",
         "ringIndex": 34,
         "routeIndex": 170,
@@ -9964,7 +9964,7 @@
       },
       {
         "type": "event",
-        "name": "内圈·外圈·卖字摊·2",
+        "name": "卖字摊·2",
         "ring": "inner",
         "ringIndex": 35,
         "routeIndex": 171,
@@ -9972,7 +9972,7 @@
       },
       {
         "type": "event",
-        "name": "内圈·外圈·沧溟志",
+        "name": "沧溟志",
         "ring": "inner",
         "ringIndex": 36,
         "routeIndex": 172,
@@ -9980,7 +9980,7 @@
       },
       {
         "type": "quiz",
-        "name": "内圈·中圈·故园讯",
+        "name": "故园讯",
         "ring": "inner",
         "ringIndex": 37,
         "routeIndex": 173,
@@ -9988,7 +9988,7 @@
       },
       {
         "type": "event",
-        "name": "内圈·外圈·指南录",
+        "name": "指南录",
         "ring": "inner",
         "ringIndex": 38,
         "routeIndex": 174,
@@ -9996,7 +9996,7 @@
       },
       {
         "type": "mingjing",
-        "name": "内圈·外圈·桃花源",
+        "name": "桃花源",
         "ring": "inner",
         "ringIndex": 39,
         "routeIndex": 175,
@@ -10004,7 +10004,7 @@
       },
       {
         "type": "ze",
-        "name": "内圈·外圈·抄书阁",
+        "name": "抄书阁",
         "ring": "inner",
         "ringIndex": 40,
         "routeIndex": 176,
@@ -10020,7 +10020,7 @@
       },
       {
         "type": "event",
-        "name": "内圈·外圈·梅边酌",
+        "name": "梅边酌",
         "ring": "inner",
         "ringIndex": 41,
         "routeIndex": 177,
@@ -10028,7 +10028,7 @@
       },
       {
         "type": "sky",
-        "name": "内圈·外圈·云津渡",
+        "name": "云津渡",
         "ring": "inner",
         "ringIndex": 42,
         "routeIndex": 178,
@@ -10036,7 +10036,7 @@
       },
       {
         "type": "battle",
-        "name": "内圈·外圈·中流擂",
+        "name": "中流擂",
         "ring": "inner",
         "ringIndex": 43,
         "routeIndex": 179,
@@ -10044,7 +10044,7 @@
       },
       {
         "type": "mingjing",
-        "name": "内圈·外圈·玉门关",
+        "name": "玉门关",
         "ring": "inner",
         "ringIndex": 44,
         "routeIndex": 180,
@@ -10052,7 +10052,7 @@
       },
       {
         "type": "sky",
-        "name": "内圈·外圈·望气坛",
+        "name": "望气坛",
         "ring": "inner",
         "ringIndex": 45,
         "routeIndex": 181,
@@ -10060,7 +10060,7 @@
       },
       {
         "type": "battle",
-        "name": "内圈·外圈·曲江宴",
+        "name": "曲江宴",
         "phaseGate": {
           "id": "xiucai",
           "phase": "xiucai",
@@ -10073,7 +10073,7 @@
       },
       {
         "type": "sky",
-        "name": "内圈·外圈·观星阜",
+        "name": "观星阜",
         "ring": "inner",
         "ringIndex": 47,
         "routeIndex": 183,
@@ -10081,7 +10081,7 @@
       },
       {
         "type": "quiz",
-        "name": "内圈·中圈·秋闱号舍",
+        "name": "秋闱号舍",
         "ring": "inner",
         "ringIndex": 48,
         "routeIndex": 184,
@@ -10089,7 +10089,7 @@
       },
       {
         "type": "quiz",
-        "name": "内圈·中圈·策论斋",
+        "name": "策论斋",
         "ring": "inner",
         "ringIndex": 49,
         "routeIndex": 185,
@@ -10097,7 +10097,7 @@
       },
       {
         "type": "event",
-        "name": "内圈·外圈·邻舟笛",
+        "name": "邻舟笛",
         "ring": "inner",
         "ringIndex": 50,
         "routeIndex": 186,
@@ -10105,7 +10105,7 @@
       },
       {
         "type": "ze",
-        "name": "内圈·外圈·白鹭洲",
+        "name": "白鹭洲",
         "ring": "inner",
         "ringIndex": 51,
         "routeIndex": 187,
@@ -10121,7 +10121,7 @@
       },
       {
         "type": "ze",
-        "name": "内圈·外圈·旧雨楼",
+        "name": "旧雨楼",
         "ring": "inner",
         "ringIndex": 52,
         "routeIndex": 188,
@@ -10137,7 +10137,7 @@
       },
       {
         "type": "battle",
-        "name": "内圈·外圈·社学擂",
+        "name": "社学擂",
         "ring": "inner",
         "ringIndex": 53,
         "routeIndex": 189,
@@ -10145,7 +10145,7 @@
       },
       {
         "type": "quiz",
-        "name": "内圈·外圈·描红斋",
+        "name": "描红斋",
         "ring": "inner",
         "ringIndex": 54,
         "routeIndex": 190,
@@ -10153,7 +10153,7 @@
       },
       {
         "type": "ze",
-        "name": "内圈·外圈·石渠阁",
+        "name": "石渠阁",
         "ring": "inner",
         "ringIndex": 55,
         "routeIndex": 191,
