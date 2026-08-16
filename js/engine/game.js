@@ -1196,7 +1196,7 @@ export class Game {
         if (!t) return false;
         const ef = t.effect || {};
         const repeatable = ef.type === 'planned_dice';
-        if (!repeatable && this.usedActive.some(x => x.id === id)) return false;
+        if (this.usedActive.some(x => x.id === id)) return false;
         if (repeatable && this.plannedDice != null) return false;
         if (repeatable) this.plannedDiceChoice = Math.max(1, Math.min(Number(ef.maxValue) || 6, Number(plannedValue) || 6));
         const ts = s.talentState || (s.talentState = { triggers: {}, flags: {}, activeUses: {} });
