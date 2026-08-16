@@ -246,7 +246,7 @@
   animation: popIn .34s var(--ease-back);
 }
 .choice-echo {
-  width: min(560px, calc(100vw - 32px)); padding: 13px 18px; border-radius: 12px;
+  width: min(560px, calc(100vw - var(--safe-left) - var(--safe-right) - 32px)); padding: 13px 18px; border-radius: 12px;
   letter-spacing: .03em; text-align: left; line-height: 1.6;
   border-color: rgba(224,190,120,.7); background: rgba(38,29,21,.96);
 }

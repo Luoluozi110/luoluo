@@ -310,7 +310,7 @@ export class Modals {
   askReplaceTalent(nw, list) {
     return new Promise(resolve => {
       const ov = this.open(`
-        <div class="modal scroll-frame paper" style="width:min(560px,90vw)">
+        <div class="modal scroll-frame paper" style="width:min(560px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
           <div class="mtitle"><h2>文心已满</h2><span class="mtag">${nw.kind === 'active' ? `主动上限 ${ACTIVE_MAX}` : `被动上限 ${PASSIVE_MAX}`}</span></div>
           <hr class="hr-ink"/>
           <div style="font-size:16px;line-height:1.8">新得「<b style="color:var(--zhu)">${esc(nw.name)}</b>」——${talentEffectText(nw)}<br/>
@@ -378,11 +378,11 @@ export class Modals {
   /** 阶段变化说明：会试圈 / 殿试由引擎在相应节点调用。 */
   async showStageIntro(title, text, button = '谨记于心') {
     const ov = this.open(`
-      <div class="modal scroll-frame paper stage-intro" style="width:min(680px,92vw);max-height:min(82vh,760px)">
+      <div class="modal scroll-frame paper stage-intro" style="width:min(680px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
         <div class="kind">科 场 叙 事</div>
         <div class="title-ink" style="font-size:38px;text-align:center">${esc(title)}</div>
         <hr class="hr-ink"/>
-        <div class="stage-story" style="font-size:16px;line-height:2.05;letter-spacing:.04em;text-align:left;white-space:pre-line;max-height:min(58vh,540px);overflow:auto;padding:0 8px">${esc(text)}</div>
+        <div class="stage-story" style="font-size:16px;line-height:2.05;letter-spacing:.04em;text-align:left;white-space:pre-line;overflow:auto;padding:0 8px">${esc(text)}</div>
         <div class="btn-row"><button class="btn btn-primary" data-ok>${esc(button)}</button></div>
       </div>`, 'stage-intro');
     await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', r));
@@ -403,7 +403,7 @@ export class Modals {
     const themeName = themeNames[(z && z.theme)] || (z && z.theme) || '某题材';
     const mannerName = mannerNames[(z && z.manner)] || (z && z.manner) || '某文体';
     const ov = this.open(`
-      <div class="modal scroll-frame paper zg-card" style="width:min(560px,92vw);text-align:center">
+      <div class="modal scroll-frame paper zg-card" style="width:min(560px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center">
         <div class="kind">当 朝 文 风</div>
         <div class="title-ink" style="font-size:38px">风 潮 既 起</div>
         <hr class="hr-ink"/>
@@ -436,7 +436,7 @@ export class Modals {
     const sweepScore = bonusScore(grades, 'yuanman', 'jinbangtiming', 200);
     const themeLabels = (names && names.length) ? names : (themes || ['咏物', '送别', '怀古']);
     const ov = this.open(`
-      <div class="modal scroll-frame paper" style="text-align:center;width:min(600px,92vw)">
+      <div class="modal scroll-frame paper" style="text-align:center;width:min(600px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
         <div class="title-ink" style="font-size:46px">金 殿 對 策</div>
         <hr class="hr-ink"/>
         <div style="font-size:17px;line-height:2">${laps} 圈科举路已尽，今登金殿。<br/>
@@ -458,7 +458,7 @@ export class Modals {
   showNamePrompt(defaultName = '') {
     return new Promise(resolve => {
       const ov = this.open(`
-        <div class="modal paper name-prompt" style="width:min(440px,92vw);text-align:center">
+        <div class="modal paper name-prompt" style="width:min(440px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center">
           <div class="mtitle"><h2>為 自 己 起 名</h2></div>
           <hr class="hr-ink"/>
           <div style="font-size:15px;line-height:1.95;color:var(--mo-3)">

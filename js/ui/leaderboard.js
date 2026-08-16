@@ -138,7 +138,7 @@ export const Leaderboard = {
   async openModal() {
     if (!modalsInst) return;
     const ov = modalsInst.open(`
-      <div class="modal paper" style="width:min(420px,92vw)">
+      <div class="modal paper" style="width:min(420px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
         <div class="mtitle"><h2>☁ 云端排行榜 · 前 ${LIMIT} 名</h2></div>
         <div id="lbBody" class="lb-body">读取中…</div>
         <div style="text-align:center;margin-top:14px">
