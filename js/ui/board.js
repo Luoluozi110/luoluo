@@ -57,12 +57,14 @@ export class BoardView {
     board.style.width = span + 'px';
     board.style.height = span + 'px';
 
-    // 浮岛底座
+    // 浮岛底座：三圈以最大 19×19 网格为视觉基准；旧版这里误用 21×21，
+    // 会把中心底图向右下偏移约一个格位，视觉上吞掉内圈的辨识度。
+    const baseGrid = maxGrid;
     const isl = document.createElement('div');
     isl.className = 'island';
     Object.assign(isl.style, {
       left: (PAD - 0.7) * UNIT + 'px', top: (PAD - 0.7) * UNIT + 'px',
-      width: (GRID + 1.4) * UNIT + 'px', height: (GRID + 1.4) * UNIT + 'px'
+      width: (baseGrid + 1.4) * UNIT + 'px', height: (baseGrid + 1.4) * UNIT + 'px'
     });
     board.appendChild(isl);
 
@@ -70,7 +72,7 @@ export class BoardView {
     inner.className = 'island-inner';
     Object.assign(inner.style, {
       left: (PAD + 1.4) * UNIT + 'px', top: (PAD + 1.4) * UNIT + 'px',
-      width: (GRID - 2.8) * UNIT + 'px', height: (GRID - 2.8) * UNIT + 'px'
+      width: (baseGrid - 2.8) * UNIT + 'px', height: (baseGrid - 2.8) * UNIT + 'px'
     });
     board.appendChild(inner);
 
@@ -78,7 +80,7 @@ export class BoardView {
     ttl.className = 'island-title';
     Object.assign(ttl.style, {
       left: (PAD + 1.4) * UNIT + 'px', top: (PAD + 1.4) * UNIT + 'px',
-      width: (GRID - 2.8) * UNIT + 'px', height: (GRID - 2.8) * UNIT + 'px'
+      width: (baseGrid - 2.8) * UNIT + 'px', height: (baseGrid - 2.8) * UNIT + 'px'
     });
     ttl.innerHTML = `<div class="big">桃花島</div><div class="sm">詩詞楹聯飛花棋</div>`;
     board.appendChild(ttl);
@@ -90,7 +92,7 @@ export class BoardView {
         const offset = Math.floor((maxGrid - grid) / 2);
         for (const cell of ring.cells || []) {
           const c = mainCoord(cell.ringIndex ?? cell.id, grid);
-          this.addCell(board, cell, c.col + offset, c.row + offset, c.season, false);
+          this.addCell(board, cell, c.col + offset, c.row + offset, c.season, false, ring.id);
         }
       }
     } else {
@@ -116,10 +118,10 @@ export class BoardView {
     this.setPiecePos(0);
   }
 
-  addCell(board, cell, col, row, season, isBranch) {
+  addCell(board, cell, col, row, season, isBranch, ringId = '') {
     const p = this.px(col, row);
     const el = document.createElement('div');
-    el.className = `cell t-${cell.type} ${season ? 'season-' + season : ''} ${isBranch ? 'branch-cell' : ''}`;
+    el.className = `cell t-${cell.type} ${season ? 'season-' + season : ''} ${isBranch ? 'branch-cell' : ''} ${ringId ? 'ring-' + ringId : ''}`;
     el.style.left = p.x + 'px';
     el.style.top = p.y + 'px';
     const big = cell.type === 'start' || cell.type === 'landmark';
