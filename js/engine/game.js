@@ -714,6 +714,12 @@ export class Game {
     // 回合开始：灵感为 0 → 封笔
     if (s.inspiration <= 0) return this.endGame('fengbi');
 
+    // 第0回合前先展示开局序章；续玩存档 turn>0 不重复触发。
+    if (s.turn === 0 && typeof this.ui.showPrologue === 'function' && !s.prologueSeen) {
+      await this.ui.showPrologue();
+      s.prologueSeen = true;
+      this.ui.onState(s);
+    }
     // 首回合开始前：弹窗说明当朝文风（风潮）及其效果（续玩存档 turn>0 不触发）
     if (s.turn === 0 && typeof this.ui.showZeitgeist === 'function') {
       await this.ui.showZeitgeist(s.zeitgeist);
@@ -722,8 +728,13 @@ export class Game {
     if (s.turn > TURN_LIMIT) return this.endGame('turnlimit');
 
     this.tickSky();
+    const previousPhase = s.phase;
     s.phase = s.lap >= 2 ? 'lap2' : 'lap1';
     this.ui.onState(s);
+    if (s.phase === 'lap2' && previousPhase !== 'lap2' && typeof this.ui.showLap2Intro === 'function') {
+      await this.ui.showLap2Intro();
+      this.ui.onState(s);
+    }
 
     const dice = this.d6();
     await this.ui.showDice(dice);
@@ -765,6 +776,11 @@ export class Game {
           if (s.lap > board.laps) { await this.ui.movePiece(s); return 'palace'; }
           this.ui.toast(`再度经过童生铺，进入「会试圈」，对手升档`);
           this.push('进入会试圈');
+          if (s.phase !== 'lap2' && typeof this.ui.showLap2Intro === 'function') {
+            s.phase = 'lap2';
+            this.ui.onState(s);
+            await this.ui.showLap2Intro();
+          }
         }
       }
       await this.ui.movePiece(s);
@@ -1655,6 +1671,7 @@ export class Game {
     s.phase = 'palace';
     s.reachedEnd = true;
     this.ui.onState(s);
+    // 后续由 showPalaceIntro 展示殿试阶段说明，避免重复弹窗。
 
     // 殿试题材与场次取自主考官配置（npcs.json 的 zhukaoguan.themes），不再硬编码，
     // 便于内容方增减殿试科目；场次数与「全胜」阈值同步由题材数量决定。

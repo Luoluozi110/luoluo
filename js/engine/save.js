@@ -28,7 +28,7 @@ const STATE_KEYS = [
   'passive', 'active', 'track', 'pos', 'branchId', 'branchIndex',
   'lap', 'turn', 'phase',   'sky', 'nextBattlePct', 'battle', 'events',
   'quiz', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
-  'zeitgeist', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
+  'zeitgeist', 'prologueSeen', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
   'talentLevels', 'schoolState', 'over', 'reachedEnd', 'endReason', 'log'
 ];
 

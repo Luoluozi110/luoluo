@@ -304,6 +304,11 @@ async function startGame(schoolId, loadout, playerName) {
   const s = game.start(schoolId, { loadout: cards, name: playerName || '' });
   modals.playerName = s.playerName || '';   // 叙事文本据此替换「你」
   modals.game = game;                       // 文心升级：详情弹窗调用引擎 upgradeTalent
+  // 新局进入棋盘前先展示序章；序章只出现一次，并随存档记录。
+  if (!s.prologueSeen && typeof modals.showPrologue === 'function') {
+    await modals.showPrologue();
+    s.prologueSeen = true;
+  }
   if (cards.length) hud.toast(`行囊生效：${cards.map(c => `「${c.name}」`).join('')}`);
   hud.render(s);
   showMenuButton(true);
@@ -339,6 +344,8 @@ function makeUi() {
     showEvent: ev => modals.showEvent(ev),
     showBowenChoice: () => modals.showBowenChoice(),
     showSky: c => modals.showSky(c),
+    showPrologue: () => modals.showPrologue(),
+    showLap2Intro: () => modals.showLap2Intro(),
     showZeitgeist: z => modals.showZeitgeist(z),
     askScenic: (cell, cost, curInsp) => modals.askScenic(cell, cost, curInsp),
     runBattle: async sess => {

@@ -336,6 +336,29 @@ export class Modals {
     this.close(ov);
   }
 
+  /* ---------------------------------------------------- 开局序章 / 阶段叙事 */
+  /** 第0回合前显示的开局序章；点击确认后才进入首回合。 */
+  async showPrologue() {
+    const text = `你有这么一段模糊的记忆：你来自于所谓的“现代世界”，你或许曾富甲一方，却感到生活寡淡无味，于是抛尽家财，出海寻访；也或许一贫如洗，为虚无缥缈的救赎凭片板到海上流浪；又或许只过着柴米油盐的生活，却在某日下定决心，去寻找那个世外仙源——总之，共同点是，你最终来到了『桃花岛』。岛上的仙人听你说明来意，默然无言，只往你头上一点，你便感觉周围的景物变成万千碎片，万千尘埃，像被狂风割裂，吹散，又重组成了新的场景。“待到种种妄念破灭，自可殿试见我，可涤尔灵台。”你到了蒙学馆，变成了一个小童生。其后十年潜心，你逐渐分不清那段模糊的记忆是真实存在，还只是一段怪谈般的梦境。总之，眼前科举将启，十载寒窗已到迎来回报的时刻，只待踏上征途，一上科场，便一鸣惊人。`;
+    return this.showStageIntro('初入科场', text, '踏上征途');
+  }
+  /** 阶段变化说明：会试圈 / 殿试由引擎在相应节点调用。 */
+  async showStageIntro(title, text, button = '谨记于心') {
+    const ov = this.open(`
+      <div class="modal scroll-frame paper stage-intro" style="width:min(680px,92vw);max-height:min(82vh,760px)">
+        <div class="kind">科 场 叙 事</div>
+        <div class="title-ink" style="font-size:38px;text-align:center">${esc(title)}</div>
+        <hr class="hr-ink"/>
+        <div class="stage-story" style="font-size:16px;line-height:2.05;letter-spacing:.04em;text-align:left;white-space:pre-line;max-height:min(58vh,540px);overflow:auto;padding:0 8px">${esc(text)}</div>
+        <div class="btn-row"><button class="btn btn-primary" data-ok>${esc(button)}</button></div>
+      </div>`, 'stage-intro');
+    await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', r));
+    this.close(ov);
+  }
+  async showLap2Intro() {
+    return this.showStageIntro('会试圈 · 再入科场', '童生圈的试炼渐远，你已不再只是初入科场的稚子。\n\n棋盘上的路重新展开，题目更深，对手也将换作秀才与举人之间的较量。前方的每一步，都在检验十年寒窗积下的根基。\n\n收束心神，继续向前；待绕过会试圈，金殿之门便会在尽头开启。', '进入会试圈');
+  }
+
   /* ---------------------------------------------------- 当朝文风（风潮） */
   /** 首回合开始前弹窗：说明本局当朝文风（风潮）及其效果 */
   async showZeitgeist(z) {
