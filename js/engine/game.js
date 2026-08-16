@@ -200,7 +200,7 @@ export class Game {
       affStreak: { manner: null, n: 0 },             // 气势连捷：连续同风格胜场
       synergies: [],                                 // 当前已激活的文心羁绊（id/name/desc/members）
       talentLevels: {},                              // 文心等级：{ [talentId]: level }（Lv1 起，存档持久化）
-      talentState: { triggers: {}, flags: {} },       // 文心局内触发次数/一次性互斥标记（存档持久化）
+      talentState: { triggers: {}, flags: {}, activeUses: {} }, // 文心局内触发次数/主动使用次数/一次性互斥标记（存档持久化）
       npcMech: { history: {}, palace: {} },          // NPC 三机制跨场状态
       loadout: [], titles: [],
       over: false, reachedEnd: false, endReason: '',
@@ -1148,6 +1148,9 @@ export class Game {
       lianUnlocked: this.lianUnlocked,
       activeTalents: s.active.slice(),
       usedActive: [],
+      plannedDice: null,       // 「布局谋篇」预先指定的下一枚灵感骰点数
+      plannedDiceCost: 0,
+      plannedDiceTalentId: null,
       inspiration: s.inspiration,
       // 败北灵感惩罚的「预览值」：与结算逻辑完全一致（lateVal × 科场风起倍数），
       // 供 UI 判词精确显示，避免文案与实际扣分不一致。
@@ -1173,15 +1176,44 @@ export class Game {
       styleHint(style) {
         return style === 'lian' && !g.lianUnlocked ? '联力尚浅，先积淀对仗功底（需联力 ≥8）' : '';
       },
-      /** 使用主动文心：扣灵感并登记 */
-      useActive(id) {
+      /** 当前主动文心本局下一次使用的灵感成本（布局谋篇会随全局使用次数递增）。 */
+      activeCost(id) {
         const t = s.active.find(x => x.id === id);
-        if (!t || this.usedActive.some(x => x.id === id)) return false;
-        const cost = Number(t.cost) || 1;
+        if (!t) return 0;
+        const ef = t.effect || {};
+        const ts = s.talentState || {};
+        const used = Number(ts.activeUses && ts.activeUses[id]) || 0;
+        if (ef.type === 'planned_dice') {
+          const baseCost = Math.max(1, Number(ef.baseCost ?? t.cost) || 1);
+          const step = Math.max(0, Number(ef.costStep) || 0);
+          return baseCost + used * step;
+        }
+        return Math.max(1, Number(t.cost) || 1);
+      },
+      /** 使用主动文心：扣灵感并登记；planned_dice 可在一局内重复使用，其他主动仍为每场一次。 */
+      useActive(id, plannedValue = 6) {
+        const t = s.active.find(x => x.id === id);
+        if (!t) return false;
+        const ef = t.effect || {};
+        const repeatable = ef.type === 'planned_dice';
+        if (!repeatable && this.usedActive.some(x => x.id === id)) return false;
+        if (repeatable && this.plannedDice != null) return false;
+        if (repeatable) this.plannedDiceChoice = Math.max(1, Math.min(Number(ef.maxValue) || 6, Number(plannedValue) || 6));
+        const ts = s.talentState || (s.talentState = { triggers: {}, flags: {}, activeUses: {} });
+        ts.activeUses = ts.activeUses || {};
+        const used = Number(ts.activeUses[id]) || 0;
+        const cost = this.activeCost(id);
         if (s.inspiration < cost) return false;
         g.addInspiration(-cost, `文心·${t.name}`);
+        ts.activeUses[id] = used + 1;
         this.usedActive.push(t);
+        if (repeatable) {
+          this.plannedDice = Math.max(1, Math.min(Number(ef.maxValue) || 6, Number(this.plannedDiceChoice) || 6));
+          this.plannedDiceCost = cost;
+          this.plannedDiceTalentId = id;
+        }
         this.inspiration = s.inspiration;
+        if (g.ui && g.ui.onState) g.ui.onState(s);
         return true;
       },
       /** 创作时消耗灵感多掷一枚灵感骰：扣灵感并同步快照，供 UI 判断可否继续叠加 */

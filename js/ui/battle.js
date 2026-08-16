@@ -214,13 +214,17 @@ export class BattleStage {
 
       const doRoll = async (auto) => {
         if (done || pips.length > 0) return;
-        const n = 1 + Math.floor(Math.random() * 6);
+        const n = session.plannedDice != null
+          ? Math.max(1, Math.min(6, Number(session.plannedDice) || 6))
+          : 1 + Math.floor(Math.random() * 6);
         pips.push(n);
         play('dice');
         sting('dice');
+        const planned = session.plannedDice != null;
+        session.plannedDice = null;
         panel.innerHTML = `<div class="ph">⑤ 掷灵感骰${auto ? '　<span style="font-size:12px;color:var(--mo-3)">时限已到，代掷</span>' : ''}</div>
           <div style="text-align:center"><div style="display:inline-block;font-size:62px;letter-spacing:.1em;color:var(--zhu)" class="pop-in">${'一二三四五六'[n - 1]}</div>
-          <div style="font-size:14px;color:var(--mo-3)">掷出 ${n} 点</div></div>`;
+          <div style="font-size:14px;color:var(--mo-3)">${planned ? '布局谋篇定策，' : ''}掷出 ${n} 点</div></div>`;
         await sleep(760);
         if (done) return;
         renderExtra();
@@ -268,19 +272,26 @@ export class BattleStage {
     if (!session.activeTalents.length) return '';
     const btns = session.activeTalents.map(t => {
       const used = session.usedActive.some(x => x.id === t.id);
-      const afford = session.inspiration >= (t.cost || 1);
-      return `<button class="at-btn ${used ? 'used' : ''}" data-t="${t.id}" ${used || !afford ? 'disabled' : ''}
-        title="${esc(talentEffectText(t))}">${esc(t.name)}<span class="cost">灵感 -${t.cost || 1}</span></button>`;
+      const repeatable = (t.effect || {}).type === 'planned_dice';
+      const cost = typeof session.activeCost === 'function' ? session.activeCost(t.id) : (t.cost || 1);
+      const afford = session.inspiration >= cost;
+      const choice = repeatable ? `<select class="planned-dice-choice" data-planned-for="${t.id}" ${used || !afford ? 'disabled' : ''} aria-label="${esc(t.name)}指定骰点">${[1, 2, 3, 4, 5, 6].map(n => `<option value="${n}">${n}点</option>`).join('')}</select>` : '';
+      return `${choice}<button class="at-btn ${used ? 'used' : ''}" data-t="${t.id}" ${used || !afford ? 'disabled' : ''}
+        title="${esc(talentEffectText(t))}">${esc(t.name)}<span class="cost">灵感 -${cost}${repeatable ? '（递增）' : ''}</span></button>`;
     }).join('');
     return `<div class="active-talents"><span class="lb">主动文心</span>${btns}</div>`;
   }
 
   bindActive(panel, session) {
     panel.querySelectorAll('[data-t]').forEach(b => b.addEventListener('click', () => {
-      if (session.useActive(b.dataset.t)) {
+      const t = session.activeTalents.find(x => x.id === b.dataset.t);
+      const repeatable = (t && t.effect || {}).type === 'planned_dice';
+      const selector = repeatable ? panel.querySelector(`[data-planned-for="${b.dataset.t}"]`) : null;
+      const plannedValue = selector ? Number(selector.value) : 6;
+      if (session.useActive(b.dataset.t, plannedValue)) {
         b.classList.add('used'); b.disabled = true;
-        const t = session.activeTalents.find(x => x.id === b.dataset.t);
-        this.flash(`文心「${t.name}」已发动`);
+        if (selector) selector.disabled = true;
+        this.flash(`文心「${t.name}」已发动${repeatable ? `，下次掷骰定为 ${plannedValue} 点` : ''}`);
       }
     }));
   }

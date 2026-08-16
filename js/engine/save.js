@@ -154,7 +154,9 @@ function migrateRun(obj) {
   state.loadout = idsOf(state.loadout);
   // v3：旧档没有文心限次/互斥状态；默认空对象，不重复触发旧的一次性文心。
   state.talentState = (state.talentState && typeof state.talentState === 'object')
-    ? state.talentState : { triggers: {}, flags: {} };
+    ? state.talentState : { triggers: {}, flags: {}, activeUses: {} };
+  state.talentState.activeUses = (state.talentState.activeUses && typeof state.talentState.activeUses === 'object')
+    ? state.talentState.activeUses : {};
   // v4：文心等级。v3 及更早旧档无此字段 → 按持有文心置 Lv1（上限钳制推迟到 deserialize，因此处无 cfg）。
   if (!state.talentLevels || typeof state.talentLevels !== 'object') {
     state.talentLevels = {};
@@ -259,9 +261,10 @@ export function deserializeRun(rawObj, cfg) {
   out.log = Array.isArray(out.log) ? out.log.slice(-LOG_KEEP) : [];
   out.titles = Array.isArray(out.titles) ? out.titles : [];
   out.synergies = Array.isArray(out.synergies) ? out.synergies : [];
-  out.talentState = (out.talentState && typeof out.talentState === 'object') ? out.talentState : { triggers: {}, flags: {} };
+  out.talentState = (out.talentState && typeof out.talentState === 'object') ? out.talentState : { triggers: {}, flags: {}, activeUses: {} };
   out.talentState.triggers = (out.talentState.triggers && typeof out.talentState.triggers === 'object') ? out.talentState.triggers : {};
   out.talentState.flags = (out.talentState.flags && typeof out.talentState.flags === 'object') ? out.talentState.flags : {};
+  out.talentState.activeUses = (out.talentState.activeUses && typeof out.talentState.activeUses === 'object') ? out.talentState.activeUses : {};
   out.schoolState = (out.schoolState && typeof out.schoolState === 'object') ? out.schoolState : {};
   const schoolAliases = { tongru: 'bowen', cizong: 'cizong_bi', shixian: 'bowen', liansheng: 'bowen' };
   if (schoolAliases[out.school && out.school.id]) {

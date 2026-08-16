@@ -667,28 +667,28 @@
           "type": "fixed_dice",
           "value": 13
         },
-        "cost": 1
+        "cost": 3
       },
       {
         "effect": {
           "type": "fixed_dice",
           "value": 14
         },
-        "cost": 1
+        "cost": 3
       },
       {
         "effect": {
           "type": "fixed_dice",
           "value": 15
         },
-        "cost": 1
+        "cost": 3
       },
       {
         "effect": {
           "type": "fixed_dice",
           "value": 17
         },
-        "cost": 1
+        "cost": 3
       }
     ]
   },
@@ -706,28 +706,28 @@
           "type": "copy_affinity",
           "ratio": 0.7
         },
-        "cost": 1
+        "cost": 3
       },
       {
         "effect": {
           "type": "copy_affinity",
           "ratio": 0.85
         },
-        "cost": 1
+        "cost": 3
       },
       {
         "effect": {
           "type": "copy_affinity",
           "ratio": 1.0
         },
-        "cost": 1
+        "cost": 3
       },
       {
         "effect": {
           "type": "copy_affinity",
           "ratio": 1.15
         },
-        "cost": 1
+        "cost": 3
       }
     ]
   },
@@ -746,35 +746,35 @@
           "type": "dice_mult",
           "value": 6.5
         },
-        "cost": 2
+        "cost": 4
       },
       {
         "effect": {
           "type": "dice_mult",
           "value": 6.925
         },
-        "cost": 2
+        "cost": 4
       },
       {
         "effect": {
           "type": "dice_mult",
           "value": 7.35
         },
-        "cost": 2
+        "cost": 4
       },
       {
         "effect": {
           "type": "dice_mult",
           "value": 7.775
         },
-        "cost": 2
+        "cost": 4
       },
       {
         "effect": {
           "type": "dice_mult",
           "value": 8.2
         },
-        "cost": 2
+        "cost": 4
       }
     ]
   },
@@ -794,7 +794,7 @@
           "chance": 0.3,
           "mult": 1.45
         },
-        "cost": 2
+        "cost": 3
       },
       {
         "effect": {
@@ -802,7 +802,7 @@
           "chance": 0.3425,
           "mult": 1.475
         },
-        "cost": 1
+        "cost": 3
       },
       {
         "effect": {
@@ -810,7 +810,7 @@
           "chance": 0.385,
           "mult": 1.5
         },
-        "cost": 1
+        "cost": 3
       },
       {
         "effect": {
@@ -818,7 +818,7 @@
           "chance": 0.4275,
           "mult": 1.525
         },
-        "cost": 1
+        "cost": 3
       },
       {
         "effect": {
@@ -826,7 +826,7 @@
           "chance": 0.47,
           "mult": 1.55
         },
-        "cost": 1
+        "cost": 3
       }
     ]
   },
@@ -844,28 +844,28 @@
           "type": "dice_plus",
           "value": 3
         },
-        "cost": 1
+        "cost": 2
       },
       {
         "effect": {
           "type": "dice_plus",
           "value": 4
         },
-        "cost": 1
+        "cost": 2
       },
       {
         "effect": {
           "type": "dice_plus",
           "value": 5
         },
-        "cost": 1
+        "cost": 2
       },
       {
         "effect": {
           "type": "dice_plus",
           "value": 6
         },
-        "cost": 1
+        "cost": 2
       }
     ]
   },
@@ -885,42 +885,42 @@
           "type": "fixed_dice",
           "value": 16
         },
-        "cost": 2
+        "cost": 4
       },
       {
         "effect": {
           "type": "fixed_dice",
           "value": 17
         },
-        "cost": 1
+        "cost": 4
       },
       {
         "effect": {
           "type": "fixed_dice",
           "value": 19
         },
-        "cost": 1
+        "cost": 4
       },
       {
         "effect": {
           "type": "fixed_dice",
           "value": 20
         },
-        "cost": 1
+        "cost": 4
       },
       {
         "effect": {
           "type": "fixed_dice",
           "value": 22
         },
-        "cost": 1
+        "cost": 4
       },
       {
         "effect": {
           "type": "fixed_dice",
           "value": 24
         },
-        "cost": 1
+        "cost": 4
       }
     ]
   },
@@ -938,28 +938,65 @@
           "type": "dice_mult",
           "value": 6
         },
-        "cost": 2
+        "cost": 3
       },
       {
         "effect": {
           "type": "dice_mult",
           "value": 6
         },
-        "cost": 1
+        "cost": 3
       },
       {
         "effect": {
           "type": "dice_mult",
           "value": 6
         },
-        "cost": 1
+        "cost": 3
       },
       {
         "effect": {
           "type": "dice_mult",
           "value": 7
         },
-        "cost": 1
+        "cost": 3
+      }
+    ]
+  },
+  "TA08": {
+    "quality": "common",
+    "maxLevel": 3,
+    "upCost": [
+      6,
+      10
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "planned_dice",
+          "baseCost": 5,
+          "costStep": 2,
+          "maxValue": 6
+        },
+        "cost": 5
+      },
+      {
+        "effect": {
+          "type": "planned_dice",
+          "baseCost": 5,
+          "costStep": 2,
+          "maxValue": 6
+        },
+        "cost": 5
+      },
+      {
+        "effect": {
+          "type": "planned_dice",
+          "baseCost": 5,
+          "costStep": 2,
+          "maxValue": 6
+        },
+        "cost": 5
       }
     ]
   },
@@ -1653,14 +1690,56 @@
   "T034": {
     "quality": "legend",
     "maxLevel": 6,
-    "upCost": [9, 13, 18, 24, 31],
+    "upCost": [
+      9,
+      13,
+      18,
+      24,
+      31
+    ],
     "levels": [
-      { "effect": { "type": "reincarnate", "inspThreshold": 40, "attrRatio": 0.80 } },
-      { "effect": { "type": "reincarnate", "inspThreshold": 36, "attrRatio": 0.84 } },
-      { "effect": { "type": "reincarnate", "inspThreshold": 32, "attrRatio": 0.88 } },
-      { "effect": { "type": "reincarnate", "inspThreshold": 28, "attrRatio": 0.92 } },
-      { "effect": { "type": "reincarnate", "inspThreshold": 24, "attrRatio": 0.96 } },
-      { "effect": { "type": "reincarnate", "inspThreshold": 20, "attrRatio": 1.00 } }
+      {
+        "effect": {
+          "type": "reincarnate",
+          "inspThreshold": 40,
+          "attrRatio": 0.8
+        }
+      },
+      {
+        "effect": {
+          "type": "reincarnate",
+          "inspThreshold": 36,
+          "attrRatio": 0.84
+        }
+      },
+      {
+        "effect": {
+          "type": "reincarnate",
+          "inspThreshold": 32,
+          "attrRatio": 0.88
+        }
+      },
+      {
+        "effect": {
+          "type": "reincarnate",
+          "inspThreshold": 28,
+          "attrRatio": 0.92
+        }
+      },
+      {
+        "effect": {
+          "type": "reincarnate",
+          "inspThreshold": 24,
+          "attrRatio": 0.96
+        }
+      },
+      {
+        "effect": {
+          "type": "reincarnate",
+          "inspThreshold": 20,
+          "attrRatio": 1.0
+        }
+      }
     ]
   }
 }
