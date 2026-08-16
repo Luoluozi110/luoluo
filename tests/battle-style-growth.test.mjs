@@ -78,10 +78,20 @@ console.log('== 同一战斗重复结算：属性与统计均不重复 ==');
   const session = g.createSession({ npc: npc(), label: '幂等·诗' });
   await g.settleBattle(session, winOut('shi'));
   const afterFirst = { attrs: { ...g.s.attrs }, battle: JSON.parse(JSON.stringify(g.s.battle)), seq: g.s.schoolState.battleSeq };
+
+  // UI 重试通常还会复用同一个对象；WeakSet 负责拦截这一类重复提交。
   await g.settleBattle(session, winOut('shi'));
-  assert.deepEqual(g.s.attrs, afterFirst.attrs, '重复结算不再增加任何属性');
-  assert.deepEqual(g.s.battle, afterFirst.battle, '重复结算不再增加战绩');
-  assert.equal(g.s.schoolState.battleSeq, afterFirst.seq, '重复结算不推进战斗序号');
+  assert.deepEqual(g.s.attrs, afterFirst.attrs, '同对象重复结算不再增加任何属性');
+  assert.deepEqual(g.s.battle, afterFirst.battle, '同对象重复结算不再增加战绩');
+  assert.equal(g.s.schoolState.battleSeq, afterFirst.seq, '同对象重复结算不推进战斗序号');
+
+  // 读档/重试可能产生新的对象引用，但必须携带同一稳定 battleId；
+  // 持久化 settledBattleIds 仍应阻止同一场战斗再次发放奖励。
+  const restoredSession = { ...session };
+  await g.settleBattle(restoredSession, winOut('shi'));
+  assert.deepEqual(g.s.attrs, afterFirst.attrs, '复制会话重复结算不再增加任何属性');
+  assert.deepEqual(g.s.battle, afterFirst.battle, '复制会话重复结算不再增加战绩');
+  assert.equal(g.s.schoolState.battleSeq, afterFirst.seq, '复制会话重复结算不推进战斗序号');
 }
 
 console.log('== 多场战斗：不同文体分别成长，不串到其他文体 ==');
@@ -113,6 +123,18 @@ console.log('== 后期数值：成长递减但每场只增加一次 ==');
   assert.equal(g.s.attrs.shi - before, 2, '两场独立胜利得到两次、而非同场重复的成长');
   assert.equal(g.s.attrs.ci, 50, '后期未出战词力不变');
   assert.equal(g.s.attrs.lian, 50, '后期未出战联力不变');
+}
+
+console.log('== 失败成长：只增加出战文体，不误增其他文体 ==');
+{
+  const g = newGame();
+  const before = { ...g.s.attrs };
+  const session = g.createSession({ npc: npc('失败·词'), label: '失败·词' });
+  await g.settleBattle(session, { result: 'lose', style: 'ci', manner: 'zheli', npcStyle: 'shi', npcDice: 1 });
+  assert.equal(g.s.attrs.shi, before.shi, '失败不改变未出战诗力');
+  assert.ok(g.s.attrs.ci > before.ci, '失败补偿只增加本场词力');
+  assert.equal(g.s.attrs.lian, before.lian, '失败不改变未出战联力');
+  assert.equal(g.s.battle.loss, 1, '失败只记一次');
 }
 
 console.log('== 平局被动：study_bonus 不因 draw_bonus 重复套用 ==');

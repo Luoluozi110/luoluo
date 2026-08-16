@@ -40,7 +40,9 @@ let leaderboardInitPromise = null;
 
 // 云端工程配置须兼顾“编辑器发布后可更新”与“弱网不拖住首屏”。
 // 成功结果会被本机缓存，下一次启动先用已验证版本显示菜单，再在后台限时检查更新。
-const CLOUD_CACHE_KEY = 'feihua_cloud_config_cache_v1';
+// 三圈版本使用独立缓存槽，避免旧单环工程配置覆盖正式地图。
+const CLOUD_CACHE_KEY = 'feihua_cloud_config_cache_v2_ringfix';
+const LEGACY_CLOUD_CACHE_KEY = 'feihua_cloud_config_cache_v1';
 const CLOUD_REQUEST_TIMEOUT_MS = 3500;
 
 /** index.html 已带静态骨架；缺失时补建，保证 app.js 单独引用也能跑 */
@@ -482,12 +484,25 @@ function showMenu() {
 
 /* ------------------------------------------------------ 云端自动同步（编辑器发布 → 所有玩家共享） */
 
+function isRingProject(project) {
+  const board = project && project.board;
+  return !board || board.layout === 'concentric_spiral'
+    || (Array.isArray(board.rings) && board.rings.length >= 3 && Array.isArray(board.route));
+}
+
 function readCloudCache(url) {
   try {
     const cached = JSON.parse(localStorage.getItem(CLOUD_CACHE_KEY) || 'null');
-    return cached && cached.url === url && cached.project && typeof cached.project === 'object'
-      ? cached.project : null;
-  } catch (_) { return null; }
+    if (cached && cached.url === url && cached.project && typeof cached.project === 'object' && isRingProject(cached.project)) {
+      return cached.project;
+    }
+    // 旧缓存只允许继续提供非地图内容；含旧单环 board 的缓存必须失效。
+    const legacy = JSON.parse(localStorage.getItem(LEGACY_CLOUD_CACHE_KEY) || 'null');
+    if (legacy && legacy.url === url && legacy.project && typeof legacy.project === 'object' && isRingProject(legacy.project)) {
+      return legacy.project;
+    }
+  } catch (_) { /* 缓存损坏或旧格式直接忽略 */ }
+  return null;
 }
 
 function writeCloudCache(url, project) {
@@ -531,6 +546,10 @@ function refreshConfigBoundUi() {
 
 /** 合并一份已验证的云端工程配置，并将它缓存给下一次首屏。 */
 function applyCloudProject(url, project, notice) {
+  if (!isRingProject(project)) {
+    cloudSyncNotice = '已忽略旧版单环云端地图，继续使用正式三圈地图';
+    return false;
+  }
   cfg = applyProjectOverride(cloudBaseCfg || cfg, project);
   cloudConfigActive = true;
   writeCloudCache(url, project);
