@@ -1299,8 +1299,10 @@
       }
     ],
     "isFinal": true,
-    "battles": 1,
+    "battles": 3,
     "themes": [
+      "yongwu",
+      "songbie",
       "huaigu"
     ]
   }

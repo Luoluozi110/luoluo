@@ -485,9 +485,11 @@ function showMenu() {
 /* ------------------------------------------------------ 云端自动同步（编辑器发布 → 所有玩家共享） */
 
 function isRingProject(project) {
+  // 兼容当前正式单环地图与历史三圈地图；这里只拦截损坏的 board，
+  // 不再把合法的 80×2 单环工程配置误判为旧版本。
   const board = project && project.board;
-  return !board || board.layout === 'concentric_spiral'
-    || (Array.isArray(board.rings) && board.rings.length >= 3 && Array.isArray(board.route));
+  return !board || typeof board !== 'object'
+    || (Array.isArray(board.mainRing) && board.mainRing.length === 80 && Number(board.laps) === 2);
 }
 
 function readCloudCache(url) {

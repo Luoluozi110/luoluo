@@ -4,7 +4,7 @@ import { getBudget } from './quality.js';
 import { play } from './audio.js';
 import { sting } from './music.js';
 
-const UNIT = 52;        // 三圈格距：42px 格面 + 10px 呼吸间距；旧单环仍可随盘缩放
+const UNIT = 46;        // 原版单环格距：42px 格面 + 4px 间距
 const GRID = 21;        // 兼容旧单环；三圈布局按各 ring.grid 计算
 const PAD = 3;          // 外扩单位（浮岛边框留白）
 const CELL = 42;        // 格子边长
