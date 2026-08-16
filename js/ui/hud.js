@@ -146,6 +146,7 @@ export class Hud {
     this.el.inspToggle.addEventListener('click', () => this.togglePanel('insp'));
     this._collapse = this._loadCollapse();
     this._bp = !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
+    this._shortLandscapeApplied = false;
     window.addEventListener('resize', () => this._onViewportChange());
     window.addEventListener('orientationchange', () => this._onViewportChange());
     this._applyCollapse();
@@ -282,9 +283,18 @@ export class Hud {
     if (this._vpTimer) clearTimeout(this._vpTimer);
     this._vpTimer = setTimeout(() => {
       const mobile = !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
-      if (mobile === this._bp) return;          // 未跨越阈值，保留玩家当前选择
+      const shortLandscape = !!(window.matchMedia && window.matchMedia('(orientation: landscape) and (max-height: 500px)').matches);
+      if (mobile === this._bp) {
+        // 横屏短视口不改变玩家已保存偏好，但在初次进入时默认收起高密度 HUD。
+        if (shortLandscape && !this._shortLandscapeApplied) {
+          this._shortLandscapeApplied = true;
+          this._collapse = { attr: true, talent: true, insp: true };
+          this._applyCollapse();
+        } else if (!shortLandscape) this._shortLandscapeApplied = false;
+        return;
+      }
       this._bp = mobile;
-      this._collapse = { attr: mobile, talent: mobile, insp: mobile };
+      this._collapse = { attr: mobile || shortLandscape, talent: mobile || shortLandscape, insp: mobile || shortLandscape };
       this._saveCollapse();
       this._applyCollapse();
     }, 180);

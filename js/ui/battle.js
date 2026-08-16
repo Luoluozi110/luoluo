@@ -261,7 +261,7 @@ export class BattleStage {
       };
 
       panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">1d6 × ${dm}（${dm}～${dm * 6} 分）；每枚耗 ${extraCost} 灵感，最多可追加 ${extraCap} 枚　·　限时 ${this.seconds} 秒</span></div>
-        <div class="pick-row"><button class="pick" id="btRoll" style="min-width:180px"><div class="pn">掷 骰</div>
+        <div class="pick-row"><button class="pick battle-roll" id="btRoll"><div class="pn">掷 骰</div>
         <div class="pv">听天由命，也听人事</div></button></div>`;
       panel.querySelector('#btRoll').addEventListener('click', () => doRoll(false));
       armTimer(() => doRoll(true));

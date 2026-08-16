@@ -38,12 +38,35 @@ export class Modals {
     ov.className = 'overlay ' + (cls || '');
     ov.innerHTML = html;
     this.layer.appendChild(ov);
+
+    // 软键盘/动态视口变化时，把弹窗中当前聚焦的输入控件带回可视区。
+    const keepFocusedControlVisible = () => {
+      const active = document.activeElement;
+      if (active && ov.contains(active) && typeof active.scrollIntoView === 'function') {
+        active.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+      }
+    };
+    ov.addEventListener('focusin', () => requestAnimationFrame(keepFocusedControlVisible));
+    if (window.visualViewport) {
+      let frame = 0;
+      const onViewportResize = () => {
+        if (frame) return;
+        frame = requestAnimationFrame(() => { frame = 0; keepFocusedControlVisible(); });
+      };
+      window.visualViewport.addEventListener('resize', onViewportResize);
+      ov._removeViewportListener = () => window.visualViewport.removeEventListener('resize', onViewportResize);
+    }
     return ov;
   }
   close(ov) {
+    if (!ov) return;
+    if (ov._removeViewportListener) ov._removeViewportListener();
     ov.style.transition = 'opacity .2s';
     ov.style.opacity = '0';
-    setTimeout(() => ov.remove(), 210);
+    setTimeout(() => {
+      if (ov._removeViewportListener) ov._removeViewportListener();
+      ov.remove();
+    }, 210);
   }
 
   /* ---------------------------------------------------- 考题格 */
@@ -443,7 +466,7 @@ export class Modals {
             placeholder="例如：青莲居士（最多 12 字）" value="${esc(defaultName)}"
             style="width:100%;box-sizing:border-box;margin-top:14px;padding:11px 14px;font-size:18px;
               font-family:var(--font-kai);text-align:center;border:1px solid var(--mo-3);
-              border-radius:10px;background:rgba(255,255,255,.06);color:var(--ink)" />
+              border-radius:10px;background:rgba(255,255,255,.72);color:var(--mo)" />
           <div style="display:flex;justify-content:space-between;align-items:center;
             margin-top:7px;padding:0 4px;font-size:12px;color:var(--mo-3);letter-spacing:.04em">
             <span>回车即可开局</span>

@@ -201,8 +201,8 @@ function buildSchoolScreen() {
     const prev = Album.MASTERY_THRESHOLDS[m.level - 1];
     const widthPct = next == null ? 100 : Math.min(100, Math.max(0, ((m.xp - prev) / (next - prev)) * 100));
     const masteryLine = isMax
-      ? `<div style="color:var(--zhu);font-size:12px;letter-spacing:.08em">造诣 ${Album.masteryLevelName(m.level)}</div>`
-      : `<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mo-3);letter-spacing:.06em">
+      ? `<div style="color:var(--zhu);font-size:var(--text-meta);letter-spacing:.08em">造诣 ${Album.masteryLevelName(m.level)}</div>`
+      : `<div style="display:flex;align-items:center;gap:6px;font-size:var(--text-micro);color:var(--mo-3);letter-spacing:.06em;min-width:0">
            <span>造诣 Lv${m.level} ${Album.masteryLevelName(m.level)}</span>
            <span style="flex:1;min-width:40px;height:4px;background:rgba(128,112,96,.15);border-radius:2px;overflow:hidden">
              <span style="display:block;height:100%;width:${widthPct.toFixed(1)}%;background:var(--zhu)"></span>
@@ -237,21 +237,21 @@ function buildSchoolScreen() {
     a + (t.npcs || []).filter(n => Codex.hasFoe(t.id, n.name)).length, 0);
 
   schoolEl.innerHTML = `
-    <div class="school-inner scroll-frame paper" style="max-width:min(1080px,94vw);border-radius:14px">
+    <div class="school-inner scroll-frame paper" style="max-width:min(1080px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));border-radius:14px">
       <div class="title-ink" style="font-size:40px;text-align:center">選 擇 流 派</div>
       <div class="subtitle" style="text-align:center;margin-top:6px">三派各有所长，落子无悔，且赴科场。</div>
       ${canContinue ? `<div style="text-align:center;margin:10px 0 4px"><button class="btn btn-primary" data-continue style="font-size:18px;padding:12px 30px;letter-spacing:.12em">▶ 继续上局</button>
-        <div style="font-size:12px;color:var(--mo-3);margin-top:6px">${contInfo}</div></div>` : ''}
+        <div style="font-size:var(--text-meta);color:var(--mo-3);margin-top:6px;line-height:1.6">${contInfo}</div></div>` : ''}
       <div class="school-grid">${cards}</div>
       <div class="school-actions" style="text-align:center;margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
         <button class="btn btn-ink" data-album>传世名篇（已解锁 ${store.unlocked.length}/${(cfg.album || []).length}）</button>
         <button class="btn btn-ink" data-codex>图鉴阁（已邂逅 ${foesGot}/${foesTotal}）</button>
         <button class="btn btn-ink" data-save-transfer>存档码（导入／导出）</button>
       </div>
-      <div style="font-size:12px;color:var(--mo-3);letter-spacing:.08em;margin-top:8px;text-align:center">
+      <div style="font-size:var(--text-meta);color:var(--mo-3);letter-spacing:.08em;margin-top:8px;text-align:center;line-height:1.65">
         择定流派后，可于「装配名篇」中携带至多 ${Album.LOADOUT_MAX} 张图鉴卡入局。
       </div>
-      <div style="text-align:center;font-size:11px;color:var(--mo-3);letter-spacing:.1em;margin-top:12px">
+      <div style="text-align:center;font-size:var(--text-micro);color:var(--mo-3);letter-spacing:.1em;margin-top:12px;line-height:1.55">
         配置来源：${src}
       </div>
     </div>`;
@@ -431,7 +431,7 @@ function showMenu() {
     ? `读取存档（${best.manual ? '手动' : '自动'} · 第${best.turn}回合 · ${fmt(best.savedAt)}）`
     : '没有可用存档';
   const html = `
-    <div class="modal paper" style="width:min(360px,90vw)">
+    <div class="modal paper compact-modal" style="width:min(360px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
       <div class="mtitle"><h2>桃 花 棋 · 菜 单</h2></div>
       <div class="menu-list">
         <button class="btn btn-ink menu-item" data-save ${canSave ? '' : 'disabled'}>${canSave ? '保存当前进度（手动存档）' : '暂无进行中的对局'}</button>
@@ -585,7 +585,7 @@ async function waitForCloudBeforeGame() {
 function openCustomConfig() {
   const cur = localStorage.getItem('feihua_custom_config');
   const html = `
-    <div class="modal paper" style="width:min(620px,94vw)">
+    <div class="modal paper" style="width:min(620px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
       <div class="mtitle"><h2>载 入 自 定 义 配 置</h2></div>
       <div style="font-size:13px;color:var(--mo-3);line-height:1.85;margin:4px 2px 12px">
         把「内容编辑器」导出的 <code>feihua-content.json</code> 粘贴或上传到此处，<br/>

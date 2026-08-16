@@ -28,12 +28,17 @@
   --xuanzhi-2:   #ebdfc6;
   --xuanzhi-3:   #ddcda9;
   --mo:          #262019;
+  --mo-1:        #3d3229;         /* 深墨：标题/关键标签 */
   --mo-2:        #483f34;
-  --mo-3:        #7a6d5d;
+  --mo-3:        #6d6052;         /* 辅助文字：在宣纸底上保持可读对比度 */
+  --ink:         var(--mo);
   --zhu:         #b23a2e;         /* 印章朱砂 */
-  --jin:         #c9971f;         /* 创作力·金 */
+  --accent:      var(--zhu);
+  --jin:         #c9971f;         /* 创作力·金（装饰/图形） */
+  --jin-text:    #785600;         /* 创作力·金（功能文字） */
   --jin-soft:    #f0d98a;
-  --qing:        #2f8b90;         /* 基本功·青 */
+  --qing:        #2f8b90;         /* 基本功·青（装饰/图形） */
+  --qing-text:   #20656a;         /* 基本功·青（功能文字） */
   --qing-soft:   #a8dcdd;
 
   /* ============================================ 描边令牌（统一所有 SVG 资产）
@@ -68,6 +73,18 @@
 
   --ease-back: cubic-bezier(.34, 1.56, .64, 1);
   --shadow-card: 0 18px 44px rgba(38, 32, 25, .34), 0 2px 0 rgba(255,255,255,.5) inset;
+
+  /* 移动端安全区与可读性基线：贴边控件统一避开刘海、圆角与手势区。 */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --edge-gap: 16px;
+  --text-micro: 0.75rem;
+  --text-meta: 0.8125rem;
+  --text-body: 0.9375rem;
+  --text-action: 1rem;
+
   /* 明朝体（宋体类）主字体：古色古香 + 高清晰度，且为自托管本地字体（断网可用）。
      优先级：本机已装正版「汇文明朝体」> 自托管思源宋体(Noto Serif SC，fonts/noto-serif-sc/，
      SIL 开源、CJK hinting 极佳) > 系统宋体回退。子集覆盖 GBK + 游戏文本，玩家任意起名基本不漏；
@@ -85,6 +102,7 @@ button, input, textarea, select { font-family: inherit; }
 
 html, body {
   margin: 0; padding: 0; height: 100%;
+  min-height: 100dvh;
   font-family: var(--font-song);
   color: var(--mo);
   background: #1d1712;
@@ -96,7 +114,14 @@ html, body {
   font-synthesis: weight style;
 }
 
-#app { position: fixed; inset: 0; overflow: hidden; }
+/* 以动态视口高度取代仅依赖 100vh，浏览器地址栏与键盘收起/弹出时仍保持全屏层可达。 */
+#app {
+  position: fixed;
+  inset: 0;
+  height: 100dvh;
+  min-height: 100vh;
+  overflow: hidden;
+}
 
 /* 宣纸质地：叠加细噪点与纤维 */
 .paper {
@@ -185,14 +210,22 @@ html, body {
 
 .pop-in { animation: popIn .42s var(--ease-back) both; }
 
-/* 遮罩 */
+/* 遮罩：短视口、软键盘、系统字号放大时由遮罩承接纵向滚动，避免弹窗上下被裁切。 */
 .overlay {
   position: absolute; inset: 0; z-index: 60;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: safe center; justify-content: center;
+  overflow-y: auto; overscroll-behavior: contain;
+  padding:
+    calc(var(--safe-top) + 18px)
+    calc(var(--safe-right) + 18px)
+    calc(var(--safe-bottom) + 18px)
+    calc(var(--safe-left) + 18px);
   background: radial-gradient(circle at 50% 45%, rgba(20,15,10,.5), rgba(12,9,6,.86));
   animation: fadeIn .22s ease both;
   backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
+.overlay > * { flex: 0 0 auto; }
 .overlay.is-hidden { display: none; }
 
 /* 滚动条 */

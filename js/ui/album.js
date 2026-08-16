@@ -176,7 +176,7 @@ export class AlbumUI {
     const ov = document.createElement('div');
     ov.className = 'overlay save-transfer';
     ov.innerHTML = `
-      <div class="modal paper" style="width:min(680px,94vw)">
+      <div class="modal paper" style="width:min(680px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
         <div class="mtitle"><h2>存 档 码</h2></div>
         <div style="font-size:13px;color:var(--mo-3);line-height:1.85;margin:6px 0 12px">
           存档码包含累计战绩与传世名篇图鉴、图鉴阁（对手／文心／羁绊／天象）进度、传承火种，以及自动／手动进行中对局。<br/>

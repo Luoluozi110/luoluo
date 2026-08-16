@@ -2,6 +2,7 @@
 
 #scene {
   position: absolute; inset: 0;
+  touch-action: none; /* 棋盘维持局部拖拽/双指缩放；页面其余文本与表单仍可由浏览器缩放。 */
   background:
     radial-gradient(ellipse 120% 70% at 50% 108%, #3a2c33 0%, transparent 60%),
     radial-gradient(ellipse 90% 60% at 50% -8%, #4a3a44 0%, transparent 62%),
