@@ -207,6 +207,13 @@
   box-shadow: 0 8px 22px rgba(0,0,0,.45);
   animation: popIn .34s var(--ease-back);
 }
+.choice-echo {
+  width: min(560px, calc(100vw - 32px)); padding: 13px 18px; border-radius: 12px;
+  letter-spacing: .03em; text-align: left; line-height: 1.6;
+  border-color: rgba(224,190,120,.7); background: rgba(38,29,21,.96);
+}
+.choice-echo-picked { font-size: 13px; color: #e8c985; margin-bottom: 4px; }
+.choice-echo-result { font-family: var(--font-kai); font-size: 16px; color: var(--xuanzhi); }
 
 /* ==================================================== 通用模态 */
 .modal { width: min(680px, 90vw); max-height: 88vh; overflow: auto; animation: popIn .44s var(--ease-back); border: 1.5px solid rgba(120,100,70,.5); }

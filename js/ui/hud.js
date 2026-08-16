@@ -299,6 +299,21 @@ export class Hud {
     setTimeout(() => el.remove(), 2450);
   }
 
+  choiceEcho({ choiceText, resultText }) {
+    const el = document.createElement('div');
+    el.className = 'toast choice-echo';
+    const picked = document.createElement('div');
+    picked.className = 'choice-echo-picked';
+    picked.textContent = `已选择：${choiceText}`;
+    const result = document.createElement('div');
+    result.className = 'choice-echo-result';
+    result.textContent = resultText;
+    el.append(picked, result);
+    this.el.toast.appendChild(el);
+    setTimeout(() => { el.style.transition = 'opacity .4s'; el.style.opacity = '0'; }, 3800);
+    setTimeout(() => el.remove(), 4250);
+  }
+
   setRollEnabled(on, label) {
     this.el.roll.disabled = !on;
     if (label) this.el.roll.textContent = label;

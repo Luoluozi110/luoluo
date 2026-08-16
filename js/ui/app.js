@@ -20,6 +20,7 @@ import { initAudio } from './audio.js';
 import { setScene, setTension, setStage } from './music.js';
 import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_MANUAL_KEY } from '../engine/save.js';
 import { Leaderboard } from './leaderboard.js';
+import { personalize } from './namefmt.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -338,6 +339,10 @@ function makeUi() {
     showDice: d => board.showDice(d),
     movePiece: s => board.movePiece(s),
     toast: t => hud.toast(t),
+    showChoiceEcho: echo => hud.choiceEcho({
+      choiceText: personalize(echo.choiceText, modals.playerName),
+      resultText: personalize(echo.resultText, modals.playerName)
+    }),
     highlightCell: c => board.highlight(c),
     showQuiz: (q, opt) => modals.showQuiz(q, opt),
     showQuizResult: (q, ans, ok) => modals.showQuizResult(q, ans, ok),

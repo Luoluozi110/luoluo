@@ -888,6 +888,26 @@ export class Game {
     return has(ev) || has(ev && ev.challenge && ev.challenge.winAll);
   }
 
+  async applyEventChoice(ev, choiceIdx) {
+    const choices = Array.isArray(ev && ev.choices) ? ev.choices : [];
+    const c = choices[choiceIdx] || choices[0] || {};
+    const choiceText = String(c.text || '未命名选择').trim();
+    const resultText = String(c.resultText || '').trim() || `选择已确认：「${choiceText}」`;
+    const echo = {
+      eventId: String((ev && ev.id) || ''),
+      eventName: String((ev && ev.name) || '奇遇'),
+      choiceText,
+      resultText
+    };
+
+    // 先确认玩家选择，再结算数值；即使奖励包含后续弹窗，回声也不会被延迟。
+    if (this.ui.showChoiceEcho) this.ui.showChoiceEcho(echo);
+    else this.ui.toast(`已选择：${choiceText}\n${resultText}`);
+    this.push(`选择「${echo.eventName}」：${choiceText}｜${resultText}`);
+    await this.applyEffect(c.effect || {});
+    return echo;
+  }
+
   async runCizongLightEvent() {
     const mech = this.schoolMechanics();
     if (mech.type !== 'cizong_bi') return false;
@@ -908,8 +928,7 @@ export class Game {
     this.push(`辞宗·文成有遇：${ev.name}`);
     const idx = await this.ui.showEvent(ev);
     if (ev.kind === 'choice') {
-      const c = (ev.choices || [])[idx] || (ev.choices || [])[0] || {};
-      await this.applyEffect(c.effect || {});
+      await this.applyEventChoice(ev, idx);
     } else await this.applyEffect(ev.effect || {});
     return true;
   }
@@ -932,8 +951,7 @@ export class Game {
     const choiceIdx = await this.ui.showEvent(ev);
 
     if (ev.kind === 'choice') {
-      const c = (ev.choices || [])[choiceIdx] || (ev.choices || [])[0] || {};
-      await this.applyEffect(c.effect || {});
+      await this.applyEventChoice(ev, choiceIdx);
     } else if (ev.kind === 'challenge') {
       await this.runChallenge(ev);
     } else {
