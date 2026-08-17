@@ -41,8 +41,8 @@ let leaderboardInitPromise = null;
 // 云端工程配置须兼顾“编辑器发布后可更新”与“弱网不拖住首屏”。
 // 成功结果会被本机缓存，下一次启动先用已验证版本显示菜单，再在后台限时检查更新。
 // 三圈版本使用独立缓存槽，避免旧单环工程配置覆盖正式地图。
-const CLOUD_CACHE_KEY = 'feihua_cloud_config_cache_v2_ringfix';
-const LEGACY_CLOUD_CACHE_KEY = 'feihua_cloud_config_cache_v1';
+const CLOUD_CACHE_KEY = 'feihua_cloud_config_cache_v3_staged_rings';
+const LEGACY_CLOUD_CACHE_KEY = 'feihua_cloud_config_cache_v2_ringfix';
 const CLOUD_REQUEST_TIMEOUT_MS = 3500;
 
 /** index.html 已带静态骨架；缺失时补建，保证 app.js 单独引用也能跑 */
@@ -296,6 +296,7 @@ async function startGame(schoolId, loadout, playerName) {
   resultEl.classList.remove('on');
   albumUI.closeLoadout();
   albumUI.closeAlbum();
+  board.setVisibleRing?.('outer');
   board.setPiecePos(0);
   board.clearHint();
   board.cellEls.forEach(e => e.classList.remove('active'));
@@ -354,7 +355,11 @@ function makeUi() {
     showSky: c => modals.showSky(c),
     showPrologue: () => modals.showPrologue(),
     showLap2Intro: () => modals.showLap2Intro(),
-    showStageChange: gate => modals.showStageChange ? modals.showStageChange(gate) : Promise.resolve(),
+    showStageChange: async gate => {
+      if (modals.showStageChange) await modals.showStageChange(gate);
+      // 阶段弹窗确认后才揭示下一圈，保证玩家先看到“进入新阶段”的说明。
+      if (gate && gate.transition && board.setVisibleRing) board.setVisibleRing(gate.transition);
+    },
     showZeitgeist: z => modals.showZeitgeist(z),
     askScenic: (cell, cost, curInsp) => modals.askScenic(cell, cost, curInsp),
     runBattle: async sess => {
@@ -485,11 +490,14 @@ function showMenu() {
 /* ------------------------------------------------------ 云端自动同步（编辑器发布 → 所有玩家共享） */
 
 function isRingProject(project) {
-  // 兼容当前正式单环地图与历史三圈地图；这里只拦截损坏的 board，
-  // 不再把合法的 80×2 单环工程配置误判为旧版本。
+  // 当前正式版本回到上一版 192 格三圈方案；旧 80×2 单环工程不能覆盖它。
   const board = project && project.board;
-  return !board || typeof board !== 'object'
-    || (Array.isArray(board.mainRing) && board.mainRing.length === 80 && Number(board.laps) === 2);
+  if (!board || typeof board !== 'object') return true;
+  const sizes = Array.isArray(board.rings) ? board.rings.map(r => (r.cells || []).length) : [];
+  return board.layout === 'concentric_spiral'
+    && Array.isArray(board.mainRing) && board.mainRing.length === 192
+    && sizes.join(',') === '72,64,56'
+    && Array.isArray(board.route) && board.route.length === 192;
 }
 
 function readCloudCache(url) {
@@ -549,7 +557,7 @@ function refreshConfigBoundUi() {
 /** 合并一份已验证的云端工程配置，并将它缓存给下一次首屏。 */
 function applyCloudProject(url, project, notice) {
   if (!isRingProject(project)) {
-    cloudSyncNotice = '已忽略旧版单环云端地图，继续使用正式三圈地图';
+    cloudSyncNotice = '已忽略非三圈云端地图，继续使用正式三圈地图';
     return false;
   }
   cfg = applyProjectOverride(cloudBaseCfg || cfg, project);
@@ -728,6 +736,7 @@ async function loadGame() {
   albumUI.closeAlbum();
   const st = game.s;
   const curCell = game.currentCell();
+  board.setVisibleRing?.(st.ringId === 'inner' ? 'inner' : st.ringId === 'middle' ? 'middle' : 'outer');
   board.setPiecePos(curCell ? curCell.id : st.pos);
   board.clearHint();
   board.cellEls.forEach(e => e.classList.remove('active'));

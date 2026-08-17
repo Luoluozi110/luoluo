@@ -29,6 +29,9 @@ export class BoardView {
     this.root = root;
     this.coords = new Map();      // cellId → {x,y}
     this.cellEls = new Map();
+    this.cellRings = new Map();   // cellId → outer/middle/inner；用于分阶段显现
+    this.visibleRing = cfg.board.layout === 'concentric_spiral' ? 'outer' : null;
+    this._pieceCellId = 0;
     this.bscale = 0.62;           // 当前基准缩放（fit 计算；移动端放大以求清晰）
     this.view = { panX: 0, panY: 0, zoom: 1 }; // 平移/手势缩放
     this._pointers = new Map();
@@ -111,6 +114,8 @@ export class BoardView {
     piece.innerHTML = `<div class="piece-body">${PIECE_SVG}</div>`;
     board.appendChild(piece);
     this.piece = piece; this.shadow = shadow; this.board = board;
+    // 三圈不是同时展开：开局只显示外圈，阶段门弹窗确认后由 setVisibleRing 切换。
+    this.setVisibleRing(this.visibleRing);
 
     this.fit();
     this._buildResponsive();
@@ -131,6 +136,22 @@ export class BoardView {
     board.appendChild(el);
     this.coords.set(cell.id, p);
     this.cellEls.set(cell.id, el);
+    if (ringId) this.cellRings.set(cell.id, ringId);
+  }
+
+  /** 分阶段显现：童生/秀才只见外圈，举人显现中圈，进士及殿试显现内圈。 */
+  setVisibleRing(ringId = 'outer') {
+    if (this.cfg.board.layout !== 'concentric_spiral') return;
+    const allowed = new Set(['outer', 'middle', 'inner']);
+    this.visibleRing = allowed.has(ringId) ? ringId : 'outer';
+    this.cellEls.forEach((el, id) => {
+      const ring = this.cellRings.get(id);
+      const visible = ring === this.visibleRing;
+      el.style.display = visible ? '' : 'none';
+      el.classList.toggle('ring-hidden', !visible);
+    });
+    // 阶段切换前棋子可能已走到尚未显现的路线，先隐去；切换后立即恢复。
+    if (this._pieceCellId != null) this.setPiecePos(this._pieceCellId);
   }
 
   fit() {
@@ -299,8 +320,14 @@ export class BoardView {
   }
 
   setPiecePos(cellId) {
+    this._pieceCellId = cellId;
     const p = this.coords.get(cellId);
     if (!p) return;
+    // 尚未显现的圈层仍可作为真实路线位置，但不让棋子提前出现在黑幕上。
+    const ring = this.cellRings.get(cellId);
+    const hidden = this.cfg.board.layout === 'concentric_spiral' && ring && ring !== this.visibleRing;
+    this.piece.style.opacity = hidden ? '0' : '';
+    this.shadow.style.opacity = hidden ? '0' : '';
     // transform 定位：走合成器、零重排（整盘是缩放层，left/top 会触发整盘重排）
     this.piece.style.transform = `translate(${p.x}px, ${p.y}px)`;
     this.shadow.style.transform = `translate(${p.x}px, ${p.y}px)`;
