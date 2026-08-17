@@ -8,7 +8,7 @@ const FILES = [
   'talents', 'schools', 'affinity', 'npcs', 'sky', 'grades'
 ];
 /** 可选配置：缺失时降级为空数组/空对象，不阻断启动 */
-const OPTIONAL_FILES = ['album', 'synergies', 'npc-mechanics', 'talent-upgrade'];
+const OPTIONAL_FILES = ['album', 'synergies', 'npc-mechanics', 'talent-upgrade', 'narrative'];
 
 export const configSource = {};   // { attrs: 'config' | 'config-dev' }
 
@@ -61,15 +61,15 @@ export async function loadCloudUrl() {
 /**
  * 运行时配置覆盖：把「内容编辑器」导出的工程文件（feihua-content.json）合并进已加载的 cfg。
  * project 形如 { _type:'feihua-content', questions, events, talents, 'talent-upgrade', npcs, affinity,
- *   synergies, board, sky, album, schools, grades }（部分键可缺省）。
+ *   synergies, board, sky, album, schools, grades, narrative }（部分键可缺省）。
  * 只覆盖存在的键；文心与升级表作为同一内容契约同步，其他未提供配置保持原值。返回合并并重新归一化后的新对象。
- * 注：schools / grades 为「叙事文案编辑器」产出的纯文案覆盖（流派口号/沉浸叙事、段位评语/奖励、评分文案），
- * 直接整体替换对应配置；normalize() 不触碰这两份配置的结构，故覆盖安全。
+ * 注：schools / grades / narrative 为「叙事文案编辑器」产出的纯文案覆盖（流派口号/沉浸叙事、段位评语/奖励、
+ * 评分文案、开局与阶段切换弹窗文案），直接整体替换对应配置；normalize() 不触碰这几份配置的结构，故覆盖安全。
  */
 export function applyProjectOverride(baseCfg, project) {
   if (!project || typeof project !== 'object') return baseCfg;
   const next = Object.assign({}, baseCfg);
-  for (const key of ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics', 'sky', 'album', 'schools', 'grades']) {
+  for (const key of ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics', 'sky', 'album', 'schools', 'grades', 'narrative']) {
     if (project[key] !== undefined && project[key] !== null) next[key] = project[key];
   }
   return normalize(next);

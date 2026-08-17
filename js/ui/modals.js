@@ -17,6 +17,54 @@ export const signed = n => (Number(n) > 0 ? '+' : '−') + Math.abs(Number(n) ||
 /** 限时默认秒数：引擎未指定时的兜底，UI 各处倒计时文案统一引用此常量 */
 export const DEFAULT_SECONDS = 30;
 
+/**
+ * 开局 / 阶段切换弹窗的纯叙事文案默认值。
+ * 与 config/narrative.json 对齐；编辑器改 narrative.json 后由 cfg.narrative 覆盖，
+ * 缺字段时回退到这里，保证不破坏现有表现。绝不在此硬编码数值/公式。
+ */
+const NARRATIVE_DEFAULTS = {
+  prologue: {
+    title: '初入科场',
+    text: '你有这么一段模糊的记忆：你来自于所谓的“现代世界”，你或许曾富甲一方，却感到生活寡淡无味，于是抛尽家财，出海寻访；也或许一贫如洗，为虚无缥缈的救赎凭片板到海上流浪；又或许只过着柴米油盐的生活，却在某日下定决心，去寻找那个世外仙源——总之，共同点是，你最终来到了『桃花岛』。岛上的仙人听你说明来意，默然无言，只往你头上一点，你便感觉周围的景物变成万千碎片，万千尘埃，像被狂风割裂，吹散，又重组成了新的场景。“待到种种妄念破灭，自可殿试见我，可涤尔灵台。”你到了蒙学馆，变成了一个小童生。其后十年潜心，你逐渐分不清那段模糊的记忆是真实存在，还只是一段怪谈般的梦境。总之，眼前科举将启，十载寒窗已到迎来回报的时刻，只待踏上征途，一上科场，便一鸣惊人。',
+    button: '踏上征途'
+  },
+  zeitgeist: {
+    kind: '当 朝 文 风',
+    title: '风 潮 既 起',
+    lead: '本局科场，文运所钟于二事。临场择题用体，可顺势而行：',
+    note: '若某场题目恰为热点题材、又用得势文体，二者叠加生效。文运在手，善用之可事半功倍。',
+    button: '谨记于心'
+  },
+  stageChange: {
+    kind: '科 场 叙 事',
+    names: { xiucai: '秀才', juren: '举人', jinshi: '进士' },
+    titleTpl: '{name}阶段 · 晋阶试',
+    buttonTpl: '进入{name}阶段',
+    default: '基础功名已立。接下来的道路会逐渐收紧，先前积下的文心与选择，将在新的试场中显出分量。',
+    middle: '外圈的试炼已尽。你将踏入中圈，补给不再唾手可得，真正的论战与奇遇正在前方等候。',
+    inner: '中圈的取舍已经定稿。内圈只给成熟的构筑留下位置，每一场论战都将逼你证明为何能走到这里。'
+  },
+  lap2Intro: {
+    title: '会试圈 · 再入科场',
+    text: '童生圈的试炼渐远，你已不再只是初入科场的稚子。\n\n棋盘上的路重新展开，题目更深，对手也将换作秀才与举人之间的较量。前方的每一步，都在检验十年寒窗积下的根基。\n\n收束心神，继续向前；待绕过会试圈，金殿之门便会在尽头开启。',
+    button: '进入会试圈'
+  }
+};
+
+/** 合并 config.narrative 与默认值（浅合并各块，stageChange.names 单独深合并）。 */
+function narrativeOf(cfg) {
+  const src = (cfg && cfg.narrative) || {};
+  const d = NARRATIVE_DEFAULTS;
+  return {
+    prologue: Object.assign({}, d.prologue, src.prologue || {}),
+    zeitgeist: Object.assign({}, d.zeitgeist, src.zeitgeist || {}),
+    stageChange: Object.assign({}, d.stageChange, src.stageChange || {}, {
+      names: Object.assign({}, d.stageChange.names, (src.stageChange || {}).names || {})
+    }),
+    lap2Intro: Object.assign({}, d.lap2Intro, src.lap2Intro || {})
+  };
+}
+
 /** 从 grades.json 里取某维某项加成的分值，供 UI 文案使用，避免硬编码 */
 export function bonusScore(grades, dimKey, bonusId, fallback) {
   const dim = ((grades || {}).dimensions || []).find(d => d.key === dimKey);
@@ -396,16 +444,17 @@ export class Modals {
   }
 
   /* ---------------------------------------------------- 开局序章 / 阶段叙事 */
-  /** 第0回合前显示的开局序章；点击确认后才进入首回合。 */
+  /** 第0回合前显示的开局序章；点击确认后才进入首回合。文案来自 config/narrative.prologue。 */
   async showPrologue() {
-    const text = `你有这么一段模糊的记忆：你来自于所谓的“现代世界”，你或许曾富甲一方，却感到生活寡淡无味，于是抛尽家财，出海寻访；也或许一贫如洗，为虚无缥缈的救赎凭片板到海上流浪；又或许只过着柴米油盐的生活，却在某日下定决心，去寻找那个世外仙源——总之，共同点是，你最终来到了『桃花岛』。岛上的仙人听你说明来意，默然无言，只往你头上一点，你便感觉周围的景物变成万千碎片，万千尘埃，像被狂风割裂，吹散，又重组成了新的场景。“待到种种妄念破灭，自可殿试见我，可涤尔灵台。”你到了蒙学馆，变成了一个小童生。其后十年潜心，你逐渐分不清那段模糊的记忆是真实存在，还只是一段怪谈般的梦境。总之，眼前科举将启，十载寒窗已到迎来回报的时刻，只待踏上征途，一上科场，便一鸣惊人。`;
-    return this.showStageIntro('初入科场', text, '踏上征途');
+    const N = narrativeOf(this.cfg);
+    return this.showStageIntro(N.prologue.title, N.prologue.text, N.prologue.button);
   }
   /** 阶段变化说明：会试圈 / 殿试由引擎在相应节点调用。 */
   async showStageIntro(title, text, button = '谨记于心') {
+    const kind = (narrativeOf(this.cfg).stageChange.kind) || '科 场 叙 事';
     const ov = this.open(`
       <div class="modal scroll-frame paper stage-intro" style="width:min(680px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
-        <div class="kind">科 场 叙 事</div>
+        <div class="kind">${esc(kind)}</div>
         <div class="title-ink" style="font-size:38px;text-align:center">${esc(title)}</div>
         <hr class="hr-ink"/>
         <div class="stage-story" style="font-size:16px;line-height:2.05;letter-spacing:.04em;text-align:left;white-space:pre-line;overflow:auto;padding:0 8px">${esc(text)}</div>
@@ -415,27 +464,23 @@ export class Modals {
     this.close(ov);
   }
   async showLap2Intro() {
-    return this.showStageIntro('会试圈 · 再入科场', '童生圈的试炼渐远，你已不再只是初入科场的稚子。\n\n棋盘上的路重新展开，题目更深，对手也将换作秀才与举人之间的较量。前方的每一步，都在检验十年寒窗积下的根基。\n\n收束心神，继续向前；待绕过会试圈，金殿之门便会在尽头开启。', '进入会试圈');
+    const N = narrativeOf(this.cfg);
+    return this.showStageIntro(N.lap2Intro.title, N.lap2Intro.text, N.lap2Intro.button);
   }
+  /** 阶段晋阶弹窗（外圈→中圈 / 中圈→内圈 / 基础功名已立）；文案来自 config/narrative.stageChange。 */
   async showStageChange(gate = {}) {
-    const names = { xiucai: '秀才', juren: '举人', jinshi: '进士' };
+    const N = narrativeOf(this.cfg);
+    const names = N.stageChange.names;
     const name = names[gate.phase] || gate.phase || '新阶段';
+    const tpl = N.stageChange;
     const text = gate.transition === 'middle'
-      ? '外圈的试炼已尽。你将踏入中圈，补给不再唾手可得，真正的论战与奇遇正在前方等候。'
+      ? tpl.middle
       : gate.transition === 'inner'
-        ? '中圈的取舍已经定稿。内圈只给成熟的构筑留下位置，每一场论战都将逼你证明为何能走到这里。'
-        : '基础功名已立。接下来的道路会逐渐收紧，先前积下的文心与选择，将在新的试场中显出分量。';
-    return this.showStageIntro(`${name}阶段 · 晋阶试`, text, `进入${name}阶段`);
-  }
-  async showStageChange(gate = {}) {
-    const names = { xiucai: '秀才', juren: '举人', jinshi: '进士' };
-    const name = names[gate.phase] || gate.phase || '新阶段';
-    const text = gate.transition === 'middle'
-      ? '外圈的试炼已尽。你将踏入中圈，补给不再唾手可得，真正的论战与奇遇正在前方等候。'
-      : gate.transition === 'inner'
-        ? '中圈的取舍已经定稿。内圈只给成熟的构筑留下位置，每一场论战都将逼你证明为何能走到这里。'
-        : '基础功名已立。接下来的道路会逐渐收紧，先前积下的文心与选择，将在新的试场中显出分量。';
-    return this.showStageIntro(`${name}阶段 · 晋阶试`, text, `进入${name}阶段`);
+        ? tpl.inner
+        : tpl.default;
+    const title = (tpl.titleTpl || '{name}阶段 · 晋阶试').replace(/\{name\}/g, name);
+    const button = (tpl.buttonTpl || '进入{name}阶段').replace(/\{name\}/g, name);
+    return this.showStageIntro(title, text, button);
   }
 
   /* ---------------------------------------------------- 当朝文风（风潮） */
@@ -448,12 +493,13 @@ export class Modals {
     const mannerBonus = Math.round((af.zeitgeistMannerBonus ?? 0) * 100);
     const themeName = themeNames[(z && z.theme)] || (z && z.theme) || '某题材';
     const mannerName = mannerNames[(z && z.manner)] || (z && z.manner) || '某文体';
+    const N = narrativeOf(this.cfg).zeitgeist;
     const ov = this.open(`
       <div class="modal scroll-frame paper zg-card" style="width:min(560px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center">
-        <div class="kind">当 朝 文 风</div>
-        <div class="title-ink" style="font-size:38px">风 潮 既 起</div>
+        <div class="kind">${esc(N.kind)}</div>
+        <div class="title-ink" style="font-size:38px">${esc(N.title)}</div>
         <hr class="hr-ink"/>
-        <p style="font-size:15px;line-height:1.9;color:var(--mo-2);margin:0 0 12px">本局科场，文运所钟于二事。临场择题用体，可顺势而行：</p>
+        <p style="font-size:15px;line-height:1.9;color:var(--mo-2);margin:0 0 12px">${esc(N.lead)}</p>
         <div class="zg-row">
           <div class="zg-k">热点题材</div>
           <div class="zg-v">「${esc(themeName)}」</div>
@@ -464,8 +510,8 @@ export class Modals {
           <div class="zg-v">「${esc(mannerName)}」</div>
           <div class="zg-d">无论何题材，凡用此文体者，得分 <b class="up">+${mannerBonus}%</b></div>
         </div>
-        <div class="zg-note">若某场题目恰为热点题材、又用得势文体，二者<b>叠加</b>生效。文运在手，善用之可事半功倍。</div>
-        <div class="btn-row"><button class="btn btn-primary" data-ok>谨记于心</button></div>
+        <div class="zg-note">${esc(N.note)}</div>
+        <div class="btn-row"><button class="btn btn-primary" data-ok>${esc(N.button)}</button></div>
       </div>`, 'zeitgeist-intro');
     await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', r));
     this.close(ov);
