@@ -3,24 +3,24 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js';
-import { Game } from '../engine/game.js';
-import { BoardView } from './board.js';
-import { Hud, radarSVG } from './hud.js';
-import { Modals } from './modals.js';
-import { BattleStage } from './battle.js';
-import { AlbumUI } from './album.js';
-import { CodexUI } from './codex.js';
-import { SCHOOL_EMBLEM, ensureDefs } from './svg.js';
-import { initQuality, getTier, setTier } from './quality.js';
-import { ATTR_NAMES } from '../engine/rules.js';
-import * as Album from '../engine/album.js';
-import * as Codex from '../engine/codex.js';
-import { initAudio } from './audio.js';
-import { setScene, setTension, setStage } from './music.js';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js';
-import { Leaderboard } from './leaderboard.js';
-import { personalize } from './namefmt.js';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260817ringfix';
+import { Game } from '../engine/game.js?v=20260817ringfix';
+import { BoardView } from './board.js?v=20260817ringfix';
+import { Hud, radarSVG } from './hud.js?v=20260817ringfix';
+import { Modals } from './modals.js?v=20260817ringfix';
+import { BattleStage } from './battle.js?v=20260817ringfix';
+import { AlbumUI } from './album.js?v=20260817ringfix';
+import { CodexUI } from './codex.js?v=20260817ringfix';
+import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260817ringfix';
+import { initQuality, getTier, setTier } from './quality.js?v=20260817ringfix';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260817ringfix';
+import * as Album from '../engine/album.js?v=20260817ringfix';
+import * as Codex from '../engine/codex.js?v=20260817ringfix';
+import { initAudio } from './audio.js?v=20260817ringfix';
+import { setScene, setTension, setStage } from './music.js?v=20260817ringfix';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260817ringfix';
+import { Leaderboard } from './leaderboard.js?v=20260817ringfix';
+import { personalize } from './namefmt.js?v=20260817ringfix';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
