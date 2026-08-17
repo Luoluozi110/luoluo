@@ -808,13 +808,22 @@ export class Game {
     s.plannedMoveDice = null;
     await this.ui.showDice(dice);
     if (plannedMove) this.ui.toast(`布局谋篇生效：本回合移动 ${dice} 格`);
-    const movement = await this.moveSteps(dice);
+    let movement = await this.moveSteps(dice);
     if (s.over) return;
+
+    // 阶段门不能被骰子跨过而漏结算；但也不能吞掉玩家已经掷出的余步。
+    // 先在门格完成“揭示下一圈 → 晋阶试”，再把这枚骰子的剩余步数走完。
+    while (movement && typeof movement === 'object' && movement.arrived === 'gate') {
+      await this.resolveCell();
+      if (s.over) return;
+      const remain = Math.max(0, Number(movement.remainingSteps) || 0);
+      if (!remain) { this.ui.onState(s); this.onSavePoint?.(s); return; }
+      movement = await this.moveSteps(remain);
+      if (s.over) return;
+    }
 
     const arrived = typeof movement === 'string' ? movement : movement?.arrived;
     if (arrived === 'palace') { await this.runPalace(); this.onSavePoint?.(s); return; }
-    // 三圈路线跨入新圈时 moveSteps 已停在门格；这里先结算晋阶试，再由下一回合继续使用剩余骰步。
-    // 代价是“越门不越过”，换来阶段叙事、地图揭示和棋子位置的原子一致性。
     await this.resolveCell();
     this.ui.onState(s);
     // 安全保存点：回合内所有状态结算（含弹窗交互）都已完成，此时序列化是稳定快照
@@ -852,7 +861,9 @@ export class Game {
         // 例如从 70 掷出 4，旧逻辑会越过 72 的举人门直接落到 74：
         // Game 已进入 middle，但棋盘仍在 outer，造成“外圈仍在、棋子透明”的半状态。
         const gate = board.routeCells[s.routeIndex]?.phaseGate;
-        if (gate && !s.phaseGateSeen[gate.phase]) return { arrived: 'gate', gateIndex: s.routeIndex };
+        if (gate && !s.phaseGateSeen[gate.phase]) {
+          return { arrived: 'gate', gateIndex: s.routeIndex, remainingSteps: Math.max(0, steps - i - 1) };
+        }
       }
       return { arrived: 'ok', gateIndex: null };
     }

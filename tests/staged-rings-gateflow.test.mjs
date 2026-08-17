@@ -64,12 +64,12 @@ const shownOuter = () => [...board.cellEls.values()].filter(el => el.style.displ
 
 // 三座阶段门都必须被逐一拦截；秀才门不切圈，举人/进士门才切图。
 const xiucaiMove = await game.moveSteps(72);
-assert.deepEqual(xiucaiMove, { arrived: 'gate', gateIndex: 36 }, '秀才门必须阻断跨门移动');
+assert.deepEqual(xiucaiMove, { arrived: 'gate', gateIndex: 36, remainingSteps: 36 }, '秀才门必须阻断跨门移动');
 await game.resolveCell();
 assert.equal(board.visibleRing, 'outer', '秀才门后仍显示外圈');
 
 const firstMove = await game.moveSteps(72);
-assert.deepEqual(firstMove, { arrived: 'gate', gateIndex: 72 }, '举人门必须阻断跨门移动');
+assert.deepEqual(firstMove, { arrived: 'gate', gateIndex: 72, remainingSteps: 36 }, '举人门必须阻断跨门移动');
 await game.resolveCell();
 assert.equal(board.visibleRing, 'middle', '举人阶段门后 visibleRing 必须为 middle');
 assert.equal(shownOuter(), 0, '举人阶段后外圈必须隐藏（修复“外圈仍然显现”）');
@@ -78,7 +78,7 @@ assert.equal(game.s.ringId, 'middle', 's.ringId 应同步为 middle');
 
 // 继续到进士阶段门（routeIndex 136）
 const secondMove = await game.moveSteps(64);
-assert.deepEqual(secondMove, { arrived: 'gate', gateIndex: 136 }, '进士门必须阻断跨门移动');
+assert.deepEqual(secondMove, { arrived: 'gate', gateIndex: 136, remainingSteps: 0 }, '进士门必须阻断跨门移动');
 await game.resolveCell();
 assert.equal(board.visibleRing, 'inner', '进士阶段门后 visibleRing 必须为 inner');
 const shownMiddle = () => [...board.cellEls.values()].filter(el => el.style.display !== 'none' && el.classList.contains('ring-middle')).length;

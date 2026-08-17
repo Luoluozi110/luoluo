@@ -42,5 +42,7 @@ assert.ok(loadIdx > -1 && app.slice(loadIdx, loadIdx + 140).includes('await ensu
 
 // 4) 主菜单返回时后台静默重同步，避免重复请求且不阻塞。
 assert.match(app, /function maybeResyncCloud\(\)\s*\{[^;]*if \(!cloudConfigUrl \|\| cloudSyncRunning\) return/, 'maybeResyncCloud 有进行中同步时不再重复发起');
+const game = fs.readFileSync(new URL('../js/engine/game.js', import.meta.url), 'utf8');
+assert.match(game, /while \(movement && typeof movement === 'object' && movement\.arrived === 'gate'\)/, '跨阶段门时先结算门、再继续本骰余步，不能漏门或吞骰');
 
 console.log('boot-perf.test.mjs: 首屏并发加载 / 云端缓存优先 / 延迟构建 / 进局前同步 全部通过');
