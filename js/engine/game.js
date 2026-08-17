@@ -808,10 +808,13 @@ export class Game {
     s.plannedMoveDice = null;
     await this.ui.showDice(dice);
     if (plannedMove) this.ui.toast(`布局谋篇生效：本回合移动 ${dice} 格`);
-    const arrived = await this.moveSteps(dice);
+    const movement = await this.moveSteps(dice);
     if (s.over) return;
 
+    const arrived = typeof movement === 'string' ? movement : movement?.arrived;
     if (arrived === 'palace') { await this.runPalace(); this.onSavePoint?.(s); return; }
+    // 三圈路线跨入新圈时 moveSteps 已停在门格；这里先结算晋阶试，再由下一回合继续使用剩余骰步。
+    // 代价是“越门不越过”，换来阶段叙事、地图揭示和棋子位置的原子一致性。
     await this.resolveCell();
     this.ui.onState(s);
     // 安全保存点：回合内所有状态结算（含弹窗交互）都已完成，此时序列化是稳定快照
@@ -837,12 +840,21 @@ export class Game {
     if (board.layout === 'concentric_spiral') {
       for (let i = 0; i < steps; i++) {
         if (s.routeIndex + 1 >= board.routeSize) { await this.ui.movePiece(s); return 'palace'; }
+        const fromIndex = s.routeIndex;
+        const fromRing = board.routeCells[fromIndex]?.ring || s.ringId || 'outer';
         s.routeIndex++;
         s.pos = s.routeIndex;
-        s.ringId = board.routeCells[s.routeIndex]?.ring || s.ringId;
+        const toRing = board.routeCells[s.routeIndex]?.ring || fromRing;
+        s.ringId = toRing;
         await this.ui.movePiece(s);
+
+        // 每一座阶段门都是硬关口，不能只在“刚好掷到”时才结算。
+        // 例如从 70 掷出 4，旧逻辑会越过 72 的举人门直接落到 74：
+        // Game 已进入 middle，但棋盘仍在 outer，造成“外圈仍在、棋子透明”的半状态。
+        const gate = board.routeCells[s.routeIndex]?.phaseGate;
+        if (gate && !s.phaseGateSeen[gate.phase]) return { arrived: 'gate', gateIndex: s.routeIndex };
       }
-      return 'ok';
+      return { arrived: 'ok', gateIndex: null };
     }
 
     for (let i = 0; i < steps; i++) {
@@ -1123,13 +1135,17 @@ export class Game {
     if (this.s.inspiration <= 0) { this.ui.toast('灵感枯竭，无力应战'); return; }
     const gate = cell.phaseGate;
     if (this.cfg.board.layout === 'concentric_spiral' && gate && !this.s.phaseGateSeen[gate.phase]) {
+      // 状态先落定，UI 再展示：即使弹窗/资源加载被中断，棋盘也能按 routeIndex 自愈到正确圈层。
+      if (gate.transition) this.s.ringId = gate.transition;
       this.s.phaseGateSeen[gate.phase] = true;
       this.s.phase = gate.phase;
-      if (typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gate);
+      if (typeof this.ui.syncStageRing === 'function') this.ui.syncStageRing(this.s);
+      if (typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gate, this.s);
+      // 二次同步是故障自愈：阶段弹窗曾是唯一切圈入口，任何旧 UI/缓存路径都会留下外圈+透明棋子。
+      if (typeof this.ui.syncStageRing === 'function') this.ui.syncStageRing(this.s);
       const tier = (this.cfg.npcs || []).find(n => n.id === gate.exam);
       const pick = tier ? this._npcFromPick(tier, R.pickNpcByWeight(tier.npcs || [], this.rand) || (tier.npcs || [])[0] || tier) : this.pickNpc(false);
       await this.doBattle({ npc: pick, label: `晋阶试·${gate.phase === 'xiucai' ? '秀才' : gate.phase === 'juren' ? '举人' : '进士'}` });
-      if (gate.transition) this.s.ringId = gate.transition;
       return;
     }
     await this.doBattle({ npc: this.pickNpc(false), label: cell.name });

@@ -35,6 +35,7 @@ export class BoardView {
     this.bscale = 0.62;           // 当前基准缩放（fit 计算；移动端放大以求清晰）
     this.view = { panX: 0, panY: 0, zoom: 1 }; // 平移/手势缩放
     this._pointers = new Map();
+    this._responsiveBound = false;
     this.build();
     this._initPan();
   }
@@ -120,7 +121,49 @@ export class BoardView {
     this.fit();
     this._buildResponsive();
     this.spawnPetals();
-    this.setPiecePos(0);
+    this.setPiecePos(this.routeCellId(0));
+  }
+
+  /**
+   * 当前路线索引对应的“物理格子” id。
+   * 引擎使用 routeIndex 表示进度，而棋盘坐标以 rings[].cells[].id 为键；二者不必天然相同。
+   * 所有棋子定位、落点高亮与预览统一走这里，避免云端编辑后的格子 id 顺序导致棋子消失。
+   */
+  routeCellId(routeIndex = 0) {
+    if (this.cfg.board.layout !== 'concentric_spiral') return Number(routeIndex) || 0;
+    const index = Math.max(0, Math.floor(Number(routeIndex) || 0));
+    const step = (this.cfg.board.route || [])[index];
+    const id = Number(step && (step.cellId ?? step.id));
+    return Number.isFinite(id) ? id : index;
+  }
+
+  /** 根据路线进度读取当前实际圈层；配置缺失时安全回退外圈。 */
+  routeRingOf(stateOrIndex = 0) {
+    if (this.cfg.board.layout !== 'concentric_spiral') return null;
+    const index = typeof stateOrIndex === 'object'
+      ? Number(stateOrIndex.routeIndex ?? stateOrIndex.pos)
+      : Number(stateOrIndex);
+    const safeIndex = Math.max(0, Math.floor(index || 0));
+    const ring = (this.cfg.board.route || [])[safeIndex]?.ring
+      || this.cellRings.get(this.routeCellId(safeIndex));
+    return ['outer', 'middle', 'inner'].includes(ring) ? ring : 'outer';
+  }
+
+  /**
+   * 保持事件监听器不变地重建地图。云端/本机工程配置变更后，下一局不能让 Game 和 BoardView 各拿一份地图。
+   */
+  rebuild(cfg, state = null) {
+    this.cfg = cfg;
+    this.coords.clear();
+    this.cellEls.clear();
+    this.cellRings.clear();
+    this.visibleRing = cfg.board.layout === 'concentric_spiral' ? 'outer' : null;
+    this._pieceCellId = this.routeCellId(0);
+    this.build();
+    if (state && cfg.board.layout === 'concentric_spiral') {
+      this.setVisibleRing(this.routeRingOf(state));
+      this.setPiecePos(this.cellIdOf(state));
+    }
   }
 
   addCell(board, cell, col, row, season, isBranch, ringId = '') {
@@ -152,6 +195,17 @@ export class BoardView {
     });
     // 阶段切换前棋子可能已走到尚未显现的路线，先隐去；切换后立即恢复。
     if (this._pieceCellId != null) this.setPiecePos(this._pieceCellId);
+  }
+
+  /**
+   * 阶段门切圈的唯一 UI 入口：先切视图，再按引擎当前 routeIndex 重新定位棋子。
+   * 即使某次移动骰跨过门格、或云端格子 id 与路线索引不同，也不会留下“外圈+透明棋子”的半状态。
+   */
+  revealRouteState(state) {
+    if (this.cfg.board.layout !== 'concentric_spiral') return;
+    const ring = this.routeRingOf(state);
+    this.setVisibleRing(ring);
+    this.setPiecePos(this.cellIdOf(state));
   }
 
   fit() {
@@ -189,6 +243,9 @@ export class BoardView {
   /** 视口变化 → 重新适配缩放：覆盖 window.resize / 旋转 / 移动端地址栏显隐
       （visualViewport.resize），并保留手势平移缩放，避免动态变化把视图强行复位。 */
   _buildResponsive() {
+    // rebuild() 会复用同一 BoardView；监听器只能绑定一次，避免每次配置更新多绑一层 resize 回调。
+    if (this._responsiveBound) return;
+    this._responsiveBound = true;
     const onResize = () => this.rescale();
     window.addEventListener('resize', onResize);
     // 旋转后尺寸可能滞后一帧，等下一帧再适配
@@ -316,21 +373,30 @@ export class BoardView {
   }
 
   cellIdOf(state) {
-    return this.cfg.board.layout === 'concentric_spiral' ? (state.routeIndex ?? state.pos) : state.pos;
+    return this.cfg.board.layout === 'concentric_spiral'
+      ? this.routeCellId(state.routeIndex ?? state.pos)
+      : state.pos;
   }
 
   setPiecePos(cellId) {
-    this._pieceCellId = cellId;
-    const p = this.coords.get(cellId);
-    if (!p) return;
+    const id = Number(cellId);
+    this._pieceCellId = Number.isFinite(id) ? id : cellId;
+    const p = this.coords.get(this._pieceCellId);
+    // 坐标缺失绝不能把上一帧的透明度遗留给棋子；保留当前位置并显式恢复可见，方便继续排查数据问题。
+    if (!p) {
+      if (this.piece) this.piece.style.opacity = '';
+      if (this.shadow) this.shadow.style.opacity = '';
+      return false;
+    }
     // 尚未显现的圈层仍可作为真实路线位置，但不让棋子提前出现在黑幕上。
-    const ring = this.cellRings.get(cellId);
+    const ring = this.cellRings.get(this._pieceCellId);
     const hidden = this.cfg.board.layout === 'concentric_spiral' && ring && ring !== this.visibleRing;
     this.piece.style.opacity = hidden ? '0' : '';
     this.shadow.style.opacity = hidden ? '0' : '';
     // transform 定位：走合成器、零重排（整盘是缩放层，left/top 会触发整盘重排）
     this.piece.style.transform = `translate(${p.x}px, ${p.y}px)`;
     this.shadow.style.transform = `translate(${p.x}px, ${p.y}px)`;
+    return true;
   }
 
   async movePiece(state) {
@@ -345,7 +411,10 @@ export class BoardView {
 
   highlight(cell) {
     this.cellEls.forEach(e => e.classList.remove('active'));
-    const el = this.cellEls.get(cell.id);
+    const id = this.cfg.board.layout === 'concentric_spiral'
+      ? this.routeCellId(cell.routeIndex ?? cell.id)
+      : cell.id;
+    const el = this.cellEls.get(id);
     if (el) el.classList.add('active');
   }
 
@@ -357,9 +426,10 @@ export class BoardView {
       ? (Number(state.routeIndex) || 0)
       : (Number(state.pos) || 0);
     for (let i = 1; i <= 6; i++) {
+      const routeIndex = Math.min(current + i, Math.max(0, ring - 1));
       const id = this.cfg.board.layout === 'concentric_spiral'
-        ? Math.min(current + i, Math.max(0, ring - 1))
-        : (current + i) % ring;
+        ? this.routeCellId(routeIndex)
+        : routeIndex % ring;
       const el = this.cellEls.get(id);
       if (el) el.classList.add('hint');
     }

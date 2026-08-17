@@ -27,7 +27,8 @@ assert.ok(app.indexOf('readCloudCache(cloudConfigUrl)') > -1 && app.indexOf('app
 
 // 3) 棋盘/HUD/Battle 延迟构建；确保进局前等待云端收尾。
 assert.match(app, /async function ensureGameUi\(\)\s*\{[^;]*await waitForCloudBeforeGame\(\)/, 'ensureGameUi 为异步且先等待云端同步收尾');
-assert.match(app, /if \(!board\) board = new BoardView\(cfg/, '棋盘仅首次进局时才构建');
+assert.match(app, /if \(!board\) board = new BoardView\(cfg/, '首次进局时构建棋盘');
+assert.match(app, /else if \(board\.cfg !== cfg\) board\.rebuild\(cfg, null\)/, '配置改变后在新局/读档边界原子重建棋盘，避免 Game 与 BoardView 拆分');
 // startGame 签名须为 async，且函数体先于他用调用 await ensureGameUi()。
 const startIdx = app.indexOf('async function startGame(');
 assert.ok(startIdx > -1, 'startGame 声明为 async 函数');

@@ -43,6 +43,7 @@ const ui = {
   highlightCell: () => {},
   toast: () => {},
   onState: () => {},
+  syncStageRing: s => events.push(`sync:${s.ringId}`),
   showStageChange: async gate => events.push(`stage:${gate.phase}`),
   showPalaceIntro: async () => events.push('palace:intro'),
   showResult: async () => {}

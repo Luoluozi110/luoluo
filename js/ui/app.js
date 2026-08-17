@@ -3,29 +3,29 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260817ringfix';
-import { Game } from '../engine/game.js?v=20260817ringfix';
-import { BoardView } from './board.js?v=20260817ringfix';
-import { Hud, radarSVG } from './hud.js?v=20260817ringfix';
-import { Modals } from './modals.js?v=20260817ringfix';
-import { BattleStage } from './battle.js?v=20260817ringfix';
-import { AlbumUI } from './album.js?v=20260817ringfix';
-import { CodexUI } from './codex.js?v=20260817ringfix';
-import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260817ringfix';
-import { initQuality, getTier, setTier } from './quality.js?v=20260817ringfix';
-import { ATTR_NAMES } from '../engine/rules.js?v=20260817ringfix';
-import * as Album from '../engine/album.js?v=20260817ringfix';
-import * as Codex from '../engine/codex.js?v=20260817ringfix';
-import { initAudio } from './audio.js?v=20260817ringfix';
-import { setScene, setTension, setStage } from './music.js?v=20260817ringfix';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260817ringfix';
-import { Leaderboard } from './leaderboard.js?v=20260817ringfix';
-import { personalize } from './namefmt.js?v=20260817ringfix';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260817gatefix';
+import { Game } from '../engine/game.js?v=20260817gatefix';
+import { BoardView } from './board.js?v=20260817gatefix';
+import { Hud, radarSVG } from './hud.js?v=20260817gatefix';
+import { Modals } from './modals.js?v=20260817gatefix';
+import { BattleStage } from './battle.js?v=20260817gatefix';
+import { AlbumUI } from './album.js?v=20260817gatefix';
+import { CodexUI } from './codex.js?v=20260817gatefix';
+import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260817gatefix';
+import { initQuality, getTier, setTier } from './quality.js?v=20260817gatefix';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260817gatefix';
+import * as Album from '../engine/album.js?v=20260817gatefix';
+import * as Codex from '../engine/codex.js?v=20260817gatefix';
+import { initAudio } from './audio.js?v=20260817gatefix';
+import { setScene, setTension, setStage } from './music.js?v=20260817gatefix';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260817gatefix';
+import { Leaderboard } from './leaderboard.js?v=20260817gatefix';
+import { personalize } from './namefmt.js?v=20260817gatefix';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
-let cfg, cloudBaseCfg, board, hud, modals, battle, schoolEl, resultEl, albumUI, codexUI;
+let cfg, cloudBaseCfg, cloudProject = null, customProject = null, board, hud, modals, battle, schoolEl, resultEl, albumUI, codexUI;
 let game = null;
 let rolling = false;
 let menuEl = null;
@@ -99,7 +99,11 @@ async function boot() {
  */
 async function ensureGameUi() {
   await waitForCloudBeforeGame();   // 同步 Promise 不忙时立即通过
+  // 云端/本机工程覆盖可以替换 board；已有棋盘必须同源重建，不能让 Game 与 BoardView 各持一份地图。
   if (!board) board = new BoardView(cfg, $('#scene'));
+  // ensureGameUi 只在“新局 / 读档”边界调用；此时允许原子重建，保证引擎和棋盘使用同一份 cfg。
+  else if (board.cfg !== cfg) board.rebuild(cfg, null);
+  if (battle && battle.cfg !== cfg) battle.cfg = cfg;
   if (!hud) {
     hud = new Hud($('#hud'));
     if (cfg.inspiration && cfg.inspiration.lowWarning) hud.lowWarning = cfg.inspiration.lowWarning;
@@ -355,10 +359,10 @@ function makeUi() {
     showSky: c => modals.showSky(c),
     showPrologue: () => modals.showPrologue(),
     showLap2Intro: () => modals.showLap2Intro(),
+    // 引擎明确要求同步圈层；不再让阶段弹窗承担唯一的状态切换职责。
+    syncStageRing: s => board.revealRouteState(s),
     showStageChange: async gate => {
       if (modals.showStageChange) await modals.showStageChange(gate);
-      // 阶段弹窗确认后才揭示下一圈，保证玩家先看到“进入新阶段”的说明。
-      if (gate && gate.transition && board.setVisibleRing) board.setVisibleRing(gate.transition);
     },
     showZeitgeist: z => modals.showZeitgeist(z),
     askScenic: (cell, cost, curInsp) => modals.askScenic(cell, cost, curInsp),
@@ -490,14 +494,31 @@ function showMenu() {
 /* ------------------------------------------------------ 云端自动同步（编辑器发布 → 所有玩家共享） */
 
 function isRingProject(project) {
-  // 当前正式版本回到上一版 192 格三圈方案；旧 80×2 单环工程不能覆盖它。
+  // 当前正式版本为 192 格三圈路线；不仅校验数量，也校验阶段门、route→cell id 和圈层语义。
+  // 否则一份“看起来也是 192 格”的旧工程会让 Game 进入中圈、BoardView 却无法定位或揭示棋子。
   const board = project && project.board;
   if (!board || typeof board !== 'object') return true;
-  const sizes = Array.isArray(board.rings) ? board.rings.map(r => (r.cells || []).length) : [];
-  return board.layout === 'concentric_spiral'
-    && Array.isArray(board.mainRing) && board.mainRing.length === 192
-    && sizes.join(',') === '72,64,56'
-    && Array.isArray(board.route) && board.route.length === 192;
+  const rings = Array.isArray(board.rings) ? board.rings : [];
+  const sizes = rings.map(r => (r.cells || []).length);
+  if (board.layout !== 'concentric_spiral'
+    || !Array.isArray(board.mainRing) || board.mainRing.length !== 192
+    || sizes.join(',') !== '72,64,56'
+    || !Array.isArray(board.route) || board.route.length !== 192) return false;
+
+  const cells = new Map(rings.flatMap(r => (r.cells || []).map(c => [Number(c.id), { cell: c, ring: r.id }])));
+  const validStep = (index, ring, phase, transition) => {
+    const step = board.route[index];
+    const id = Number(step && (step.cellId ?? step.id));
+    const physical = cells.get(id);
+    const logical = board.mainRing[index];
+    const gate = logical && logical.phaseGate;
+    return step && step.ring === ring
+      && physical && physical.ring === ring
+      && logical && Number(logical.id) === id && logical.ring === ring
+      && gate && gate.phase === phase && gate.transition === transition;
+  };
+  return validStep(72, 'middle', 'juren', 'middle')
+    && validStep(136, 'inner', 'jinshi', 'inner');
 }
 
 function readCloudCache(url) {
@@ -547,24 +568,33 @@ async function fetchCloudConfig(url, opts = {}) {
   }
 }
 
+function composeProjects() {
+  let next = cloudBaseCfg || cfg;
+  if (cloudProject) next = applyProjectOverride(next, cloudProject);
+  if (customProject) next = applyProjectOverride(next, customProject);
+  return next;
+}
+
 function refreshConfigBoundUi() {
   if (modals) modals.cfg = cfg;
   if (albumUI) albumUI.cards = cfg.album || [];
   if (codexUI) codexUI.cfg = cfg;
-  // 棋盘一旦已构建便持有自己的地图；为保证地图覆盖一致性，只把远端刷新作为“下一局/刷新后”生效。
+  // 正在对局时不热重建棋盘，避免中途跳画面；返回菜单后 ensureGameUi 会以同一份 cfg 重建。
 }
 
 /** 合并一份已验证的云端工程配置，并将它缓存给下一次首屏。 */
 function applyCloudProject(url, project, notice) {
   if (!isRingProject(project)) {
-    cloudSyncNotice = '已忽略非三圈云端地图，继续使用正式三圈地图';
+    cloudSyncNotice = '已忽略阶段门或路线映射不完整的云端地图，继续使用正式三圈地图';
     return false;
   }
-  cfg = applyProjectOverride(cloudBaseCfg || cfg, project);
+  cloudProject = project;
+  cfg = composeProjects();
   cloudConfigActive = true;
   writeCloudCache(url, project);
   refreshConfigBoundUi();
   if (notice) cloudSyncNotice = notice;
+  return true;
 }
 
 /**
@@ -658,7 +688,8 @@ function openCustomConfig() {
   const setCloudMsg = (t, bad) => { const m = ov.querySelector('#cloudMsg'); m.textContent = t; m.style.color = bad ? 'var(--bad)' : 'var(--mo-2)'; };
   ov.querySelector('#cfgClose').addEventListener('click', () => modals.close(ov));
   ov.querySelector('#cfgReset').addEventListener('click', () => {
-    localStorage.removeItem('feihua_custom_config'); customConfigActive = false;
+    localStorage.removeItem('feihua_custom_config');
+    customProject = null; customConfigActive = false; cfg = composeProjects(); refreshConfigBoundUi();
     modals.close(ov); hud.toast('已恢复默认配置');
   });
   ov.querySelector('#cfgApply').addEventListener('click', () => {
@@ -668,8 +699,13 @@ function openCustomConfig() {
     const proj = (obj && typeof obj === 'object') ? obj : null;
     const keys = ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'sky', 'album'].filter(k => proj && proj[k] !== undefined);
     if (!keys.length) { setMsg('文件中未找到 questions / events / talents / talent-upgrade / npcs / affinity / synergies / board / sky / album 任一键。', true); return; }
-    try { cfg = applyProjectOverride(cfg, proj); }
+    if (!isRingProject(proj)) {
+      setMsg('地图配置缺少三圈阶段门或路线映射，已拒绝载入；请从最新版内容编辑器重新导出。', true);
+      return;
+    }
+    try { customProject = proj; cfg = composeProjects(); }
     catch (err) { setMsg('合并失败：' + err.message, true); return; }
+    refreshConfigBoundUi();
     localStorage.setItem('feihua_custom_config', JSON.stringify(proj));
     customConfigActive = true;
     modals.close(ov);
@@ -682,8 +718,13 @@ function openCustomConfig() {
     setCloudMsg('正在同步…');
     const proj = await fetchCloudConfig(url);
     if (!proj) { setCloudMsg('拉取失败，请检查地址或网络。', true); return; }
-    try { cfg = applyProjectOverride(cfg, proj); }
+    if (!isRingProject(proj)) {
+      setCloudMsg('地图配置缺少三圈阶段门或路线映射，未保存该云端地址。', true);
+      return;
+    }
+    try { cloudProject = proj; cfg = composeProjects(); }
     catch (err) { setCloudMsg('合并失败：' + err.message, true); return; }
+    refreshConfigBoundUi();
     localStorage.setItem('feihua_cloud_config_url', url);
     cloudConfigUrl = url; cloudConfigActive = true;
     setCloudMsg('已同步并保存云端地址，所有玩家启动即生效。');
@@ -691,7 +732,7 @@ function openCustomConfig() {
   });
   ov.querySelector('#cloudClear').addEventListener('click', () => {
     localStorage.removeItem('feihua_cloud_config_url');
-    cloudConfigUrl = ''; cloudConfigActive = false;
+    cloudProject = null; cloudConfigUrl = ''; cloudConfigActive = false; cfg = composeProjects(); refreshConfigBoundUi();
     ov.querySelector('#cloudUrlInput').value = '';
     setCloudMsg('已清除云端同步地址。');
   });
@@ -736,8 +777,12 @@ async function loadGame() {
   albumUI.closeAlbum();
   const st = game.s;
   const curCell = game.currentCell();
-  board.setVisibleRing?.(st.ringId === 'inner' ? 'inner' : st.ringId === 'middle' ? 'middle' : 'outer');
-  board.setPiecePos(curCell ? curCell.id : st.pos);
+  // routeIndex 是三圈位置的唯一真源；旧存档中遗留的 ringId 不得让棋盘回退到错误圈层。
+  if (cfg.board.layout === 'concentric_spiral') board.revealRouteState(st);
+  else {
+    board.setVisibleRing?.(st.ringId === 'inner' ? 'inner' : st.ringId === 'middle' ? 'middle' : 'outer');
+    board.setPiecePos(curCell ? curCell.id : st.pos);
+  }
   board.clearHint();
   board.cellEls.forEach(e => e.classList.remove('active'));
   game.rehydrate();            // 重算羁绊等派生态（内部会 hud.render）
@@ -851,11 +896,18 @@ async function showResult(sum) {
 (async function () {
   try {
     cfg = await loadConfig();
-    // 应用上次「载入自定义配置」留下的覆盖（本机持久，刷新仍生效）
+    // cloudBaseCfg 是不可变本地基线；每次云端/自定义工程覆盖都从它重建，禁止把多次覆盖叠加成未知地图。
+    cloudBaseCfg = cfg;
+    // 应用上次「载入自定义配置」留下的覆盖（本机持久，刷新仍生效）。
+    // 旧版本只按格子数量判断，可能留下“引擎进中圈、棋盘无法切圈”的半合法地图；现直接忽略并清除。
     try {
       const raw = localStorage.getItem('feihua_custom_config');
-      if (raw) { cfg = applyProjectOverride(cfg, JSON.parse(raw)); customConfigActive = true; }
-    } catch (_) { /* 覆盖损坏则忽略，用默认配置 */ }
+      if (raw) {
+        const project = JSON.parse(raw);
+        if (isRingProject(project)) { customProject = project; cfg = composeProjects(); customConfigActive = true; }
+        else localStorage.removeItem('feihua_custom_config');
+      }
+    } catch (_) { localStorage.removeItem('feihua_custom_config'); }
   } catch (e) {
     document.body.innerHTML =
       `<div style="color:#f6f0e2;font-family:var(--font-kai);padding:40px;line-height:1.9">

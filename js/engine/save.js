@@ -266,7 +266,16 @@ export function deserializeRun(rawObj, cfg) {
   out.pos = Math.max(0, Number(out.pos) || 0);
   const routeMax = Math.max(0, Number(cfg.board && cfg.board.routeSize) - 1);
   out.routeIndex = Math.max(0, Math.min(routeMax || Number.MAX_SAFE_INTEGER, Number(out.routeIndex ?? out.pos) || 0));
-  out.ringId = String(out.ringId || (cfg.board && cfg.board.ringOfRouteIndex && cfg.board.ringOfRouteIndex.get(out.routeIndex)) || 'outer');
+  // 三圈模式中 routeIndex 是唯一位置真源。旧版可能把 ringId 保存为 outer，导致读档后外圈常驻、棋子落在中圈却被隐藏。
+  const routeRing = cfg.board && cfg.board.ringOfRouteIndex && cfg.board.ringOfRouteIndex.get(out.routeIndex);
+  if (cfg.board && cfg.board.layout === 'concentric_spiral' && routeRing) {
+    if (out.ringId && String(out.ringId) !== String(routeRing)) {
+      warnings.push(`存档圈层「${out.ringId}」与路线位置不一致，已按第 ${out.routeIndex} 格归一为「${routeRing}」`);
+    }
+    out.ringId = String(routeRing);
+  } else {
+    out.ringId = String(out.ringId || routeRing || 'outer');
+  }
   out.phaseGateSeen = (out.phaseGateSeen && typeof out.phaseGateSeen === 'object') ? out.phaseGateSeen : {};
   out.branchIndex = Number.isFinite(Number(out.branchIndex)) ? Number(out.branchIndex) : -1;
   out.lap = Math.max(1, Number(out.lap) || 1);
@@ -296,6 +305,14 @@ export function deserializeRun(rawObj, cfg) {
   out.quiz = (out.quiz && typeof out.quiz === 'object') ? out.quiz : { asked: 0, right: 0 };
   out.over = !!out.over;
   out.reachedEnd = !!out.reachedEnd;
+
+  // 若存档停在阶段门之后却没有门已见标记（旧实现/异常中断的半状态），按路线位置补齐。
+  // 这样继续游戏不会再次把“已在中圈”的玩家当作尚未进入中圈处理。
+  if (cfg.board && cfg.board.layout === 'concentric_spiral') {
+    for (const gate of (cfg.board.phaseGates || [])) {
+      if (out.routeIndex >= Number(gate.at) && gate.phase) out.phaseGateSeen[gate.phase] = true;
+    }
+  }
 
   return { ok: true, state: out, warnings, error: null };
 }
