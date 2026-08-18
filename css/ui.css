@@ -423,6 +423,8 @@
     radial-gradient(ellipse 70% 50% at 50% 40%, rgba(90,50,60,.55), transparent 70%),
     linear-gradient(180deg, #1a1015 0%, #0e0a0c 100%);
   flex-direction: column; align-items: center; padding: 18px;
+  /* 平板/矮视口兜底：内容超过可视高度时整台可滚动，避免底部按钮被 #app{overflow:hidden} 裁切 */
+  overflow-y: auto; overscroll-behavior: contain;
   animation: fadeIn .3s ease;
 }
 #battleStage.on { display: flex; }
@@ -1077,6 +1079,17 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
   .bt-panel, .bt-countdown { width: 100%; }
   #rollZone { transform: translate(-50%, -50%) scale(.82); }
   #turnInfo { bottom: calc(var(--safe-bottom) + 8px); }
+}
+
+/* 平板/横屏矮视口（>600px 宽）：桌面布局在 501–820px 高下，对阵区与按钮面板
+   会超出可视高度。base 已加 overflow-y:auto 兜底可滚动，此处再收拢纵向尺寸，
+   让论战按钮尽量首屏可见、减少滚动。手机(≤600px)与超矮横屏(≤500px)走各自规则，不受影响。 */
+@media (max-height: 820px) and (min-width: 601px) {
+  #battleStage { padding-top: 12px; padding-bottom: 12px; }
+  .fighter { min-height: 0; }
+  .bt-arena { gap: 14px; }
+  .bt-banner { margin-bottom: 8px; }
+  .bt-panel { margin-top: 10px; min-height: 0; }
 }
 
 @media (max-width: 420px) {

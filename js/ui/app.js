@@ -3,24 +3,24 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260818planclick';
-import { Game } from '../engine/game.js?v=20260818planclick';
-import { BoardView } from './board.js?v=20260818planclick';
-import { Hud, radarSVG } from './hud.js?v=20260818planclick';
-import { Modals } from './modals.js?v=20260818planclick';
-import { BattleStage } from './battle.js?v=20260818planclick';
-import { AlbumUI } from './album.js?v=20260818planclick';
-import { CodexUI } from './codex.js?v=20260818planclick';
-import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260818planclick';
-import { initQuality, getTier, setTier } from './quality.js?v=20260818planclick';
-import { ATTR_NAMES } from '../engine/rules.js?v=20260818planclick';
-import * as Album from '../engine/album.js?v=20260818planclick';
-import * as Codex from '../engine/codex.js?v=20260818planclick';
-import { initAudio } from './audio.js?v=20260818planclick';
-import { setScene, setTension, setStage } from './music.js?v=20260818planclick';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260818planclick';
-import { Leaderboard } from './leaderboard.js?v=20260818planclick';
-import { personalize } from './namefmt.js?v=20260818planclick';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260818padfix';
+import { Game } from '../engine/game.js?v=20260818padfix';
+import { BoardView } from './board.js?v=20260818padfix';
+import { Hud, radarSVG } from './hud.js?v=20260818padfix';
+import { Modals } from './modals.js?v=20260818padfix';
+import { BattleStage } from './battle.js?v=20260818padfix';
+import { AlbumUI } from './album.js?v=20260818padfix';
+import { CodexUI } from './codex.js?v=20260818padfix';
+import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260818padfix';
+import { initQuality, getTier, setTier } from './quality.js?v=20260818padfix';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260818padfix';
+import * as Album from '../engine/album.js?v=20260818padfix';
+import * as Codex from '../engine/codex.js?v=20260818padfix';
+import { initAudio } from './audio.js?v=20260818padfix';
+import { setScene, setTension, setStage } from './music.js?v=20260818padfix';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260818padfix';
+import { Leaderboard } from './leaderboard.js?v=20260818padfix';
+import { personalize } from './namefmt.js?v=20260818padfix';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
