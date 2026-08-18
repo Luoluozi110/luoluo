@@ -123,8 +123,14 @@ export class Modals {
       const isChoice = q.type === 'choice';
       const stars = '★'.repeat(q.difficulty || 1) + '☆'.repeat(3 - (q.difficulty || 1));
       const catCN = { shi: '诗', ci: '词', lian: '联', mix: '综合' }[q.category] || '综合';
+      // 柔性答题：knowledge 题若配了 scenario / optionActs，就以「情境 + 可做之事」呈现；
+      // 缺字段时自动退回原来的「题面 + 选项原文」，旧题零影响。
+      const stemText = q.scenario ? q.scenario : q.stem;
+      const optTextOf = (o, i) => isChoice
+        ? o.text
+        : (q.optionActs && q.optionActs[i] != null ? q.optionActs[i] : o);
       const opts = (q.options || []).map((o, i) => {
-        const text = isChoice ? o.text : o;
+        const text = optTextOf(o, i);
         return `<button class="opt" data-i="${i}"><span class="idx">${'ABCD'[i]}</span>
           <span>${esc(personalize(text, this.playerName))}</span></button>`;
       }).join('');
@@ -139,7 +145,9 @@ export class Modals {
           </div>
           <div class="cd-slot"></div>
           <hr class="hr-ink"/>
-          <div style="font-size:20px;line-height:1.85;letter-spacing:.04em">${esc(personalize(q.stem, this.playerName))}</div>
+          <div style="${q.scenario
+            ? 'font-size:18px;line-height:2;letter-spacing:.03em;text-indent:2em'
+            : 'font-size:20px;line-height:1.85;letter-spacing:.04em'}">${esc(personalize(stemText, this.playerName))}</div>
           <div class="opt-list">${opts}</div>
         </div>`);
 
@@ -180,13 +188,17 @@ export class Modals {
     // 答错的灵感惩罚一律读配置 inspiration.quizWrong，不再硬编码
     const insp = this.cfg.inspiration || {};
     const wrongTxt = `灵感 ${signed(insp.quizWrong ?? -1)}`;
+    // 情境化题目答错时，回显「正确的那一件事」而非裸答案；未配 optionActs 的旧题仍回显选项原文
+    const correctAct = (q.optionActs && q.optionActs[q.answer] != null)
+      ? q.optionActs[q.answer]
+      : q.options[q.answer];
     const head = isChoice
       ? (ans.timedOut
           ? `<b>超时未决</b>　未及落笔，灵感 ${signed(insp.quizWrong ?? -1)}`
           : `<b>诗无达诂</b>　选中「${esc((q.options[ans.index] || q.options[0]).text)}」`)
       : ok
         ? `<b>答对了</b>`
-        : `<b>${ans.timedOut ? '超时' : '答错了'}</b>　正确答案：${'ABCD'[q.answer]}．${esc(q.options[q.answer])}　${wrongTxt}`;
+        : `<b>${ans.timedOut ? '超时' : '答错了'}</b>　${q.scenario ? '当如是' : '正确答案'}：${'ABCD'[q.answer]}．${esc(personalize(correctAct, this.playerName))}　${wrongTxt}`;
     play(isChoice || ok ? 'right' : 'wrong');
     sting('reveal');         // 答题揭晓配乐：编钟 + 宫音
     box.innerHTML = `${head}<br/>${esc(q.analysis || '（本题暂无解析）')}
