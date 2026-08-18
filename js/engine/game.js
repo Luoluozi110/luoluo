@@ -793,9 +793,8 @@ export class Game {
     const previousPhase = s.phase;
     s.phase = this.cfg.board.layout === 'concentric_spiral' ? this.phaseForRoute() : (s.lap >= 2 ? 'lap2' : 'lap1');
     this.ui.onState(s);
-    if (typeof this.ui.showPlannedMovePrompt === 'function' && this.s.active.some(t => (t.effect || {}).type === 'planned_dice')) {
-      await this.ui.showPlannedMovePrompt(this);
-    }
+    // 布局谋篇改为玩家主动点击触发：HUD 的「布局谋篇」按钮在掷骰前可点开定策，
+    // 定策值写入 s.plannedMoveDice，于下方掷骰时生效；不再每回合自动弹窗打断体验。
     if (this.cfg.board.layout !== 'concentric_spiral' && s.phase === 'lap2' && previousPhase !== 'lap2' && typeof this.ui.showLap2Intro === 'function') {
       await this.ui.showLap2Intro();
       this.ui.onState(s);

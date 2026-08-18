@@ -260,10 +260,10 @@ export class Modals {
       const options = Array.from({ length: max }, (_, i) => `<option value="${i + 1}">${i + 1} 格</option>`).join('');
       const ov = this.open(`<div class="modal paper compact-modal">
         <div class="mtitle"><h2>布局谋篇</h2><span class="mtag">回合移动定策</span></div>
-        <div class="dianggu">胸中先有丘壑，落笔方能从容。可指定本回合移动骰点数。</div>
+        <div class="dianggu">胸中先有丘壑，落笔方能从容。定策后，点「掷骰」即按此点数移动。</div>
         <div style="text-align:center;margin:16px 0"><select data-move-dice aria-label="指定本回合移动骰">${options}</select></div>
         <div style="text-align:center;color:var(--mo-3);font-size:13px">本局第 ${Number((game.s.talentState && game.s.talentState.activeUses && game.s.talentState.activeUses[t.id]) || 0) + 1} 次使用，消耗灵感 ${cost}</div>
-        <div class="btn-row"><button class="btn btn-primary" data-plan ${afford ? '' : 'disabled'}>定策并掷骰</button><button class="btn btn-ink" data-skip>放弃本次</button></div>
+        <div class="btn-row"><button class="btn btn-primary" data-plan ${afford ? '' : 'disabled'}>定策</button><button class="btn btn-ink" data-skip>暂不</button></div>
       </div>`, 'planned-move-modal');
       const finish = ok => { this.close(ov); resolve(ok); };
       ov.querySelector('[data-plan]')?.addEventListener('click', () => {

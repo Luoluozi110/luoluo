@@ -3,24 +3,24 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260817gatefix';
-import { Game } from '../engine/game.js?v=20260817gatefix';
-import { BoardView } from './board.js?v=20260817gatefix';
-import { Hud, radarSVG } from './hud.js?v=20260817gatefix';
-import { Modals } from './modals.js?v=20260817gatefix';
-import { BattleStage } from './battle.js?v=20260817gatefix';
-import { AlbumUI } from './album.js?v=20260817gatefix';
-import { CodexUI } from './codex.js?v=20260817gatefix';
-import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260817gatefix';
-import { initQuality, getTier, setTier } from './quality.js?v=20260817gatefix';
-import { ATTR_NAMES } from '../engine/rules.js?v=20260817gatefix';
-import * as Album from '../engine/album.js?v=20260817gatefix';
-import * as Codex from '../engine/codex.js?v=20260817gatefix';
-import { initAudio } from './audio.js?v=20260817gatefix';
-import { setScene, setTension, setStage } from './music.js?v=20260817gatefix';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260817gatefix';
-import { Leaderboard } from './leaderboard.js?v=20260817gatefix';
-import { personalize } from './namefmt.js?v=20260817gatefix';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260818planclick';
+import { Game } from '../engine/game.js?v=20260818planclick';
+import { BoardView } from './board.js?v=20260818planclick';
+import { Hud, radarSVG } from './hud.js?v=20260818planclick';
+import { Modals } from './modals.js?v=20260818planclick';
+import { BattleStage } from './battle.js?v=20260818planclick';
+import { AlbumUI } from './album.js?v=20260818planclick';
+import { CodexUI } from './codex.js?v=20260818planclick';
+import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260818planclick';
+import { initQuality, getTier, setTier } from './quality.js?v=20260818planclick';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260818planclick';
+import * as Album from '../engine/album.js?v=20260818planclick';
+import * as Codex from '../engine/codex.js?v=20260818planclick';
+import { initAudio } from './audio.js?v=20260818planclick';
+import { setScene, setTension, setStage } from './music.js?v=20260818planclick';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260818planclick';
+import { Leaderboard } from './leaderboard.js?v=20260818planclick';
+import { personalize } from './namefmt.js?v=20260818planclick';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -109,6 +109,7 @@ async function ensureGameUi() {
     if (cfg.inspiration && cfg.inspiration.lowWarning) hud.lowWarning = cfg.inspiration.lowWarning;
     hud.onTalent = t => modals.showTalentDetail(t);
     hud.onRoll(onRoll);
+hud.onPlan(onPlan);
   }
   if (!battle) battle = new BattleStage($('#battleStage'), cfg);
   ensureLeaderboard();
@@ -400,6 +401,15 @@ async function onRoll() {
   rolling = false;
   if (game && !game.s.over) enableRoll();
   // 每回合的自动落盘已改由引擎「安全保存点」回调（onSavePoint）触发，此处不再重复存档
+}
+
+/** 布局谋篇：玩家主动点击 HUD 的「布局谋篇」按钮时触发（非阻塞）。
+ *  打开定策弹窗，定策值写入 game.s.plannedMoveDice，于下一次掷骰时生效。 */
+function onPlan() {
+  if (!game || game.s.over || rolling) return;
+  if (!game.s.active.some(t => (t.effect || {}).type === 'planned_dice')) return;
+  if (game.s.plannedMoveDice != null) return;
+  modals.showPlannedMovePrompt(game);
 }
 
 /* ---------------------------------------------------- 菜单 / 随时存档 */

@@ -101,6 +101,7 @@ export class Hud {
 
       <div id="turnInfo">第 <b id="turnNum">0</b> 回合</div>
       <div id="rollZone">
+        <button class="btn btn-ink" id="planBtn" style="display:none">布局谋篇</button>
         <button class="btn btn-primary" id="rollBtn">掷骰</button>
       </div>
 
@@ -128,6 +129,7 @@ export class Hud {
       phase: root.querySelector('#phaseTag'),
       pname: root.querySelector('#pnameTag'),
       roll: root.querySelector('#rollBtn'),
+      plan: root.querySelector('#planBtn'),
       toast: root.querySelector('#toastZone'),
       attrPanel: root.querySelector('#attrPanel'),
       talentPanel: root.querySelector('#talentBar'),
@@ -146,6 +148,8 @@ export class Hud {
     this.el.inspToggle.addEventListener('click', () => this.togglePanel('insp'));
     this._collapse = this._loadCollapse();
     this._bp = !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
+    this._rollOn = true;        // 当前是否处于「可掷骰」的空闲回合
+    this._planAvailable = false; // 是否拥有布局谋篇且尚未定策
     this._shortLandscapeApplied = false;
     window.addEventListener('resize', () => this._onViewportChange());
     window.addEventListener('orientationchange', () => this._onViewportChange());
@@ -212,6 +216,16 @@ export class Hud {
     this.el.pas.innerHTML = Array.from({ length: PASSIVE_MAX }, (_, i) => slot(s.passive[i], false, i)).join('');
     this.el.act.innerHTML = Array.from({ length: ACTIVE_MAX }, (_, i) => slot(s.active[i], true, i)).join('');
     this.el.talCount.textContent = `${s.passive.length}/${PASSIVE_MAX} · ${s.active.length}/${ACTIVE_MAX}`;
+
+    // 布局谋篇按钮：仅拥有该文心（planned_dice）时显示；已定策则禁用并提示已定策值
+    if (this.el.plan) {
+      const hasPlan = s.active.some(t => (t.effect || {}).type === 'planned_dice');
+      const planned = s.plannedMoveDice != null;
+      this._planAvailable = hasPlan && !planned;
+      this.el.plan.style.display = hasPlan ? '' : 'none';
+      this.el.plan.disabled = !this._planAvailable || !this._rollOn;
+      this.el.plan.textContent = planned ? `布局谋篇·已定策${s.plannedMoveDice}格` : '布局谋篇';
+    }
 
     // 文心羁绊：当前已激活的组合
     const syn = (s.synergies || []);
@@ -328,8 +342,11 @@ export class Hud {
   setRollEnabled(on, label) {
     this.el.roll.disabled = !on;
     if (label) this.el.roll.textContent = label;
+    this._rollOn = on;
+    if (this.el.plan) this.el.plan.disabled = !on || !this._planAvailable;
   }
   onRoll(fn) { this.el.roll.addEventListener('click', fn); }
+  onPlan(fn) { this.el.plan.addEventListener('click', fn); }
 }
 
 function escapeAttr(s) { return String(s).replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
