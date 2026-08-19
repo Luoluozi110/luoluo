@@ -1,5 +1,5 @@
 /** board.js —— 镜头可切换棋盘渲染、棋子移动、掷骰、飘字 */
-import { glyph, FAR_HILLS, CENTER_GARDEN_ART, ensureDefs } from './svg.js';
+import { glyph, cellGlyphKey, FAR_HILLS, ensureDefs } from './svg.js?v=20260820mapart1';
 import { getBudget } from './quality.js';
 import { play } from './audio.js';
 import { sting } from './music.js';
@@ -117,17 +117,18 @@ export class BoardView {
       left: (PAD + 1.4) * UNIT + 'px', top: (PAD + 1.4) * UNIT + 'px',
       width: (baseGrid - 2.8) * UNIT + 'px', height: (baseGrid - 2.8) * UNIT + 'px'
     });
-    world.innerHTML = `<div class="world-halo"></div><div class="world-art">${CENTER_GARDEN_ART}</div>`;
+    world.innerHTML = `<div class="world-halo"></div>
+      <div class="world-art world-ground" data-art-version="peach-academy-island-v1">
+        <picture>
+          <source type="image/webp"
+            srcset="assets/art/peach-academy-island-v1-640.webp 640w, assets/art/peach-academy-island-v1.webp 960w"
+            sizes="(max-width: 720px) 74vw, 560px">
+          <img src="assets/art/peach-academy-island-v1.png" width="960" height="960"
+            alt="" aria-hidden="true" decoding="async" fetchpriority="high" draggable="false">
+        </picture>
+      </div>
+      <div class="world-billboards" aria-hidden="true"></div>`;
     board.appendChild(world);
-
-    const ttl = document.createElement('div');
-    ttl.className = 'island-title';
-    Object.assign(ttl.style, {
-      left: (PAD + 1.4) * UNIT + 'px', top: (PAD + 1.4) * UNIT + 'px',
-      width: (baseGrid - 2.8) * UNIT + 'px', height: (baseGrid - 2.8) * UNIT + 'px'
-    });
-    ttl.innerHTML = `<div class="big">桃花島</div><div class="sm">詩詞楹聯飛花棋</div>`;
-    board.appendChild(ttl);
 
     // 主环或三圈同心方环格子
     if (isSpiral) {
@@ -220,7 +221,9 @@ export class BoardView {
     el.style.top = p.y + 'px';
     const big = cell.type === 'start' || cell.type === 'landmark';
     if (big) { el.style.left = (p.x - 4) + 'px'; el.style.top = (p.y - 4) + 'px'; }   // 50px 大格相对 42px 格位居中
-    el.innerHTML = `<div class="glyph">${glyph(cell.icon || cell.type)}</div><div class="cname">${cell.name}</div>`;
+    const glyphKey = cellGlyphKey(cell);
+    el.dataset.cellIcon = glyphKey;
+    el.innerHTML = `<div class="glyph">${glyph(glyphKey) || glyph(cell.type)}</div><div class="cname">${cell.name}</div>`;
     el.title = `${cell.id}｜${cell.name}`;
     board.appendChild(el);
     this.coords.set(cell.id, p);

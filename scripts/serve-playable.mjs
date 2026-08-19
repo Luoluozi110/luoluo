@@ -12,6 +12,7 @@ const mime = {
   '.css': 'text/css; charset=utf-8',
   '.woff2': 'font/woff2',
   '.png': 'image/png',
+  '.webp': 'image/webp',
   '.svg': 'image/svg+xml'
 };
 

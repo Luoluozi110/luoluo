@@ -183,7 +183,7 @@
   box-shadow: inset 0 0 62px rgba(66,91,57,.3), inset 0 0 0 3px rgba(255,255,255,.25);
 }
 
-/* 中央岛心园景：单一 SVG 对象层，格子与棋子仍在其上。 */
+/* 中央岛心园景：ground 与 billboard 分层，格子与棋子仍在其上。 */
 .world-scene {
   position: absolute; z-index: 1; pointer-events: none;
   display: grid; place-items: center;
@@ -193,22 +193,25 @@
   background: radial-gradient(ellipse, rgba(120,220,221,.22), rgba(74,151,157,.12) 58%, transparent 72%);
   box-shadow: 0 18px 34px rgba(44,92,94,.18);
 }
-.world-art { position: relative; width: 78%; transform: translateY(-2%); }
-.world-art svg { width: 100%; height: auto; display: block; overflow: visible; }
-/* 中央印章题名（下移避让居中的掷骰按钮，transform 随棋盘缩放，桌面/手机一致） */
-.island-title {
-  position: absolute; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 10px;
-  transform: translateY(278px);
-  pointer-events: none;
-  z-index: 2;
+.world-art {
+  position: relative; z-index: 1;
+  width: 74%; aspect-ratio: 1;
+  transform: translateY(-1%);
 }
-.island-title .big {
-  font-size: 34px; letter-spacing: .34em; color: rgba(61,53,38,.38);
-  text-indent: .3em;
-  text-shadow: 0 1px 0 rgba(255,255,255,.55);
+.world-art picture,
+.world-art img {
+  display: block; width: 100%; height: 100%;
 }
-.island-title .sm { font-size: 13px; letter-spacing: .46em; color: rgba(61,53,38,.31); text-indent: .46em; }
+.world-art img {
+  object-fit: contain;
+  filter: drop-shadow(0 9px 7px rgba(37,73,68,.2));
+  user-select: none;
+}
+/* 正式 2.5D 时，亭塔与树冠会从 ground 拆到此锚点层做 billboard。 */
+.world-billboards {
+  position: absolute; inset: 0; z-index: 2;
+  transform-style: preserve-3d;
+}
 
 /* ------------------------------------------------------------ 格子 */
 .cell {
@@ -223,7 +226,8 @@
   transition: transform .25s var(--ease-back), box-shadow .25s, filter .25s;
 }
 .cell .cname { font-size: 10.5px; opacity: .88; max-width: 42px; overflow: hidden; }
-.cell .glyph { width: 19px; height: 19px; margin-bottom: 1px; }
+.cell .glyph { width: 20px; height: 20px; margin-bottom: 1px; flex: 0 0 20px; }
+.cell .glyph svg { display: block; width: 100%; height: 100%; overflow: visible; }
 
 /* 三圈层级：用“春青—秋金—桃红”区分路线，同时保留四季底色。 */
 .cell.ring-outer {
@@ -259,6 +263,11 @@
 .cell.t-quiz   { box-shadow: 0 5px 0 rgba(90,70,30,.3),  0 8px 12px rgba(0,0,0,.28), inset 0 0 0 2px rgba(201,151,31,.45); }
 .cell.t-branch_gate { background: linear-gradient(165deg, #f7dcc4, #e0b58c); border-color: #b98b5c; }
 .cell.t-mingjing { box-shadow: 0 5px 0 rgba(140,50,80,.3), 0 8px 12px rgba(0,0,0,.28), inset 0 0 0 2px rgba(178,58,46,.5); }
+.cell.t-gate {
+  background: linear-gradient(165deg, #f9e7be, #dfb36d);
+  border-color: rgba(151,80,54,.78);
+  box-shadow: 0 5px 0 rgba(104,54,39,.28), 0 8px 12px rgba(0,0,0,.26), inset 0 0 0 2px rgba(185,68,57,.38);
+}
 .cell.t-landmark {
   background: linear-gradient(165deg, #ffd9e6, #f3a1bd);
   width: 50px; height: 50px; border-color: var(--taohua-deep);
@@ -284,8 +293,7 @@
 /* 2.5D 预览：按行建立绘制顺序，并把岛体、园景、格子、棋子拆为可独立调参的高度层。 */
 #scene[data-board-view-effective="25d"] .island { translate: 0 0 var(--board-island-z); }
 #scene[data-board-view-effective="25d"] .island-inner,
-#scene[data-board-view-effective="25d"] .world-scene,
-#scene[data-board-view-effective="25d"] .island-title { translate: 0 0 var(--board-world-z); }
+#scene[data-board-view-effective="25d"] .world-scene { translate: 0 0 var(--board-world-z); }
 #scene[data-board-view-effective="25d"] .season-canopy { translate: 0 0 5px; }
 #scene[data-board-view-effective="25d"] .cell {
   translate: 0 0 var(--board-tile-z);
@@ -442,7 +450,7 @@ html[data-quality="low"] #piece .piece-sprite { transform: none !important; }
 html[data-quality="low"] .cell .glyph g     { filter: none !important; }
 html[data-quality="low"] .landmark-3d svg g { filter: none !important; }
 html[data-quality="low"] .emblem svg g      { filter: none !important; }
-html[data-quality="low"] .world-art svg g   { filter: none !important; }
+html[data-quality="low"] .world-art img     { filter: none !important; }
 html[data-quality="low"] .fighter-portrait svg g,
 html[data-quality="low"] .event-illustration svg g,
 html[data-quality="low"] .quiz-emblem svg g,

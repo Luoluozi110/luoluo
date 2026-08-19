@@ -179,8 +179,9 @@ function objGroup(inner) {
 - `billboard`：人物、亭台立面与需要直立的树冠，世界层只保存锚点，精灵子层用
   `--board-billboard-*` 抵消镜头旋转；棋子已按此结构拆成 anchor / sprite。
 - `screen`：HUD、模态、骰子和飘字，不进入棋盘 DOM 变换链。
-- 当前 `CENTER_GARDEN_ART` 同时包含湖面与亭台，正式默认启用 2.5D 前必须拆成 ground 湖面和
-  billboard 亭台，避免现成斜视插画被二次透视。
+- 当前中央图使用 `assets/art/peach-academy-island-v1.*`：透明岛屿整图先放在 `.world-ground`，
+  `.world-billboards` 为空锚点。它同时包含湖面与亭台，正式默认启用 2.5D 前必须拆成 ground
+  湖岛层与 billboard 亭台/树冠层，避免斜视插画被二次透视。
 - 每个格子必须保留 `data-cell-id`、`data-cell-type`、`data-ring` 与 `--cell-row`；未来树木和门楼
   按这些字段挂接，不再靠解析中文名称决定位置。地标建筑禁止覆盖格面，只能落在中央景区、
   路线外侧或独立装饰锚点。

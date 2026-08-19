@@ -5,13 +5,13 @@
  */
 import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260819strategyv2';
 import { Game } from '../engine/game.js?v=20260819strategyv2';
-import { BoardView } from './board.js?v=20260820viewangle';
+import { BoardView } from './board.js?v=20260820mapart1';
 import { Hud, radarSVG } from './hud.js?v=20260820viewangle';
 import { Modals } from './modals.js?v=20260819strategyv2';
 import { BattleStage } from './battle.js?v=20260819strategyv2';
 import { AlbumUI } from './album.js?v=20260819strategyv2';
 import { CodexUI } from './codex.js?v=20260819strategyv2';
-import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260819strategyv2';
+import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260820mapart1';
 import { initQuality, getTier, setTier } from './quality.js?v=20260819strategyv2';
 import { ATTR_NAMES } from '../engine/rules.js?v=20260819strategyv2';
 import * as Album from '../engine/album.js?v=20260819strategyv2';
