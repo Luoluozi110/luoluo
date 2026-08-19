@@ -5,6 +5,7 @@ import { createCountdown } from './timer.js';
 import { play } from './audio.js';
 import { sting } from './music.js';
 import { intentHint, weaknessHint, settleLines } from './mechHints.js';
+import { SCHOLAR_PORTRAIT } from './svg.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -34,17 +35,21 @@ export class BattleStage {
       <div class="bt-countdown" id="btTimerSlot"></div>
       <div class="bt-arena">
         <div class="fighter self">
-          <div class="fname"><span class="seal">應試</span><span>${esc(session.playerName) || '在下'}</span></div>
-          <div class="fsub" id="selfPick">待审题</div>
-          <div class="fattrs">${this.attrsRow(session.playerAttrs)}</div>
+          <div class="fighter-head"><div class="fighter-portrait" aria-hidden="true">${SCHOLAR_PORTRAIT.self}</div><div class="fighter-meta">
+            <div class="fname"><span class="seal">應試</span><span>${esc(session.playerName) || '在下'}</span></div>
+            <div class="fsub" id="selfPick">待审题</div>
+            <div class="fattrs">${this.attrsRow(session.playerAttrs)}</div>
+          </div></div>
           <div class="score-lines" id="selfLines"></div>
           <div class="score-total" id="selfTotal"><span>作品得分</span><b>—</b></div>
         </div>
         <div class="vs-badge">對</div>
         <div class="fighter opp">
-          <div class="fname"><span class="seal">對手</span><span>${esc(session.npc.fullName || session.npc.name)}</span>${session.npc.style ? `<span class="opp-style">偏${STYLE_NAMES[session.npc.style] || ''}</span>` : ''}</div>
-          <div class="fsub">${esc(session.npc.title || '')}</div>
-          <div class="fattrs">${this.attrsRow(session.npc.attrs)}</div>
+          <div class="fighter-head"><div class="fighter-portrait" aria-hidden="true">${SCHOLAR_PORTRAIT.opponent}</div><div class="fighter-meta">
+            <div class="fname"><span class="seal">對手</span><span>${esc(session.npc.fullName || session.npc.name)}</span>${session.npc.style ? `<span class="opp-style">偏${STYLE_NAMES[session.npc.style] || ''}</span>` : ''}</div>
+            <div class="fsub">${esc(session.npc.title || '')}</div>
+            <div class="fattrs">${this.attrsRow(session.npc.attrs)}</div>
+          </div></div>
           <div class="score-lines" id="oppLines"></div>
           <div class="score-total" id="oppTotal"><span>作品得分</span><b>—</b></div>
         </div>
@@ -111,7 +116,7 @@ export class BattleStage {
       `文体：${STYLE_NAMES[style]}　风格：${session.mannerNames[manner]}`;
 
     /* ⑤ 掷灵感骰 */
-    const dice = await this.rollDice(panel, session);
+    const dice = await this.rollDice(panel, session, style);
 
     /* ⑥ 算分对决（决策已毕，撤去倒计时） */
     const slot = el.querySelector('#btTimerSlot');
@@ -150,21 +155,20 @@ export class BattleStage {
         const hint = session.styleHint(s);
         return `<button class="pick" data-s="${s}" ${can ? '' : 'disabled'}>
           <div class="pn">${STYLE_NAMES[s]}</div>
-          <div class="pv">${ATTR_NAMES[s]} ${session.playerAttrs[s] || 0}　格律分 ${(session.playerAttrs[s] || 0) * BATTLE_COEF.styleMult}</div>
+          <div class="pv">${ATTR_NAMES[s]} ${session.playerAttrs[s] || 0}　格律分 ${typeof session.styleScore === 'function' ? session.styleScore(s) : (session.playerAttrs[s] || 0) * BATTLE_COEF.styleMult}</div>
           ${hint ? `<div class="pv">${hint}</div>` : ''}
         </button>`;
       }).join('');
-      panel.innerHTML = `<div class="ph">③ 选文体　<span style="font-size:12px;color:var(--mo-3)">文体属性 ×${BATTLE_COEF.styleMult} = 格律分，基本盘所系　·　限时 ${this.seconds} 秒</span></div>
+      panel.innerHTML = `<div class="ph">③ 选文体　<span style="font-size:12px;color:var(--mo-3)">三体共通 ×7 ＋ 本体专精 ×3　·　限时 ${this.seconds} 秒</span></div>
         <div class="pick-row">${cards}</div>${this.weaknessTip(session)}${this.activeRow(session)}`;
       this.bindActive(panel, session);
       panel.querySelectorAll('[data-s]').forEach(b =>
         b.addEventListener('click', () => finish(b.dataset.s)));
       stop = this.startTimer(panel, () => {
         const usable = ['shi', 'ci', 'lian'].filter(s => session.canUseStyle(s));
-        let best = usable[0];
-        for (const s of usable) if ((session.playerAttrs[s] || 0) > (session.playerAttrs[best] || 0)) best = s;
-        this.flash(`时限已到，自动以最高文体「${STYLE_NAMES[best]}」应试`);
-        finish(best);
+        const fallback = usable.includes(session.lastStyle) ? session.lastStyle : usable[0];
+        this.flash(`时限已到，${session.lastStyle ? '沿用上一场' : '以默认'}文体「${STYLE_NAMES[fallback]}」应试`);
+        finish(fallback);
       });
     });
   }
@@ -200,7 +204,7 @@ export class BattleStage {
     });
   }
 
-  rollDice(panel, session) {
+  rollDice(panel, session, style) {
     return new Promise(resolve => {
       let done = false;
       let timerStop = null;
@@ -231,11 +235,12 @@ export class BattleStage {
         armTimer(() => finish());                       // 进入追加阶段：再给一整段时限，超时自动结算
       };
 
-      const extraCost = this.cfg && this.cfg.inspiration ? (Number(this.cfg.inspiration.extraDiceCost) || 3) : 3;
       const extraCap = this.cfg && this.cfg.inspiration ? (Number(this.cfg.inspiration.maxExtraDice) || 4) : 4;
       const renderExtra = () => {
         const total = pips.reduce((a, b) => a + b, 0);
-        const score = total * dm;
+        const preview = typeof session.previewDiceScore === 'function' ? session.previewDiceScore(style, pips) : { score: total * dm };
+        const score = preview.score;
+        const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length) : (Number(this.cfg?.inspiration?.extraDiceCost) || 3);
         const canExtra = !hasFixed() && session.inspiration >= extraCost && pips.length - 1 < extraCap;
         const pipHtml = pips.map(n => `<span class="dice-pip">${'①②③④⑤⑥'[n - 1]}</span>`).join('');
         panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → 临场发挥 ${score} 分${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
@@ -251,8 +256,10 @@ export class BattleStage {
       };
 
       const addExtra = () => {
+        const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length) : (Number(this.cfg?.inspiration?.extraDiceCost) || 3);
         if (done || session.inspiration < extraCost || hasFixed() || pips.length - 1 >= extraCap) return;
-        session.spendInspiration(extraCost, '追加灵感骰');
+        if (typeof session.spendExtraDice === 'function') session.spendExtraDice(extraCost);
+        else session.spendInspiration(extraCost, '追加灵感骰');
         const n = 1 + Math.floor(Math.random() * 6);
         pips.push(n);
         play('dice'); sting('dice');
@@ -260,7 +267,8 @@ export class BattleStage {
         armTimer(() => finish());
       };
 
-      panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">1d6 × ${dm}（${dm}～${dm * 6} 分）；每枚耗 ${extraCost} 灵感，最多可追加 ${extraCap} 枚　·　限时 ${this.seconds} 秒</span></div>
+      const firstCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, 1) : (Number(this.cfg?.inspiration?.extraDiceCost) || 3);
+      panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">本体结构公开结算；首次追加耗 ${firstCost} 灵感，最多可追加 ${extraCap} 枚　·　限时 ${this.seconds} 秒</span></div>
         <div class="pick-row"><button class="pick battle-roll" id="btRoll"><div class="pn">掷 骰</div>
         <div class="pv">听天由命，也听人事</div></button></div>`;
       panel.querySelector('#btRoll').addEventListener('click', () => doRoll(false));

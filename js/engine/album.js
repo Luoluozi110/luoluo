@@ -74,25 +74,22 @@ const MASTERY_MECH = {
   bowen: {
     // knowledgeThreshold: 2→1 于 Lv4 开始（阈值不能低于 1，Lv4/5 共享）
     perLv: { 4: { knowledgeThreshold: 1 }, 5: { knowledgeThreshold: 1 } },
-    // Lv5 专属：每次博闻触发，额外 +1 学力（「厚积薄发」点睛；仿真校准：+2 会让博闻满级 xue 成长≈奇士 2 倍，收敛为 +1）
-    apex: { 5: { knowledgeBonusGain: 1 } }
+    // 高造诣增加知识转化出的心得，不再直接叠加学力。
+    apex: { 5: { knowledgeInsightBonus: 1 } }
   },
   qishi: {
-    // inspirationBonusRate: 0.35→0.40/0.45/0.50/0.55
+    // 新版奇士的主轴是筹策；灵感放大只保留轻量成长。
     perLv: {
-      2: { inspirationBonusRate: 0.40 },
-      3: { inspirationBonusRate: 0.45 },
-      4: { inspirationBonusRate: 0.50 },
-      5: { inspirationBonusRate: 0.55 }
+      2: { inspirationBonusRate: 0.22 },
+      3: { inspirationBonusRate: 0.24 },
+      4: { inspirationBonusRate: 0.26 },
+      5: { inspirationBonusRate: 0.28 }
     },
-    // Lv5 专属：升级成本折扣 0.65→0.55
-    apex: { 5: { upgradeCostRate: 0.55 } }
+    apex: { 5: { strategyChargePlus: 2 } }
   },
   cizong_bi: {
-    // creativeDicePlus: 2→3/4/5/5（Lv4 触及 freeDiceCap=5，Lv5 维持 5）
-    perLv: { 2: { creativeDicePlus: 3 }, 3: { creativeDicePlus: 4 }, 4: { creativeDicePlus: 5 }, 5: { creativeDicePlus: 5 } },
-    // Lv5 专属：创作骰 cap 5→6（突破常人笔力上限）
-    apex: { 5: { freeDiceCap: 6 } }
+    perLv: { 2: { manuscriptCapPlus: 2 }, 3: { manuscriptCapPlus: 2 }, 4: { manuscriptCapPlus: 3 }, 5: { manuscriptCapPlus: 3 } },
+    apex: { 5: { firstFinishedPagePlus: 2 } }
   }
 };
 

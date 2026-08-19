@@ -3,12 +3,19 @@
  * 契约见 SCHEMA.md。所有内容均来自配置，代码不硬编码题目/事件/棋盘。
  */
 
+import './config-contract.js';
+
+const CONTRACT = globalThis.FeihuaConfigContract;
+
 const FILES = [
   'attrs', 'inspiration', 'board', 'questions', 'events',
   'talents', 'schools', 'affinity', 'npcs', 'sky', 'grades'
 ];
 /** 可选配置：缺失时降级为空数组/空对象，不阻断启动 */
 const OPTIONAL_FILES = ['album', 'synergies', 'npc-mechanics', 'talent-upgrade', 'narrative'];
+const OPTIONAL_DEFAULTS = {
+  album: [], synergies: [], 'npc-mechanics': {}, 'talent-upgrade': {}, narrative: {}
+};
 
 export const configSource = {};   // { attrs: 'config' | 'config-dev' }
 
@@ -34,10 +41,11 @@ export async function loadConfig() {
   const required = FILES.map(async n => [n, await loadOne(n)]);
   const optional = OPTIONAL_FILES.map(async n => {
     try { return [n, await loadOne(n)]; }
-    catch (_) { configSource[n] = '缺失'; return [n, []]; }
+    catch (_) { configSource[n] = '缺失'; return [n, OPTIONAL_DEFAULTS[n]]; }
   });
   const cfg = Object.fromEntries(await Promise.all([...required, ...optional]));
-  return normalize(cfg);
+  CONTRACT.assertConfig(cfg);
+  return normalizeConfig(cfg);
 }
 
 /**
@@ -66,17 +74,23 @@ export async function loadCloudUrl() {
  * 注：schools / grades / narrative 为「叙事文案编辑器」产出的纯文案覆盖（流派口号/沉浸叙事、段位评语/奖励、
  * 评分文案、开局与阶段切换弹窗文案），直接整体替换对应配置；normalize() 不触碰这几份配置的结构，故覆盖安全。
  */
-export function applyProjectOverride(baseCfg, project) {
+export function applyProjectOverride(baseCfg, project, options = {}) {
   if (!project || typeof project !== 'object') return baseCfg;
+  // 引擎内部与测试可直接传配置补丁（无工程包装层）；外部编辑器发布仍由 assertProject 默认严格校验 _type。
+  CONTRACT.assertProject(project, { requireComplete: false, requireType: !!options.requireType });
   const next = Object.assign({}, baseCfg);
   for (const key of ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics', 'sky', 'album', 'schools', 'grades', 'narrative']) {
     if (project[key] !== undefined && project[key] !== null) next[key] = project[key];
   }
-  return normalize(next);
+  CONTRACT.assertConfig(next);
+  return normalizeConfig(next);
 }
 
+export const validateConfig = CONTRACT.validateConfig;
+export const validateProject = CONTRACT.validateProject;
+
 /** 归一化：补齐派生结构，容忍内容方省略可选字段 */
-function normalize(cfg) {
+export function normalizeConfig(cfg) {
   const board = cfg.board;
   board.layout = board.layout || 'single_ring';
   board.route = Array.isArray(board.route) && board.route.length

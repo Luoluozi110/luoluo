@@ -5,9 +5,18 @@
 #hud > * { pointer-events: auto; }
 
 .panel {
-  border-radius: 12px;
-  border: 1px solid rgba(120,100,70,.4);
-  box-shadow: 0 10px 26px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.6);
+  border-radius: 7px;
+  border: 2px solid #79543a;
+  box-shadow:
+    0 0 0 2px #c69a61,
+    0 0 0 5px #4a3328,
+    0 12px 26px rgba(44,48,50,.34),
+    inset 0 1px 0 rgba(255,255,255,.72),
+    inset 0 0 18px rgba(124,88,48,.13);
+}
+.panel::before {
+  content: ''; position: absolute; inset: 4px; border-radius: 3px;
+  border: 1px solid rgba(111,72,42,.28); pointer-events: none;
 }
 
 /* --- 面板收起/展开（移动端收起以露出棋盘） --- */
@@ -86,10 +95,17 @@
   left: 50%; top: calc(var(--safe-top) + 14px);
   transform: translateX(-50%);
   width: min(340px, calc(100% - var(--safe-left) - var(--safe-right) - 32px));
-  padding: 8px 12px 9px;
+  padding: 9px 18px 11px;
+  border: 0; border-radius: 0;
+  background: linear-gradient(92deg, rgba(31,34,34,.04), #222a2a 9%, #172020 50%, #26302e 91%, rgba(31,34,34,.04));
+  box-shadow: 0 8px 16px rgba(44,55,57,.24);
+  clip-path: polygon(0 13%,8% 5%,14% 12%,23% 3%,31% 9%,42% 2%,53% 8%,64% 3%,75% 10%,86% 4%,100% 15%,95% 85%,84% 92%,74% 86%,62% 97%,52% 90%,39% 98%,28% 88%,17% 96%,4% 83%);
 }
-#inspBar .ih { display: flex; align-items: center; gap: 8px; font-size: 13px; letter-spacing: .12em; color: var(--mo-2); }
-#inspBar .ih b { font-size: 17px; font-family: var(--font-song); color: var(--mo); }
+#inspBar::before { display: none; }
+#inspBar .ih { display: flex; align-items: center; gap: 8px; font-size: 13px; letter-spacing: .12em; color: #e9d8b6; }
+#inspBar .ih b { font-size: 17px; font-family: var(--font-song); color: #fff0cb; }
+#inspBar .pc-ico { color: #e9d8b6; opacity: .72; }
+#inspBar .pc-toggle { border-color: rgba(240,220,181,.32); background: rgba(255,255,255,.1); color: #f1dfbd; }
 .brush {
   position: relative; height: 26px; margin-top: 6px;
   display: flex; align-items: center;
@@ -151,16 +167,19 @@
 #talentBar .th i { font-style: normal; font-size: 11px; color: var(--mo-3); }
 .slot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; margin-bottom: 9px; }
 .slot {
-  height: 42px; border-radius: 7px; display: flex; align-items: center; justify-content: center;
+  min-height: 52px; aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center;
   font-size: 11px; line-height: 1.2; text-align: center; padding: 2px;
-  border: 1px dashed rgba(120,100,70,.42); color: var(--mo-3);
-  background: rgba(255,255,255,.28);
+  border: 2px dashed rgba(120,100,70,.42); color: var(--mo-3);
+  background: radial-gradient(circle, rgba(255,255,255,.4), rgba(221,207,179,.24));
 }
 .slot.filled { border-style: solid; color: #4a3a1c; background: linear-gradient(160deg, #fdf0cd, #eed7a0); border-color: #c9a94f; box-shadow: inset 0 1px 0 #fff, 0 2px 5px rgba(0,0,0,.15); cursor: help; }
 .slot.filled.act { background: linear-gradient(160deg, #d8f0f0, #a9dcdd); border-color: #4d9a9e; color: #14484b; }
 
 /* --- 画面中央：掷骰 --- */
-#rollZone { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+#rollZone {
+  position: absolute; right: calc(var(--safe-right) + 30px); bottom: calc(var(--safe-bottom) + 34px);
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
 #turnInfo {
   position: absolute;
   left: 50%; bottom: calc(var(--safe-bottom) + 20px); transform: translateX(-50%);
@@ -170,15 +189,24 @@
 }
 #turnInfo b { color: var(--taohua); }
 #rollBtn {
-  width: 132px; height: 132px; border-radius: 50%;
-  font-size: 25px; letter-spacing: .2em; text-indent: .2em;
-  background: radial-gradient(circle at 34% 28%, #f6bccd, var(--taohua-deep) 62%, #a24a68);
-  border: 3px solid rgba(255,255,255,.5);
-  box-shadow: 0 8px 0 #7e3550, 0 16px 30px rgba(0,0,0,.45), inset 0 3px 10px rgba(255,255,255,.5);
-  color: #fff6f9; text-shadow: 0 2px 4px rgba(120,40,60,.6);
+  width: 178px; height: 88px; border-radius: 12px;
+  padding: 8px 15px; display: flex; align-items: center; justify-content: center; gap: 12px;
+  font-size: 27px; letter-spacing: .18em; text-indent: .18em;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.18), transparent 34%),
+    linear-gradient(180deg, #d86c61 0%, #b84339 56%, #96342d 100%);
+  border: 3px solid #e6bc80;
+  outline: 3px solid #5b3829;
+  box-shadow: 0 8px 0 #603126, 0 16px 28px rgba(48,56,58,.38), inset 0 0 0 2px rgba(255,235,197,.3);
+  color: #fff5df; text-shadow: 0 2px 2px rgba(91,38,30,.72);
 }
-#rollBtn:active { transform: translateY(6px); box-shadow: 0 2px 0 #7e3550, 0 6px 14px rgba(0,0,0,.4); }
+#rollBtn:active { transform: translateY(6px); box-shadow: 0 2px 0 #603126, 0 6px 14px rgba(0,0,0,.3); }
 #rollBtn:disabled { filter: grayscale(.55) brightness(.8); }
+.roll-die { flex: 0 0 50px; width: 50px; height: 50px; transform: rotate(-6deg); }
+.roll-die svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.roll-die rect { fill: #f5e9ce; stroke: #664333; stroke-width: 2.2; }
+.roll-die circle { fill: var(--zhu); }
+.roll-label { white-space: nowrap; }
 #planBtn {
   width: auto; min-width: 148px; height: auto; padding: 9px 20px; border-radius: 20px;
   font-size: 15px; letter-spacing: .08em; text-indent: 0;
@@ -276,6 +304,20 @@
 .modal .mtitle h2 { margin: 0; font-family: var(--font-kai); font-size: 24px; letter-spacing: .16em; }
 .modal .mtag { font-size: 12px; padding: 3px 10px; border-radius: 12px; background: rgba(120,100,70,.16); color: var(--mo-2); letter-spacing: .1em; }
 
+/* 题卡题头：卷册印记承担类型识别，正文仍保持单一阅读列。 */
+.quiz-heading { display: flex; align-items: center; gap: 13px; }
+.quiz-emblem { flex: 0 0 62px; width: 62px; height: 62px; }
+.quiz-emblem svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.quiz-heading-copy { flex: 1; min-width: 0; }
+.quiz-heading-copy .mtitle { flex-wrap: wrap; }
+.quiz-kicker { margin-top: 4px; font-size: 11px; color: var(--mo-3); letter-spacing: .26em; }
+.quiz-stem {
+  font-size: 20px; line-height: 1.85; letter-spacing: .04em;
+  padding: 12px 16px; border-left: 4px solid var(--zhu);
+  background: linear-gradient(90deg, rgba(178,58,46,.07), transparent 82%);
+}
+.quiz-stem.is-scenario { font-size: 18px; line-height: 2; letter-spacing: .03em; text-indent: 2em; }
+
 .cfg-ta {
   width: 100%; min-height: 180px; resize: vertical; box-sizing: border-box;
   padding: 12px 14px; border-radius: 10px; font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
@@ -366,6 +408,13 @@
   transform-style: preserve-3d;
   position: relative;
 }
+.event-card::before {
+  content: ''; position: absolute; inset: 6px; border-radius: 8px; pointer-events: none;
+  border: 1px solid rgba(119,78,43,.24);
+  box-shadow: inset 0 0 18px rgba(123,91,51,.1);
+}
+.event-illustration { width: 190px; height: 92px; margin: -2px auto -4px; position: relative; }
+.event-illustration svg { width: 100%; height: 100%; display: block; overflow: visible; }
 .event-card.r-common { border: 3px solid var(--rarity-common); box-shadow: 0 16px 40px rgba(0,0,0,.5); }
 .event-card.r-rare   { border: 3px solid var(--rarity-rare);   box-shadow: 0 16px 40px rgba(0,0,0,.5), 0 0 28px rgba(74,127,193,.55); }
 .event-card.r-legend {
@@ -420,8 +469,9 @@
 #battleStage {
   position: absolute; inset: 0; z-index: 70; display: none;
   background:
-    radial-gradient(ellipse 70% 50% at 50% 40%, rgba(90,50,60,.55), transparent 70%),
-    linear-gradient(180deg, #1a1015 0%, #0e0a0c 100%);
+    radial-gradient(ellipse 72% 44% at 50% 42%, rgba(119,67,58,.5), transparent 72%),
+    linear-gradient(90deg, transparent 49.7%, rgba(222,185,119,.14) 50%, transparent 50.3%),
+    linear-gradient(180deg, #24171b 0%, #130d10 100%);
   flex-direction: column; align-items: center; padding: 18px;
   /* 平板/矮视口兜底：内容超过可视高度时整台可滚动，避免底部按钮被 #app{overflow:hidden} 裁切 */
   overflow-y: auto; overscroll-behavior: contain;
@@ -431,7 +481,9 @@
 .bt-banner {
   padding: 11px 34px; border-radius: 8px; margin-bottom: 12px;
   background: linear-gradient(180deg, #f7efdd, #e2d4b4);
-  border: 2px solid #b79a63; box-shadow: 0 8px 22px rgba(0,0,0,.55);
+  border: 3px solid #79543a;
+  outline: 2px solid #c69a61;
+  box-shadow: 0 8px 22px rgba(0,0,0,.48), inset 0 0 0 2px rgba(255,255,255,.42);
   text-align: center;
 }
 .bt-banner .sm { font-size: 12px; letter-spacing: .22em; color: var(--mo-3); }
@@ -442,11 +494,16 @@
 .fighter {
   flex: 1; border-radius: 12px; padding: 14px 16px;
   background: linear-gradient(170deg, rgba(246,240,226,.96), rgba(228,216,190,.94));
-  border: 2px solid rgba(150,124,80,.6);
+  border: 3px solid #79543a;
+  outline: 1px solid #c69a61;
   box-shadow: 0 12px 30px rgba(0,0,0,.5);
   display: flex; flex-direction: column; min-height: 260px;
 }
 .fighter.opp { background: linear-gradient(170deg, rgba(238,226,226,.96), rgba(216,198,196,.94)); }
+.fighter-head { display: grid; grid-template-columns: 82px 1fr; gap: 12px; align-items: center; }
+.fighter-portrait { width: 82px; height: 82px; }
+.fighter-portrait svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.fighter-meta { min-width: 0; }
 .fighter .fname { font-size: 19px; letter-spacing: .14em; display: flex; align-items: center; gap: 8px; }
 .fighter .fname .seal { width: 34px; height: 34px; font-size: 11px; }
 .fighter .fname .opp-style {
@@ -922,6 +979,7 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 /* 支线选择弹窗 */
 .branch-modal { width: min(520px, 90vw); text-align: center; }
 .branch-modal .bimg { width: 96px; height: 96px; margin: 6px auto 2px; }
+.branch-modal .bimg svg { width: 100%; height: 100%; display: block; overflow: visible; }
 .branch-modal .rewards { font-size: var(--text-body); color: var(--jin-text); letter-spacing: .08em; margin: 8px 0 4px; line-height: 1.6; }
 .branch-modal .warn { font-size: 13px; color: var(--mo-3); }
 .btn-row { display: flex; gap: 14px; justify-content: center; margin-top: 16px; }
@@ -1005,8 +1063,9 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
     top: auto; width: 38px; height: 38px;
   }
 
-  #rollZone { left: 50%; right: auto; bottom: auto; gap: 7px; }
-  #rollBtn { width: 104px; height: 104px; font-size: 21px; }
+  #rollZone { left: 50%; right: auto; top: auto; bottom: calc(var(--safe-bottom) + 54px); transform: translateX(-50%); gap: 7px; }
+  #rollBtn { width: 122px; height: 68px; border-radius: 10px; padding: 6px 10px; gap: 8px; font-size: 20px; }
+  .roll-die { flex-basis: 38px; width: 38px; height: 38px; }
   #turnInfo { bottom: calc(var(--safe-bottom) + 14px); font-size: var(--text-meta); padding: 6px 11px; }
 
   /* 弹窗 / 卷轴收紧内边距，短屏可滚；正文与可操作文字不再继续缩小。 */
@@ -1047,6 +1106,8 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
   .bt-banner .bg2 { font-size: 20px; }
   .bt-arena { flex-direction: column; gap: 10px; width: 96vw; }
   .fighter { min-height: 0; }
+  .fighter-head { grid-template-columns: 58px 1fr; gap: 8px; }
+  .fighter-portrait { width: 58px; height: 58px; }
   .fighter .fname { font-size: 17px; }
   .bt-panel { width: 96vw; padding: 12px 14px; min-height: 0; }
   .bt-countdown { width: 96vw; }
@@ -1077,8 +1138,11 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
   .bt-arena { flex-direction: row; width: 100%; }
   .fighter { min-width: 0; }
   .bt-panel, .bt-countdown { width: 100%; }
-  #rollZone { transform: translate(-50%, -50%) scale(.82); }
+  #rollZone { transform: scale(.82); transform-origin: 100% 100%; }
   #turnInfo { bottom: calc(var(--safe-bottom) + 8px); }
+}
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 600px) {
+  #rollZone { transform: translateX(-50%) scale(.82); transform-origin: 50% 100%; }
 }
 
 /* 平板/横屏矮视口（>600px 宽）：桌面布局在 501–820px 高下，对阵区与按钮面板
@@ -1112,7 +1176,7 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 @media (max-width: 380px) {
   #attrPanel { width: 138px; }
   #inspBar { left: calc(var(--safe-left) + 150px); }
-  #rollBtn { width: 92px; height: 92px; font-size: 19px; }
+  #rollBtn { width: 112px; height: 62px; font-size: 18px; }
   #talentBar { width: 124px; }
   #talentBar .th i, #skyBadges .sky-badge .left { display: none; }
   .slot { min-height: 36px; height: auto; font-size: var(--text-micro); overflow-wrap: anywhere; }

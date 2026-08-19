@@ -1,7 +1,7 @@
 /** modals.js —— 题卡 / 奇遇卡 / 文心卡 / 支线选择 / 天象 / 名胜 */
 import { ATTR_NAMES } from '../engine/rules.js';
 import { PASSIVE_MAX, ACTIVE_MAX } from '../engine/game.js';
-import { LANDMARK_ART } from './svg.js';
+import { LANDMARK_ART, EVENT_VIGNETTE, QUIZ_MARK } from './svg.js';
 import { createCountdown } from './timer.js';
 import { play } from './audio.js';
 import { sting } from './music.js';
@@ -138,16 +138,17 @@ export class Modals {
       const total = (opt && opt.seconds) || DEFAULT_SECONDS;
 
       const ov = this.open(`
-        <div class="modal scroll-frame paper">
-          <div class="mtitle">
-            <h2>${isChoice ? '创作抉择' : '知识考课'}</h2>
-            <span class="mtag">${catCN}</span><span class="mtag">难度 ${stars}</span>
+        <div class="modal scroll-frame paper quiz-modal">
+          <div class="quiz-heading">
+            <div class="quiz-emblem" aria-hidden="true">${QUIZ_MARK}</div>
+            <div class="quiz-heading-copy"><div class="mtitle">
+              <h2>${isChoice ? '创作抉择' : '知识考课'}</h2>
+              <span class="mtag">${catCN}</span><span class="mtag">难度 ${stars}</span>
+            </div><div class="quiz-kicker">研墨 · 审题 · 落笔</div></div>
           </div>
           <div class="cd-slot"></div>
           <hr class="hr-ink"/>
-          <div style="${q.scenario
-            ? 'font-size:18px;line-height:2;letter-spacing:.03em;text-indent:2em'
-            : 'font-size:20px;line-height:1.85;letter-spacing:.04em'}">${esc(personalize(stemText, this.playerName))}</div>
+          <div class="quiz-stem${q.scenario ? ' is-scenario' : ''}">${esc(personalize(stemText, this.playerName))}</div>
           <div class="opt-list">${opts}</div>
         </div>`);
 
@@ -225,6 +226,75 @@ export class Modals {
     });
   }
 
+  /* ---------------------------------------------------- 方案 B · 三功 */
+  askStrategyMove(dice, points, opts = {}) {
+    return new Promise(resolve => {
+      const maxDelta = Math.max(1, Math.min(2, Number(opts.maxDelta) || 1));
+      const far = maxDelta >= 2 && Number(points) >= 2
+        ? `<button class="opt" data-d="-2"><b>徐行两格</b><span>${dice} → ${Math.max(1, dice - 2)}（筹策 −2）</span></button>
+           <button class="opt" data-d="2"><b>疾行两格</b><span>${dice} → ${Math.min(8, dice + 2)}（筹策 −2）</span></button>` : '';
+      const ov = this.open(`<div class="modal scroll-frame paper" style="width:min(520px,calc(100vw - 24px))">
+        <div class="mtitle"><h2>思力·调步</h2><span class="mtag">筹策 ${Number(points) || 0}</span></div>
+        <div class="dianggu">移动骰已掷出 ${dice}。每调整一格消耗 1 筹策；地图内容不会因此额外揭示。</div>
+        <div class="opt-list">
+          <button class="opt" data-d="-1"><b>缓行一格</b><span>${dice} → ${Math.max(1, dice - 1)}</span></button>
+          <button class="opt" data-d="1"><b>疾行一格</b><span>${dice} → ${Math.min(8, dice + 1)}</span></button>
+          ${far}
+          <button class="opt" data-d="0"><b>依骰而行</b><span>保留筹策</span></button>
+        </div></div>`);
+      ov.querySelectorAll('[data-d]').forEach(b => b.addEventListener('click', () => {
+        const d = Number(b.dataset.d) || 0; this.close(ov); resolve(d);
+      }));
+    });
+  }
+
+  showAbilityPanel(game) {
+    const ov = this.open(`<div class="modal scroll-frame paper ability-panel" style="width:min(680px,calc(100vw - 24px))"></div>`);
+    const box = ov.querySelector('.ability-panel');
+    const render = (notice = '') => {
+      const a = game.ensureAbilityState();
+      const mc = game.abilityConfig().manuscript || {};
+      const tc = game.techniqueConfig();
+      const focus = new Set(a.study.focus || []);
+      const attrs = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
+      const attrNames = { shi: '诗力', ci: '词力', lian: '联力', bi: '笔力', xue: '学力', si: '思力' };
+      box.innerHTML = `<div class="mtitle"><h2>三功修习</h2><span class="mtag">成长 · 调度 · 沉淀</span></div>
+        ${notice ? `<div class="analysis">${esc(notice)}</div>` : ''}
+        <div class="dianggu"><b>心得 ${a.insight}/${game.insightCap()}</b>　筹策 ${a.strategy.points}/${game.strategyCap()}　稿页 ${a.manuscript.pages}/${game.manuscriptCap()}　残页 ${a.manuscript.fragments}</div>
+        <hr class="hr-ink"/><h3>学力·研修位 ${a.study.focus.length}/${game.studySlots()}</h3>
+        <div class="opt-list">${attrs.map(k => `<button class="opt" data-focus="${k}"><b>${focus.has(k) ? '✓ ' : ''}${attrNames[k]}</b><span>进度 ${Number(a.study.progress[k]) || 0}/${Number((game.abilityConfig().study || {}).progressNeed) || 3}</span></button>`).join('')}</div>
+        <div class="dianggu">思力·易策：消耗 1 筹策，把尚未兑现的研修进度一并转向。
+          <select data-redirect-from>${a.study.focus.map(k => `<option value="${k}">${attrNames[k]}</option>`).join('')}</select>
+          → <select data-redirect-to>${attrs.filter(k => !focus.has(k)).map(k => `<option value="${k}">${attrNames[k]}</option>`).join('')}</select>
+          <button class="btn btn-ink" data-redirect ${a.strategy.points < 1 ? 'disabled' : ''}>易策</button>
+        </div>
+        <h3>分配心得</h3><div class="opt-list">${attrs.map(k => `<button class="opt" data-insight="${k}" ${a.insight < game.insightCost(k) ? 'disabled' : ''}><b>${attrNames[k]} +1</b><span>消耗 ${game.insightCost(k)} 心得</span></button>`).join('')}</div>
+        <h3>笔力·稿本</h3><div class="opt-list">
+          <button class="opt" data-manuscript="polish"><b>润色</b><span>下一场首次追加少耗 ${Number(mc.polishDiscount) || 2} 灵感</span></button>
+          <button class="opt" data-manuscript="publish"><b>刊行</b><span>恢复 ${Number(mc.publishInspiration) || 4} 灵感</span></button>
+          <button class="opt" data-manuscript="volume"><b>定卷</b><span>终局文采 +${Number(mc.volumeScore) || 60}（${a.manuscript.volumes}/${Number(mc.volumeCap) || 2}）</span></button>
+        </div>
+        <h3>技法筹备（方案 C）</h3><div class="dianggu">${['shi','ci','lian'].map(k => `${attrNames[k]}技法经验 ${Number(a.technique.xp[k]) || 0} · 阶 ${Number(a.technique.level[k]) || 0}/${(tc.thresholds || []).length}`).join('　')}</div>
+        <div class="btn-row"><button class="btn btn-primary" data-close>收卷</button></div>`;
+      box.querySelectorAll('[data-focus]').forEach(b => b.addEventListener('click', () => {
+        const ok = game.toggleStudyFocus(b.dataset.focus); render(ok ? '研修方向已调整。' : '至少保留一个方向，且不能超过研修位上限。');
+      }));
+      box.querySelector('[data-redirect]')?.addEventListener('click', () => {
+        const from = box.querySelector('[data-redirect-from]')?.value;
+        const to = box.querySelector('[data-redirect-to]')?.value;
+        const r = game.redirectStudy(from, to); render(r.ok ? `易策完成，转移 ${r.moved} 点研修进度。` : r.reason);
+      });
+      box.querySelectorAll('[data-insight]').forEach(b => b.addEventListener('click', () => {
+        const r = game.spendInsight(b.dataset.insight); render(r.ok ? '心得已经兑现。' : r.reason);
+      }));
+      box.querySelectorAll('[data-manuscript]').forEach(b => b.addEventListener('click', () => {
+        const r = game.spendManuscript(b.dataset.manuscript); render(r.ok ? '稿本已经付梓。' : r.reason);
+      }));
+      box.querySelector('[data-close]').addEventListener('click', () => this.close(ov));
+    };
+    render();
+  }
+
   /* ---------------------------------------------------- 奇遇格 */
   showEvent(ev) {
     return new Promise(resolve => {
@@ -242,6 +312,7 @@ export class Modals {
         <div class="event-card-wrap">
           <div class="event-card paper r-${ev.rarity}">
             <span class="rarity-tag r-${ev.rarity}">${RARITY_CN[ev.rarity] || '普通'}奇遇</span>
+            <div class="event-illustration" aria-hidden="true">${EVENT_VIGNETTE[isChoice ? 'choice' : (ev.kind === 'challenge' ? 'challenge' : 'encounter')]}</div>
             <h3>${esc(ev.name)}</h3>
             <div class="etext">${esc(personalize(ev.text, this.playerName))}</div>
             ${!isChoice && ev.kind !== 'challenge' && effectBrief(ev.effect) ? `<div class="etext" style="margin-top:10px;color:#8a5a12">${effectBrief(ev.effect)}</div>` : ''}
@@ -419,10 +490,15 @@ export class Modals {
   askScenic(cell, cost = 8, curInsp = Infinity) {
     return new Promise(resolve => {
       const canDraw = curInsp >= cost;
+      const name = String(cell && cell.name || '');
+      const artKey = /玉门|边关|关/.test(name) ? 'biansai'
+        : (/桃花|山水|源/.test(name) ? 'shanshui'
+          : (/白鹿|书院|堂|洞/.test(name) ? 'shuyuan' : 'yuyuan'));
       const ov = this.open(`
         <div class="modal scroll-frame paper branch-modal">
           <div class="mtitle" style="justify-content:center"><h2>${esc(cell.name)}</h2></div>
           <hr class="hr-ink"/>
+          <div class="bimg" aria-hidden="true">${LANDMARK_ART[artKey] || LANDMARK_ART.yuyuan}</div>
           <div style="font-size:17px;line-height:1.9">驻足名胜，可焚香祈愿、抽签问文心。</div>
           <div class="rewards">消耗灵感 ${cost} 点，随机抽取一枚尚未拥有的文心</div>
           <div class="warn" style="color:#b23a2e">${canDraw ? '抽签后灵感将减少，请斟酌' : '当前灵感不足，无法抽签'}</div>

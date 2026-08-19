@@ -4,9 +4,10 @@
   position: absolute; inset: 0;
   touch-action: none; /* 棋盘维持局部拖拽/双指缩放；页面其余文本与表单仍可由浏览器缩放。 */
   background:
-    radial-gradient(ellipse 120% 70% at 50% 108%, #3a2c33 0%, transparent 60%),
-    radial-gradient(ellipse 90% 60% at 50% -8%, #4a3a44 0%, transparent 62%),
-    linear-gradient(180deg, #241c22 0%, #191317 55%, #120e11 100%);
+    radial-gradient(ellipse 48% 18% at 8% 18%, rgba(255,255,255,.66), transparent 72%),
+    radial-gradient(ellipse 44% 16% at 91% 12%, rgba(255,255,255,.62), transparent 74%),
+    radial-gradient(ellipse 75% 32% at 50% 94%, rgba(222,239,246,.82), transparent 72%),
+    linear-gradient(180deg, #6d9fd1 0%, #a8cce6 48%, #d5e7ee 100%);
   overflow: hidden;
 }
 
@@ -17,13 +18,14 @@
   content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 180px 180px;
-  opacity: .38; mix-blend-mode: overlay;
+  opacity: .16; mix-blend-mode: soft-light;
 }
-#scene::after {                        /* 暗角 + 暖光 */
+#scene::after {                        /* 云气 + 柔和暗角 */
   content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
   background:
-    radial-gradient(58% 36% at 50% 5%, rgba(255,214,170,.14), transparent 72%),
-    radial-gradient(125% 95% at 50% 44%, transparent 50%, rgba(14,9,6,.46) 100%);
+    radial-gradient(ellipse 30% 12% at 18% 74%, rgba(255,255,255,.44), transparent 75%),
+    radial-gradient(ellipse 34% 13% at 84% 66%, rgba(255,255,255,.38), transparent 76%),
+    radial-gradient(125% 95% at 50% 44%, transparent 58%, rgba(42,73,99,.22) 100%);
 }
 
 /* ===================================================== 资产描边令牌
@@ -49,9 +51,10 @@
 
 /* 远山剪影 */
 .far-hills {
-  position: absolute; left: 0; right: 0; top: 8%;
-  height: 220px; opacity: .3; pointer-events: none;
+  position: absolute; left: -2%; right: -2%; top: 9%;
+  height: 270px; opacity: .38; pointer-events: none;
 }
+.far-hills svg { width: 104%; height: 100%; filter: blur(.35px); }
 
 /* 桃花瓣 */
 .petal {
@@ -69,43 +72,79 @@
 }
 #board { position: relative; transform-style: preserve-3d; }
 
-/* 浮岛底座（平面：柔和投影，无立体厚度） */
+/* 四季浮岛底座：同一块岛体上用桃粉 / 春绿 / 秋金 / 冬青建立区域层次。 */
 .island {
-  position: absolute; border-radius: 46px;
+  position: absolute; border-radius: 92px;
   background:
-    radial-gradient(circle at 34% 26%, rgba(255,255,255,.2), transparent 55%),
-    linear-gradient(160deg, #6f5b6a, #4b3d49 60%, #3a2f38);
-  box-shadow: 0 30px 70px rgba(0,0,0,.55), inset 0 0 0 2px rgba(255,255,255,.1);
+    radial-gradient(circle at 12% 23%, rgba(244,164,191,.94), transparent 27%),
+    radial-gradient(circle at 83% 22%, rgba(227,177,78,.78), transparent 30%),
+    radial-gradient(circle at 82% 82%, rgba(216,135,49,.78), transparent 27%),
+    radial-gradient(circle at 18% 84%, rgba(222,235,239,.94), transparent 29%),
+    linear-gradient(145deg, #84a96c 0%, #688d59 52%, #557646 100%);
+  border: 2px solid rgba(236,218,173,.72);
+  box-shadow:
+    0 16px 0 #514842,
+    0 32px 0 #3d3938,
+    0 54px 58px rgba(39,53,60,.46),
+    inset 0 0 0 3px rgba(255,255,255,.18);
+}
+.island::before {
+  content: ''; position: absolute; inset: 18px; border-radius: 74px;
+  border: 2px solid rgba(255,244,213,.42);
+  box-shadow: inset 0 0 38px rgba(43,69,47,.2);
+}
+.island::after {
+  content: ''; position: absolute; left: 9%; right: 9%; bottom: -35px; height: 48px;
+  border-radius: 0 0 48% 48%;
+  background: linear-gradient(180deg, rgba(78,72,66,.88), rgba(50,51,51,.08));
+  clip-path: polygon(0 0,100% 0,92% 58%,80% 42%,68% 100%,54% 48%,42% 88%,27% 40%,13% 70%);
 }
 .island-inner {
-  position: absolute; border-radius: 30px;
+  position: absolute; border-radius: 72px;
   background:
-    radial-gradient(circle at 50% 40%, #fdf7ea, #e9dcc0 62%, #d6c39f);
-  box-shadow: inset 0 0 60px rgba(140,115,80,.3), inset 0 0 0 2px rgba(255,255,255,.5);
+    radial-gradient(circle at 50% 46%, rgba(248,243,218,.76), rgba(219,220,172,.74) 58%, rgba(119,151,91,.86) 100%);
+  border: 2px solid rgba(247,232,190,.72);
+  box-shadow: inset 0 0 62px rgba(66,91,57,.3), inset 0 0 0 3px rgba(255,255,255,.25);
+}
+
+/* 中央岛心园景：单一 SVG 对象层，格子与棋子仍在其上。 */
+.world-scene {
+  position: absolute; z-index: 1; pointer-events: none;
+  display: grid; place-items: center;
+}
+.world-halo {
+  position: absolute; width: 74%; aspect-ratio: 1.16; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(120,220,221,.22), rgba(74,151,157,.12) 58%, transparent 72%);
+  box-shadow: 0 18px 34px rgba(44,92,94,.18);
+}
+.world-art { position: relative; width: 78%; transform: translateY(-2%); }
+.world-art svg { width: 100%; height: auto; display: block; overflow: visible; }
 }
 /* 中央印章题名（下移避让居中的掷骰按钮，transform 随棋盘缩放，桌面/手机一致） */
 .island-title {
   position: absolute; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 10px;
-  transform: translateY(200px);
+  transform: translateY(278px);
   pointer-events: none;
+  z-index: 2;
 }
 .island-title .big {
-  font-size: 62px; letter-spacing: .3em; color: rgba(70,56,40,.19);
+  font-size: 34px; letter-spacing: .34em; color: rgba(61,53,38,.38);
   text-indent: .3em;
+  text-shadow: 0 1px 0 rgba(255,255,255,.55);
 }
-.island-title .sm { font-size: 19px; letter-spacing: .5em; color: rgba(70,56,40,.16); text-indent: .5em; }
+.island-title .sm { font-size: 13px; letter-spacing: .46em; color: rgba(61,53,38,.31); text-indent: .46em; }
 
 /* ------------------------------------------------------------ 格子 */
 .cell {
   position: absolute;
   width: 42px; height: 42px;
-  border-radius: 7px;
+  border-radius: 5px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   font-size: 10.5px; line-height: 1.15; color: rgba(46,38,28,.82);
   text-align: center; letter-spacing: .02em;
   box-shadow: 0 5px 0 rgba(0,0,0,.22), 0 8px 12px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.55);
-  border: 1px solid rgba(90,72,48,.28);
+  border: 1px solid rgba(90,72,48,.38);
   transition: transform .25s var(--ease-back), box-shadow .25s, filter .25s;
 }
 .cell .cname { font-size: 10.5px; opacity: .88; max-width: 42px; overflow: hidden; }
@@ -222,7 +261,9 @@
 
 /* 骰子 */
 #diceLayer {
-  position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%);
+  position: absolute;
+  right: calc(var(--safe-right) + 72px); bottom: calc(var(--safe-bottom) + 144px);
+  transform: translateX(50%);
   z-index: 55; pointer-events: none;
 }
 .die {
@@ -264,8 +305,8 @@
    故用 `.glyph g { filter: none }` 即可覆盖 T4 加的柔影，无需改 svg.js。 */
 html[data-quality="low"] #scene::before { display: none; }   /* 纸纹噪点（全屏混合，最贵） */
 html[data-quality="low"] #scene::after {
-  /* 仅留暗角，去掉顶部暖光 bloom */
-  background: radial-gradient(125% 95% at 50% 44%, transparent 55%, rgba(14,9,6,.42) 100%);
+  /* 仅留轻暗角，去掉云气叠层。 */
+  background: radial-gradient(125% 95% at 50% 44%, transparent 62%, rgba(42,73,99,.18) 100%);
 }
 html[data-quality="low"] .far-hills { display: none; }
 
@@ -273,6 +314,12 @@ html[data-quality="low"] .far-hills { display: none; }
 html[data-quality="low"] .cell .glyph g     { filter: none !important; }
 html[data-quality="low"] .landmark-3d svg g { filter: none !important; }
 html[data-quality="low"] .emblem svg g      { filter: none !important; }
+html[data-quality="low"] .world-art svg g   { filter: none !important; }
+html[data-quality="low"] .fighter-portrait svg g,
+html[data-quality="low"] .event-illustration svg g,
+html[data-quality="low"] .quiz-emblem svg g,
+html[data-quality="low"] .branch-modal .bimg svg g { filter: none !important; }
+html[data-quality="low"] .world-halo        { display: none; }
 /* 名胜额外 drop-shadow（CSS filter）一并去掉 */
 html[data-quality="low"] .landmark-3d svg   { filter: none !important; }
 
@@ -305,8 +352,8 @@ html[data-quality="low"] .cell.t-branch_gate { background: #e7c8a8; }
 html[data-quality="low"] .cell.t-landmark { background: #f4b3cb; }
 
 /* 浮岛底座渐变 → 扁平 */
-html[data-quality="low"] .island { background: #473a45; }
-html[data-quality="low"] .island-inner { background: #e9dcc0; }
+html[data-quality="low"] .island { background: #789263; }
+html[data-quality="low"] .island-inner { background: #daddb6; }
 
 /* 徽记体积渐变 → 扁平（保留圆盘底色，仅去高光/暗部体积） */
 html[data-quality="low"] .emblem svg [fill="url(#ta-vol)"] { fill: rgba(255,255,255,.16); }
@@ -326,4 +373,13 @@ html[data-quality="low"] #resultScreen {
   .petal { animation: none; display: none; }
   .cell.hint { animation: none; }
   .cell.hint::after { border-color: rgba(240,162,184,.7); }
+}
+
+@media (max-width: 600px) {
+  #diceLayer {
+    left: 50%; right: auto; bottom: calc(var(--safe-bottom) + 126px);
+    transform: translateX(-50%);
+  }
+  .die { width: 72px; height: 72px; padding: 10px; border-radius: 15px; }
+  .die i { width: 12px; height: 12px; }
 }

@@ -7,7 +7,8 @@
  *   - STATE_KEYS 白名单：只序列化受控字段，新增/删除引擎字段不再污染存档。
  *   - 引用按 ID 存储：school / passive / active / sky / loadout 只存 ID，
  *     读档时从当前 cfg 重新关联，配置更新后旧存档不引用过时对象。
- *   - 版本迁移 migrateRun：v1/v2 → v3（ID 引用 + 文心触发状态），并清理已删除系统字段。
+ *   - 版本迁移 migrateRun：旧格式 → 当前格式（ID 引用、文心等级与流派状态），并清理已删除字段。
+ *     单环存档因坐标空间与三圈地图不兼容，会被明确拒绝而不是静默传送。
  *   - 结构化校验 validateRun：坏档、缺字段、类型错误都能 graceful 降级。
  *   - 双槽位：自动槽 feihua_run_save + 手动槽 feihua_run_save_manual。
  *   - 日志截断：s.log 最多保留最近 150 条，防 localStorage 撑爆。
@@ -16,7 +17,7 @@
 
 export const RUN_SAVE_KEY = 'feihua_run_save';               // 自动存档槽（每回合结束）
 export const RUN_SAVE_MANUAL_KEY = 'feihua_run_save_manual'; // 手动存档槽（菜单「保存当前进度」）
-export const RUN_SAVE_VERSION = 5;
+export const RUN_SAVE_VERSION = 6;
 export const SAVE_WARN_BYTES = 3 * 1024 * 1024;              // 体积预警阈值 3MB
 
 const LOG_MAX = 200;   // 超过则截断
@@ -29,7 +30,7 @@ const STATE_KEYS = [
   'lap', 'routeIndex', 'ringId', 'phaseGateSeen', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
   'quiz', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
   'zeitgeist', 'prologueSeen', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
-  'talentLevels', 'schoolState', 'over', 'reachedEnd', 'endReason', 'log'
+  'talentLevels', 'schoolState', 'abilityState', 'over', 'reachedEnd', 'endReason', 'log'
 ];
 
 /**
@@ -128,7 +129,7 @@ export function serializeRun(game) {
 
 /* ------------------------------------------------ 迁移与校验 */
 
-/** v1/v2 → v3：对象引用改 ID、补文心触发状态、清理已删除系统字段 */
+/** 旧格式 → 当前格式：对象引用改 ID、补新增状态、清理已删除系统字段 */
 function migrateRun(obj) {
   if (!obj || typeof obj !== 'object') return null;
   if (obj.v >= RUN_SAVE_VERSION) return obj;
@@ -166,6 +167,19 @@ function migrateRun(obj) {
   if (!state.schoolState || typeof state.schoolState !== 'object') {
     state.schoolState = { type: '', knowledge: 0, knowledgeTriggered: false, inspirationAccumulator: 0,
       qishiTalentDropObtained: false, battleSeq: 0, settledBattleIds: [] };
+  }
+  // v6：方案 B 三功 + 方案 C 技法经验契约。旧档从零开始，不追溯补发。
+  if (!state.abilityState || typeof state.abilityState !== 'object') {
+    state.abilityState = {
+      version: 1, insight: 0,
+      familiarity: { shi: 0, ci: 0, lian: 0 },
+      study: { focus: ['shi'], progress: {} },
+      strategy: { points: 0, refillPhase: '', freeChapterPhases: {} },
+      manuscript: { pages: 0, fragments: 0, volumes: 0, polish: 0, bonusPagePhases: {}, schoolPagePhases: {}, firstPolishPhases: {} },
+      lastStyle: null, phaseStyles: {},
+      technique: { version: 1, xp: { shi: 0, ci: 0, lian: 0 }, level: { shi: 0, ci: 0, lian: 0 },
+        unlocked: { shi: [], ci: [], lian: [] }, equipped: { shi: [], ci: [], lian: [] } }
+    };
   }
   return { v: RUN_SAVE_VERSION, savedAt: Number(obj.savedAt) || Date.now(), state };
 }
@@ -299,6 +313,29 @@ export function deserializeRun(rawObj, cfg) {
   out.schoolState.knowledge = Math.max(0, Number(out.schoolState.knowledge) || 0);
   out.schoolState.inspirationAccumulator = Math.max(0, Number(out.schoolState.inspirationAccumulator) || 0);
   out.schoolState.settledBattleIds = Array.isArray(out.schoolState.settledBattleIds) ? out.schoolState.settledBattleIds.slice(-40) : [];
+  out.abilityState = (out.abilityState && typeof out.abilityState === 'object') ? out.abilityState : {};
+  const ab = out.abilityState;
+  ab.version = Math.max(1, Number(ab.version) || 1);
+  ab.insight = Math.max(0, Number(ab.insight) || 0);
+  ab.familiarity = Object.assign({ shi: 0, ci: 0, lian: 0 }, ab.familiarity || {});
+  ab.study = Object.assign({ focus: ['shi'], progress: {} }, ab.study || {});
+  ab.study.focus = Array.isArray(ab.study.focus) ? ab.study.focus.filter(k => ['shi','ci','lian','bi','xue','si'].includes(k)) : ['shi'];
+  if (!ab.study.focus.length) ab.study.focus = ['shi'];
+  ab.study.progress = (ab.study.progress && typeof ab.study.progress === 'object') ? ab.study.progress : {};
+  ab.strategy = Object.assign({ points: 0, refillPhase: '', freeChapterPhases: {} }, ab.strategy || {});
+  ab.strategy.points = Math.max(0, Number(ab.strategy.points) || 0);
+  ab.strategy.freeChapterPhases = (ab.strategy.freeChapterPhases && typeof ab.strategy.freeChapterPhases === 'object') ? ab.strategy.freeChapterPhases : {};
+  ab.manuscript = Object.assign({ pages: 0, fragments: 0, volumes: 0, polish: 0, bonusPagePhases: {}, schoolPagePhases: {}, firstPolishPhases: {} }, ab.manuscript || {});
+  for (const k of ['pages','fragments','volumes','polish']) ab.manuscript[k] = Math.max(0, Number(ab.manuscript[k]) || 0);
+  ab.manuscript.bonusPagePhases = (ab.manuscript.bonusPagePhases && typeof ab.manuscript.bonusPagePhases === 'object') ? ab.manuscript.bonusPagePhases : {};
+  ab.manuscript.schoolPagePhases = (ab.manuscript.schoolPagePhases && typeof ab.manuscript.schoolPagePhases === 'object') ? ab.manuscript.schoolPagePhases : {};
+  ab.manuscript.firstPolishPhases = (ab.manuscript.firstPolishPhases && typeof ab.manuscript.firstPolishPhases === 'object') ? ab.manuscript.firstPolishPhases : {};
+  ab.phaseStyles = (ab.phaseStyles && typeof ab.phaseStyles === 'object') ? ab.phaseStyles : {};
+  ab.technique = Object.assign({ version: 1, xp: {}, level: {}, unlocked: {}, equipped: {} }, ab.technique || {});
+  ab.technique.xp = Object.assign({ shi: 0, ci: 0, lian: 0 }, ab.technique.xp || {});
+  ab.technique.level = Object.assign({ shi: 0, ci: 0, lian: 0 }, ab.technique.level || {});
+  ab.technique.unlocked = Object.assign({ shi: [], ci: [], lian: [] }, ab.technique.unlocked || {});
+  ab.technique.equipped = Object.assign({ shi: [], ci: [], lian: [] }, ab.technique.equipped || {});
   out.npcMech = (out.npcMech && typeof out.npcMech === 'object') ? out.npcMech : { history: {}, palace: {} };
   out.battle = (out.battle && typeof out.battle === 'object') ? out.battle : { win: 0, draw: 0, loss: 0, streak: 0, maxStreak: 0, upsets: 0, winsByStyle: { shi: 0, ci: 0, lian: 0 } };
   out.events = (out.events && typeof out.events === 'object') ? out.events : { total: 0, rare: 0, legend: 0, talents: 0, items: 0 };

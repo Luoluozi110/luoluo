@@ -154,6 +154,124 @@ export const LANDMARK_ART = {
   , '0 0 64 62')
 };
 
+/* ------------------------------------------------- 棋盘中央园景
+   参考「园林即棋盘」的空间叙事：湖面、环形石岸、岛心亭与引桥共同承担视觉锚点。
+   全部复用 ta-soft-lg / ta-vol，不新增 gradient / filter id，省电档可统一关闭柔影。 */
+export const CENTER_GARDEN_ART = S(
+  `<ellipse cx="180" cy="278" rx="138" ry="18" fill="rgba(30,40,34,.24)"/>` +
+  objGroup(`
+    <ellipse cx="180" cy="152" rx="164" ry="125" fill="#d9cfb3" class="ta-brown ta-3"/>
+    <ellipse cx="180" cy="150" rx="148" ry="109" fill="#4ba9b3" class="ta-qing ta-3"/>
+    <ellipse cx="180" cy="150" rx="148" ry="109" fill="url(#ta-vol)" opacity=".34"/>
+    <path d="M40 158c32-16 52-10 78 3s49 17 76 3 55-19 86-4 49 12 70 2" class="ta-white ta-1" opacity=".38"/>
+    <path d="M55 118c25-11 43-8 61 1M246 105c25-10 43-8 59 1M76 203c20 8 36 8 54 0" class="ta-white ta-1" opacity=".32"/>
+
+    <ellipse cx="180" cy="158" rx="72" ry="51" fill="#746d54" class="ta-brown ta-2"/>
+    <ellipse cx="180" cy="148" rx="68" ry="46" fill="#78965a" class="ta-green ta-3"/>
+    <path d="M119 159c22-12 39-11 58 1s38 11 64-2v27c-35 17-91 17-122 0z" fill="#6c7652" opacity=".72"/>
+
+    <path d="M170 190h20l25 79h-70z" fill="#d7ccb0" class="ta-brown ta-2"/>
+    <path d="M174 198h12M169 216h22M163 235h34M157 254h46" class="ta-white ta-1" opacity=".72"/>
+    <path d="M170 190h20M145 269h70" class="ta-brown ta-3"/>
+
+    <ellipse cx="129" cy="106" rx="25" ry="12" fill="#5b7d4a"/>
+    <path d="M129 112V74" class="ta-brown ta-3"/>
+    <circle cx="117" cy="73" r="17" fill="#6f9a56" class="ta-green ta-2"/>
+    <circle cx="137" cy="66" r="21" fill="#86aa63" class="ta-green ta-2"/>
+    <circle cx="151" cy="82" r="16" fill="#6f9355" class="ta-green ta-2"/>
+    <circle cx="128" cy="61" r="5" fill="#fff" opacity=".14"/>
+
+    <ellipse cx="239" cy="123" rx="25" ry="11" fill="#5b7448"/>
+    <path d="M239 128V91" class="ta-brown ta-3"/>
+    <circle cx="224" cy="91" r="16" fill="#759653" class="ta-green ta-2"/>
+    <circle cx="243" cy="80" r="20" fill="#89a95e" class="ta-green ta-2"/>
+    <circle cx="257" cy="97" r="15" fill="#6b8e50" class="ta-green ta-2"/>
+    <circle cx="238" cy="74" r="5" fill="#fff" opacity=".14"/>
+
+    <ellipse cx="180" cy="173" rx="43" ry="10" fill="rgba(38,42,34,.26)"/>
+    <rect x="151" y="125" width="58" height="43" rx="3" fill="#ead7ad" class="ta-brown ta-2"/>
+    <rect x="159" y="132" width="7" height="36" fill="#8f4b32"/>
+    <rect x="176" y="132" width="7" height="36" fill="#8f4b32"/>
+    <rect x="193" y="132" width="7" height="36" fill="#8f4b32"/>
+    <path d="M139 129h82l-16-15h-50z" fill="#173f4a" class="ta-ln ta-3"/>
+    <path d="M146 114h68l-17-15h-34z" fill="#286170" class="ta-ln ta-3"/>
+    <path d="M134 128c19 1 29-4 38-11M226 128c-19 1-29-4-38-11" class="ta-gold ta-2"/>
+    <path d="M157 145h46M148 169h64" class="ta-brown ta-3"/>
+    <rect x="171" y="143" width="18" height="25" fill="#4f3326"/>
+    <circle cx="180" cy="98" r="4" fill="#e3b85e"/>
+  `) +
+  `<ellipse cx="137" cy="115" rx="20" ry="10" fill="#fff" opacity=".12"/>
+   <g opacity=".92">
+     <ellipse cx="73" cy="175" rx="13" ry="6" fill="#5e8c52" transform="rotate(-12 73 175)"/>
+     <circle cx="73" cy="175" r="3" fill="#f4a4bc"/>
+     <ellipse cx="291" cy="150" rx="14" ry="6" fill="#699554" transform="rotate(10 291 150)"/>
+     <circle cx="291" cy="149" r="3" fill="#f4a4bc"/>
+     <ellipse cx="263" cy="206" rx="12" ry="5" fill="#5d8a50" transform="rotate(-18 263 206)"/>
+   </g>`
+, '0 0 360 300');
+
+/* ------------------------------------------------- 对决人物半身像
+   以盘内 Q 版棋子为基准，提供应试者 / 对手两套高辨识剪影；仅复用共享体积与柔影。 */
+const scholarPortrait = ({ robe, robeDeep, disk, hat, accent, beard = false }) => S(
+  `<ellipse cx="48" cy="89" rx="31" ry="5" fill="rgba(0,0,0,.24)"/>` +
+  objGroup(`
+    <circle cx="48" cy="45" r="39" fill="${disk}" class="ta-brown ta-2"/>
+    <circle cx="48" cy="45" r="39" fill="url(#ta-vol)" opacity=".22"/>
+    <path d="M18 90c3-24 14-35 30-35s27 11 30 35z" fill="${robe}" class="ta-ln ta-2"/>
+    <path d="M34 89c1-18 5-28 14-28s13 10 14 28z" fill="${robeDeep}"/>
+    <path d="M40 61l8 11 8-11" fill="#f5ead1" class="ta-brown ta-1"/>
+    <circle cx="48" cy="38" r="19" fill="#f2ceb0" class="ta-brown ta-1"/>
+    <path d="M29 36c1-16 9-25 19-25s18 9 19 25c-5-8-11-11-19-11S34 28 29 36z" fill="${hat}"/>
+    <path d="M34 24h28l-4-9H38z" fill="${hat}" class="ta-ln ta-2"/>
+    <circle cx="41" cy="39" r="2" fill="#2b2622"/><circle cx="55" cy="39" r="2" fill="#2b2622"/>
+    <circle cx="41.5" cy="38.5" r=".55" fill="#fff"/><circle cx="55.5" cy="38.5" r=".55" fill="#fff"/>
+    ${beard ? `<path d="M43 48q5 3 10 0M45 50l3 9 3-9" class="ta-brown ta-2"/>` : `<path d="M44 48q4 3 8 0" class="ta-brown ta-1"/>`}
+    <path d="M68 62l8 25" class="ta-brown ta-3"/><path d="M75 85l4 7-6-1z" fill="#2b2622"/>
+    <circle cx="25" cy="20" r="5" fill="${accent}" opacity=".78"/>
+  `) +
+  `<ellipse cx="36" cy="28" rx="8" ry="5" fill="#fff" opacity=".13"/>`
+, '0 0 96 96');
+
+export const SCHOLAR_PORTRAIT = {
+  self: scholarPortrait({ robe: '#4f8ca5', robeDeep: '#2f667e', disk: '#e8f1df', hat: '#273331', accent: '#6ab3b5' }),
+  opponent: scholarPortrait({ robe: '#a85643', robeDeep: '#73372f', disk: '#f0dfcf', hat: '#392821', accent: '#d5a044', beard: true })
+};
+
+/* ------------------------------------------------- 模态叙事插画
+   奇遇按“抉择 / 挑战 / 获赠”分三类，题卡使用独立卷册印记；都保持短宽构图，
+   不挤压正文的第一屏阅读空间。 */
+export const EVENT_VIGNETTE = {
+  choice: S(objGroup(`
+    <path d="M28 61c24-7 34-22 42-43 10 21 22 35 48 43" class="ta-brown ta-3"/>
+    <path d="M70 18v48" class="ta-brown ta-3"/>
+    <path d="M70 42L43 24M70 42l29-20" class="ta-brown ta-2"/>
+    <circle cx="41" cy="23" r="7" fill="#f0a2b8"/><circle cx="101" cy="21" r="7" fill="#e0b85f"/>
+    <path d="M20 64h112" class="ta-brown ta-2"/>
+  `), '0 0 150 78'),
+  challenge: S(objGroup(`
+    <rect x="46" y="25" width="58" height="34" rx="12" fill="#b44839" class="ta-zhu ta-2"/>
+    <ellipse cx="75" cy="25" rx="29" ry="9" fill="#e8c985" class="ta-brown ta-2"/>
+    <path d="M46 42h58M35 14l18 13M115 14L97 27" class="ta-gold ta-3"/>
+    <circle cx="35" cy="14" r="5" fill="#7b5236"/><circle cx="115" cy="14" r="5" fill="#7b5236"/>
+    <path d="M30 64h90" class="ta-brown ta-2"/>
+  `), '0 0 150 78'),
+  encounter: S(objGroup(`
+    <path d="M36 20h78v42H36z" fill="#f1e4c7" class="ta-brown ta-2"/>
+    <path d="M31 18h88v8H31zM31 58h88v8H31z" fill="#8d6a45" class="ta-brown ta-2"/>
+    <path d="M50 34h50M50 43h38M50 52h44" class="ta-brown ta-2"/>
+    <circle cx="107" cy="49" r="10" fill="#b23a2e" opacity=".82"/>
+    <path d="M103 49h8M107 45v8" class="ta-gold ta-1"/>
+  `), '0 0 150 78')
+};
+
+export const QUIZ_MARK = S(objGroup(`
+  <circle cx="36" cy="36" r="31" fill="#efe2c5" class="ta-brown ta-2"/>
+  <path d="M20 20h32v35H20z" fill="#f8efd9" class="ta-brown ta-2"/>
+  <path d="M25 28h22M25 36h18M25 44h22" class="ta-brown ta-2"/>
+  <path d="M50 17l7 7-15 27-8 4 1-9z" fill="#395d60" class="ta-qing ta-2"/>
+  <circle cx="21" cy="17" r="4" fill="#b23a2e"/>
+`), '0 0 72 72');
+
 /* ------------------------------------------------- 流派徽记 */
 export const SCHOOL_EMBLEM = {
   shi: S(objGroup(`
@@ -192,8 +310,8 @@ export const SCHOOL_EMBLEM = {
 
 /* ------------------------------------------------- 远山 */
 export const FAR_HILLS = `<svg viewBox="0 0 1600 220" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M0 220L0 150 120 96 240 148 360 78 500 140 620 92 760 152 900 84 1040 146 1180 96 1320 152 1460 104 1600 156 1600 220z" fill="#5a4459"/>
-  <path d="M0 220L0 178 140 140 300 182 460 132 620 180 800 138 960 184 1120 142 1300 186 1460 148 1600 190 1600 220z" fill="#3d2f3d"/>
+  <path d="M0 220L0 150 120 96 240 148 360 78 500 140 620 92 760 152 900 84 1040 146 1180 96 1320 152 1460 104 1600 156 1600 220z" fill="#6f8fa2"/>
+  <path d="M0 220L0 178 140 140 300 182 460 132 620 180 800 138 960 184 1120 142 1300 186 1460 148 1600 190 1600 220z" fill="#8eabb8"/>
 </svg>`;
 
 /* ------------------------------------------------- 通用 */

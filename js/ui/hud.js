@@ -101,8 +101,9 @@ export class Hud {
 
       <div id="turnInfo">第 <b id="turnNum">0</b> 回合</div>
       <div id="rollZone">
+        <button class="btn btn-ink" id="abilityBtn">修习</button>
         <button class="btn btn-ink" id="planBtn" style="display:none">布局谋篇</button>
-        <button class="btn btn-primary" id="rollBtn">掷骰</button>
+        <button class="btn btn-primary" id="rollBtn"><span class="roll-die" aria-hidden="true"><svg viewBox="0 0 46 46"><rect x="3" y="3" width="40" height="40" rx="9"/><circle cx="14" cy="14" r="3"/><circle cx="32" cy="14" r="3"/><circle cx="23" cy="23" r="3"/><circle cx="14" cy="32" r="3"/><circle cx="32" cy="32" r="3"/></svg></span><span class="roll-label">掷骰</span></button>
       </div>
 
       <div id="toastZone"></div>`;
@@ -130,6 +131,7 @@ export class Hud {
       pname: root.querySelector('#pnameTag'),
       roll: root.querySelector('#rollBtn'),
       plan: root.querySelector('#planBtn'),
+      ability: root.querySelector('#abilityBtn'),
       toast: root.querySelector('#toastZone'),
       attrPanel: root.querySelector('#attrPanel'),
       talentPanel: root.querySelector('#talentBar'),
@@ -172,11 +174,14 @@ export class Hud {
       this.prev[k] = v;
     }
 
-    // 三派成长进度：把核心循环做成 HUD 可见反馈。
+    // 方案 B 三功资源：核心循环必须随时可见；流派身份在修习面板展开。
     const mech = (s.school && s.school.schoolMechanics) || {};
     const ss = s.schoolState || {};
     if (this.el.schoolProgress) {
-      if (mech.type === 'bowen') {
+      if (s.abilityState) {
+        const ab = s.abilityState;
+        this.el.schoolProgress.innerHTML = `<span class="school-progress-name">三功修习</span><span>心得 ${Number(ab.insight) || 0}　筹策 ${Number((ab.strategy || {}).points) || 0}　稿页 ${Number((ab.manuscript || {}).pages) || 0}</span>`;
+      } else if (mech.type === 'bowen') {
         const need = Number(mech.knowledgeThreshold) || 2;
         this.el.schoolProgress.innerHTML = `<span class="school-progress-name">博闻·开卷</span><span>知识 ${Math.min(need, Number(ss.knowledge) || 0)}/${need}</span>`;
       } else if (mech.type === 'qishi') {
@@ -225,6 +230,11 @@ export class Hud {
       this.el.plan.style.display = hasPlan ? '' : 'none';
       this.el.plan.disabled = !this._planAvailable || !this._rollOn;
       this.el.plan.textContent = planned ? `布局谋篇·已定策${s.plannedMoveDice}格` : '布局谋篇';
+    }
+    if (this.el.ability) {
+      const ab = s.abilityState || {};
+      this.el.ability.textContent = `修习·${Number(ab.insight) || 0}/${Number((ab.manuscript || {}).pages) || 0}`;
+      this.el.ability.disabled = !this._rollOn;
     }
 
     // 文心羁绊：当前已激活的组合
@@ -344,9 +354,11 @@ export class Hud {
     if (label) this.el.roll.textContent = label;
     this._rollOn = on;
     if (this.el.plan) this.el.plan.disabled = !on || !this._planAvailable;
+    if (this.el.ability) this.el.ability.disabled = !on;
   }
   onRoll(fn) { this.el.roll.addEventListener('click', fn); }
   onPlan(fn) { this.el.plan.addEventListener('click', fn); }
+  onAbility(fn) { this.el.ability.addEventListener('click', fn); }
 }
 
 function escapeAttr(s) { return String(s).replace(/"/g, '&quot;').replace(/</g, '&lt;'); }

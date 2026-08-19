@@ -3,24 +3,24 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260818softquiz';
-import { Game } from '../engine/game.js?v=20260818softquiz';
-import { BoardView } from './board.js?v=20260818softquiz';
-import { Hud, radarSVG } from './hud.js?v=20260818softquiz';
-import { Modals } from './modals.js?v=20260818softquiz';
-import { BattleStage } from './battle.js?v=20260818softquiz';
-import { AlbumUI } from './album.js?v=20260818softquiz';
-import { CodexUI } from './codex.js?v=20260818softquiz';
-import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260818softquiz';
-import { initQuality, getTier, setTier } from './quality.js?v=20260818softquiz';
-import { ATTR_NAMES } from '../engine/rules.js?v=20260818softquiz';
-import * as Album from '../engine/album.js?v=20260818softquiz';
-import * as Codex from '../engine/codex.js?v=20260818softquiz';
-import { initAudio } from './audio.js?v=20260818softquiz';
-import { setScene, setTension, setStage } from './music.js?v=20260818softquiz';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260818softquiz';
-import { Leaderboard } from './leaderboard.js?v=20260818softquiz';
-import { personalize } from './namefmt.js?v=20260818softquiz';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260819abilityb1';
+import { Game } from '../engine/game.js?v=20260819abilityb1';
+import { BoardView } from './board.js?v=20260819abilityb1';
+import { Hud, radarSVG } from './hud.js?v=20260819abilityb1';
+import { Modals } from './modals.js?v=20260819abilityb1';
+import { BattleStage } from './battle.js?v=20260819abilityb1';
+import { AlbumUI } from './album.js?v=20260819abilityb1';
+import { CodexUI } from './codex.js?v=20260819abilityb1';
+import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260819abilityb1';
+import { initQuality, getTier, setTier } from './quality.js?v=20260819abilityb1';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260819abilityb1';
+import * as Album from '../engine/album.js?v=20260819abilityb1';
+import * as Codex from '../engine/codex.js?v=20260819abilityb1';
+import { initAudio } from './audio.js?v=20260819abilityb1';
+import { setScene, setTension, setStage } from './music.js?v=20260819abilityb1';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260819abilityb1';
+import { Leaderboard } from './leaderboard.js?v=20260819abilityb1';
+import { personalize } from './namefmt.js?v=20260819abilityb1';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -110,6 +110,7 @@ async function ensureGameUi() {
     hud.onTalent = t => modals.showTalentDetail(t);
     hud.onRoll(onRoll);
 hud.onPlan(onPlan);
+    hud.onAbility(onAbility);
   }
   if (!battle) battle = new BattleStage($('#battleStage'), cfg);
   ensureLeaderboard();
@@ -412,6 +413,12 @@ function onPlan() {
   modals.showPlannedMovePrompt(game);
 }
 
+/** 三功修习：集中管理心得、研修位与稿本，避免每场战后连续弹窗。 */
+function onAbility() {
+  if (!game || game.s.over || rolling) return;
+  modals.showAbilityPanel(game);
+}
+
 /* ---------------------------------------------------- 菜单 / 随时存档 */
 const MENU_ICON = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2.4" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2.4" fill="currentColor" stroke="none"/><circle cx="8" cy="18" r="2.4" fill="currentColor" stroke="none"/></svg>`;
 
@@ -580,8 +587,8 @@ async function fetchCloudConfig(url, opts = {}) {
 
 function composeProjects() {
   let next = cloudBaseCfg || cfg;
-  if (cloudProject) next = applyProjectOverride(next, cloudProject);
-  if (customProject) next = applyProjectOverride(next, customProject);
+  if (cloudProject) next = applyProjectOverride(next, cloudProject, { requireType: true });
+  if (customProject) next = applyProjectOverride(next, customProject, { requireType: true });
   return next;
 }
 
@@ -598,8 +605,14 @@ function applyCloudProject(url, project, notice) {
     cloudSyncNotice = '已忽略阶段门或路线映射不完整的云端地图，继续使用正式三圈地图';
     return false;
   }
+  const previous = cloudProject;
   cloudProject = project;
-  cfg = composeProjects();
+  try { cfg = composeProjects(); }
+  catch (error) {
+    cloudProject = previous;
+    cloudSyncNotice = `已忽略不符合配置契约的云端工程：${error.message || error}`;
+    return false;
+  }
   cloudConfigActive = true;
   writeCloudCache(url, project);
   refreshConfigBoundUi();

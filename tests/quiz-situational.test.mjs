@@ -11,10 +11,11 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'file:///C:/Users/77522/.workbuddy/binaries/node/workspace/node_modules/jsdom/lib/api.js';
 import { Game } from '../js/engine/game.js';
 
-const CFG_DIR = path.join(process.cwd(), 'config');
+const CFG_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'config');
 const load = n => JSON.parse(fs.readFileSync(path.join(CFG_DIR, `${n}.json`), 'utf8'));
 
 /* ═══════════════════════ 1. 数据层校验 ═══════════════════════ */

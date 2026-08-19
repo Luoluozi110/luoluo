@@ -39,17 +39,17 @@ assert(Album.masteryLevelFromXp(340)===5 && Album.masteryLevelFromXp(9999)===5, 
 assert(Album.masteryLevelName(1)==='初学乍练' && Album.masteryLevelName(5)==='登峰造极', '等级名正确');
 
 console.log('== 机制增强表 ==');
-const bowenBase={type:'bowen',knowledgeThreshold:2};
-const qishiBase={type:'qishi',inspirationBonusRate:0.35,upgradeCostRate:0.65};
-const cizongBase={type:'cizong_bi',creativeDicePlus:2,freeDiceCap:5};
+const bowenBase={type:'bowen',knowledgeThreshold:2,knowledgeInsight:4};
+const qishiBase={type:'qishi',inspirationBonusRate:0.20,upgradeCostRate:0.80,strategyChargePlus:1};
+const cizongBase={type:'cizong_bi',manuscriptCapPlus:1,firstFinishedPagePlus:1};
 assert(Album.applyMasteryMechanics(bowenBase,'bowen',1)===bowenBase, 'Lv1 不增强（原引用）');
 assert(Album.applyMasteryMechanics(bowenBase,'bowen',3).knowledgeThreshold===2, '博闻 Lv3 threshold 仍为 2');
 assert(Album.applyMasteryMechanics(bowenBase,'bowen',4).knowledgeThreshold===1, '博闻 Lv4 threshold→1');
-assert(Album.applyMasteryMechanics(bowenBase,'bowen',5).knowledgeBonusGain===1, '博闻 Lv5 点睛 +1 学力');
-assert(Album.applyMasteryMechanics(qishiBase,'qishi',5).inspirationBonusRate===0.55 && Album.applyMasteryMechanics(qishiBase,'qishi',5).upgradeCostRate===0.55, '奇士 Lv5 rate 0.55 + 成本折扣 0.55');
-assert(Album.applyMasteryMechanics(qishiBase,'qishi',2).inspirationBonusRate===0.40, '奇士 Lv2 rate→0.40');
-assert(Album.applyMasteryMechanics(cizongBase,'cizong_bi',4).creativeDicePlus===5 && Album.applyMasteryMechanics(cizongBase,'cizong_bi',4).freeDiceCap===5, '辞宗 Lv4 dice 5（cap 5 不变）');
-assert(Album.applyMasteryMechanics(cizongBase,'cizong_bi',5).creativeDicePlus===5 && Album.applyMasteryMechanics(cizongBase,'cizong_bi',5).freeDiceCap===6, '辞宗 Lv5 dice 5 + cap→6');
+assert(Album.applyMasteryMechanics(bowenBase,'bowen',5).knowledgeInsightBonus===1, '博闻 Lv5 点睛 +1 心得');
+assert(Album.applyMasteryMechanics(qishiBase,'qishi',5).inspirationBonusRate===0.28 && Album.applyMasteryMechanics(qishiBase,'qishi',5).strategyChargePlus===2, '奇士 Lv5 灵感轻增益 + 筹策上限 2');
+assert(Album.applyMasteryMechanics(qishiBase,'qishi',2).inspirationBonusRate===0.22, '奇士 Lv2 rate→0.22');
+assert(Album.applyMasteryMechanics(cizongBase,'cizong_bi',4).manuscriptCapPlus===3, '辞宗 Lv4 稿匣上限加成 3');
+assert(Album.applyMasteryMechanics(cizongBase,'cizong_bi',5).firstFinishedPagePlus===2, '辞宗 Lv5 首次成篇额外 2 稿页');
 assert(Album.applyMasteryMechanics(bowenBase,'unknown',5)===bowenBase, '未知门派不增强');
 
 console.log('== xp 累加与升级 ==');
@@ -69,15 +69,16 @@ const L4=gameWithMastery(cfg,'qishi',200);
 assert(L4.s.attrs.si===cfg.attrs.initial.si+cfg.attrs.schoolBonus+(4-1)*Album.MASTERY_ATTR_PER_LEVEL, `qishi Lv4 si=${L4.s.attrs.si}（初5+3+6）`);
 const L5=gameWithMastery(cfg,'cizong_bi',340);
 assert(L5.s.attrs.bi===cfg.attrs.initial.bi+cfg.attrs.schoolBonus+(5-1)*Album.MASTERY_ATTR_PER_LEVEL, `cizong Lv5 bi=${L5.s.attrs.bi}（初5+3+8）`);
-assert(L5.game.schoolMechanics().freeDiceCap===6 && L5.game.schoolMechanics().creativeDicePlus===5, 'cizong Lv5 引擎机制已增强');
+assert(L5.game.schoolMechanics().manuscriptCapPlus===3 && L5.game.schoolMechanics().firstFinishedPagePlus===2, 'cizong Lv5 稿本机制已增强');
 
-console.log('== 博闻 Lv5 点睛：触发额外 +1 学力 ==');
+console.log('== 博闻 Lv5 点睛：触发额外 +1 心得 ==');
 // 直接构造 bowen Lv5 结算
 Album.resetStore(); store=Album.emptyStore(); store.mastery.bowen=Album.masteryEntry(340); Album.saveStore(store);
 const g4=new Game(cfg,makeUI(),rng); g4.push=()=>{}; g4.grantTalent=(t,o)=>{}; g4.applyLoadout=()=>{};
 g4.start('bowen',{name:''});
 const s4=g4.s; s4.turn=1; s4.schoolState=g4.createSchoolState(g4.s.school); s4.schoolState.knowledge=1;
 await g4.gainBowenKnowledge('t');
-assert(s4.attrs.xue===cfg.attrs.initial.xue+cfg.attrs.schoolBonus+(5-1)*2+1, `bowen Lv5 触发后 xue=${s4.attrs.xue}（初5+3+8，点睛+1）`);
+assert(s4.attrs.xue===cfg.attrs.initial.xue+cfg.attrs.schoolBonus+(5-1)*2, '博闻触发不再直接增加学力');
+assert(s4.abilityState.insight===5, '知识 4 + Lv5 点睛 1 = 5 心得');
 
 console.log('\n流派熟练度测试：全部通过 ✓');

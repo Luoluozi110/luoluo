@@ -1,5 +1,5 @@
 /** board.js —— 平面俯视棋盘渲染、棋子移动、掷骰、飘字 */
-import { glyph, LANDMARK_ART, FAR_HILLS, ensureDefs } from './svg.js';
+import { glyph, FAR_HILLS, CENTER_GARDEN_ART, ensureDefs } from './svg.js';
 import { getBudget } from './quality.js';
 import { play } from './audio.js';
 import { sting } from './music.js';
@@ -79,6 +79,17 @@ export class BoardView {
       width: (baseGrid - 2.8) * UNIT + 'px', height: (baseGrid - 2.8) * UNIT + 'px'
     });
     board.appendChild(inner);
+
+    // 中央园景：让棋盘本身成为可读的桃花岛世界，而非一块留白操作台。
+    // 仅承担美术叙事，不接收事件；格子与棋子保持更高层级，不影响玩法命中区。
+    const world = document.createElement('div');
+    world.className = 'world-scene';
+    Object.assign(world.style, {
+      left: (PAD + 1.4) * UNIT + 'px', top: (PAD + 1.4) * UNIT + 'px',
+      width: (baseGrid - 2.8) * UNIT + 'px', height: (baseGrid - 2.8) * UNIT + 'px'
+    });
+    world.innerHTML = `<div class="world-halo"></div><div class="world-art">${CENTER_GARDEN_ART}</div>`;
+    board.appendChild(world);
 
     const ttl = document.createElement('div');
     ttl.className = 'island-title';
