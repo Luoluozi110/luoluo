@@ -1,8 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  BOARD_VIEW_ANGLE_PRESETS,
   BOARD_VIEW_MODE,
+  DEFAULT_BOARD_VIEW_ANGLE,
+  boardViewAngleLabel,
   normalizeBoardViewMode,
+  normalizeBoardViewAngle,
+  nextBoardViewAngle,
+  resolveBoardViewAngle,
   resolveBoardViewMode,
   boardViewProfile,
   applyBoardViewMode,
@@ -27,6 +33,17 @@ test('2.5D profile 提供倾角、厚度与人物抬升', () => {
   assert.ok(p.pieceZ > p.tileZ);
 });
 
+test('便捷视角按钮使用三档离散俯角并支持 URL / 记忆值', () => {
+  assert.deepEqual(BOARD_VIEW_ANGLE_PRESETS.map(x => x.angle), [20, 28, 36]);
+  assert.equal(DEFAULT_BOARD_VIEW_ANGLE, 28);
+  assert.equal(resolveBoardViewAngle('?boardAngle=36', '20'), 36);
+  assert.equal(resolveBoardViewAngle('', '20'), 20);
+  assert.equal(normalizeBoardViewAngle(34), 36);
+  assert.equal(boardViewAngleLabel(20), '舒展');
+  assert.equal(nextBoardViewAngle(20), 28);
+  assert.equal(nextBoardViewAngle(36), 20);
+});
+
 test('模式应用只写 scene/HTML 属性和 CSS 变量', () => {
   const vars = new Map();
   const root = { dataset: {}, style: { setProperty: (k, v) => vars.set(k, v) } };
@@ -38,6 +55,10 @@ test('模式应用只写 scene/HTML 属性和 CSS 变量', () => {
   assert.equal(attrs.get('data-board-view'), '25d');
   assert.equal(vars.get('--board-camera-pitch'), '28deg');
   assert.equal(vars.get('--board-billboard-pitch'), '-28deg');
+
+  assert.equal(applyEffectiveBoardViewMode(root, '25d', doc, 36), '25d');
+  assert.equal(vars.get('--board-camera-pitch'), '36deg');
+  assert.equal(vars.get('--board-billboard-pitch'), '-36deg');
 
   assert.equal(applyEffectiveBoardViewMode(root, 'flat', doc), 'flat');
   assert.equal(root.dataset.boardView, '25d');
@@ -59,6 +80,8 @@ test('fit 使用透视后四角包围盒', () => {
   assert.ok(tilted.width > 700);
   assert.ok(tilted.height < 700);
   assert.ok(Number.isFinite(tilted.width) && Number.isFinite(tilted.height));
+  const overhead = projectedBoardFootprint(1000, .7, '25d', 36);
+  assert.ok(overhead.height < tilted.height);
 });
 
 test('保留的反投影工具同时补偿 pitch 与轻微 yaw', () => {

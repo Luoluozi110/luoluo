@@ -100,6 +100,13 @@ export class Hud {
       <div id="logBox" class="panel paper"></div>
 
       <div id="turnInfo">第 <b id="turnNum">0</b> 回合</div>
+      <button id="viewAngleBtn" type="button" hidden aria-label="地图视角" title="切换地图俯角">
+        <svg viewBox="0 0 26 22" aria-hidden="true" focusable="false">
+          <path d="M3 8.5 13 3l10 5.5L13 14 3 8.5Z"/>
+          <path d="m3 13.5 10 5.5 10-5.5"/>
+        </svg>
+        <span class="view-angle-copy"><span class="view-angle-name">视角</span><b id="viewAngleValue">28°</b></span>
+      </button>
       <div id="rollZone">
         <button class="btn btn-ink" id="abilityBtn">修习</button>
         <button class="btn btn-ink" id="planBtn" style="display:none">布局谋篇</button>
@@ -129,6 +136,8 @@ export class Hud {
       turn: root.querySelector('#turnNum'),
       phase: root.querySelector('#phaseTag'),
       pname: root.querySelector('#pnameTag'),
+      viewAngle: root.querySelector('#viewAngleBtn'),
+      viewAngleValue: root.querySelector('#viewAngleValue'),
       roll: root.querySelector('#rollBtn'),
       plan: root.querySelector('#planBtn'),
       ability: root.querySelector('#abilityBtn'),
@@ -360,6 +369,20 @@ export class Hud {
   onRoll(fn) { this.el.roll.addEventListener('click', fn); }
   onPlan(fn) { this.el.plan.addEventListener('click', fn); }
   onAbility(fn) { this.el.ability.addEventListener('click', fn); }
+  onViewAngle(fn) { this.el.viewAngle.addEventListener('click', fn); }
+
+  setViewAngleState(state = {}) {
+    const button = this.el.viewAngle;
+    if (!button) return;
+    const visible = !!state.visible;
+    const angle = Number(state.angle) || 28;
+    const label = state.label || '标准';
+    button.hidden = !visible;
+    button.disabled = !state.enabled;
+    this.el.viewAngleValue.textContent = `${angle}°`;
+    button.setAttribute('aria-label', `地图视角：${label} ${angle} 度，点击切换`);
+    button.title = `地图视角：${label} ${angle}°（点击切换）`;
+  }
 }
 
 function escapeAttr(s) { return String(s).replace(/"/g, '&quot;').replace(/</g, '&lt;'); }

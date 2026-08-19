@@ -6,15 +6,20 @@ import { sting } from './music.js';
 import {
   applyBoardViewMode,
   applyEffectiveBoardViewMode,
+  boardViewAngleLabel,
+  nextBoardViewAngle,
+  normalizeBoardViewAngle,
   projectedBoardFootprint,
+  resolveBoardViewAngle,
   resolveBoardViewMode,
   resolveEffectiveBoardViewMode
-} from './boardView.js';
+} from './boardView.js?v=20260820viewangle';
 
 const UNIT = 46;        // 原版单环格距：42px 格面 + 4px 间距
 const GRID = 21;        // 兼容旧单环；三圈布局按各 ring.grid 计算
 const PAD = 3;          // 外扩单位（浮岛边框留白）
 const CELL = 42;        // 格子边长
+const VIEW_ANGLE_STORE_KEY = 'feihua_board_view_angle';
 
 export const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -34,10 +39,12 @@ export class BoardView {
   constructor(cfg, root) {
     this.cfg = cfg;
     this.root = root;
-    this.requestedViewMode = resolveBoardViewMode(
-      typeof location !== 'undefined' ? location.search : ''
-    );
-    applyBoardViewMode(root, this.requestedViewMode);
+    const search = typeof location !== 'undefined' ? location.search : '';
+    let storedAngle = '';
+    try { storedAngle = localStorage.getItem(VIEW_ANGLE_STORE_KEY) || ''; } catch (_) { /* ignore */ }
+    this.viewAngle = resolveBoardViewAngle(search, storedAngle);
+    this.requestedViewMode = resolveBoardViewMode(search);
+    applyBoardViewMode(root, this.requestedViewMode, undefined, this.viewAngle);
     this.viewMode = this._refreshEffectiveViewMode();
     this.coords = new Map();      // cellId → {x,y}
     this.cellEls = new Map();
@@ -49,6 +56,7 @@ export class BoardView {
     this._fitOffset = { x: 0, y: 0 }; // 透视近端放大造成的包围盒偏心校正（不占用玩家平移）
     this._pointers = new Map();
     this._responsiveBound = false;
+    this.onViewChange = null;
     this.build();
     this._initPan();
   }
@@ -259,12 +267,43 @@ export class BoardView {
     const quality = doc?.documentElement?.getAttribute('data-quality') || 'high';
     const width = this.root?.clientWidth || win?.innerWidth || 1280;
     const height = this.root?.clientHeight || win?.innerHeight || 720;
-    const compact = Math.min(width, height) < 600;
+    // 与 board.css 的 max-width:600px / 粗指针拍平规则保持同一边界，
+    // 避免恰好 600px 时 CSS 已拍平但角度按钮仍误判为可用。
+    const compact = Math.min(width, height) <= 600;
     const coarse = !!(win?.matchMedia && win.matchMedia('(pointer: coarse)').matches);
     const effective = resolveEffectiveBoardViewMode(this.requestedViewMode, {
       quality, compact, coarse
     });
-    return applyEffectiveBoardViewMode(this.root, effective, doc);
+    return applyEffectiveBoardViewMode(this.root, effective, doc, this.viewAngle);
+  }
+
+  /** 当前镜头按钮状态：仅在真正启用 2.5D 时展示，避免移动端/省电档出现无效控件。 */
+  getViewAngleState() {
+    const angle = normalizeBoardViewAngle(this.viewAngle);
+    return {
+      visible: this.requestedViewMode === '25d' && this.viewMode === '25d',
+      enabled: this.viewMode === '25d',
+      angle,
+      label: boardViewAngleLabel(angle)
+    };
+  }
+
+  _notifyViewChange() {
+    if (typeof this.onViewChange === 'function') this.onViewChange(this.getViewAngleState());
+  }
+
+  /** 应用离散俯角并重新拟合棋盘；保留玩家缩放/平移，刷新后仍记住选择。 */
+  setViewAngle(angle) {
+    this.viewAngle = normalizeBoardViewAngle(angle);
+    try { localStorage.setItem(VIEW_ANGLE_STORE_KEY, String(this.viewAngle)); } catch (_) { /* ignore */ }
+    this._fitOffset.x = 0;
+    this._fitOffset.y = 0;
+    this.rescale();
+    return this.getViewAngleState();
+  }
+
+  cycleViewAngle() {
+    return this.setViewAngle(nextBoardViewAngle(this.viewAngle));
   }
 
   /** 透视投影不是线性缩放；二分求能放进视口的最大基准缩放。 */
@@ -274,7 +313,7 @@ export class BoardView {
     let lo = 0, hi = 1.1;
     for (let i = 0; i < 18; i++) {
       const mid = (lo + hi) / 2;
-      const footprint = projectedBoardFootprint(span, mid, this.viewMode);
+      const footprint = projectedBoardFootprint(span, mid, this.viewMode, this.viewAngle);
       if (footprint.width <= safeWidth && footprint.height <= safeHeight) lo = mid;
       else hi = mid;
     }
@@ -367,7 +406,8 @@ export class BoardView {
     const footprint = projectedBoardFootprint(
       this._boardSpan(),
       this.bscale * this.view.zoom,
-      this.viewMode
+      this.viewMode,
+      this.viewAngle
     );
     const margin = 60;
     return {
@@ -390,6 +430,7 @@ export class BoardView {
     this.clampViewPan();
     this.applyView();
     this._settleProjectedFit();
+    this._notifyViewChange();
   }
 
   /** 视口变化 → 重新适配缩放：覆盖 window.resize / 旋转 / 移动端地址栏显隐

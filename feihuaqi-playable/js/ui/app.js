@@ -5,8 +5,8 @@
  */
 import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260819strategyv2';
 import { Game } from '../engine/game.js?v=20260819strategyv2';
-import { BoardView } from './board.js?v=20260819artpass3';
-import { Hud, radarSVG } from './hud.js?v=20260819strategyv2';
+import { BoardView } from './board.js?v=20260820viewangle';
+import { Hud, radarSVG } from './hud.js?v=20260820viewangle';
 import { Modals } from './modals.js?v=20260819strategyv2';
 import { BattleStage } from './battle.js?v=20260819strategyv2';
 import { AlbumUI } from './album.js?v=20260819strategyv2';
@@ -109,9 +109,17 @@ async function ensureGameUi() {
     if (cfg.inspiration && cfg.inspiration.lowWarning) hud.lowWarning = cfg.inspiration.lowWarning;
     hud.onTalent = t => modals.showTalentDetail(t);
     hud.onRoll(onRoll);
-hud.onPlan(onPlan);
+    hud.onPlan(onPlan);
     hud.onAbility(onAbility);
+    hud.onViewAngle(() => {
+      if (!board) return;
+      const state = board.cycleViewAngle();
+      hud.setViewAngleState(state);
+      hud.toast(`地图视角：${state.label} ${state.angle}°`);
+    });
   }
+  board.onViewChange = state => hud.setViewAngleState(state);
+  hud.setViewAngleState(board.getViewAngleState());
   if (!battle) battle = new BattleStage($('#battleStage'), cfg);
   ensureLeaderboard();
 }

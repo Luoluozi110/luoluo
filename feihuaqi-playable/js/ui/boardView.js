@@ -10,6 +10,14 @@ export const BOARD_VIEW_MODE = Object.freeze({
   PERSPECTIVE: '25d'
 });
 
+export const BOARD_VIEW_ANGLE_PRESETS = Object.freeze([
+  Object.freeze({ angle: 20, label: '舒展' }),
+  Object.freeze({ angle: 28, label: '标准' }),
+  Object.freeze({ angle: 36, label: '俯瞰' })
+]);
+
+export const DEFAULT_BOARD_VIEW_ANGLE = 28;
+
 const PROFILES = Object.freeze({
   flat: Object.freeze({
     mode: 'flat', perspective: 0, pitch: 0, yaw: 0, lift: 0,
@@ -17,10 +25,10 @@ const PROFILES = Object.freeze({
     billboardPitch: 0, billboardYaw: 0, screenYScale: 1
   }),
   '25d': Object.freeze({
-    mode: '25d', perspective: 1500, pitch: 28, yaw: -0.6, lift: -18,
+    mode: '25d', perspective: 1500, pitch: DEFAULT_BOARD_VIEW_ANGLE, yaw: -0.6, lift: -18,
     islandZ: -18, worldZ: -3, tileZ: 8, pieceZ: 18,
-    billboardPitch: -28, billboardYaw: 0.6,
-    screenYScale: Math.cos(28 * Math.PI / 180)
+    billboardPitch: -DEFAULT_BOARD_VIEW_ANGLE, billboardYaw: 0.6,
+    screenYScale: Math.cos(DEFAULT_BOARD_VIEW_ANGLE * Math.PI / 180)
   })
 });
 
@@ -37,8 +45,42 @@ export function resolveBoardViewMode(search = '') {
   return normalizeBoardViewMode(value);
 }
 
-export function boardViewProfile(mode) {
-  return PROFILES[normalizeBoardViewMode(mode)];
+export function normalizeBoardViewAngle(value) {
+  const requested = Number(value);
+  if (!Number.isFinite(requested)) return DEFAULT_BOARD_VIEW_ANGLE;
+  return BOARD_VIEW_ANGLE_PRESETS.reduce((best, preset) =>
+    Math.abs(preset.angle - requested) < Math.abs(best.angle - requested) ? preset : best
+  ).angle;
+}
+
+export function resolveBoardViewAngle(search = '', storedValue = '') {
+  let value = '';
+  try { value = new URLSearchParams(String(search || '')).get('boardAngle') || ''; } catch (_) { /* ignore */ }
+  return normalizeBoardViewAngle(value || storedValue);
+}
+
+export function boardViewAngleLabel(value) {
+  const angle = normalizeBoardViewAngle(value);
+  return BOARD_VIEW_ANGLE_PRESETS.find(preset => preset.angle === angle)?.label || '标准';
+}
+
+export function nextBoardViewAngle(value) {
+  const angle = normalizeBoardViewAngle(value);
+  const index = BOARD_VIEW_ANGLE_PRESETS.findIndex(preset => preset.angle === angle);
+  return BOARD_VIEW_ANGLE_PRESETS[(index + 1) % BOARD_VIEW_ANGLE_PRESETS.length].angle;
+}
+
+export function boardViewProfile(mode, angle = DEFAULT_BOARD_VIEW_ANGLE) {
+  const normalizedMode = normalizeBoardViewMode(mode);
+  const base = PROFILES[normalizedMode];
+  if (normalizedMode === BOARD_VIEW_MODE.FLAT) return base;
+  const pitch = normalizeBoardViewAngle(angle);
+  return {
+    ...base,
+    pitch,
+    billboardPitch: -pitch,
+    screenYScale: Math.cos(pitch * Math.PI / 180)
+  };
 }
 
 /**
@@ -74,9 +116,10 @@ function writeProfile(root, profile) {
 export function applyEffectiveBoardViewMode(
   root,
   mode,
-  doc = (typeof document !== 'undefined' ? document : null)
+  doc = (typeof document !== 'undefined' ? document : null),
+  angle = DEFAULT_BOARD_VIEW_ANGLE
 ) {
-  const profile = boardViewProfile(mode);
+  const profile = boardViewProfile(mode, angle);
   if (!root) return profile.mode;
   if (root.dataset) root.dataset.boardViewEffective = profile.mode;
   writeProfile(root, profile);
@@ -87,21 +130,26 @@ export function applyEffectiveBoardViewMode(
 }
 
 /** 记录请求镜头并先按同档应用；设备能力判断完成后可再调用 applyEffectiveBoardViewMode。 */
-export function applyBoardViewMode(root, mode, doc = (typeof document !== 'undefined' ? document : null)) {
-  const profile = boardViewProfile(mode);
+export function applyBoardViewMode(
+  root,
+  mode,
+  doc = (typeof document !== 'undefined' ? document : null),
+  angle = DEFAULT_BOARD_VIEW_ANGLE
+) {
+  const profile = boardViewProfile(mode, angle);
   if (!root) return profile.mode;
   if (root.dataset) root.dataset.boardView = profile.mode;
   if (doc && doc.documentElement) doc.documentElement.setAttribute('data-board-view', profile.mode);
-  return applyEffectiveBoardViewMode(root, profile.mode, doc);
+  return applyEffectiveBoardViewMode(root, profile.mode, doc, angle);
 }
 
 /**
  * 计算正方形棋盘经过 yaw / pitch / perspective 后的屏幕包围盒。
  * fit 与 panBounds 共用同一公式，缩放时不会再按未投影的正方形错误裁切近端。
  */
-export function projectedBoardFootprint(span, scale, mode) {
+export function projectedBoardFootprint(span, scale, mode, angle = DEFAULT_BOARD_VIEW_ANGLE) {
   const size = Math.max(0, Number(span) || 0) * Math.max(0, Number(scale) || 0);
-  const p = boardViewProfile(mode);
+  const p = boardViewProfile(mode, angle);
   if (!size || p.mode === BOARD_VIEW_MODE.FLAT || !p.perspective) {
     return { width: size, height: size };
   }
@@ -135,8 +183,8 @@ export function projectedBoardFootprint(span, scale, mode) {
  * 可直接使用屏幕 dx/dy。这里只为未来的空白棋盘坐标工具保留正交近似；透视命中应使用
  * 浏览器命中结果或四角单应变换，不能把它当作精确 picking。
  */
-export function projectScreenDelta(dx, dy, mode) {
-  const p = boardViewProfile(mode);
+export function projectScreenDelta(dx, dy, mode, angle = DEFAULT_BOARD_VIEW_ANGLE) {
+  const p = boardViewProfile(mode, angle);
   const sx = Number(dx) || 0;
   const sy = (Number(dy) || 0) / Math.max(.6, p.screenYScale);
   const yaw = p.yaw * Math.PI / 180;
