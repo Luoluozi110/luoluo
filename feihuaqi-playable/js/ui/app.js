@@ -5,7 +5,7 @@
  */
 import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260819strategyv2';
 import { Game } from '../engine/game.js?v=20260819strategyv2';
-import { BoardView } from './board.js?v=20260820mapart1';
+import { BoardView } from './board.js?v=20260820angledefault';
 import { Hud, radarSVG } from './hud.js?v=20260820uioverlap';
 import { Modals } from './modals.js?v=20260819strategyv2';
 import { BattleStage } from './battle.js?v=20260819strategyv2';

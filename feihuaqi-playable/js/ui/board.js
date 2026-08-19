@@ -13,7 +13,7 @@ import {
   resolveBoardViewAngle,
   resolveBoardViewMode,
   resolveEffectiveBoardViewMode
-} from './boardView.js?v=20260820viewangle';
+} from './boardView.js?v=20260820angledefault';
 
 const UNIT = 46;        // 原版单环格距：42px 格面 + 4px 间距
 const GRID = 21;        // 兼容旧单环；三圈布局按各 ring.grid 计算
