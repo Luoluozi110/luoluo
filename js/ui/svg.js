@@ -56,60 +56,95 @@ export function ensureDefs() {
    所有描边改用 class="ta-颜色 ta-粗细"（见 board.css 描边令牌），禁止手写 stroke 字面量；
    粗细吸附到 --sw-1/2/3 三档，颜色引用主调色板。fill 保留。 */
 export const CELL_GLYPH = {
-  // 平韵格：竹叶
+  // 平韵格：横笛 + 平缓声纹；与仄韵的折转笔势组成一对声调语法。
   ping: glyphCell(`
-    <path d="M12 21V9" class="ta-green ta-2"/>
-    <path d="M12 12c-4-1-6-4-6-7 3 0 6 2 6 6z" fill="#78ac5e"/>
-    <path d="M12 15c4-1.2 6-4 6-7.4-3.2.2-6 2.2-6 6.2z" fill="#96c47b"/>`),
-  // 仄韵格：砚台
+    <path d="M3.2 13.8c4.2-2.1 7.2-2.1 10.2 0s5.2 2.1 7.4.6" class="ta-green ta-1" opacity=".66"/>
+    <path d="M4.1 9.2 19.9 6.8l.7 4.4L4.8 13.6z" fill="#79a96c" class="ta-green ta-2"/>
+    <path d="m6.4 8.9.7 4.3M17.3 7.2l.7 4.3" class="ta-gold ta-1"/>
+    <circle cx="9.6" cy="10.1" r=".85" fill="#f4eccf"/><circle cx="13" cy="9.55" r=".85" fill="#f4eccf"/><circle cx="16.1" cy="9.1" r=".85" fill="#f4eccf"/>
+    <path d="M5 17.2c3.4-1.2 6.1-1.2 8.9 0 2.5 1.1 4.7 1.1 6.1.4" class="ta-blue ta-1" opacity=".72"/>`),
+  // 仄韵格：斜置墨笔 + 折转节拍纹。
   ze: glyphCell(`
-    <ellipse cx="12" cy="15" rx="8" ry="4.6" fill="#524a41"/>
-    <ellipse cx="12" cy="13.4" rx="6.2" ry="3.4" fill="#2b2622"/>
-    <ellipse cx="10.6" cy="12.8" rx="2.6" ry="1.3" fill="#585049" opacity=".7"/>
-    <path d="M17.5 6.5l-4.5 5.2" class="ta-brown ta-3"/>`),
-  // 考题格：卷轴
+    <path d="m3.4 17.6 4-4.2 3.3 2.3 3.8-5.1 3 2.2 3.1-5" class="ta-blue ta-2"/>
+    <path d="M5 20.2c2.7-.2 4.8-.8 6.1-2.1" class="ta-brown ta-1" opacity=".72"/>
+    <path d="M7.1 17.9 17.8 4.4l2.8 2.2L9.7 19.8z" fill="#8a6648" class="ta-brown ta-2"/>
+    <path d="m17.8 4.4 1.6-1.3 2.7 2.1-1.5 1.4z" fill="#d7b45b" class="ta-gold ta-1"/>
+    <path d="m7.1 17.9-2.4 3.2 5-1.3z" fill="#2d2b34"/>
+    <path d="M18.4 5.3 8.6 18.5" class="ta-gold ta-1" opacity=".55"/>`),
+  // 考题格：展开的科举试卷 + 朱砂小印。
   quiz: glyphCell(`
-    <rect x="5" y="5" width="14" height="14" rx="2" fill="#f2e7cd" class="ta-brown ta-2"/>
-    <path d="M8 9.5h8M8 12.5h8M8 15.5h5" class="ta-brown ta-2"/>
-    <rect x="3.4" y="3.4" width="17.2" height="2.6" rx="1.3" fill="#8d6a45"/>
-    <rect x="3.4" y="18" width="17.2" height="2.6" rx="1.3" fill="#8d6a45"/>`),
-  // 奇遇格：祥云 + 问
+    <path d="M3.6 6.2c3.2-.8 6-.4 8.4 1.1 2.4-1.5 5.2-1.9 8.4-1.1v12.1c-3.2-.7-6-.3-8.4 1.3-2.4-1.6-5.2-2-8.4-1.3z" fill="#f4e8c9" class="ta-brown ta-2"/>
+    <path d="M12 7.3v12.2M6.2 9.5c1.6-.2 2.9 0 4 .6M6.2 12.2c1.5-.2 2.8 0 3.9.5M13.8 9.9c1.5-.6 2.8-.8 4-.5" class="ta-brown ta-1" opacity=".78"/>
+    <path d="M15 13.1h3.1v3.1H15z" fill="#b94b42" class="ta-zhu ta-1"/>
+    <path d="m5 5.4.6-1.6M19 5.4l-.6-1.6" class="ta-gold ta-2"/>`),
+  // 奇遇格：桃色锦囊 + 祥云，去除现代问号。
   event: glyphCell(`
-    <path d="M5 15.5c-1.6 0-2.6-1.1-2.6-2.4 0-1.3 1-2.3 2.3-2.4.2-2 1.9-3.5 3.9-3.5 1.5 0 2.8.8 3.4 2 .4-.2.9-.3 1.4-.3 1.8 0 3.2 1.4 3.3 3.1 1.4.1 2.5 1.2 2.5 2.6 0 1.4-1.2 2.6-2.6 2.6z" fill="#cfd9ef" class="ta-blue ta-1"/>
-    <path d="M10.6 12.4c0-1 .7-1.6 1.6-1.6.9 0 1.6.6 1.6 1.4 0 1.2-1.5 1.2-1.5 2.3" class="ta-blue ta-2"/>
-    <circle cx="12.3" cy="16.6" r=".9" fill="#4a5a80"/>`),
-  // 论战格：擂鼓
+    <path d="M7.2 7.1c1.8-1.2 3.4-1.7 4.8-1.7s3 .5 4.8 1.7l-1.2 2.4H8.4z" fill="#d68aa1" class="ta-taohua ta-2"/>
+    <path d="M8.3 9.2h7.4c1.8 2.1 2.7 4.2 2.4 6.2-.4 3-2.8 4.9-6.1 4.9s-5.7-1.9-6.1-4.9c-.3-2 .6-4.1 2.4-6.2z" fill="#efb3c3" class="ta-taohua ta-2"/>
+    <path d="M7.5 9.4c2.9 1 6.1 1 9 0M10.8 5.7 9.7 3.9M13.2 5.7l1.1-1.8" class="ta-gold ta-1"/>
+    <path d="M12 11.7c.6-1 2.2-.4 1.7.8 1.3-.3 1.7 1.4.5 1.8.9.8-.2 2.1-1.2 1.3-.1 1.3-1.9 1.3-2 0-1 .8-2.1-.5-1.2-1.3-1.2-.4-.8-2.1.5-1.8-.5-1.2 1.1-1.8 1.7-.8z" fill="#fff1cf" class="ta-gold ta-1"/>
+    <path d="M3.1 13.8c1.2-1.4 2.3-1.8 3.5-1.2M17.4 12.6c1.2-.6 2.3-.2 3.5 1.2" class="ta-blue ta-1" opacity=".72"/>`),
+  // 论战格：朱漆战鼓 + 交叉鼓槌。
   battle: glyphCell(`
-    <rect x="5" y="8" width="14" height="9" rx="3.4" fill="#b23a2e" class="ta-zhu ta-2"/>
-    <ellipse cx="12" cy="8" rx="7" ry="2.4" fill="#e6c98f" class="ta-zhu ta-1"/>
-    <path d="M5 12.5h14" class="ta-gold ta-2"/>
-    <path d="M17.5 5.5l3-2.4M6.5 5.5l-3-2.4" class="ta-brown ta-2"/>`),
-  // 天象格：星盘
+    <path d="M6.2 8.4 3.7 4.1M17.8 8.4l2.5-4.3M4.3 4.1l2.1-1.2M19.7 4.1l-2.1-1.2" class="ta-brown ta-2"/>
+    <path d="M5.2 8.1h13.6v9.3H5.2z" fill="#ad3d35" class="ta-zhu ta-2"/>
+    <ellipse cx="12" cy="8.2" rx="6.8" ry="2.35" fill="#ead39b" class="ta-brown ta-2"/>
+    <ellipse cx="12" cy="8.2" rx="4.8" ry="1.35" fill="#f4e7c5" class="ta-gold ta-1"/>
+    <path d="M5.5 12.7h13M7.3 17.5l-1.1 2.4M16.7 17.5l1.1 2.4" class="ta-gold ta-1"/>
+    <circle cx="6.2" cy="10.5" r=".7" fill="#f4d77a"/><circle cx="17.8" cy="10.5" r=".7" fill="#f4d77a"/><circle cx="6.2" cy="15" r=".7" fill="#f4d77a"/><circle cx="17.8" cy="15" r=".7" fill="#f4d77a"/>`),
+  // 天象格：靛青浑仪 + 月牙星芒。
   sky: glyphCell(`
-    <circle cx="12" cy="12" r="8" fill="#26345c" class="ta-blue ta-2"/>
-    <circle cx="12" cy="12" r="4.4" class="ta-blue ta-1"/>
-    <path d="M12 3.4l1.4 3 3.2.4-2.4 2.2.7 3.2L12 10.6 9.1 12.2l.7-3.2L7.4 6.8l3.2-.4z" fill="#ffe08a"/>`),
+    <circle cx="12" cy="11.8" r="8.5" fill="#34456f" class="ta-blue ta-2"/>
+    <ellipse cx="12" cy="11.8" rx="8.1" ry="3.9" transform="rotate(-24 12 11.8)" class="ta-gold ta-1"/>
+    <ellipse cx="12" cy="11.8" rx="3.8" ry="8" transform="rotate(28 12 11.8)" class="ta-blue ta-1"/>
+    <path d="M10.8 7.3a4 4 0 1 0 4.4 5.8A4.7 4.7 0 0 1 10.8 7.3z" fill="#f6df8b"/>
+    <path d="m17.5 5 .65 1.45 1.55.2-1.15 1.05.3 1.5-1.35-.75-1.35.75.3-1.5-1.15-1.05 1.55-.2z" fill="#fff1a8"/>
+    <path d="M8.8 20.1h6.4M10.2 20.1v1.2M13.8 20.1v1.2" class="ta-brown ta-2"/>`),
   // 岔路格：分叉箭头
   branch_gate: glyphCell(`
-    <path d="M12 20V13" class="ta-brown ta-3"/>
-    <path d="M12 13L6 6.5M12 13l6-6.5" class="ta-brown ta-3"/>
-    <path d="M6 6.5l.4 3.4M6 6.5l3.4-.4M18 6.5l-.4 3.4M18 6.5l-3.4-.4" class="ta-brown ta-2"/>`),
-  // 名胜格：楼阁（访胜抽签）
+    <path d="M12 21V12.6" class="ta-brown ta-3"/>
+    <path d="M12 13 6.4 7.1M12 13l5.6-5.9" class="ta-brown ta-3"/>
+    <path d="M4.4 5.4h6.1L8.7 7.2l1.8 1.8H4.4zM19.6 5.4h-6.1l1.8 1.8L13.5 9h6.1z" fill="#d5a451" class="ta-brown ta-1"/>
+    <path d="M9 20.8h6" class="ta-green ta-2"/>`),
+  // 访胜格：月洞门框景，不再使用会遮格的独立建筑轮廓。
   mingjing: glyphCell(`
-    <path d="M3.5 12l8.5-5 8.5 5z" fill="#b23a2e" class="ta-zhu ta-2"/>
-    <path d="M5.5 12l6.5-3.8 6.5 3.8z" fill="#e6c98f" class="ta-brown ta-1"/>
-    <rect x="7.5" y="12" width="9" height="6" rx="1" fill="#f0dcb4" class="ta-brown ta-2"/>
-    <rect x="9.4" y="13.6" width="1.8" height="4.4" fill="#8d5a2a"/>
-    <rect x="13" y="13.6" width="1.8" height="4.4" fill="#8d5a2a"/>
-    <rect x="4.6" y="18" width="14.8" height="2" rx="1" fill="#b23a2e" class="ta-zhu ta-1"/>`),
-  // 起点：书铺
+    <path d="M4 20V10.5C4 6.2 7.6 3 12 3s8 3.2 8 7.5V20z" fill="#ead8b2" class="ta-brown ta-2"/>
+    <path d="M7 20v-8.7C7 8 9.2 6 12 6s5 2 5 5.3V20z" fill="#b9d9d4" class="ta-blue ta-1"/>
+    <path d="m7.4 16.5 3.5-4.2 2.1 2.3 2.1-3 1.9 2.1V20H7z" fill="#648b73" class="ta-green ta-1"/>
+    <path d="M15.2 9.1c1.8-.2 3-1.1 3.8-2.4-.1 1.9-.9 3.1-2.5 3.7" class="ta-taohua ta-1"/>
+    <circle cx="18.7" cy="6.2" r="1.1" fill="#ed9db5"/><circle cx="16.7" cy="8.3" r=".8" fill="#f7c0d0"/>
+    <path d="M3 20h18" class="ta-brown ta-2"/>`),
+  // 起点：线装书函叠册 + 朱砂书签。
   start: glyphCell(`
-    <path d="M3.5 11L12 4.5 20.5 11" class="ta-brown ta-3" fill="#e5b657"/>
-    <rect x="6" y="11" width="12" height="8.5" rx="1.2" fill="#f6e2b2" class="ta-brown ta-2"/>
-    <rect x="10.2" y="14" width="3.6" height="5.5" rx=".6" fill="#b23a2e"/>`),
+    <path d="M4.1 5.2h13.7l2.1 2.2-2.1 2.2H4.1z" fill="#e8ce91" class="ta-brown ta-2"/>
+    <path d="M5.2 9.6h14.2v4.8H5.2z" fill="#f4e4bd" class="ta-brown ta-2"/>
+    <path d="M3.5 14.4h14.2l2.3 2.2-2.3 2.3H3.5z" fill="#d7b66c" class="ta-brown ta-2"/>
+    <path d="M7 6.4v2M8.8 6.4v2M8 10.8v2.4M9.8 10.8v2.4M6.4 15.7v2" class="ta-zhu ta-1"/>
+    <path d="M15.1 5.2v8.4l1.8-1.25 1.8 1.25V6.2" fill="#b9443c" class="ta-zhu ta-1"/>
+    <path d="M5.2 20.7h13.6" class="ta-gold ta-2"/>`),
+  // 阶段门：科举牌楼 + 朱色门槛，区别于起点书册。
+  gate: glyphCell(`
+    <path d="M3 7.1h18L17.9 4H6.1z" fill="#b84a3d" class="ta-zhu ta-2"/>
+    <path d="M5.1 10.1h13.8L17 7.1H7z" fill="#e7c66f" class="ta-brown ta-1"/>
+    <path d="M6.2 10.1v9.4M17.8 10.1v9.4" class="ta-brown ta-3"/>
+    <path d="M9.1 10.2v7.2h5.8v-7.2" fill="#8d4f3c" class="ta-brown ta-2"/>
+    <path d="M4.4 19.5h15.2M8.2 21.2h7.6" class="ta-zhu ta-2"/>
+    <circle cx="12" cy="8.7" r="1.25" fill="#b9443c" class="ta-zhu ta-1"/>`),
   landmark: glyphCell(`
-    <path d="M12 3.6l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L4.8 8.9l5-.7z" fill="#e56a94" class="ta-taohua ta-1"/>`)
+    <circle cx="12" cy="12" r="8.6" fill="#f1d8c5" class="ta-brown ta-2"/>
+    <path d="M12 5.1c.7 2.2 2.1 3.3 4.2 3.4-1.8 1.3-2.4 2.9-1.7 4.9-1.7-1.2-3.4-1.2-5.1 0 .7-2-.1-3.6-1.8-4.9 2.2-.1 3.6-1.2 4.4-3.4z" fill="#e889a8" class="ta-taohua ta-1"/>
+    <circle cx="12" cy="10.3" r="1.45" fill="#f5d66f"/>
+    <path d="M12 15v5M8.5 20h7" class="ta-green ta-2"/>`)
 };
+
+/** 优先使用格子类型的视觉语义；仅当类型没有专属资产时才接受配置中的兼容图标。 */
+export function cellGlyphKey(cell = {}) {
+  const type = String(cell.type || '');
+  const configured = String(cell.icon || '');
+  if (CELL_GLYPH[type]) return type;
+  if (CELL_GLYPH[configured]) return configured;
+  return type || configured;
+}
 
 /* ------------------------------------------------- 名胜建筑（立牌） */
 export const LANDMARK_ART = {

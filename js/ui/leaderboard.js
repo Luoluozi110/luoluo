@@ -2,7 +2,7 @@
  * leaderboard.js —— 云端排行榜（后端可切换：GitHub Contents API / Supabase / Cloudflare Worker 代理）
  *
  * 配置（config/leaderboard.json 或 window.LEADERBOARD_CFG）：
- *   { "backend": "github", "repo": "owner/repo", "path": "leaderboard.json", "branch": "main", "githubToken": "ghp_xxx" }
+ *   { "backend": "github", "repo": "owner/repo", "path": "leaderboard.json", "branch": "main", "githubToken": "<token>" }
  *   { "backend": "supabase", "supabaseUrl": "...", "supabaseAnonKey": "...", "table": "leaderboard" }
  *   —— Supabase 走原生 fetch 直连其 PostgREST 接口（不加载第三方库），避免 esm.sh 等 CDN 在部分地区不可达导致榜单静默失效。
  *   { "backend": "cf", "workerUrl": "https://<your-worker>.workers.dev" }   // 推荐：token 留在 Worker 端，前端零密钥

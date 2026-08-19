@@ -84,40 +84,40 @@ console.log('== 学力：扩充心得容量与研修位 ==');
   assert.ok(learned.insightCap() > ordinary.insightCap(), '学力主修拥有更高心得容量');
   assert.ok(learned.studySlots() > ordinary.studySlots(), '博闻额外研修位已落地');
   learned.s.abilityState.insight = learned.insightCap();
-  assert.equal(learned.toggleStudyFocus('bi'), true, '第二研修位可分配给基本功');
+  assert.equal(learned.toggleStudyFocus('bi'), true, '第二研修位可为下阶段分配给基本功');
   assert.ok(learned.s.abilityState.study.nextFocus.includes('bi'));
-  // 方案B未实现: redirectStudy(易策转移进度) 尚未在 game.js 落地，相关验收暂缓
-  if (false) {
-  learned.s.abilityState.study.progress.shi = 2;
-  learned.s.abilityState.strategy.points = 1;
-  const redirect = learned.redirectStudy('shi', 'ci');
-  assert.deepEqual(redirect, { ok: true, cost: 1, moved: 2 }, '易策消耗筹策并转移未兑现进度');
-  assert.equal(learned.s.abilityState.study.progress.ci, 2);
-  }
+  assert.equal(learned.s.abilityState.study.focus.includes('bi'), false, '当前阶段不会被即时改写');
+  learned.refillStrategy('outer');
+  assert.ok(learned.s.abilityState.study.focus.includes('bi'), '进入下阶段后应用排定的研修方向');
 }
 
-console.log('== 思力：阶段筹策可改步与预写章法 ==');
+console.log('== 思力：阶段预案自动触发，不产生回合弹窗 ==');
 {
   const game = newGame('qishi');
   game.s.attrs.si = 20;
   assert.equal(game.strategyIncome(), 3, '20 思力每阶段取得 3 筹策');
   assert.equal(game.strategyCap(), 4, '奇士 20 思力达到 4 点筹策上限');
+  assert.equal(game.setNextStrategyPlan('switch'), true);
   assert.equal(game.refillStrategy('outer'), 3);
-  // 方案B未实现: 章法(chapterCost/useChapter)与地图调步(spendStrategy)尚未在 game.js 落地，相关验收暂缓
-  if (false) {
-  const free = game.createSession({ npc: npc('首章'), label: '首章' });
-  assert.equal(free.chapterCost(), 0, '奇士每阶段首章免费');
-  assert.equal(free.useChapter('guard'), true);
-  assert.equal(game.s.abilityState.strategy.points, 3);
-  const paid = game.createSession({ npc: npc('次章'), label: '次章' });
-  assert.equal(paid.chapterCost(), 1);
-  assert.equal(paid.useChapter('advance'), true);
-  assert.equal(game.s.abilityState.strategy.points, 2, '后续章法消耗筹策');
-  assert.equal(game.spendStrategy(1, '测试调步'), true);
-  assert.equal(game.s.abilityState.strategy.points, 1, '地图调步与战前章法共享资源');
-  game.s.abilityState.strategy.points = 2;
-  assert.equal(game.spendStrategy(2, '测试两格调步'), true, '奇士两格调步按两点筹策结算');
-  }
+  assert.equal(game.s.abilityState.strategy.plan, 'switch', '下阶段预案已经锁定');
+  const firstSwitch = { lastStyle: 'shi', strategyPlanTriggered: null };
+  assert.equal(game.strategyBattlePct(firstSwitch, 'ci'), 0.06, '换体自动获得转锋加成');
+  assert.equal(game.s.abilityState.strategy.charges, 3, '奇士本阶段第一次发动免费');
+  const secondSwitch = { lastStyle: 'ci', strategyPlanTriggered: null };
+  assert.equal(game.strategyBattlePct(secondSwitch, 'lian'), 0.06);
+  assert.equal(game.s.abilityState.strategy.charges, 2, '后续发动才消耗筹策');
+  assert.equal(game.strategyBattlePct({ lastStyle: 'lian', strategyPlanTriggered: null }, 'lian'), 0, '不换体不触发');
+
+  game.setNextStrategyPlan('steady');
+  game.refillStrategy('middle');
+  assert.equal(game.applyStrategyMovement(2), 3, '缓急策自动修正低骰');
+  assert.equal(game.s.abilityState.strategy.charges, 3, '新阶段首次发动再次免费');
+  assert.equal(game.applyStrategyMovement(2, true), 2, '预先指定的移动骰不被二次修正');
+
+  game.setNextStrategyPlan('guard');
+  game.refillStrategy('inner');
+  assert.equal(game.strategyLossAmount(-3, 'shi'), -1, '守成策自动减少 2 点败北损失');
+  assert.equal(game.s.abilityState.strategy.charges, 3, '守成策首次发动同样免费');
 }
 
 console.log('== 笔力：稿页可润色、刊行，并形成跨局末评分资产 ==');

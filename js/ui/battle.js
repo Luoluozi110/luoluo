@@ -387,7 +387,8 @@ export class BattleStage {
   async showVerdict(out, session) {
     const txt = { win: '勝', lose: '負', draw: '平' }[out.result];
     // 败北灵感惩罚与结算逻辑一致（含会试/殿试 Late 档与「科场风起」翻倍），由引擎预填到 session.projLoseInsp
-    const loseInsp = session.projLoseInsp != null ? session.projLoseInsp
+    const loseInsp = typeof session.projLoseInspFor === 'function' ? session.projLoseInspFor(out.style)
+      : session.projLoseInsp != null ? session.projLoseInsp
       : ((this.cfg.inspiration || {}).battleLoseExtra ?? -3);
     const drawPct = Math.round(BATTLE_COEF.drawRatio * 100);
     const sub = {

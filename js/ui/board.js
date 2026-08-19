@@ -1,13 +1,25 @@
-/** board.js —— 平面俯视棋盘渲染、棋子移动、掷骰、飘字 */
-import { glyph, FAR_HILLS, CENTER_GARDEN_ART, ensureDefs } from './svg.js';
+/** board.js —— 镜头可切换棋盘渲染、棋子移动、掷骰、飘字 */
+import { glyph, cellGlyphKey, FAR_HILLS, ensureDefs } from './svg.js?v=20260820mapart1';
 import { getBudget } from './quality.js';
 import { play } from './audio.js';
 import { sting } from './music.js';
+import {
+  applyBoardViewMode,
+  applyEffectiveBoardViewMode,
+  boardViewAngleLabel,
+  nextBoardViewAngle,
+  normalizeBoardViewAngle,
+  projectedBoardFootprint,
+  resolveBoardViewAngle,
+  resolveBoardViewMode,
+  resolveEffectiveBoardViewMode
+} from './boardView.js?v=20260820viewangle';
 
 const UNIT = 46;        // 原版单环格距：42px 格面 + 4px 间距
 const GRID = 21;        // 兼容旧单环；三圈布局按各 ring.grid 计算
 const PAD = 3;          // 外扩单位（浮岛边框留白）
 const CELL = 42;        // 格子边长
+const VIEW_ANGLE_STORE_KEY = 'feihua_board_view_angle';
 
 export const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -27,6 +39,13 @@ export class BoardView {
   constructor(cfg, root) {
     this.cfg = cfg;
     this.root = root;
+    const search = typeof location !== 'undefined' ? location.search : '';
+    let storedAngle = '';
+    try { storedAngle = localStorage.getItem(VIEW_ANGLE_STORE_KEY) || ''; } catch (_) { /* ignore */ }
+    this.viewAngle = resolveBoardViewAngle(search, storedAngle);
+    this.requestedViewMode = resolveBoardViewMode(search);
+    applyBoardViewMode(root, this.requestedViewMode, undefined, this.viewAngle);
+    this.viewMode = this._refreshEffectiveViewMode();
     this.coords = new Map();      // cellId → {x,y}
     this.cellEls = new Map();
     this.cellRings = new Map();   // cellId → outer/middle/inner；用于分阶段显现
@@ -34,8 +53,10 @@ export class BoardView {
     this._pieceCellId = 0;
     this.bscale = 0.62;           // 当前基准缩放（fit 计算；移动端放大以求清晰）
     this.view = { panX: 0, panY: 0, zoom: 1 }; // 平移/手势缩放
+    this._fitOffset = { x: 0, y: 0 }; // 透视近端放大造成的包围盒偏心校正（不占用玩家平移）
     this._pointers = new Map();
     this._responsiveBound = false;
+    this.onViewChange = null;
     this.build();
     this._initPan();
   }
@@ -53,13 +74,17 @@ export class BoardView {
 
     this.root.innerHTML = `
       <div class="far-hills">${FAR_HILLS}</div>
-      <div id="boardWrap"><div id="board"></div></div>
+      <div class="board-stage-shadow" aria-hidden="true"></div>
+      <div id="boardCamera"><div id="boardZoom"><div id="boardProjection"><div id="boardWrap"><div id="board"></div></div></div></div></div>
       <div id="diceLayer"></div>
       <div class="float-layer" id="floatLayer"></div>`;
 
     const board = this.root.querySelector('#board');
     board.style.width = span + 'px';
     board.style.height = span + 'px';
+    const wrap = this.root.querySelector('#boardWrap');
+    wrap.style.width = span + 'px';
+    wrap.style.height = span + 'px';
 
     // 浮岛底座：三圈以最大 19×19 网格为视觉基准；旧版这里误用 21×21，
     // 会把中心底图向右下偏移约一个格位，视觉上吞掉内圈的辨识度。
@@ -70,6 +95,10 @@ export class BoardView {
       left: (PAD - 0.7) * UNIT + 'px', top: (PAD - 0.7) * UNIT + 'px',
       width: (baseGrid + 1.4) * UNIT + 'px', height: (baseGrid + 1.4) * UNIT + 'px'
     });
+    isl.innerHTML = `<i class="season-canopy canopy-spring" aria-hidden="true"></i>
+      <i class="season-canopy canopy-summer" aria-hidden="true"></i>
+      <i class="season-canopy canopy-autumn" aria-hidden="true"></i>
+      <i class="season-canopy canopy-winter" aria-hidden="true"></i>`;
     board.appendChild(isl);
 
     const inner = document.createElement('div');
@@ -88,17 +117,18 @@ export class BoardView {
       left: (PAD + 1.4) * UNIT + 'px', top: (PAD + 1.4) * UNIT + 'px',
       width: (baseGrid - 2.8) * UNIT + 'px', height: (baseGrid - 2.8) * UNIT + 'px'
     });
-    world.innerHTML = `<div class="world-halo"></div><div class="world-art">${CENTER_GARDEN_ART}</div>`;
+    world.innerHTML = `<div class="world-halo"></div>
+      <div class="world-art world-ground" data-art-version="peach-academy-island-v1">
+        <picture>
+          <source type="image/webp"
+            srcset="assets/art/peach-academy-island-v1-640.webp 640w, assets/art/peach-academy-island-v1.webp 960w"
+            sizes="(max-width: 720px) 74vw, 560px">
+          <img src="assets/art/peach-academy-island-v1.png" width="960" height="960"
+            alt="" aria-hidden="true" decoding="async" fetchpriority="high" draggable="false">
+        </picture>
+      </div>
+      <div class="world-billboards" aria-hidden="true"></div>`;
     board.appendChild(world);
-
-    const ttl = document.createElement('div');
-    ttl.className = 'island-title';
-    Object.assign(ttl.style, {
-      left: (PAD + 1.4) * UNIT + 'px', top: (PAD + 1.4) * UNIT + 'px',
-      width: (baseGrid - 2.8) * UNIT + 'px', height: (baseGrid - 2.8) * UNIT + 'px'
-    });
-    ttl.innerHTML = `<div class="big">桃花島</div><div class="sm">詩詞楹聯飛花棋</div>`;
-    board.appendChild(ttl);
 
     // 主环或三圈同心方环格子
     if (isSpiral) {
@@ -123,7 +153,7 @@ export class BoardView {
     board.appendChild(shadow);
     const piece = document.createElement('div');
     piece.id = 'piece';
-    piece.innerHTML = `<div class="piece-body">${PIECE_SVG}</div>`;
+    piece.innerHTML = `<div class="piece-body"><div class="piece-sprite">${PIECE_SVG}</div></div>`;
     board.appendChild(piece);
     this.piece = piece; this.shadow = shadow; this.board = board;
     // 三圈不是同时展开：开局只显示外圈，阶段门弹窗确认后由 setVisibleRing 切换。
@@ -181,11 +211,19 @@ export class BoardView {
     const p = this.px(col, row);
     const el = document.createElement('div');
     el.className = `cell t-${cell.type} ${season ? 'season-' + season : ''} ${isBranch ? 'branch-cell' : ''} ${ringId ? 'ring-' + ringId : ''}`;
+    el.dataset.cellId = String(cell.id);
+    el.dataset.cellType = String(cell.type || '');
+    if (ringId) el.dataset.ring = ringId;
+    if (season) el.dataset.season = season;
+    el.style.setProperty('--cell-row', String(row));
+    el.style.setProperty('--cell-col', String(col));
     el.style.left = p.x + 'px';
     el.style.top = p.y + 'px';
     const big = cell.type === 'start' || cell.type === 'landmark';
     if (big) { el.style.left = (p.x - 4) + 'px'; el.style.top = (p.y - 4) + 'px'; }   // 50px 大格相对 42px 格位居中
-    el.innerHTML = `<div class="glyph">${glyph(cell.icon || cell.type)}</div><div class="cname">${cell.name}</div>`;
+    const glyphKey = cellGlyphKey(cell);
+    el.dataset.cellIcon = glyphKey;
+    el.innerHTML = `<div class="glyph">${glyph(glyphKey) || glyph(cell.type)}</div><div class="cname">${cell.name}</div>`;
     el.title = `${cell.id}｜${cell.name}`;
     board.appendChild(el);
     this.coords.set(cell.id, p);
@@ -219,36 +257,183 @@ export class BoardView {
     this.setPiecePos(this.cellIdOf(state));
   }
 
-  fit() {
+  _boardSpan() {
     const maxGrid = this.cfg.board.layout === 'concentric_spiral'
-      ? Math.max(...(this.cfg.board.rings || []).map(r => Number(r.grid) || 0), GRID) : GRID;
-    const span = (maxGrid + PAD * 2) * UNIT;
-    const w = this.root.clientWidth, h = this.root.clientHeight;
-    // 平面模式：整盘铺满可视区（留 ~5% 边距），不再做俯视纵向压缩
-    const s = Math.min(w / (span * 1.05), h / (span * 1.05));
-    this.bscale = Math.max(0.4, Math.min(1.1, s));   // 下限 0.4：手机端默认适度放大（不过大），字体可辨，可拖动/双指缩放看全盘
-    this.view.zoom = 1; this.view.panX = 0; this.view.panY = 0;
-    this.applyView();
+      ? Math.max(...(this.cfg.board.rings || []).map(r => Number(r.grid) || 0), GRID)
+      : GRID;
+    return (maxGrid + PAD * 2) * UNIT;
   }
 
-  /** 应用 平移 + 缩放 到棋盘容器（平面俯视，无 3D 倾斜） */
+  _refreshEffectiveViewMode() {
+    const doc = typeof document !== 'undefined' ? document : null;
+    const win = typeof window !== 'undefined' ? window : null;
+    const quality = doc?.documentElement?.getAttribute('data-quality') || 'high';
+    const width = this.root?.clientWidth || win?.innerWidth || 1280;
+    const height = this.root?.clientHeight || win?.innerHeight || 720;
+    // 与 board.css 的 max-width:600px / 粗指针拍平规则保持同一边界，
+    // 避免恰好 600px 时 CSS 已拍平但角度按钮仍误判为可用。
+    const compact = Math.min(width, height) <= 600;
+    const coarse = !!(win?.matchMedia && win.matchMedia('(pointer: coarse)').matches);
+    const effective = resolveEffectiveBoardViewMode(this.requestedViewMode, {
+      quality, compact, coarse
+    });
+    return applyEffectiveBoardViewMode(this.root, effective, doc, this.viewAngle);
+  }
+
+  /** 当前镜头按钮状态：仅在真正启用 2.5D 时展示，避免移动端/省电档出现无效控件。 */
+  getViewAngleState() {
+    const angle = normalizeBoardViewAngle(this.viewAngle);
+    return {
+      visible: this.requestedViewMode === '25d' && this.viewMode === '25d',
+      enabled: this.viewMode === '25d',
+      angle,
+      label: boardViewAngleLabel(angle)
+    };
+  }
+
+  _notifyViewChange() {
+    if (typeof this.onViewChange === 'function') this.onViewChange(this.getViewAngleState());
+  }
+
+  /** 应用离散俯角并重新拟合棋盘；保留玩家缩放/平移，刷新后仍记住选择。 */
+  setViewAngle(angle) {
+    this.viewAngle = normalizeBoardViewAngle(angle);
+    try { localStorage.setItem(VIEW_ANGLE_STORE_KEY, String(this.viewAngle)); } catch (_) { /* ignore */ }
+    this._fitOffset.x = 0;
+    this._fitOffset.y = 0;
+    this.rescale();
+    return this.getViewAngleState();
+  }
+
+  cycleViewAngle() {
+    return this.setViewAngle(nextBoardViewAngle(this.viewAngle));
+  }
+
+  /** 透视投影不是线性缩放；二分求能放进视口的最大基准缩放。 */
+  _fitScale(span, width, height) {
+    const safeWidth = Math.max(1, width) / 1.05;
+    const safeHeight = Math.max(1, height) / 1.05;
+    let lo = 0, hi = 1.1;
+    for (let i = 0; i < 18; i++) {
+      const mid = (lo + hi) / 2;
+      const footprint = projectedBoardFootprint(span, mid, this.viewMode, this.viewAngle);
+      if (footprint.width <= safeWidth && footprint.height <= safeHeight) lo = mid;
+      else hi = mid;
+    }
+    // 手机端保留原有 0.4 下限：宁可允许拖动查看边缘，也不把文字缩到不可辨。
+    return Math.max(0.4, Math.min(1.1, lo));
+  }
+
+  fit() {
+    this.viewMode = this._refreshEffectiveViewMode();
+    const span = this._boardSpan();
+    this.bscale = this._fitScale(span, this.root.clientWidth, this.root.clientHeight);
+    this.view.zoom = 1; this.view.panX = 0; this.view.panY = 0;
+    this._fitOffset.x = 0; this._fitOffset.y = 0;
+    this.applyView();
+    this._settleProjectedFit();
+  }
+
+  /**
+   * 玩家平移在投影外层、统一缩放在投影前一层；两种 transform 不再与相机倾角互相覆盖。
+   * CSS 变量也让运行时画质切换可以安全拍平 #boardProjection。
+   */
   applyView() {
-    const wrap = this.root.querySelector('#boardWrap');
-    if (!wrap) return;
+    if (!this.root?.style) return;
     const sc = (this.bscale * this.view.zoom).toFixed(4);
-    wrap.style.transform =
-      `translate(-50%,-50%) translate(${this.view.panX}px, ${this.view.panY}px) scale(${sc})`;
+    const screenX = this.view.panX + (this._fitOffset?.x || 0);
+    const screenY = this.view.panY + (this._fitOffset?.y || 0);
+    this.root.style.setProperty('--board-pan-x', `${screenX.toFixed(2)}px`);
+    this.root.style.setProperty('--board-pan-y', `${screenY.toFixed(2)}px`);
+    this.root.style.setProperty('--board-scale', sc);
+  }
+
+  /** 使用真实投影包围盒做一次小幅收口，吸收 perspective-origin 与浏览器矩阵舍入。 */
+  _settleProjectedFit(pass = 0) {
+    if (this.viewMode !== '25d' ||
+        !this.board?.getBoundingClientRect || typeof requestAnimationFrame === 'undefined') return;
+    if (this._fitRaf) cancelAnimationFrame(this._fitRaf);
+    this._fitRaf = requestAnimationFrame(() => {
+      this._fitRaf = 0;
+      const rect = this.board.getBoundingClientRect();
+      const rootRect = this.root.getBoundingClientRect();
+      if (!rect.width || !rect.height || !rootRect.width || !rootRect.height) return;
+      const safeWidth = rootRect.width / 1.05;
+      const safeHeight = rootRect.height / 1.05;
+      const ratio = Math.min(
+        safeWidth / rect.width,
+        safeHeight / rect.height
+      );
+
+      // perspective 会令近端放大，包围盒中心因此偏向屏幕下方。先扣除玩家平移与旧校正，
+      // 再求“零平移棋盘”需要的独立 framing offset，避免占用用户可拖动范围。
+      const safeLeft = rootRect.left + (rootRect.width - safeWidth) / 2;
+      const safeRight = safeLeft + safeWidth;
+      const safeTop = rootRect.top + (rootRect.height - safeHeight) / 2;
+      const safeBottom = safeTop + safeHeight;
+      const oldX = this._fitOffset?.x || 0;
+      const oldY = this._fitOffset?.y || 0;
+      const base = {
+        left: rect.left - this.view.panX - oldX,
+        right: rect.right - this.view.panX - oldX,
+        top: rect.top - this.view.panY - oldY,
+        bottom: rect.bottom - this.view.panY - oldY
+      };
+      const axisOffset = (start, end, safeStart, safeEnd) => {
+        if (end - start > safeEnd - safeStart) {
+          return (safeStart + safeEnd - start - end) / 2;
+        }
+        if (start < safeStart) return safeStart - start;
+        if (end > safeEnd) return safeEnd - end;
+        return 0;
+      };
+      this._fitOffset.x = axisOffset(base.left, base.right, safeLeft, safeRight);
+      this._fitOffset.y = axisOffset(base.top, base.bottom, safeTop, safeBottom);
+
+      if (this.view.zoom === 1 && Number.isFinite(ratio) && Math.abs(1 - ratio) > .012 && pass < 2) {
+        const next = Math.max(0.4, Math.min(1.1, this.bscale * ratio));
+        if (Math.abs(next - this.bscale) > .001) {
+          this.bscale = next;
+          this.applyView();
+          this._settleProjectedFit(pass + 1);
+          return;
+        }
+      }
+      this.clampViewPan();
+      this.applyView();
+    });
+  }
+
+  /** 投影后的平移边界；放大后可拖到近端四角，整盘可见时锁在中心。 */
+  panBounds() {
+    const footprint = projectedBoardFootprint(
+      this._boardSpan(),
+      this.bscale * this.view.zoom,
+      this.viewMode,
+      this.viewAngle
+    );
+    const margin = 60;
+    return {
+      maxX: Math.max(0, (footprint.width - this.root.clientWidth) / 2 + margin),
+      maxY: Math.max(0, (footprint.height - this.root.clientHeight) / 2 + margin)
+    };
+  }
+
+  clampViewPan() {
+    const { maxX, maxY } = this.panBounds();
+    this.view.panX = Math.max(-maxX, Math.min(maxX, this.view.panX));
+    this.view.panY = Math.max(-maxY, Math.min(maxY, this.view.panY));
   }
 
   /** 仅按当前视口重算基准缩放，保留用户平移 / 缩放手势状态（动态适配用） */
   rescale() {
-    const maxGrid = this.cfg.board.layout === 'concentric_spiral'
-      ? Math.max(...(this.cfg.board.rings || []).map(r => Number(r.grid) || 0), GRID) : GRID;
-    const span = (maxGrid + PAD * 2) * UNIT;
-    const w = this.root.clientWidth, h = this.root.clientHeight;
-    const s = Math.min(w / (span * 1.05), h / (span * 1.05));
-    this.bscale = Math.max(0.4, Math.min(1.1, s));   // 下限 0.4：手机端默认适度放大（不过大），字体可辨，可拖动/双指缩放看全盘
+    this.viewMode = this._refreshEffectiveViewMode();
+    const span = this._boardSpan();
+    this.bscale = this._fitScale(span, this.root.clientWidth, this.root.clientHeight);
+    this.clampViewPan();
     this.applyView();
+    this._settleProjectedFit();
+    this._notifyViewChange();
   }
 
   /** 视口变化 → 重新适配缩放：覆盖 window.resize / 旋转 / 移动端地址栏显隐
@@ -272,32 +457,20 @@ export class BoardView {
     }
   }
 
-  /** 触摸/鼠标拖动平移 + 双指缩放（围绕捏合中心缩放 + 平移范围随缩放扩大） */
+  /** 触摸/鼠标拖动平移 + 双指缩放；手势处于投影外层，直接使用屏幕坐标。 */
   _initPan() {
     const root = this.root;
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
     const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
     const ZOOM_MIN = 0.4, ZOOM_MAX = 2.8;
 
-    /** 平移范围随当前缩放扩大：放大后可拖到棋盘边角，全盘可见时锁在中心 */
-    const panBounds = () => {
-      const maxGrid = this.cfg.board.layout === 'concentric_spiral'
-        ? Math.max(...(this.cfg.board.rings || []).map(r => Number(r.grid) || 0), GRID) : GRID;
-      const span = (maxGrid + PAD * 2) * UNIT;
-      const sc = this.bscale * this.view.zoom;
-      const margin = 60;
-      return {
-        maxX: Math.max(0, (span * sc - root.clientWidth) / 2 + margin),
-        maxY: Math.max(0, (span * sc - root.clientHeight) / 2 + margin)
-      };
-    };
+    const panBounds = () => this.panBounds();
 
     root.addEventListener('pointerdown', e => {
       // 仅响应落在棋盘区域内的操作（HUD/弹窗是 #scene 的兄弟层，不会冒泡进来）
       root.setPointerCapture(e.pointerId);
       this._pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      const wrap = root.querySelector('#boardWrap');
-      if (wrap) wrap.style.transition = 'none';
+      root.classList.add('board-gesturing');
       if (this._pointers.size === 1) {
         this._panStart = { x: e.clientX, y: e.clientY, px: this.view.panX, py: this.view.panY };
       } else if (this._pointers.size === 2) {
@@ -316,8 +489,10 @@ export class BoardView {
           this._panStart = { x: e.clientX, y: e.clientY, px: this.view.panX, py: this.view.panY };
         }
         const { maxX, maxY } = panBounds();
-        this.view.panX = clamp(this._panStart.px + (e.clientX - this._panStart.x), -maxX, maxX);
-        this.view.panY = clamp(this._panStart.py + (e.clientY - this._panStart.y), -maxY, maxY);
+        const dx = e.clientX - this._panStart.x;
+        const dy = e.clientY - this._panStart.y;
+        this.view.panX = clamp(this._panStart.px + dx, -maxX, maxX);
+        this.view.panY = clamp(this._panStart.py + dy, -maxY, maxY);
         this.applyView();
       } else if (this._pointers.size === 2 && this._pinch) {
         const p = [...this._pointers.values()];
@@ -349,12 +524,13 @@ export class BoardView {
         this._panStart = { x: p.x, y: p.y, px: this.view.panX, py: this.view.panY };
       } else if (this._pointers.size === 0) {
         this._panStart = null;
-        const wrap = root.querySelector('#boardWrap');
-        if (wrap) wrap.style.transition = '';
+        root.classList.remove('board-gesturing');
+        this._settleProjectedFit();
       }
     };
     root.addEventListener('pointerup', end);
     root.addEventListener('pointercancel', end);
+    root.addEventListener('lostpointercapture', end);
   }
 
   spawnPetals() {
@@ -381,6 +557,8 @@ export class BoardView {
   applyQuality() {
     this.root.querySelectorAll('.petal').forEach(p => p.remove());
     this.spawnPetals();
+    // 省电档会把请求中的 2.5D 自动拍平；切回高画质时再恢复投影并重新 fit。
+    this.rescale();
   }
 
   cellIdOf(state) {

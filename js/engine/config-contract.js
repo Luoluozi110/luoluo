@@ -65,7 +65,24 @@
             if (!finite(cfg.attrs.battleFormula[k]) || Number(cfg.attrs.battleFormula[k]) < 0) add(`attrs.battleFormula.${k}`, '必须是非负有限数字');
           }
         }
-        if (cfg.attrs.abilitySystem != null && !isObj(cfg.attrs.abilitySystem)) add('attrs.abilitySystem', '必须是对象');
+        if (cfg.attrs.abilitySystem != null) {
+          if (!isObj(cfg.attrs.abilitySystem)) add('attrs.abilitySystem', '必须是对象');
+          else {
+            const strategy = cfg.attrs.abilitySystem.strategy;
+            if (!isObj(strategy)) add('attrs.abilitySystem.strategy', '必须是对象');
+            else {
+              for (const k of ['baseCharges', 'chargePerSi', 'maxCharges']) {
+                if (!finite(strategy[k]) || Number(strategy[k]) <= 0) add(`attrs.abilitySystem.strategy.${k}`, '必须是正数');
+              }
+              if (!isObj(strategy.plans)) add('attrs.abilitySystem.strategy.plans', '必须是对象');
+              else for (const id of ['steady', 'guard', 'switch']) {
+                if (!isObj(strategy.plans[id])) add(`attrs.abilitySystem.strategy.plans.${id}`, '缺少必需预案');
+                else if (!text(strategy.plans[id].name) || !text(strategy.plans[id].desc)) add(`attrs.abilitySystem.strategy.plans.${id}`, '必须包含名称和说明');
+              }
+              if (!text(strategy.defaultPlan) || !isObj(strategy.plans) || !strategy.plans[strategy.defaultPlan]) add('attrs.abilitySystem.strategy.defaultPlan', '必须引用已有预案');
+            }
+          }
+        }
         const tech = cfg.attrs.techniqueSystem;
         if (tech != null) {
           if (!isObj(tech)) add('attrs.techniqueSystem', '必须是对象');

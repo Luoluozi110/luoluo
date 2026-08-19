@@ -55,6 +55,7 @@ export class Hud {
   constructor(root) {
     this.root = root;
     root.innerHTML = `
+      <div id="leftHudRail">
       <div id="attrPanel" class="panel paper">
         <div class="ph"><span class="ph-left"><span class="pc-ico">❖</span><b>六维才学</b></span><span class="ph-right">
           <span id="phaseTag">乡试圈</span><span id="pnameTag" class="pname"></span>
@@ -81,7 +82,9 @@ export class Hud {
           </div>
         </div></div>
       </div>
+      </div>
 
+      <div id="rightHudRail">
       <div id="skyBadges"></div>
 
       <div id="talentBar" class="panel paper">
@@ -96,17 +99,25 @@ export class Hud {
           <div id="synList" class="syn-list"></div>
         </div></div>
       </div>
+      </div>
 
+      <button id="viewAngleBtn" type="button" hidden aria-label="地图视角" title="切换地图俯角">
+        <svg viewBox="0 0 26 22" aria-hidden="true" focusable="false">
+          <path d="M3 8.5 13 3l10 5.5L13 14 3 8.5Z"/>
+          <path d="m3 13.5 10 5.5 10-5.5"/>
+        </svg>
+        <span class="view-angle-copy"><span class="view-angle-name">视角</span><b id="viewAngleValue">28°</b></span>
+      </button>
+      <div id="actionDock">
       <div id="logBox" class="panel paper"></div>
-
-      <div id="turnInfo">第 <b id="turnNum">0</b> 回合</div>
+      <div id="toastZone"></div>
       <div id="rollZone">
         <button class="btn btn-ink" id="abilityBtn">修习</button>
         <button class="btn btn-ink" id="planBtn" style="display:none">布局谋篇</button>
         <button class="btn btn-primary" id="rollBtn"><span class="roll-die" aria-hidden="true"><svg viewBox="0 0 46 46"><rect x="3" y="3" width="40" height="40" rx="9"/><circle cx="14" cy="14" r="3"/><circle cx="32" cy="14" r="3"/><circle cx="23" cy="23" r="3"/><circle cx="14" cy="32" r="3"/><circle cx="32" cy="32" r="3"/></svg></span><span class="roll-label">掷骰</span></button>
       </div>
-
-      <div id="toastZone"></div>`;
+      <div id="turnInfo">第 <b id="turnNum">0</b> 回合</div>
+      </div>`;
 
     this.prev = {};
     this.onTalent = null;   // 点击已拥有文心时回调（由 app.js 注入，打开详情）
@@ -129,6 +140,8 @@ export class Hud {
       turn: root.querySelector('#turnNum'),
       phase: root.querySelector('#phaseTag'),
       pname: root.querySelector('#pnameTag'),
+      viewAngle: root.querySelector('#viewAngleBtn'),
+      viewAngleValue: root.querySelector('#viewAngleValue'),
       roll: root.querySelector('#rollBtn'),
       plan: root.querySelector('#planBtn'),
       ability: root.querySelector('#abilityBtn'),
@@ -156,6 +169,7 @@ export class Hud {
     window.addEventListener('resize', () => this._onViewportChange());
     window.addEventListener('orientationchange', () => this._onViewportChange());
     this._applyCollapse();
+    this._onViewportChange();
     this.el.list.innerHTML = ATTR_KEYS.map(k =>
       `<div class="attr-row ${CREATIVE_KEYS.includes(k) ? 'creative' : 'basic'}" data-k="${k}">
         <i class="dot"></i><span class="nm">${ATTR_NAMES[k]}</span><span class="vl">5</span></div>`).join('');
@@ -180,7 +194,8 @@ export class Hud {
     if (this.el.schoolProgress) {
       if (s.abilityState) {
         const ab = s.abilityState;
-        this.el.schoolProgress.innerHTML = `<span class="school-progress-name">三功修习</span><span>心得 ${Number(ab.insight) || 0}　筹策 ${Number((ab.strategy || {}).points) || 0}　稿页 ${Number((ab.manuscript || {}).pages) || 0}</span>`;
+        const planName = { steady: '缓急策', guard: '守成策', switch: '转锋策' }[(ab.strategy || {}).plan] || '未定策';
+        this.el.schoolProgress.innerHTML = `<span class="school-progress-name">三功修习</span><span>心得 ${Number(ab.insight) || 0}　筹策 ${Number((ab.strategy || {}).charges) || 0} · ${planName}　稿页 ${Number((ab.manuscript || {}).pages) || 0}</span>`;
       } else if (mech.type === 'bowen') {
         const need = Number(mech.knowledgeThreshold) || 2;
         this.el.schoolProgress.innerHTML = `<span class="school-progress-name">博闻·开卷</span><span>知识 ${Math.min(need, Number(ss.knowledge) || 0)}/${need}</span>`;
@@ -233,7 +248,7 @@ export class Hud {
     }
     if (this.el.ability) {
       const ab = s.abilityState || {};
-      this.el.ability.textContent = `修习·${Number(ab.insight) || 0}/${Number((ab.manuscript || {}).pages) || 0}`;
+      this.el.ability.textContent = `修习·心${Number(ab.insight) || 0} 策${Number((ab.strategy || {}).charges) || 0} 稿${Number((ab.manuscript || {}).pages) || 0}`;
       this.el.ability.disabled = !this._rollOn;
     }
 
@@ -359,6 +374,20 @@ export class Hud {
   onRoll(fn) { this.el.roll.addEventListener('click', fn); }
   onPlan(fn) { this.el.plan.addEventListener('click', fn); }
   onAbility(fn) { this.el.ability.addEventListener('click', fn); }
+  onViewAngle(fn) { this.el.viewAngle.addEventListener('click', fn); }
+
+  setViewAngleState(state = {}) {
+    const button = this.el.viewAngle;
+    if (!button) return;
+    const visible = !!state.visible;
+    const angle = Number(state.angle) || 28;
+    const label = state.label || '标准';
+    button.hidden = !visible;
+    button.disabled = !state.enabled;
+    this.el.viewAngleValue.textContent = `${angle}°`;
+    button.setAttribute('aria-label', `地图视角：${label} ${angle} 度，点击切换`);
+    button.title = `地图视角：${label} ${angle}°（点击切换）`;
+  }
 }
 
 function escapeAttr(s) { return String(s).replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
