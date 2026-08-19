@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>飞花棋 · 多人连接 Demo</title>
+  <style>
+    body { font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif; margin: 2rem; color: #222; }
+    h2 { margin-top: 0; }
+    button { margin: .2rem; padding: .4rem .8rem; }
+    input { padding: .3rem .5rem; margin: .2rem; }
+    #log { height: 240px; overflow: auto; border: 1px solid #ccc; padding: .5rem; background: #fafafa; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h2>飞花棋 · 多人连接 Demo</h2>
+  <div>
+    <input id="name" placeholder="昵称" value="玩家" />
+    <button id="connect">连接</button>
+    <button id="create">创建房间</button>
+    <button id="quick">快速匹配</button>
+    <button id="start">开始(房主)</button>
+    <button id="roll">掷骰</button>
+    <button id="buy">买地</button>
+    <button id="end">结束回合</button>
+  </div>
+  <div>
+    <input id="chat" placeholder="说点什么" />
+    <button id="sendChat">发送</button>
+  </div>
+  <pre id="log"></pre>
+
+  <script type="module">
+    import { MultiplayerClient, ACTION } from './multiplayer-client.js';
+    const url = 'ws://' + location.hostname + ':8080';
+    const c = new MultiplayerClient(url);
+    const log = (...a) => { document.getElementById('log').textContent += a.join(' ') + '\n'; };
+
+    c.on('welcome', (d) => log('✅ 欢迎 token=', d.token, 'reconnected=', !!d.reconnected));
+    c.on('room_state', (d) => log('📦 房间状态:', JSON.stringify(d)));
+    c.on('event', (d) => log('⚡ 事件', d.type, JSON.stringify(d.payload)));
+    c.on('chat', (d) => log('💬', d.name + ':', d.text));
+    c.on('error', (d) => log('⛔ 错误', d.code, d.msg || ''));
+    c.on('player_joined', (d) => log('➕ 加入', d.name, d.connected));
+    c.on('player_left', (d) => log('➖ 离开', d.playerId, 'connected=', d.connected));
+    c.on('close', () => log('🔌 连接断开，将自动重连…'));
+
+    const nameEl = document.getElementById('name');
+    document.getElementById('connect').onclick = () => { c.name = nameEl.value; c.connect(); };
+    document.getElementById('create').onclick = () => c.createRoom({ name: '飞花棋房', maxPlayers: 4 });
+    document.getElementById('quick').onclick = () => c.quickMatch();
+    document.getElementById('start').onclick = () => c.sendAction(ACTION.START);
+    document.getElementById('roll').onclick = () => c.sendAction(ACTION.ROLL);
+    document.getElementById('buy').onclick = () => c.sendAction(ACTION.BUY);
+    document.getElementById('end').onclick = () => c.sendAction(ACTION.END_TURN);
+    document.getElementById('sendChat').onclick = () => c.sendChat(document.getElementById('chat').value);
+  </script>
+</body>
+</html>

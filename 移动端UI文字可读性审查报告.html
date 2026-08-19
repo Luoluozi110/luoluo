@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>飞花棋移动端 UI 文字可读性审查报告</title>
+  <style>
+    :root {
+      --ink: #262019;
+      --ink-2: #483f34;
+      --muted: #6d6052;
+      --paper: #f6f0e2;
+      --paper-2: #fffaf0;
+      --line: #d8cdb7;
+      --red: #a43d31;
+      --gold: #785600;
+      --teal: #176b3a;
+      --blue: #275f86;
+      --bad-bg: #fff0ed;
+      --warn-bg: #fff7e5;
+      --ok-bg: #edf7ef;
+      --info-bg: #eef5fa;
+      --shadow: 0 12px 30px rgba(48, 35, 20, .10);
+    }
+    * { box-sizing: border-box; }
+    html { background: #efe7d8; color: var(--ink); }
+    body { margin: 0; font-family: "Noto Serif SC", "Source Han Serif SC", SimSun, serif; line-height: 1.65; }
+    .page { max-width: 1120px; margin: 0 auto; padding: 38px 22px 64px; }
+    header { padding: 30px 32px; background: var(--paper); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+    .eyebrow { margin: 0 0 9px; color: var(--red); font: 700 13px/1.4 system-ui, sans-serif; letter-spacing: .08em; }
+    h1, h2, h3 { color: var(--ink); line-height: 1.28; }
+    h1 { margin: 0; font-size: clamp(26px, 5vw, 38px); letter-spacing: .05em; }
+    h2 { margin: 0 0 14px; font-size: 22px; }
+    h3 { margin: 0 0 8px; font-size: 16px; }
+    p { margin: 8px 0; }
+    .lead { max-width: 850px; margin-top: 15px; color: var(--ink-2); font-size: 16px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 18px; color: var(--muted); font: 13px/1.5 system-ui, sans-serif; }
+    .meta span { padding-left: 10px; border-left: 3px solid var(--line); }
+    .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 18px; margin-top: 20px; }
+    section { margin-top: 26px; padding: 24px 26px; background: var(--paper-2); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 4px 15px rgba(48, 35, 20, .05); }
+    .summary { grid-column: span 12; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .metric { min-height: 120px; padding: 16px; border-radius: 12px; border: 1px solid var(--line); background: #fffdf8; }
+    .metric b { display: block; margin-bottom: 6px; color: var(--red); font: 700 26px/1.1 system-ui, sans-serif; }
+    .metric span { color: var(--ink-2); font-size: 14px; }
+    .callout { padding: 14px 16px; border-left: 4px solid var(--red); background: var(--bad-bg); border-radius: 8px; }
+    .callout strong { color: #7d241d; }
+    .note { padding: 13px 15px; border-left: 4px solid var(--blue); background: var(--info-bg); border-radius: 8px; color: #284b66; }
+    .columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .card { padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #fffdf8; }
+    .card p { color: var(--ink-2); font-size: 14px; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 999px; font: 700 12px/1.4 system-ui, sans-serif; letter-spacing: .04em; }
+    .p0 { color: #7d241d; background: #ffdeda; }
+    .p1 { color: #765100; background: #ffedbf; }
+    .p2 { color: #215c39; background: #dcefdc; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+    th, td { padding: 10px 11px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+    th { color: var(--ink); background: #f0e8d9; font-family: system-ui, sans-serif; font-size: 12px; letter-spacing: .04em; }
+    tr:last-child td { border-bottom: 0; }
+    .ratio-fail { color: #8b2b22; font-weight: 700; }
+    .ratio-pass { color: #215c39; font-weight: 700; }
+    code { padding: 1px 4px; border-radius: 4px; background: #ede5d7; color: #563d25; font: 12px/1.5 ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
+    pre { margin: 12px 0 0; padding: 14px; overflow: auto; border: 1px solid #ded2be; border-radius: 10px; background: #28241f; color: #f8f0df; font: 12px/1.6 ui-monospace, Consolas, monospace; }
+    ul, ol { margin: 8px 0; padding-left: 22px; }
+    li + li { margin-top: 6px; }
+    .risk-list { display: grid; gap: 10px; }
+    .risk { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 13px 14px; border: 1px solid var(--line); border-radius: 10px; background: #fffdf8; }
+    .risk p { margin: 3px 0 0; color: var(--ink-2); font-size: 14px; }
+    .flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+    .step { position: relative; min-height: 116px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #fffdf8; }
+    .step b { display: block; margin-bottom: 5px; color: var(--red); font: 700 16px/1.3 system-ui, sans-serif; }
+    .step span { color: var(--ink-2); font-size: 13px; }
+    .check { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; }
+    .check div { padding: 9px 10px; border-radius: 8px; background: #f4eee2; color: var(--ink-2); font-size: 14px; }
+    .check div::before { content: "□"; margin-right: 8px; color: var(--red); font-family: system-ui, sans-serif; }
+    .source { color: var(--muted); font-size: 13px; }
+    footer { padding: 18px 8px 0; color: var(--muted); font-size: 12px; }
+    @media (max-width: 760px) {
+      .page { padding: 18px 12px 42px; }
+      header, section { padding: 20px 17px; border-radius: 13px; }
+      .summary, .columns, .check { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      table { display: block; overflow-x: auto; white-space: normal; }
+      th, td { min-width: 130px; }
+    }
+    @media (max-width: 420px) {
+      .flow { grid-template-columns: 1fr; }
+      h2 { font-size: 20px; }
+      .lead { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">飞花棋网页版 · 移动端 UX 审查</p>
+      <h1>移动端 UI 文字可读性审查报告</h1>
+      <p class="lead">本报告基于 <code>feihuaqi-playable</code> 当前 CSS、HTML 与关键 UI 结构进行静态审查，聚焦文字遮挡、对比度、字号、排版拥挤、动态内容溢出，以及不同屏幕尺寸、短视口、横屏和文字放大下的可用性。结论用于指导下一轮 UI 改造；本轮未直接改变线上游戏样式。</p>
+      <div class="meta"><span>审查时间：2026-08-16</span><span>范围：HUD、弹窗、流派选择、论战、图鉴、结算</span><span>基准：WCAG 2.2 AA + 真机可读性</span></div>
+    </header>
+
+    <div class="grid">
+      <section class="summary">
+        <div class="metric"><b>4 项 P0</b><span>浏览器缩放、刘海/底部安全区、固定 HUD 重叠、短视口与键盘遮挡。</span></div>
+        <div class="metric"><b>多处小字</b><span>当前 UI 存在 10px、11px、11.5px、12px 的信息文字；窄屏下仍继续缩小。</span></div>
+        <div class="metric"><b>2 个断点</b><span>主要依赖 ≤600px 与 ≤380px，尚未覆盖 320px、短高、横屏、文字放大与安全区。</span></div>
+      </section>
+    </div>
+
+    <section>
+      <h2>一、结论与优化优先级</h2>
+      <div class="callout"><strong>核心判断：</strong>当前版本已经为 ≤600px 增加 HUD、战斗台和结算页重排，方向正确；但布局仍以固定像素定位和压缩字体为主。它在常见 375–430px 竖屏可能“看起来可用”，却会在 320px、低高度横屏、刘海安全区、软键盘弹出、动态长文案及 150%–200% 文字放大时重新发生遮挡、拥挤或不可读。</div>
+      <div class="risk-list" style="margin-top:14px">
+        <div class="risk"><span class="tag p0">P0</span><div><h3>恢复文本缩放能力，禁止把“不可缩放”当作布局稳定手段</h3><p><code>index.html:5</code> 的 viewport 含 <code>maximum-scale=1, user-scalable=no</code>。这会阻止用户放大文字，也掩盖窄屏真实问题。应允许浏览器缩放，并改用局部棋盘手势处理、弹窗滚动和重排保证布局稳定。</p></div></div>
+        <div class="risk"><span class="tag p0">P0</span><div><h3>为所有边缘浮层建立安全区与动态视口规则</h3><p><code>#attrPanel</code>、<code>#inspBar</code>、<code>#turnInfo</code>、<code>#soundToggle</code>、<code>#menuBtn</code> 都使用固定 <code>top/bottom</code> 值，当前没有 <code>env(safe-area-inset-*)</code> 或 <code>dvh</code> 规则。带刘海、灵动岛、圆角屏和手势条设备容易遮挡文字。</p></div></div>
+        <div class="risk"><span class="tag p0">P0</span><div><h3>先修正“含义文字”的对比度，再优化装饰色</h3><p>弱提示色、金色数值、绿色状态与稀有度徽标在宣纸底或渐变底上存在低于 4.5:1 的组合；半透明背景还会使真实对比进一步下降。优先保证规则、状态、奖励、倒计时和可点击控件的文字可读。</p></div></div>
+        <div class="risk"><span class="tag p0">P0</span><div><h3>让可变长内容进入可滚动/可换行容器</h3><p>起名输入、题干、天象/文心描述、NPC 机制提示、流派卡叙事和结算说明都可能随着数据变长。必须以可换行、可滚动、可取得完整文本为优先，不可用截断掩盖必需信息。</p></div></div>
+        <div class="risk"><span class="tag p1">P1</span><div><h3>建立统一文字层级令牌，消除逐组件“缩一号”的堆叠</h3><p>将正文、辅助、微型标注、按钮、标题统一为 rem 基线、最小字号和行高规范；不要在 600px 断点继续把正文/功能文字缩至 10–11px。</p></div></div>
+        <div class="risk"><span class="tag p1">P1</span><div><h3>用布局断点与容器查询取代仅按手机宽度压缩</h3><p>重点覆盖 320px 宽、≤430px 单列卡片、≤480px 动态文字行、≤500px 高短视口和横屏；组件应根据自身可用宽度决定换行，而不只看设备宽度。</p></div></div>
+        <div class="risk"><span class="tag p2">P2</span><div><h3>将可读性加入回归测试与发布验收</h3><p>建立截图基线、碰撞检测、文本溢出检测、对比度令牌测试与长文案测试，以防新 NPC、天象、奇遇和玩家名号再次挤坏移动端。</p></div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>二、移动端常见文字显示问题类型与排查重点</h2>
+      <div class="columns">
+        <article class="card"><h3>1. 对比度不足</h3><p>浅色字叠在渐变、毛玻璃、图片或半透明宣纸上；同一文字色在不同底图下对比不稳定。对策是先计算最终合成色，关键信息使用不透明或近不透明承载层，普通文字至少 4.5:1。</p></article>
+        <article class="card"><h3>2. 字号与容器不匹配</h3><p>为了塞进固定宽度面板而缩小到 10–11px，或使用大字距导致中文字数占宽激增。对策是让容器重排、换行或滚动，而非继续缩字；功能性正文以 14–16px 为目标。</p></article>
+        <article class="card"><h3>3. 文字被浮层或安全区遮挡</h3><p>绝对/固定定位的角标、菜单、悬浮按钮、底部提示与系统刘海、键盘或手势条重叠。对策是统一安全边距令牌，并在弹窗打开时避让或隐藏游戏 HUD。</p></article>
+        <article class="card"><h3>4. 行高、字距和段距过密</h3><p>小字号叠加 <code>line-height: 1.2–1.5</code>、较大 <code>letter-spacing</code>，会使长叙事和规则说明拥挤、跳读困难。对策是正文 1.6–1.8、辅助文本至少 1.45，14px 以下避免超过 .08em 的字距。</p></article>
+        <article class="card"><h3>5. 字色与主题冲突</h3><p>金、朱、青等主题色能表达语义，但未必适合承载小字号文字。对策是将“状态颜色”与“文字颜色”分离：保留色条/边框表达主题，用深色文字承载内容。</p></article>
+        <article class="card"><h3>6. 动态文本溢出与截断</h3><p>玩家 12 字名号、具名 NPC、配置型事件、奖励串和多标签组合，都会突破静态样例。对策是设置 <code>min-inline-size: 0</code>、<code>overflow-wrap: anywhere</code>，仅对非关键字段截断且提供完整内容入口。</p></article>
+        <article class="card"><h3>7. 软键盘与短视口</h3><p>居中弹窗在手机输入时可能被键盘顶住；<code>vh</code> 在移动浏览器地址栏伸缩时也可能失真。对策是可滚动 overlay、<code>100dvh</code>、聚焦后自动滚入可视区域。</p></article>
+        <article class="card"><h3>8. 分辨率与字体渲染差异</h3><p>布局应以 CSS 像素和可用宽高为中心，而非仅按物理分辨率。仍需在 DPR 1/2/3 和不同系统字体渲染下检查细笔画、浅色小字和楷体标题的真实可读性。</p></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>三、当前飞花棋实现中的具体风险点</h2>
+      <table>
+        <thead><tr><th>优先级</th><th>证据位置</th><th>风险表现</th><th>建议方向</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag p0">P0</span></td><td><code>index.html:5</code></td><td>设置 <code>maximum-scale=1, user-scalable=no</code>，用户无法通过浏览器缩放缓解小字。</td><td>去除缩放禁令；棋盘双指缩放使用局部手势逻辑，不以禁用全页缩放解决。</td></tr>
+          <tr><td><span class="tag p0">P0</span></td><td><code>base.css:99</code>、<code>ui.css:58–203</code></td><td><code>#app</code> 固定且溢出隐藏，HUD 使用固定 <code>top/bottom/left/right</code>，无安全区补偿。</td><td>引入 <code>--safe-top/right/bottom/left</code> 与 <code>100dvh</code>；所有贴边浮层基于安全边距定位。</td></tr>
+          <tr><td><span class="tag p0">P0</span></td><td><code>base.css:188–195</code>、<code>ui.css:219</code></td><td>Overlay 居中且通用弹窗仅 <code>max-height:88vh</code>；软键盘、短视口或文字放大时可能上/下裁切。</td><td>Overlay 允许纵向滚动并从安全区顶部开始排列；弹窗用 <code>max-block-size: calc(100dvh - ...)</code>。</td></tr>
+          <tr><td><span class="tag p0">P0</span></td><td><code>ui.css:169–191</code>、<code>ui.css:492–498</code></td><td>音效/菜单按钮 z-index 为 130/131，高于 modal layer，可能压住弹窗标题、输入框或关闭区。</td><td>定义层级合同：全屏对话框应高于 HUD；弹窗开启时隐藏或迁移游戏悬浮控件。</td></tr>
+          <tr><td><span class="tag p1">P1</span></td><td><code>ui.css:884–904</code></td><td>≤600px 时 HUD 仍为 150px、132px、104px 等固定尺寸；≤380px 继续压缩文字与按钮。</td><td>增加 320px、短高和横屏规则；非关键 HUD 默认折叠，关键文字保持最小字号，而非继续缩小。</td></tr>
+          <tr><td><span class="tag p1">P1</span></td><td><code>ui.css:898</code>、<code>ui.css:884</code>、<code>ui.css:813</code></td><td>移动端槽位 10px、属性行 11px、结算细项 11px，信息密度高且易受字体渲染影响。</td><td>功能文字不低于 12px，正文/选项不低于 14–16px；微型装饰信息允许收起或改图标+展开说明。</td></tr>
+          <tr><td><span class="tag p1">P1</span></td><td><code>ui.css:916–920</code></td><td>流派卡在手机保持两列，<code>44vw</code> 卡片内含标题、口号、叙事、meta，长文案会被压窄。</td><td>≤420px 转单列，或只显示摘要并提供展开；标题小字距，叙事不使用两端对齐。</td></tr>
+          <tr><td><span class="tag p1">P1</span></td><td><code>ui.css:994</code>、<code>ui.css:1072</code>、<code>ui.css:1090</code></td><td><code>min-width:180px</code>、固定 76px 网格列、横向 flex 行在 320px 宽下可能迫使溢出或挤压文本。</td><td>窄屏将机制条、文风条、升级行改纵向；子项使用 <code>min-inline-size:0</code> 与自动换行。</td></tr>
+          <tr><td><span class="tag p1">P1</span></td><td><code>ui.css:145</code>、<code>board.css:110</code>、<code>ui.css:814</code></td><td>多个元素使用 <code>white-space:nowrap</code>、ellipsis 或固定最大宽度，动态名称可能无法完整读取。</td><td>仅对可替代短标签使用截断；对于规则、名字、奖励需允许换行，或提供显式“查看全文”。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>四、对比度核验：当前令牌的高风险组合</h2>
+      <p>下表按 CSS 声明色在基础宣纸色 <code>#f6f0e2</code> 或相应纯色底上计算。透明背景、渐变、滤镜、纹理和阴影会改变最终合成色，因此上线前仍应在实际状态截图中复核。</p>
+      <table>
+        <thead><tr><th>前景 / 背景</th><th>估算对比度</th><th>判定</th><th>常见用途与修正</th></tr></thead>
+        <tbody>
+          <tr><td><code>#262019</code> / <code>#f6f0e2</code></td><td class="ratio-pass">14.18:1</td><td>通过</td><td>主正文可作为基准文本色。</td></tr>
+          <tr><td><code>#483f34</code> / <code>#f6f0e2</code></td><td class="ratio-pass">9.08:1</td><td>通过</td><td>次级正文安全。</td></tr>
+          <tr><td><code>#7a6d5d</code> / <code>#f6f0e2</code></td><td class="ratio-fail">4.43:1</td><td>普通小字不足</td><td>当前 <code>--mo-3</code> 被大量用于 11–13px 辅助文字；建议改为至少 <code>#6d6052</code>（约 5.36:1）。</td></tr>
+          <tr><td><code>#96700d</code> / <code>#f6f0e2</code></td><td class="ratio-fail">4.00:1</td><td>普通小字不足</td><td>金色数值不宜单独承担信息；可改为 <code>#785600</code>（约 5.90:1）。</td></tr>
+          <tr><td><code>#1f8a4c</code> / <code>#f6f0e2</code></td><td class="ratio-fail">3.85:1</td><td>普通小字不足</td><td>绿色“上涨/成功”文字建议改为更深的 <code>#176b3a</code>（约 5.77:1），并配合文字标签而非仅颜色。</td></tr>
+          <tr><td><code>#a89c8c</code> / <code>#f6f0e2</code></td><td class="ratio-fail">2.37:1</td><td>不可用于必要信息</td><td>仅作装饰性“锁定”暗示；若内容需被阅读，必须改用更深的色彩或增加承载底。</td></tr>
+          <tr><td><code>#ffffff</code> / <code>#d8a930</code></td><td class="ratio-fail">2.18:1</td><td>徽标不可读</td><td>金色传奇徽标不应配白字；改深墨字或显著加深金色背景。</td></tr>
+          <tr><td><code>#ffffff</code> / <code>#4a7fc1</code></td><td class="ratio-fail">4.12:1</td><td>普通小字不足</td><td>蓝色稀有徽标的白色 12px 字应加深底色或改用深色字。</td></tr>
+          <tr><td><code>#ffffff</code> / <code>#b23a2e</code></td><td class="ratio-pass">5.94:1</td><td>通过</td><td>朱砂色标签可保留白字。</td></tr>
+        </tbody>
+      </table>
+      <div class="note" style="margin-top:14px"><strong>颜色规则：</strong>普通文本以 4.5:1 为底线；约 24px 的大字或约 18.5px 的粗体大字可用 3:1；细笔画楷体、低分辨率设备和半透明背景建议高于最低阈值。状态不应只用红/绿/金区分，应同时提供文字、图标或形状。</div>
+    </section>
+
+    <section>
+      <h2>五、推荐的系统性排查流程</h2>
+      <div class="flow">
+        <div class="step"><b>01. 文本清单</b><span>列出所有标题、正文、辅助、数值、状态、倒计时、按钮、输入提示与动态内容。</span></div>
+        <div class="step"><b>02. 样式核验</b><span>检查字号、行高、字距、颜色、背景合成、字体回退和是否允许用户放大。</span></div>
+        <div class="step"><b>03. 容器核验</b><span>检查可用宽高、换行、最小宽度、滚动边界、文本截断和软键盘状态。</span></div>
+        <div class="step"><b>04. 层级核验</b><span>检查 HUD、模态、菜单、提示、刘海区、底部手势条与焦点元素是否相交。</span></div>
+      </div>
+      <ol style="margin-top:18px">
+        <li><strong>先测试最坏文本：</strong>12 字玩家名号、最长 NPC 名/称号、四行题干、最长奖励串、两枚天象角标、满槽文心、连续机制结算。</li>
+        <li><strong>再测试最坏空间：</strong>320px 宽、256px 高横屏、375×667、390×844、412×915、768×1024，以及地址栏收起/展开和软键盘打开。</li>
+        <li><strong>最后测试最坏偏好：</strong>浏览器文字缩放 125%/150%/200%，系统“大字体”，弱网字体回退，降低动态效果，深浅/高亮环境下的屏幕亮度变化。</li>
+        <li><strong>为每一状态截屏：</strong>开局流派、起名、题卡、奇遇、文心、论战、图鉴、结算、排行榜；把截图基线纳入回归。</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>六、可直接落地的 CSS / 结构方向</h2>
+      <h3>1. 统一安全区与动态视口</h3>
+      <pre>:root {
+  --safe-top: max(8px, env(safe-area-inset-top));
+  --safe-right: max(8px, env(safe-area-inset-right));
+  --safe-bottom: max(12px, env(safe-area-inset-bottom));
+  --safe-left: max(8px, env(safe-area-inset-left));
+}
+
+#app { min-height: 100dvh; height: 100dvh; }
+#attrPanel { top: var(--safe-top); left: var(--safe-left); }
+#turnInfo { bottom: var(--safe-bottom); }
+#soundToggle { left: var(--safe-left); bottom: var(--safe-bottom); }
+#menuBtn { right: var(--safe-right); top: var(--safe-top); }</pre>
+      <h3 style="margin-top:20px">2. 可滚动 overlay 与输入态避让</h3>
+      <pre>.overlay {
+  align-items: flex-start;
+  overflow-y: auto;
+  padding: calc(var(--safe-top) + 16px) var(--safe-right)
+           calc(var(--safe-bottom) + 16px) var(--safe-left);
+}
+.modal, .event-card, .talent-card {
+  max-block-size: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 32px);
+  overflow: auto;
+  margin: auto;
+  overscroll-behavior: contain;
+}
+@media (max-width: 600px) {
+  input, textarea, select { font-size: max(16px, 1rem); }
+}</pre>
+      <h3 style="margin-top:20px">3. 文字令牌：不再通过无限缩字换空间</h3>
+      <pre>:root {
+  --text-body: 1rem;
+  --text-small: .875rem;
+  --text-meta: .8125rem;
+  --text-micro: .75rem;
+  --lh-body: 1.65;
+  --lh-small: 1.5;
+  --text-muted: #6d6052;
+  --text-gold: #785600;
+  --text-success: #176b3a;
+}
+
+.ui-body { font-size: var(--text-body); line-height: var(--lh-body); }
+.ui-meta { font-size: var(--text-meta); line-height: var(--lh-small); color: var(--text-muted); }
+@media (max-width: 420px) {
+  .school-grid { display: block; }
+  .school-card { width: min(100%, 22rem); margin: 0 auto 12px; }
+  .mech-line, .cx-up-lv-row { align-items: flex-start; }
+  .mech-line .bd { min-width: 0; flex-basis: 100%; }
+}</pre>
+      <h3 style="margin-top:20px">4. 统一长文本与层级避让</h3>
+      <pre>.can-wrap { min-inline-size: 0; overflow-wrap: anywhere; word-break: normal; }
+.has-modal #hud, .has-modal #soundToggle, .has-modal #menuBtn {
+  visibility: hidden;
+}
+
+/* 对关键名称：优先换行；若必须截断，提供 aria-label / 查看全文 */
+.truncate-optional { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }</pre>
+      <p class="source">说明：示例用于指导实现，需与当前棋盘双指缩放和弹窗生命周期联动测试；不要直接整段覆盖现有样式。</p>
+    </section>
+
+    <section>
+      <h2>七、设备与状态验收矩阵</h2>
+      <table>
+        <thead><tr><th>场景</th><th>代表视口 / 条件</th><th>必须验证的文字问题</th></tr></thead>
+        <tbody>
+          <tr><td>最窄竖屏</td><td>320×568 CSS px</td><td>无横向页面滚动；流派/图鉴/弹窗单列或可纵滚；所有按钮及正文完整可达。</td></tr>
+          <tr><td>常见小屏</td><td>360×640、375×667</td><td>HUD 不与天象/文心/掷骰/回合提示重叠；题干、选项、名字完整阅读。</td></tr>
+          <tr><td>刘海与手势条</td><td>390×844、412×915</td><td>顶部标题和按钮不被系统区域覆盖；底部回合/Toast/音效按钮不落入手势条。</td></tr>
+          <tr><td>短高或横屏</td><td>568×320、667×375、812×375</td><td>弹窗、战斗台、输入框可纵向滚动；中心控件不遮挡关键文案；软键盘不挡确认按钮。</td></tr>
+          <tr><td>平板</td><td>768×1024 与横向</td><td>中间布局不拉得过散；文字不会因大留白而失去层级；多列符合阅读宽度。</td></tr>
+          <tr><td>文字放大</td><td>100% / 125% / 150% / 200%</td><td>内容与功能不丢失，标题、按钮、倒计时、输入及长文案仍可访问。</td></tr>
+          <tr><td>数据压力</td><td>最长配置 + 12 字名号 + 多状态</td><td>不以省略号隐藏规则；必须截断的项有完整文本入口，长词不撑破容器。</td></tr>
+        </tbody>
+      </table>
+      <div class="check" style="margin-top:16px">
+        <div>普通功能文字对比度 ≥ 4.5:1</div><div>大号文字对比度 ≥ 3:1</div>
+        <div>功能文字不低于 12px，正文优先 14–16px</div><div>正文行高 ≥ 1.6，辅助文字 ≥ 1.45</div>
+        <div>所有弹窗在短屏/键盘状态可纵向滚动</div><div>边缘控件纳入安全区，不遮挡焦点和文本</div>
+        <div>320px 宽下正文不要求左右双向滚动</div><div>200% 缩放下内容与功能不丢失</div>
+        <div>关键长文本可换行或有完整阅读入口</div><div>点击目标原则上不小于 44×44 CSS px</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>八、建议的实施顺序</h2>
+      <ol>
+        <li><strong>第一批：无障碍与遮挡修复。</strong>移除 viewport 缩放禁令；补安全区/dvh；修正 overlay 滚动与输入键盘；让 modal 覆盖 HUD 控件；修正高风险色彩。</li>
+        <li><strong>第二批：排版系统收敛。</strong>建立正文/辅助/微型/标题四级文字令牌；替换散落的 10–12px 必要信息；降低小字大字距；统一长文本换行规则。</li>
+        <li><strong>第三批：组件重排。</strong>流派卡在 ≤420px 单列；机制结算、升级行、文风行在窄屏纵向；各列表和卡片使用容器可用宽度重排。</li>
+        <li><strong>第四批：回归保障。</strong>新增移动端截图、溢出、碰撞、长文案与对比度测试；每次新增天象/NPC/奇遇/文心字段时复跑矩阵。</li>
+      </ol>
+      <div class="note"><strong>验收目标：</strong>移动端不以“把字塞进去”为完成标准，而以“在 320px、短高横屏和 200% 文本缩放下，玩家仍可完整看懂、触达并完成当前任务”为完成标准。棋盘属于可缩放的二维游戏区可以保留独立交互例外，但周围的规则、表单、按钮和文本不应继承这种例外。</div>
+    </section>
+
+    <footer>
+      参考基线：W3C WCAG 2.2 Understanding SC 1.4.3 Contrast (Minimum)、SC 1.4.4 Resize Text、SC 1.4.10 Reflow。报告结论基于当前代码静态审查；上线前应结合真实 iOS/Android 设备和截图回归完成视觉验证。
+    </footer>
+  </main>
+</body>
+</html>

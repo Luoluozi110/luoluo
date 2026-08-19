@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>飞花棋 · 题库编辑器</title>
+<style>
+  /* ============ 主题（与飞花棋墨纸风一致） ============ */
+  :root{
+    --paper:#f7f1e3; --paper2:#efe6d2; --ink:#2b2620; --ink2:#6b6256;
+    --zhu:#b03a2e; --zhu2:#c9603f; --gold:#b08c48; --line:#d8cba8;
+    --ok:#3f7d4e; --bad:#b03a2e; --shadow:0 2px 10px rgba(60,40,10,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",system-ui,sans-serif;
+    background:
+      radial-gradient(circle at 20% 0%, #fbf6ea, transparent 60%),
+      var(--paper);
+    color:var(--ink); line-height:1.5;
+  }
+  a{color:var(--zhu)}
+  button{font-family:inherit;cursor:pointer}
+  .wrap{max-width:1080px;margin:0 auto;padding:18px 16px 80px}
+
+  /* ============ 顶栏 ============ */
+  header.bar{
+    position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#fbf6ea,#f4ecd9);
+    border-bottom:2px solid var(--line);box-shadow:var(--shadow);
+    padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  }
+  header.bar .title{font-size:20px;font-weight:800;letter-spacing:1px;color:var(--ink)}
+  header.bar .title small{font-weight:500;color:var(--ink2);font-size:12px;margin-left:8px}
+  .spacer{flex:1}
+  .btn{
+    border:1px solid var(--line);background:var(--paper2);color:var(--ink);
+    padding:7px 13px;border-radius:9px;font-size:14px;transition:.15s;
+  }
+  .btn:hover{background:#e7dcc2}
+  .btn.primary{background:var(--zhu);color:#fff;border-color:var(--zhu)}
+  .btn.primary:hover{background:var(--zhu2)}
+  .btn.ghost{background:transparent}
+  .btn.danger{color:var(--bad);border-color:#e0b3ab}
+  .btn.danger:hover{background:#f6e3df}
+  .btn.sm{padding:4px 9px;font-size:12.5px;border-radius:7px}
+
+  /* ============ 统计条 ============ */
+  .stat-strip{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .stat{
+    background:var(--paper2);border:1px solid var(--line);border-radius:10px;
+    padding:8px 14px;min-width:84px;text-align:center;
+  }
+  .stat b{display:block;font-size:20px;color:var(--zhu)}
+  .stat span{font-size:12px;color:var(--ink2)}
+
+  /* ============ 筛选 ============ */
+  .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .filters input[type=search],.filters select{
+    border:1px solid var(--line);background:#fff;border-radius:8px;
+    padding:7px 10px;font-size:14px;color:var(--ink);font-family:inherit;
+  }
+  .filters input[type=search]{min-width:220px;flex:1}
+  .filters label{font-size:13px;color:var(--ink2)}
+
+  /* ============ 题目列表 ============ */
+  .qlist{display:flex;flex-direction:column;gap:10px}
+  .q-card{
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;
+    box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start;
+  }
+  .q-card .meta{display:flex;flex-direction:column;gap:6px;min-width:118px}
+  .q-id{font-family:ui-monospace,Consolas,monospace;font-weight:700;color:var(--ink)}
+  .badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:20px;font-weight:600}
+  .badge.k{background:#e8f0fb;color:#2b6cb0}
+  .badge.c{background:#fbf0da;color:#9a6a16}
+  .diff{color:var(--gold);font-size:13px;letter-spacing:1px}
+  .pill{font-size:11.5px;padding:1px 8px;border-radius:20px;border:1px solid}
+  .pill.on{color:var(--ok);border-color:#bfe0c6;background:#eef8f0}
+  .pill.off{color:var(--ink2);border-color:var(--line);background:var(--paper2);cursor:pointer}
+  .q-main{flex:1;min-width:0}
+  .q-stem{font-size:15.5px;font-weight:600;margin:0 0 6px;word-break:break-word}
+  .q-tags{display:flex;gap:6px;flex-wrap:wrap;color:var(--ink2);font-size:12.5px}
+  .q-tags .t{background:var(--paper2);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+  .q-opts{margin-top:6px;color:var(--ink2);font-size:12.5px;max-height:46px;overflow:hidden}
+  .q-actions{display:flex;flex-direction:column;gap:6px;min-width:74px}
+  .empty{
+    text-align:center;color:var(--ink2);padding:50px 20px;border:2px dashed var(--line);
+    border-radius:14px;background:var(--paper2);
+  }
+  .empty b{display:block;font-size:16px;color:var(--ink);margin-bottom:6px}
+
+  /* ============ 弹窗 ============ */
+  .overlay{
+    position:fixed;inset:0;background:rgba(40,30,15,.45);display:none;
+    align-items:flex-start;justify-content:center;z-index:50;padding:24px 12px;overflow:auto;
+  }
+  .overlay.show{display:flex}
+  .modal{
+    background:var(--paper);border:1px solid var(--line);border-radius:16px;
+    width:min(720px,100%);box-shadow:0 12px 40px rgba(40,30,10,.3);
+    padding:18px 20px;margin-bottom:24px;
+  }
+  .modal h3{margin:0 0 12px;font-size:18px}
+  .field{margin-bottom:12px}
+  .field > label{display:block;font-size:13px;color:var(--ink2);margin-bottom:5px;font-weight:600}
+  .field input[type=text],.field input[type=search],.field textarea,.field select{
+    width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;
+    font-size:14px;font-family:inherit;color:var(--ink);background:#fff;
+  }
+  .field textarea{resize:vertical;min-height:64px;line-height:1.6}
+  .row2{display:flex;gap:12px;flex-wrap:wrap}
+  .row2 > .field{flex:1;min-width:140px}
+  .type-pick{display:flex;gap:10px}
+  .type-pick label{
+    flex:1;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center;
+    cursor:pointer;background:var(--paper2);font-weight:600;
+  }
+  .type-pick input{display:none}
+  .type-pick input:checked + span{color:var(--zhu)}
+  .type-pick label:has(input:checked){border-color:var(--zhu);background:#fbeee9}
+
+  /* 选项编辑 */
+  .opt-row{display:flex;gap:6px;align-items:center;margin-bottom:7px}
+  .opt-row .opt-text{flex:1}
+  .opt-row.knowledge-opt-row{display:grid;grid-template-columns:22px 18px minmax(0,1fr) 30px;align-items:center}
+  .knowledge-opt-row .opt-act{grid-column:3/4;min-width:0}
+  .knowledge-opt-row .opt-del{grid-column:4;grid-row:1/3;align-self:stretch}
+  .opt-row select{border:1px solid var(--line);border-radius:8px;padding:7px 8px;background:#fff;font-family:inherit}
+  .opt-row .ord{width:22px;text-align:center;color:var(--ink2);font-weight:700}
+  .opt-row .ans-flag{font-size:12px;color:var(--ok);width:34px;text-align:center}
+  .opt-del{border:1px solid #e0b3ab;background:#fff;color:var(--bad);border-radius:8px;padding:6px 9px}
+  .opt-add{margin-top:4px}
+  .hint{font-size:12.5px;color:var(--ink2);margin-top:4px}
+  .msg{font-size:13px;padding:8px 10px;border-radius:8px;margin:6px 0;display:none}
+  .msg.err{display:block;background:#fbe9e4;color:var(--bad);border:1px solid #e6bdb2}
+  .msg.ok{display:block;background:#eef8f0;color:var(--ok);border:1px solid #bfe0c6}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
+
+  /* ============ 统计弹窗 ============ */
+  .stat-table{width:100%;border-collapse:collapse;font-size:14px}
+  .stat-table th,.stat-table td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+  .stat-table th{background:var(--paper2)}
+  .stat-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+
+  /* ============ 保存状态 ============ */
+  #saveStatus{font-size:12.5px;color:var(--ink2);margin-left:4px}
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
+    background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;
+    box-shadow:0 6px 20px rgba(0,0,0,.25);opacity:0;transition:.25s;z-index:99;pointer-events:none;
+  }
+  .toast.show{opacity:1}
+  footer{text-align:center;color:var(--ink2);font-size:12px;margin-top:30px}
+  @media(max-width:560px){
+    .q-card{flex-direction:column}
+    .q-actions{flex-direction:row;min-width:0}
+    .filters input[type=search]{min-width:100%}
+  }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="title">飞花棋 · 题库编辑器<small>知识题 / 创作抉择题 全管理</small></div>
+  <div class="spacer"></div>
+  <span id="saveStatus"></span>
+  <button class="btn" id="btnImport">导入 JSON</button>
+  <button class="btn" id="btnExport">导出 questions.json</button>
+  <button class="btn" id="btnStats">统计</button>
+  <button class="btn primary" id="btnAdd">＋ 新增题目</button>
+  <input type="file" id="fileInput" accept=".json,application/json" style="display:none" />
+</header>
+
+<div class="wrap">
+  <div class="stat-strip" id="statStrip"></div>
+
+  <div class="filters">
+    <input type="search" id="fSearch" placeholder="搜索 题干 / ID / 解析 / 选项…" />
+    <select id="fType"><option value="all">全部题型</option><option value="knowledge">知识题</option><option value="choice">创作抉择题</option></select>
+    <select id="fCategory"><option value="all">全部分类</option></select>
+    <select id="fDifficulty"><option value="all">全部难度</option><option value="1">难度 1</option><option value="2">难度 2</option><option value="3">难度 3</option></select>
+    <select id="fStatus"><option value="all">全部状态</option><option value="on">已启用</option><option value="off">已禁用</option></select>
+  </div>
+
+  <div class="qlist" id="qlist"></div>
+</div>
+
+<!-- ============ 编辑弹窗 ============ -->
+<div class="overlay" id="edOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3 id="edTitle">新增题目</h3>
+    <div class="msg" id="edMsg"></div>
+
+    <div class="field">
+      <label>题型</label>
+      <div class="type-pick">
+        <label><input type="radio" name="ed-type" value="knowledge" checked /><span>知识题（单选 + 解析）</span></label>
+        <label><input type="radio" name="ed-type" value="choice" /><span>创作抉择题（无标准答案）</span></label>
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label>题目 ID（唯一，如 Q0001）</label>
+        <input type="text" id="ed-id" placeholder="Q0001" />
+      </div>
+      <div class="field" style="max-width:150px">
+        <label>难度</label>
+        <select id="ed-difficulty">
+          <option value="1">1 · 易</option><option value="2" selected>2 · 中</option><option value="3">3 · 难</option>
+        </select>
+      </div>
+      <div class="field" style="max-width:150px">
+        <label>分类</label>
+        <select id="ed-category"></select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>题干</label>
+      <textarea id="ed-stem" placeholder="请输入题目内容…"></textarea>
+    </div>
+
+    <div class="field" id="knowledgeSituationalField">
+      <label>游戏内情境（柔性题面，可选）</label>
+      <textarea id="ed-scenario" maxlength="160" placeholder="以玩家正在经历的场景引出问题，20–160 字；留空则继续使用传统题干。"></textarea>
+      <div class="hint">填写情境后，每个选项都必须填写对应的“游戏内行动文案”；情境和行动文案均不能使用 {name} 占位符。</div>
+    </div>
+
+    <div class="field">
+      <label id="optLabel">选项（勾选圆圈标记正确答案）</label>
+      <div id="ed-options"></div>
+      <button class="btn sm opt-add" id="ed-addopt">＋ 添加选项</button>
+      <div class="hint" id="optHint"></div>
+    </div>
+
+    <div class="row2">
+      <div class="field" id="tendField">
+        <label>倾向（知识题答对后计入，可选）</label>
+        <input type="text" id="ed-tendency" placeholder="如：羁旅愁思 / 浪漫主义" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label>解析 / 说明</label>
+      <textarea id="ed-analysis" placeholder="答对/选项说明、考点提示…"></textarea>
+    </div>
+
+    <div class="field" style="display:flex;align-items:center;gap:8px">
+      <input type="checkbox" id="ed-enabled" checked />
+      <label style="margin:0">启用（取消勾选则游戏内不会抽到此题）</label>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn ghost" id="edCancel">取消</button>
+      <button class="btn primary" id="edSave">保存题目</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 统计弹窗 ============ -->
+<div class="overlay" id="stOverlay">
+  <div class="modal">
+    <h3>题库统计</h3>
+    <div id="stBody"></div>
+    <div class="modal-actions"><button class="btn primary" id="stClose">关闭</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>数据自动保存在本浏览器（localStorage）。导出即可得到游戏可直接使用的 questions.json。</footer>
+
+<script>
+"use strict";
+/* =========================================================================
+ * 飞花棋题库编辑器 — 单文件、无依赖、离线可用
+ * 数据结构与游戏 config/questions.json 完全兼容：
+ *   knowledge: {id,type,stem,options:[str...],answer,difficulty,category,tendency,analysis,enabled}
+ *   choice:    {id,type,stem,options:[{text,attr,tendency}...],difficulty,category,analysis,enabled}
+ * ========================================================================= */
+
+const STORAGE_KEY = "feihuaqi_qbank_v1";
+
+// 与游戏 rules.js 保持一致
+const ATTR = { shi:"诗力", ci:"词力", lian:"联力", bi:"笔力", xue:"学力", si:"思力" };
+const CATEGORY = { shi:"诗", ci:"词", lian:"联", mix:"综合", xue:"学力" };
+const TYPE_NAME = { knowledge:"知识题", choice:"创作抉择题" };
+
+// 全局状态
+const state = {
+  questions: [],     // 题库数组
+  editIndex: -1,     // 正在编辑的题目在数组中的下标（-1 表示新增）
+  form: null         // 编辑表单的临时模型
+};
+
+/* ---------------- 持久化 ---------------- */
+function save(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.questions));
+    const t = new Date();
+    document.getElementById("saveStatus").textContent =
+      "已自动保存 " + t.toLocaleTimeString("zh-CN",{hour12:false});
+  }catch(e){
+    document.getElementById("saveStatus").textContent = "保存失败：" + e.message;
+  }
+}
+function load(){
+  let raw = null;
+  try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){}
+  if(raw){
+    try{ state.questions = normalizeAll(JSON.parse(raw)); return; }
+    catch(e){ console.warn("读取本地数据失败，使用初始示例", e); }
+  }
+  // 首次使用：放入两道示例，便于上手
+  state.questions = normalizeAll(SEED);
+}
+
+/* ---------------- 规范化 / 校验 ---------------- */
+function normalizeOne(q){
+  q = q || {};
+  const type = q.type === "choice" ? "choice" : "knowledge";
+  const out = {
+    id: String(q.id || "").trim(),
+    type,
+    stem: String(q.stem || "").trim(),
+    difficulty: [1,2,3].includes(Number(q.difficulty)) ? Number(q.difficulty) : 2,
+    category: CATEGORY[q.category] ? q.category : (q.category || "shi"),
+    analysis: String(q.analysis || "").trim(),
+    enabled: q.enabled === false ? false : true
+  };
+  if(type === "knowledge"){
+    const opts = Array.isArray(q.options) ? q.options.map(o=>String(o||"").trim()) : [];
+    out.options = opts;
+    const a = Number(q.answer);
+    out.answer = (Number.isInteger(a) && a>=0 && a<opts.length) ? a : 0;
+    out.tendency = String(q.tendency || "").trim();
+    const scenario = String(q.scenario || "").trim();
+    const acts = Array.isArray(q.optionActs) ? q.optionActs.map(x=>String(x||"").trim()) : [];
+    if(scenario || acts.some(Boolean)){
+      out.scenario = scenario;
+      out.optionActs = acts;
+    }
+  }else{
+    const opts = Array.isArray(q.options)
+      ? q.options.map(o => {
+          if(typeof o === "string") return { text:o.trim(), attr:null, tendency:null };
+          return { text:String(o.text||"").trim(), attr: ATTR[o.attr]?o.attr:null, tendency: o.tendency?String(o.tendency).trim()||null:null };
+        })
+      : [];
+    out.options = opts;
+    out.tendency = "";
+  }
+  return out;
+}
+function normalizeAll(arr){ return (Array.isArray(arr)?arr:[]).map(normalizeOne); }
+
+// 校验单题；返回 {ok, errors:[]}
+function validate(q, allQuestions, selfIndex){
+  const errors = [];
+  if(!q.id) errors.push("题目 ID 不能为空");
+  else if(!/^[A-Za-z0-9_\-]+$/.test(q.id)) errors.push("ID 只能含字母、数字、下划线和连字符");
+  else{
+    const dup = allQuestions.findIndex((x,i)=> x.id===q.id && i!==selfIndex);
+    if(dup>=0) errors.push("ID 与第 "+(dup+1)+" 题重复");
+  }
+  if(!q.stem) errors.push("题干不能为空");
+  if(!Array.isArray(q.options) || q.options.length < 2) errors.push("至少需要 2 个选项");
+  if(q.type==="knowledge"){
+    q.options.forEach((o,i)=>{ if(!o) errors.push("选项 "+(i+1)+" 内容为空"); });
+    if(q.answer<0 || q.answer>=q.options.length) errors.push("请指定正确答案");
+    const scenario = String(q.scenario || "").trim();
+    const acts = Array.isArray(q.optionActs) ? q.optionActs : [];
+    const hasSituational = !!scenario || acts.some(x=>String(x||"").trim());
+    if(hasSituational){
+      if(scenario.length<20 || scenario.length>160) errors.push("游戏内情境须为 20–160 字");
+      if(scenario.includes("{name}")) errors.push("游戏内情境不能使用 {name} 占位符");
+      if(acts.length!==q.options.length) errors.push("行动文案数量必须与选项数量一致");
+      q.options.forEach((_,i)=>{
+        const act = String(acts[i]||"").trim();
+        if(act.length<5) errors.push("选项 "+(i+1)+" 的游戏内行动文案至少需要 5 字");
+        else if(act.length>60) errors.push("选项 "+(i+1)+" 的游戏内行动文案不能超过 60 字");
+        if(act.includes("{name}")) errors.push("选项 "+(i+1)+" 的游戏内行动文案不能使用 {name} 占位符");
+      });
+    }
+  }else{
+    q.options.forEach((o,i)=>{ if(!o.text) errors.push("选项 "+(i+1)+" 内容为空"); });
+  }
+  if(![1,2,3].includes(q.difficulty)) errors.push("难度必须是 1–3");
+  return { ok:errors.length===0, errors };
+}
+function validateAll(){ return state.questions.map((q,i)=>({i, ...validate(q, state.questions, i)})).filter(r=>!r.ok); }
+
+/* ---------------- 渲染列表 ---------------- */
+function getFilters(){
+  return {
+    q: document.getElementById("fSearch").value.trim().toLowerCase(),
+    type: document.getElementById("fType").value,
+    category: document.getElementById("fCategory").value,
+    difficulty: document.getElementById("fDifficulty").value,
+    status: document.getElementById("fStatus").value
+  };
+}
+function filtered(){
+  const f = getFilters();
+  return state.questions.filter(q=>{
+    if(f.type!=="all" && q.type!==f.type) return false;
+    if(f.category!=="all" && q.category!==f.category) return false;
+    if(f.difficulty!=="all" && String(q.difficulty)!==f.difficulty) return false;
+    if(f.status==="on" && q.enabled!==true) return false;
+    if(f.status==="off" && q.enabled===true) return false;
+    if(f.q){
+      const hay = [q.id, q.stem, q.scenario, q.analysis, q.tendency, ...(q.optionActs||[]),
+        ...(q.options||[]).map(o=> typeof o==="string"?o:(o&&o.text)||"")].join(" ").toLowerCase();
+      if(!hay.includes(f.q)) return false;
+    }
+    return true;
+  });
+}
+
+function renderStats(){
+  const total = state.questions.length;
+  const on = state.questions.filter(q=>q.enabled).length;
+  const k = state.questions.filter(q=>q.type==="knowledge").length;
+  const c = state.questions.filter(q=>q.type==="choice").length;
+  const strip = document.getElementById("statStrip");
+  strip.innerHTML = `
+    <div class="stat"><b>${total}</b><span>题目总数</span></div>
+    <div class="stat"><b>${on}</b><span>已启用</span></div>
+    <div class="stat"><b>${total-on}</b><span>已禁用</span></div>
+    <div class="stat"><b>${k}</b><span>知识题</span></div>
+    <div class="stat"><b>${c}</b><span>抉择题</span></div>`;
+}
+
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
+
+function renderList(){
+  renderStats();
+  const list = document.getElementById("qlist");
+  const items = filtered();
+  if(!items.length){
+    list.innerHTML = `<div class="empty"><b>${state.questions.length? "没有符合筛选条件的题目" : "题库还是空的"}</b>
+      ${state.questions.length? "试着调整上方筛选条件。" : "点击右上角「＋ 新增题目」开始，或「导入 JSON」载入现有的 questions.json。"}</div>`;
+    return;
+  }
+  list.innerHTML = items.map(q=>{
+    const idx = state.questions.indexOf(q);
+    const diff = "●".repeat(q.difficulty) + "○".repeat(3-q.difficulty);
+    const optText = q.options.map((o,i)=>{
+      const t = typeof o==="string"? o : (o&&o.text)||"";
+      const mark = (q.type==="knowledge" && i===q.answer) ? " ✓" : "";
+      return esc(t)+mark;
+    }).join("　|　");
+    return `<div class="q-card" data-idx="${idx}">
+      <div class="meta">
+        <span class="q-id">${esc(q.id)}</span>
+        <span class="badge ${q.type==="knowledge"?"k":"c"}">${TYPE_NAME[q.type]}</span>
+        <span class="diff">${diff}</span>
+        <span class="pill ${q.enabled?"on":"off"}" data-toggle="${idx}" title="点击切换启用/禁用">${q.enabled?"启用":"禁用"}</span>
+      </div>
+      <div class="q-main">
+        <p class="q-stem">${esc(q.scenario||q.stem)}</p>
+        <div class="q-tags">
+          <span class="t">${CATEGORY[q.category]||q.category}</span>
+          ${q.scenario?`<span class="t">柔性题面</span>`:""}
+          ${q.tendency?`<span class="t">倾向：${esc(q.tendency)}</span>`:""}
+          <span class="t">${q.options.length} 选项</span>
+        </div>
+        <div class="q-opts">${esc(optText)}</div>
+      </div>
+      <div class="q-actions">
+        <button class="btn sm" data-edit="${idx}">编辑</button>
+        <button class="btn sm" data-dup="${idx}">复制</button>
+        <button class="btn sm danger" data-del="${idx}">删除</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------------- 编辑弹窗 ---------------- */
+function fillCategorySelect(sel, includeAll){
+  const head = includeAll ? `<option value="all">全部分类</option>` : ``;
+  sel.innerHTML = head + Object.entries(CATEGORY)
+    .map(([k,v])=>`<option value="${k}">${v}（${k}）</option>`).join("");
+}
+function openEditor(index){
+  state.editIndex = index;
+  const src = index>=0 ? state.questions[index] : null;
+  state.form = src
+    ? JSON.parse(JSON.stringify(src))
+    : { id:"", type:"knowledge", stem:"", scenario:"", options:["",""], optionActs:["",""], answer:0, difficulty:2, category:"shi", tendency:"", analysis:"", enabled:true };
+  // 兜底：新题按当前题型给默认选项
+  if(!src){
+    if(state.form.type==="choice") state.form.options=[{text:"",attr:null,tendency:null},{text:"",attr:null,tendency:null}];
+  }
+
+  document.getElementById("edTitle").textContent = src ? "编辑题目 · "+src.id : "新增题目";
+  document.getElementById("ed-id").value = state.form.id;
+  document.querySelector(`input[name=ed-type][value=${state.form.type}]`).checked = true;
+  document.getElementById("ed-difficulty").value = String(state.form.difficulty);
+  document.getElementById("ed-category").value = state.form.category;
+  document.getElementById("ed-stem").value = state.form.stem;
+  document.getElementById("ed-scenario").value = state.form.scenario||"";
+  document.getElementById("ed-tendency").value = state.form.tendency||"";
+  document.getElementById("ed-analysis").value = state.form.analysis||"";
+  document.getElementById("ed-enabled").checked = state.form.enabled!==false;
+  document.getElementById("edMsg").className = "msg";
+  document.getElementById("edMsg").textContent = "";
+  syncTypeUI();
+  renderOptions();
+  document.getElementById("edOverlay").classList.add("show");
+}
+function closeEditor(){ document.getElementById("edOverlay").classList.remove("show"); state.editIndex=-1; state.form=null; }
+
+// 根据当前题型切换界面可见性
+function syncTypeUI(){
+  const type = document.querySelector('input[name=ed-type]:checked').value;
+  state.form.type = type;
+  const isK = type==="knowledge";
+  document.getElementById("tendField").style.display = isK ? "" : "none";
+  document.getElementById("knowledgeSituationalField").style.display = isK ? "" : "none";
+  document.getElementById("optLabel").textContent = isK ? "选项（勾选圆圈标记正确答案）" : "选项（每项可设置属性与倾向）";
+  document.getElementById("optHint").textContent = isK
+    ? "单选知识题：勾选正确答案，游戏答错会扣灵感。"
+    : "创作抉择题：无标准答案，勾选的属性/倾向会在玩家抉择后计入。";
+  // 切换题型时确保选项结构正确
+  if(isK){
+    if(!state.form.options.length || typeof state.form.options[0] !== "string")
+      state.form.options = ["",""];
+    if(!Array.isArray(state.form.optionActs)) state.form.optionActs=[];
+    while(state.form.optionActs.length<state.form.options.length) state.form.optionActs.push("");
+    if(state.form.optionActs.length>state.form.options.length) state.form.optionActs.length=state.form.options.length;
+    if(state.form.answer>=state.form.options.length) state.form.answer=0;
+  }else{
+    if(!state.form.options.length || typeof state.form.options[0] === "string")
+      state.form.options = state.form.options.map(o=>({text:o,attr:null,tendency:null}));
+    if(!state.form.options.length) state.form.options=[{text:"",attr:null,tendency:null},{text:"",attr:null,tendency:null}];
+  }
+}
+
+function renderOptions(){
+  const type = state.form.type;
+  const box = document.getElementById("ed-options");
+  box.innerHTML = state.form.options.map((o,i)=>{
+    if(type==="knowledge"){
+      const checked = (state.form.answer===i) ? "checked" : "";
+      const act = (state.form.optionActs&&state.form.optionActs[i])||"";
+      return `<div class="opt-row knowledge-opt-row" data-i="${i}">
+        <span class="ord">${i+1}</span>
+        <input type="radio" name="ed-answer" value="${i}" ${checked} title="设为正确答案"/>
+        <input type="text" class="opt-text" value="${esc(o)}" placeholder="标准答案文本"/>
+        <input type="text" class="opt-act" maxlength="60" value="${esc(act)}" placeholder="游戏内行动文案（柔性题填写，5–60 字）"/>
+        <button class="opt-del" data-delopt="${i}" title="删除此选项">×</button>
+      </div>`;
+    }else{
+      const attrOpts = `<option value="">无属性</option>` + Object.entries(ATTR)
+        .map(([k,v])=>`<option value="${k}" ${o.attr===k?"selected":""}>${v}</option>`).join("");
+      return `<div class="opt-row" data-i="${i}">
+        <span class="ord">${i+1}</span>
+        <input type="text" class="opt-text" value="${esc(o.text)}" placeholder="选项内容"/>
+        <select class="opt-attr">${attrOpts}</select>
+        <input type="text" class="opt-tend" value="${esc(o.tendency||"")}" placeholder="倾向(可选)"/>
+        <button class="opt-del" data-delopt="${i}" title="删除此选项">×</button>
+      </div>`;
+    }
+  }).join("");
+}
+
+function collectForm(){
+  const type = document.querySelector('input[name=ed-type]:checked').value;
+  const rows = [...document.querySelectorAll("#ed-options .opt-row")];
+  const options = rows.map(r=>{
+    const text = r.querySelector(".opt-text").value.trim();
+    if(type==="choice"){
+      const attr = r.querySelector(".opt-attr").value || null;
+      const tend = r.querySelector(".opt-tend").value.trim() || null;
+      return { text, attr, tendency: tend };
+    }
+    return text;
+  });
+  const optionActs = type==="knowledge" ? rows.map(r=>r.querySelector(".opt-act").value.trim()) : undefined;
+  let answer = -1;
+  if(type==="knowledge"){
+    const ck = document.querySelector('input[name=ed-answer]:checked');
+    answer = ck ? Number(ck.value) : -1;
+  }
+  const out = {
+    id: document.getElementById("ed-id").value.trim(),
+    type,
+    stem: document.getElementById("ed-stem").value.trim(),
+    options,
+    answer,
+    difficulty: Number(document.getElementById("ed-difficulty").value),
+    category: document.getElementById("ed-category").value,
+    tendency: document.getElementById("ed-tendency").value.trim(),
+    analysis: document.getElementById("ed-analysis").value.trim(),
+    enabled: document.getElementById("ed-enabled").checked
+  };
+  if(type==="knowledge"){
+    out.scenario = document.getElementById("ed-scenario").value.trim();
+    out.optionActs = optionActs;
+  }
+  return out;
+}
+
+function saveEditor(){
+  const q = collectForm();
+  // 答案下标在删除/重排后可能漂移，重新按选中 radio 对齐
+  if(q.type==="knowledge"){
+    const ck = document.querySelector('input[name=ed-answer]:checked');
+    q.answer = ck ? Number(ck.value) : -1;
+  }
+  const { ok, errors } = validate(q, state.questions, state.editIndex);
+  const msg = document.getElementById("edMsg");
+  if(!ok){
+    msg.className = "msg err";
+    msg.innerHTML = "✗ 无法保存：<br>• " + errors.join("<br>• ");
+    return;
+  }
+  if(state.editIndex>=0){
+    state.questions[state.editIndex] = normalizeOne(q);
+    toast("已更新 "+q.id);
+  }else{
+    state.questions.push(normalizeOne(q));
+    toast("已新增 "+q.id);
+  }
+  save();
+  closeEditor();
+  renderList();
+}
+
+/* ---------------- 题目操作 ---------------- */
+function toggleEnabled(idx){
+  state.questions[idx].enabled = !state.questions[idx].enabled;
+  save(); renderList();
+  toast(state.questions[idx].enabled?"已启用":"已禁用");
+}
+function duplicate(idx){
+  const copy = JSON.parse(JSON.stringify(state.questions[idx]));
+  let base = copy.id, n=1, newId;
+  do{ newId = base + "_" + n; n++; }while(state.questions.some(q=>q.id===newId));
+  copy.id = newId;
+  state.questions.splice(idx+1, 0, copy);
+  save(); renderList(); toast("已复制为 "+newId);
+}
+function remove(idx){
+  const q = state.questions[idx];
+  if(!confirm(`确定删除题目「${q.id}」？此操作不可撤销。`)) return;
+  state.questions.splice(idx,1);
+  save(); renderList(); toast("已删除 "+q.id);
+}
+
+/* ---------------- 导入 / 导出 ---------------- */
+function importFile(file){
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    let data;
+    try{ data = JSON.parse(reader.result); }
+    catch(e){ alert("JSON 解析失败：" + e.message); return; }
+    let arr;
+    if(Array.isArray(data)) arr = data;
+    else if(Array.isArray(data.questions)) arr = data.questions;
+    else if(Array.isArray(data.bank)) arr = data.bank;
+    else { alert("未识别的 JSON 结构（应为题目数组，或含 questions/bank 字段的对象）。"); return; }
+    const norm = normalizeAll(arr);
+    const mode = confirm(
+      `成功读取 ${norm.length} 道题。\n\n点击「确定」= 替换当前题库；\n点击「取消」= 按 ID 合并（已存在则覆盖，不存在则追加）。`);
+    if(mode){
+      state.questions = norm;
+      toast("已替换为 "+norm.length+" 题");
+    }else{
+      const map = new Map(state.questions.map((q,i)=>[q.id,i]));
+      let added=0, updated=0;
+      norm.forEach(q=>{
+        if(map.has(q.id)){ state.questions[map.get(q.id)] = q; updated++; }
+        else { state.questions.push(q); added++; }
+      });
+      toast(`合并完成：新增 ${added}，更新 ${updated}`);
+    }
+    save(); renderList();
+  };
+  reader.readAsText(file, "utf-8");
+}
+function exportData(){
+  const bad = validateAll();
+  if(bad.length){
+    const names = bad.slice(0,8).map(r=>state.questions[r.i].id||"(无ID)").join("、");
+    if(!confirm(`有 ${bad.length} 道题存在校验问题（如：${names}…）。\n仍要导出吗？建议先修正再导出。`)) return;
+  }
+  const data = JSON.stringify(state.questions, null, 2);
+  const blob = new Blob([data], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "questions.json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+  toast("已导出 questions.json");
+}
+
+/* ---------------- 统计弹窗 ---------------- */
+function showStats(){
+  const byType = {}, byCat = {}, byDiff = {1:0,2:0,3:0};
+  state.questions.forEach(q=>{
+    byType[q.type]=(byType[q.type]||0)+1;
+    byCat[q.category]=(byCat[q.category]||0)+1;
+    byDiff[q.difficulty]=(byDiff[q.difficulty]||0)+1;
+  });
+  const row = (k,v)=>`<tr><td>${k}</td><td class="num">${v}</td></tr>`;
+  const body = document.getElementById("stBody");
+  body.innerHTML = `
+    <p><b>总题数：</b>${state.questions.length}（已启用 ${state.questions.filter(q=>q.enabled).length}）</p>
+    <h4 style="margin:14px 0 6px">按题型</h4>
+    <table class="stat-table"><tr><th>题型</th><th>数量</th></tr>
+      ${row(TYPE_NAME.knowledge||"知识题", byType.knowledge||0)}
+      ${row(TYPE_NAME.choice||"创作抉择题", byType.choice||0)}</table>
+    <h4 style="margin:14px 0 6px">按分类</h4>
+    <table class="stat-table"><tr><th>分类</th><th>数量</th></tr>
+      ${Object.entries(byCat).map(([k,v])=>row((CATEGORY[k]||k)+" ("+k+")", v)).join("")}</table>
+    <h4 style="margin:14px 0 6px">按难度</h4>
+    <table class="stat-table"><tr><th>难度</th><th>数量</th></tr>
+      ${row("1 · 易", byDiff[1])}${row("2 · 中", byDiff[2])}${row("3 · 难", byDiff[3])}</table>`;
+  document.getElementById("stOverlay").classList.add("show");
+}
+
+/* ---------------- 提示 ---------------- */
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 1800);
+}
+
+/* ---------------- 事件绑定 ---------------- */
+function bind(){
+  document.getElementById("btnAdd").addEventListener("click", ()=>openEditor(-1));
+  document.getElementById("btnExport").addEventListener("click", exportData);
+  document.getElementById("btnStats").addEventListener("click", showStats);
+  document.getElementById("btnImport").addEventListener("click", ()=>document.getElementById("fileInput").click());
+  document.getElementById("fileInput").addEventListener("change", e=>{
+    if(e.target.files[0]) importFile(e.target.files[0]);
+    e.target.value = "";
+  });
+
+  document.getElementById("edCancel").addEventListener("click", closeEditor);
+  document.getElementById("edSave").addEventListener("click", saveEditor);
+  document.querySelectorAll('input[name=ed-type]').forEach(r=>r.addEventListener("change", ()=>{ syncTypeUI(); renderOptions(); }));
+  document.getElementById("ed-addopt").addEventListener("click", ()=>{
+    if(state.form.type==="knowledge"){ state.form.options.push(""); state.form.optionActs.push(""); }
+    else state.form.options.push({text:"",attr:null,tendency:null});
+    renderOptions();
+  });
+  // 选项区事件委托：删除选项 + 答案选择
+  document.getElementById("ed-options").addEventListener("click", e=>{
+    const del = e.target.closest("[data-delopt]");
+    if(del){
+      const i = Number(del.dataset.delopt);
+      state.form.options.splice(i,1);
+      if(state.form.type==="knowledge") state.form.optionActs.splice(i,1);
+      if(state.form.type==="knowledge" && state.form.answer>=state.form.options.length)
+        state.form.answer = Math.max(0, state.form.options.length-1);
+      renderOptions();
+    }
+  });
+  document.getElementById("ed-options").addEventListener("change", e=>{
+    if(e.target.name==="ed-answer") state.form.answer = Number(e.target.value);
+    const row = e.target.closest(".opt-row");
+    if(row && state.form.type==="choice"){
+      const i = Number(row.dataset.i);
+      const attr = row.querySelector(".opt-attr").value || null;
+      const tend = row.querySelector(".opt-tend").value.trim() || null;
+      if(state.form.options[i]){ state.form.options[i].attr=attr; state.form.options[i].tendency=tend; }
+    }
+  });
+  document.getElementById("ed-options").addEventListener("input", e=>{
+    const row = e.target.closest(".opt-row");
+    if(!row || !state.form) return;
+    const i = Number(row.dataset.i);
+    if(state.form.type==="knowledge"){
+      state.form.options[i] = row.querySelector(".opt-text").value;
+      state.form.optionActs[i] = row.querySelector(".opt-act").value;
+    }else if(state.form.options[i]){
+      state.form.options[i].text = row.querySelector(".opt-text").value;
+      state.form.options[i].tendency = row.querySelector(".opt-tend").value.trim()||null;
+    }
+  });
+  // 题干/解析/倾向/ID 实时回写（避免切换时丢失）
+  ["ed-id","ed-stem","ed-scenario","ed-analysis","ed-tendency"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", e=>{
+      if(!state.form) return;
+      const key = id.replace("ed-","");
+      state.form[key==="id"?"id":key] = e.target.value;
+    });
+  });
+  document.getElementById("ed-difficulty").addEventListener("change", e=>{ if(state.form) state.form.difficulty=Number(e.target.value); });
+  document.getElementById("ed-category").addEventListener("change", e=>{ if(state.form) state.form.category=e.target.value; });
+  document.getElementById("ed-enabled").addEventListener("change", e=>{ if(state.form) state.form.enabled=e.target.checked; });
+
+  // 列表事件委托
+  document.getElementById("qlist").addEventListener("click", e=>{
+    const t = e.target;
+    if(t.dataset.edit!=null) return openEditor(Number(t.dataset.edit));
+    if(t.dataset.dup!=null) return duplicate(Number(t.dataset.dup));
+    if(t.dataset.del!=null) return remove(Number(t.dataset.del));
+    if(t.dataset.toggle!=null) return toggleEnabled(Number(t.dataset.toggle));
+  });
+
+  document.getElementById("stClose").addEventListener("click", ()=>document.getElementById("stOverlay").classList.remove("show"));
+  // 点击遮罩关闭
+  document.querySelectorAll(".overlay").forEach(ov=>ov.addEventListener("click", e=>{ if(e.target===ov) ov.classList.remove("show"); }));
+  // 筛选
+  ["fSearch","fType","fCategory","fDifficulty","fStatus"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", renderList);
+    document.getElementById(id).addEventListener("change", renderList);
+  });
+  // 全局快捷键：Esc 关闭弹窗
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeEditor(); document.querySelectorAll(".overlay.show").forEach(o=>o.classList.remove("show")); } });
+}
+
+/* ---------------- 初始示例 ---------------- */
+const SEED = [
+  {
+    id:"Q0001", type:"knowledge",
+    stem:"「夜半钟声到客船」的作者是？",
+    options:["张继","杜牧","李白","王维"], answer:0,
+    difficulty:2, category:"shi", tendency:"羁旅愁思",
+    analysis:"答案是张继。此句出自《枫桥夜泊》，写旅人夜泊苏州的孤寂。",
+    enabled:true
+  },
+  {
+    id:"Q0101", type:"choice",
+    stem:"塞外八月飞雪，同行者叫苦，你却提起了笔——",
+    options:[
+      {text:"把苦寒写成惊喜：「千树万树梨花开」", attr:"shi", tendency:"浪漫主义"},
+      {text:"把苦寒写成实录：「瀚海阑干百丈冰」", attr:"bi", tendency:"写实"},
+      {text:"缩回帐中烤火，明日再说", attr:null, tendency:null}
+    ],
+    difficulty:2, category:"shi",
+    analysis:"无标准答案。两句其实出自同一首诗——岑参《白雪歌送武判官归京》。",
+    enabled:true
+  }
+];
+
+/* ---------------- 启动 ---------------- */
+function init(){
+  fillCategorySelect(document.getElementById("ed-category"), false);
+  fillCategorySelect(document.getElementById("fCategory"), true);
+  load();
+  bind();
+  renderList();
+}
+document.addEventListener("DOMContentLoaded", init);
+
+// 暴露给控制台/测试（便于高级用户与自动化）
+window.QB = {
+  get: ()=>state.questions,
+  add: (q)=>{ state.questions.push(normalizeOne(q)); save(); renderList(); },
+  exportObj: ()=>state.questions,
+  validateAll
+};
+</script>
+</body>
+</html>

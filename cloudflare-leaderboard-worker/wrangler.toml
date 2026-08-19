@@ -1,0 +1,16 @@
+name = "feihua-leaderboard"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+# 明文变量（非机密）
+[vars]
+GITHUB_REPO = "Luoluozi110/luoluo"
+GITHUB_PATH = "leaderboard.json"
+GITHUB_BRANCH = "main"
+# 允许跨域的源；公开榜单可用 "*"。若只想放行 GitHub Pages，改为：
+# ALLOWED_ORIGIN = "https://luoluozi110.github.io"
+ALLOWED_ORIGIN = "*"
+
+# 机密：必须用 secret 设置，切勿写进本文件（wrangler.toml 会进版本库）。
+#   wrangler secret put GITHUB_TOKEN
+# 填入一枚有 contents:write 的 PAT（建议细粒度，仅授权 luoluo 仓库的 Contents 读写）。

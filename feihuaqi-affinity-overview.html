@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>飞花棋 · 相性系统总表</title>
+<style>
+  :root{ --ink:#2b2118; --paper:#f7f1e3; --line:#d8c9a8; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:"Noto Serif SC","Songti SC",serif; padding:28px 18px 60px; line-height:1.6; }
+  .wrap{ max-width:980px; margin:0 auto; }
+  h1{ text-align:center; font-size:30px; letter-spacing:.12em; margin:6px 0 2px; }
+  .sub{ text-align:center; color:#7a6a4f; font-size:13px; margin-bottom:18px; }
+  h2{ border-left:5px solid #b5893b; padding-left:10px; margin:26px 0 10px; font-size:20px; letter-spacing:.06em; }
+  p.lead{ color:#5c4f3b; font-size:14px; }
+  table{ border-collapse:collapse; width:100%; margin:8px 0; background:#fffdf6; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+  th,td{ border:1px solid var(--line); padding:7px 9px; text-align:center; font-size:14px; }
+  th{ background:#efe4cb; }
+  td small{ color:#6b5c41; font-size:11px; }
+  .num{ font-variant-numeric:tabular-nums; }
+  .tier-hit{ background:#cfe9c4; font-weight:700; }
+  .tier-good{ background:#e9f2d4; }
+  .tier-flat{ background:#f0ece0; color:#9a8c70; }
+  .tier-bad{ background:#f3cdc8; color:#9b322a; font-weight:700; }
+  .ok{ color:#2e7d32; } .warn{ color:#b3261e; } .muted{ color:#a99c80; }
+  code{ background:#ece2cb; padding:1px 5px; border-radius:4px; font-size:13px; }
+  .legend span{ display:inline-block; padding:2px 10px; border-radius:5px; margin-right:8px; font-size:13px; border:1px solid var(--line); }
+  .note{ background:#fff8e6; border:1px dashed #cdb066; padding:10px 14px; border-radius:8px; font-size:13px; color:#5c4f3b; }
+  .okbadge{ display:inline-block; padding:3px 12px; border-radius:20px; font-weight:700; margin-top:6px; }
+  .okbadge.ok{ background:#d8efce; color:#256d28; } .okbadge.bad{ background:#f6d3ce; color:#9b322a; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>飞 花 棋 · 相 性 系 统 总 表</h1>
+<div class="sub">题材 × 文风 相性 · 四层叠加 · 设计约束校验（由 config/affinity.json 自动生成）</div>
+
+<div class="legend">
+  <span class="tier-hit">契合 +12%</span>
+  <span class="tier-good">相得 +6%</span>
+  <span class="tier-flat">中平 0%</span>
+  <span class="tier-bad">相左 −8%</span>
+</div>
+
+<h2>一、矩阵总表（文风 行 × 题材 列）</h2>
+<p class="lead">每格为「该文风应对该题的相性档位」。NPC 与玩家共用此基矩阵；②③④ 三层为玩家专属优势。</p>
+<table>
+  <tr><th><th>文风＼题材</th><th>咏物</th><th>送别</th><th>山水</th><th>边塞</th><th>怀古</th><th>节令</th></th></tr>
+  <tr><th>婉约</th><td class="tier-good">相得<br><small>+6%</small></td><td class="tier-hit">契合<br><small>+12%</small></td><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-bad">相左<br><small>-8%</small></td><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-good">相得<br><small>+6%</small></td></tr><tr><th>豪放</th><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-good">相得<br><small>+6%</small></td><td class="tier-good">相得<br><small>+6%</small></td><td class="tier-hit">契合<br><small>+12%</small></td><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-flat">中平<br><small>0%</small></td></tr><tr><th>哲理</th><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-good">相得<br><small>+6%</small></td><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-good">相得<br><small>+6%</small></td><td class="tier-hit">契合<br><small>+12%</small></td></tr><tr><th>清雅</th><td class="tier-good">相得<br><small>+6%</small></td><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-hit">契合<br><small>+12%</small></td><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-good">相得<br><small>+6%</small></td></tr><tr><th>沉郁</th><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-good">相得<br><small>+6%</small></td><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-good">相得<br><small>+6%</small></td><td class="tier-hit">契合<br><small>+12%</small></td><td class="tier-bad">相左<br><small>-8%</small></td></tr><tr><th>绮丽</th><td class="tier-hit">契合<br><small>+12%</small></td><td class="tier-good">相得<br><small>+6%</small></td><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-bad">相左<br><small>-8%</small></td><td class="tier-flat">中平<br><small>0%</small></td><td class="tier-good">相得<br><small>+6%</small></td></tr>
+</table>
+
+<h2>二、题材 → 最优文风</h2>
+<table>
+  <tr><th>题材</th><th>契合文风数</th><th>校验</th></tr>
+  <tr><td>咏物</td><td class="num">1</td>
+     <td><span class="ok">✅ 唯一最优 绮丽</span></td></tr><tr><td>送别</td><td class="num">1</td>
+     <td><span class="ok">✅ 唯一最优 婉约</span></td></tr><tr><td>山水</td><td class="num">1</td>
+     <td><span class="ok">✅ 唯一最优 清雅</span></td></tr><tr><td>边塞</td><td class="num">1</td>
+     <td><span class="ok">✅ 唯一最优 豪放</span></td></tr><tr><td>怀古</td><td class="num">1</td>
+     <td><span class="ok">✅ 唯一最优 沉郁</span></td></tr><tr><td>节令</td><td class="num">1</td>
+     <td><span class="ok">✅ 唯一最优 哲理</span></td></tr>
+</table>
+
+<h2>三、文风 → 契合 / 相得 / 相左 题材</h2>
+<table>
+  <tr><th>文风</th><th>契合题材（最强）</th><th>相得题材</th><th>相左题材（下注风险）</th></tr>
+  <tr><td><b>婉约</b></td>
+    <td>送别</td>
+    <td>咏物、送别、节令</td>
+    <td><span class="muted">—</span></td></tr><tr><td><b>豪放</b></td>
+    <td>边塞</td>
+    <td>送别、山水、边塞</td>
+    <td><span class="muted">—</span></td></tr><tr><td><b>哲理</b></td>
+    <td>节令</td>
+    <td>山水、怀古、节令</td>
+    <td><span class="muted">—</span></td></tr><tr><td><b>清雅</b></td>
+    <td>山水</td>
+    <td>咏物、山水、节令</td>
+    <td><span class="muted">—</span></td></tr><tr><td><b>沉郁</b></td>
+    <td>怀古</td>
+    <td>送别、边塞、怀古</td>
+    <td><span class="muted">—</span></td></tr><tr><td><b>绮丽</b></td>
+    <td>咏物</td>
+    <td>咏物、送别、节令</td>
+    <td><span class="muted">—</span></td></tr>
+</table>
+
+<h2>四、四层叠加机制</h2>
+<table>
+  <tr><th>层</th><th>机制</th><th>数值</th><th>作用范围</th></tr>
+  <tr><td><b>① 稠密非对称矩阵</b></td><td>基础相性</td><td>每题材唯一最优文风，三文风各有 ≥1 契合题材；每格 契合+12% / 相得+6% / 中平0 / 相左-8%</td><td>NPC 与玩家共用</td></tr><tr><td><b>② 门派文风 identity</b></td><td>身份层</td><td>本门文风 +4%（通儒自适应 +4%）</td><td>玩家专属（NPC 仅取基矩阵）</td></tr><tr><td><b>③ 当朝风潮 zeitgeist</b></td><td>变化层</td><td>随机热点题材 +4% 全风格；随机得势文体 +3% 全题材</td><td>玩家专属 · 每局不同</td></tr><tr><td><b>④ 气势连捷 momentum</b></td><td>复利层</td><td>同文风连胜每层 +2%，封顶 5 层（+10%）；换风格/败清零，平局保留</td><td>玩家专属</td></tr>
+</table>
+
+<h2>五、可调旋钮（config/affinity.json）</h2>
+<table>
+  <tr><th>旋钮键</th><th>当前值</th><th>对应层</th><th>说明</th></tr>
+  <tr><td><code>homeMannerBonus</code></td><td class="num">0.04</td><td>本门文风（identity）</td><td class="muted">忠于本门文风出战额外加成；通儒为 adaptive 临题自选最优</td></tr><tr><td><code>homeAdaptiveBonus</code></td><td class="num">0.04</td><td>通儒自适应</td><td class="muted">通儒流临题选到本题最优文风时的额外加成</td></tr><tr><td><code>zeitgeistThemeBonus</code></td><td class="num">0.04</td><td>当朝风潮·热点题材</td><td class="muted">开局随机抽中热点题材，所有文风对该题材 +此值</td></tr><tr><td><code>zeitgeistMannerBonus</code></td><td class="num">0.03</td><td>当朝风潮·得势文体</td><td class="muted">开局随机抽中得势文风，该文风对所有题材 +此值</td></tr><tr><td><code>momentumPer</code></td><td class="num">0.02</td><td>气势连捷（每层）</td><td class="muted">连续同文风胜场每层叠加 +此值</td></tr><tr><td><code>momentumMax</code></td><td class="num">5</td><td>气势连捷（封顶层数）</td><td class="muted">连捷加成封顶层数（封顶 = momentumPer × momentumMax）</td></tr>
+</table>
+
+<h2>六、门派文风（identity 层）</h2>
+<table>
+  <tr><th>流派</th><th>主属性</th><th>本门文风</th><th>出战加成</th></tr>
+  <tr><td>诗仙流</td><td class="num">shi</td><td>豪放</td>
+  <td>+4%（用本门文风出战）</td></tr><tr><td>词宗流</td><td class="num">ci</td><td>婉约</td>
+  <td>+4%（用本门文风出战）</td></tr><tr><td>联圣流</td><td class="num">lian</td><td>哲理</td>
+  <td>+4%（用本门文风出战）</td></tr><tr><td>通儒流</td><td class="num">xue</td><td>通儒·临题自选最优</td>
+  <td>+4%（命中）</td></tr><tr><td>奇士流</td><td class="num">si</td><td>绮丽</td>
+  <td>+4%（用本门文风出战）</td></tr>
+</table>
+
+<h2>七、档位说明</h2>
+<table>
+  <tr><th>档位</th><th>数值</th><th>星标</th><th>含义</th></tr>
+  <tr><td class="tier-hit">契合</td><td class="num">+0.12</td><td>★★★</td><td>该文风为此题材唯一最优，强烈推荐</td></tr>
+  <tr><td class="tier-good">相得</td><td class="num">+0.06</td><td>★★</td><td>次优搭配，仍为正向相性</td></tr>
+  <tr><td class="tier-flat">中平</td><td class="num">0</td><td>★</td><td>无相性影响（矩阵未列即此档）</td></tr>
+  <tr><td class="tier-bad">相左</td><td class="num">−0.08</td><td>—</td><td>相冲，出战该文风会被克制</td></tr>
+</table>
+
+<h2>八、设计约束校验</h2>
+<div class="note">
+  <p><b>约束一：</b>每个题材恰有 <b>1 个契合文风</b>（唯一最优）。<br>
+  <b>约束二：</b>每个文风至少 <b>1 个契合题材</b>（保证三/六文风策略均衡可行）。</p>
+  <span class="okbadge ok">✅ 当前矩阵满足全部设计约束</span>
+</div>
+<p class="lead" style="margin-top:14px">说明：相性数值仅作用于战斗分（pct 修正）；②③④ 三层为玩家专属优势，是把「理解并驾驭相性」转化为胜势的奖励。详见 feihuaqi-affinity-2.0.md。</p>
+</div>
+</body>
+</html>

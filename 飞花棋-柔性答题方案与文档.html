@@ -1,0 +1,277 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>飞花棋 · 柔性答题方案与交接文档</title><style>
+* { box-sizing: border-box; }
+body { margin:0; background:#f7f3ec; color:#2b2723;
+  font-family: system-ui, -apple-system, "Microsoft YaHei", sans-serif; }
+.shell { max-width: 980px; margin: auto; padding: 32px 20px 80px; }
+.top { background:#fffdf9; border:1px solid #e2d8ca; border-radius:14px;
+  padding:20px 24px; margin-bottom:18px; }
+.top h1 { font-family:KaiTi, STKaiti, serif; font-size:27px; margin:0 0 8px; color:#8e2f22; }
+.top p { margin:0; color:#756b60; }
+.doc { background:#fffdf9; border:1px solid #e2d8ca; border-radius:14px; padding:30px 34px; }
+h1 { font-family:KaiTi, STKaiti, serif; color:#8e2f22; font-size:24px; margin:28px 0 12px; }
+h2 { color:#7a3326; font-size:19px; margin:26px 0 10px; border-left:4px solid #b08a4a; padding-left:10px; }
+h3 { color:#5a4a3a; font-size:16px; margin:18px 0 8px; }
+p { line-height:1.85; margin:8px 0; }
+li { line-height:1.8; margin:4px 0 4px 20px; }
+code { font-family: Consolas, "Microsoft YaHei", monospace; background:#efe7d8;
+  padding:1px 5px; border-radius:4px; font-size:13px; color:#6a3b1f; }
+pre.code { background:#2b2723; color:#f0e6d2; padding:16px 18px; border-radius:10px;
+  overflow:auto; font-size:13px; line-height:1.7; font-family: Consolas, monospace; }
+blockquote { border-left:3px solid #b08a4a; margin:10px 0; padding:6px 14px;
+  background:#f3ecdd; color:#5a4a3a; border-radius:0 8px 8px 0; }
+table { border-collapse: collapse; width:100%; margin:14px 0; font-size:14px; }
+th, td { border:1px solid #d8ccb6; padding:8px 10px; text-align:left; vertical-align:top; }
+th { background:#efe7d8; color:#5a4a3a; }
+@media (max-width: 640px) { .shell { padding:14px 10px 50px; } .doc { padding:20px 16px; } }
+</style></head>
+<body><main class="shell">
+<section class="top"><h1>飞花棋 · 柔性答题（情境化选择）</h1>
+<p>方案与交接文档｜字段规范 · 改写范式 · 完整示例 · 最小代码改动 · 验收标准</p></section>
+<section class="doc"><h1>飞花棋 · 柔性答题（情境化选择）方案与交接文档</h1>
+<p></p>
+<blockquote>目标：把「知识考课」里的显式 ABCD 问答，改成<b>情境中的行动选择</b>——本质仍是做题、判定机制不变，只是玩家看到的是「你身处某刻、想做某件事」，而非「A 张继 B 李白 C 杜甫」。</blockquote>
+<blockquote>范围：仅改造 <code>type:&quot;knowledge&quot;</code> 题目的<b>展示文案</b>；引擎判定、数值奖励、答题倒计时全部保持不变。</blockquote>
+<blockquote>状态：本文件为<b>方案与交接文档</b>，不含代码改动。执行窗口据此落地。</blockquote>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>一、任务概述</h2>
+<p></p>
+<p>用户原话示例：</p>
+<p></p>
+<blockquote>枫桥夜泊的作者是（）A 张继 B 李白 C 杜甫。</blockquote>
+<blockquote>改后：你旅至枫桥，于此夜泊，忽闻寒山寺传来钟声，你心有所感，打算诵上一句古人诗句。第一选择念张继的诗，第二念李白的，第三念杜甫的……</blockquote>
+<p></p>
+<p>核心诉求：</p>
+<p></p>
+<p>1. 保留「做题」内核——题目事实、正误判定、属性/灵感奖惩都不变。</p>
+<p>2. 去掉直白的「A/B/C/D + 选项原文」，换成「情境 + 你会做什么」的柔性选择。</p>
+<p>3. 文档要能直接交给另一个对话窗口执行，因此需给出<b>字段规范、改写范式、完整示例、最小代码改动点、验收标准</b>。</p>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>二、现状与可行性（为什么改动很小）</h2>
+<p></p>
+<p>现有答题链路（实际可玩构建 <code>feihuaqi-playable/</code>）：</p>
+<p></p>
+<li>出题：<code>js/engine/game.js</code> <code>doQuiz()</code> —— 70% 抽 <code>knowledge</code>、30% 抽 <code>choice</code>；判定仅一行：<code>const ok = !ans.timedOut &amp;&amp; ans.index === q.answer;</code></li>
+<li>展示：<code>js/ui/modals.js</code> <code>showQuiz(q)</code> —— 渲染 <code>q.stem</code> 为题面，选项渲染为 <code>&lt;span class=&quot;idx&quot;&gt;A&lt;/span&gt; 选项原文</code>，点击回传 <code>index</code>。</li>
+<li>结果：<code>showQuizResult(q, ans, ok)</code> —— 用 <code>q.answer</code> 高亮正确项，答错时显示 <code>正确答案：A．张继</code>。</li>
+<p></p>
+<p><b>关键结论</b>：判定是<b>纯索引式</b>。<code>options</code> 数组的顺序就是答案，<code>answer</code> 只是下标。只要：</p>
+<p></p>
+<li>选项数组顺序不变；</li>
+<li>新增的「情境文案」「选项动作文案」与原 <code>options</code> 顺序一一对应；</li>
+<p></p>
+<p>引擎 <code>game.js</code> 与 <code>config.js</code> <b>一行都不用改</b>，只动 <code>modals.js</code> 的展示逻辑。这是低风险改造。</p>
+<p></p>
+<p>题库概况：<code>config/questions.json</code> 共 67 题，其中 <code>knowledge</code> 49、<code>choice</code> 18；类别 <code>shi</code> 23、<code>ci</code> 16、<code>lian</code> 13、<code>mix</code> 15。本文只处理 <code>knowledge</code> 49 题；<code>choice</code>（创作抉择）保持原样。</p>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>三、内容模型（目标字段规范）</h2>
+<p></p>
+<p>在现有 <code>knowledge</code> 题目上<b>增量新增两个可选字段</b>，不改动原有字段，保证向后兼容：</p>
+<p></p>
+<pre class='code'>
+{
+  &quot;id&quot;: &quot;Q0001&quot;,
+  &quot;type&quot;: &quot;knowledge&quot;,
+  &quot;stem&quot;: &quot;「夜半钟声到客船」的作者是？&quot;,
+  &quot;scenario&quot;: &quot;你旅至枫桥，于此夜泊。夜半，寒山寺钟声悠悠传来，惊起岸边宿鸟。你披衣坐起，忽有所感，便想向同舟的旅人诵一句古人的诗，以寄此刻羁旅之意。&quot;,
+  &quot;options&quot;: [&quot;张继&quot;, &quot;杜牧&quot;, &quot;李白&quot;, &quot;王维&quot;],
+  &quot;optionActs&quot;: [
+    &quot;诵张继《枫桥夜泊》：「月落乌啼霜满天，江枫渔火对愁眠」&quot;,
+    &quot;诵杜牧《泊秦淮》：「烟笼寒水月笼沙，夜泊秦淮近酒家」&quot;,
+    &quot;诵李白《静夜思》：「床前明月光，疑是地上霜」&quot;,
+    &quot;诵王维《山居秋暝》：「空山新雨后，天气晚来秋」&quot;
+  ],
+  &quot;answer&quot;: 0,
+  &quot;analysis&quot;: &quot;答案是张继。此句是《枫桥夜泊》末句……&quot;,
+  &quot;enabled&quot;: true
+}
+</pre>
+<p></p>
+<p>字段约定：</p>
+<p></p>
+<table><thead><tr><th>字段</th><th>是否改动</th><th>作用</th></tr></thead><tbody><tr><td><code>stem</code></td><td>保留</td><td>机器/编辑参考用的原题面；<code>scenario</code> 存在时界面不显示它</td></tr><tr><td><code>scenario</code></td><td><b>新增（可选）</b></td><td>情境化题面，替换 <code>stem</code> 的展示</td></tr><tr><td><code>options</code></td><td>保留</td><td>答案身份数组（张继/杜牧/…），顺序即判定，不可打乱</td></tr><tr><td><code>optionActs</code></td><td><b>新增（可选）</b></td><td>与 <code>options</code> 等长、同序；玩家点击时看到的「动作文案」</td></tr><tr><td><code>answer</code></td><td>保留</td><td>正确项下标，指向 <code>options</code>/<code>optionActs</code> 同一位置</td></tr><tr><td><code>analysis</code></td><td>保留</td><td>答后解析，原样展示即可（解释的是事实，与包装无关）</td></tr></tbody></table>
+<p></p>
+<p>兼容规则：<code>scenario</code>/<code>optionActs</code> 缺省时，<code>modals.js</code> 退化为当前渲染（显示 <code>stem</code> + <code>options</code> 原文 + ABCD 角标），旧题零影响。</p>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>四、题型转换范式（改写 cheat sheet）</h2>
+<p></p>
+<p><code>knowledge</code> 题可归为几类「提问原型」。每类给一个<b>情境模板</b>和<b>选项动作写法规则</b>，内容作者照此批量产出即可。</p>
+<p></p>
+<table><thead><tr><th>原型</th><th>示例原题</th><th>情境落点</th><th>选项动作写法</th></tr></thead><tbody><tr><td>作者是谁</td><td>「夜半钟声…」作者？</td><td>把人带到诗发生的地点/时刻，想「诵/评」一句</td><td>「诵{诗人}{代表作}：『名句』」</td></tr><tr><td>词牌/诗体</td><td>「但愿人长久」词牌？</td><td>友人赞某词，问你依何调</td><td>「答：依《{词牌}》——『名句』」</td></tr><tr><td>上一句/下一句</td><td>「野火烧不尽」下一句？</td><td>与人联句/教童子，要接下去</td><td>「接：『{诗句}』」</td></tr><tr><td>对句/下联</td><td>上联「两个黄鹂…」下联？</td><td>题联/补对，要凑成工对</td><td>「补：『{诗句}』」</td></tr><tr><td>写的是哪处</td><td>「一览众山小」写哪座山？</td><td>登临某山，同伴问是哪座</td><td>「答：是{山/地}」</td></tr><tr><td>出自哪首诗</td><td>「锄禾日当午」出自？</td><td>评某句，问其来处</td><td>「道：出自《{诗名}》」</td></tr><tr><td>意象/手法（mix）</td><td>某手法指什么</td><td>评点作品，要你点破</td><td>「说：这是{手法}——『例句中…』」</td></tr></tbody></table>
+<p></p>
+<p>通用原则：情境结尾给一个明确<b>意图动词</b>（想诵 / 要答 / 接着背 / 补一句 / 道是哪座），让四个选项自然成为「四种可做之事」。干扰项在情境里都要<b> plausibly 可做</b>，只是按文学事实错误（换了诗人、换了诗、换了对句）。</p>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>五、完整示例（5 题，跨类别）</h2>
+<p></p>
+<p>下面 5 题已按规范写好，顺序与 <code>options</code> 严格对齐，<code>answer</code> 下标不变。执行窗口可直接作为首批种子数据。</p>
+<p></p>
+<h3>示例 1 · 作者是谁（shi）</h3>
+<li>原题：<code>「夜半钟声到客船」的作者是？</code></li>
+<li><code>scenario</code>：你旅至枫桥，于此夜泊。夜半，寒山寺钟声悠悠传来，惊起岸边宿鸟。你披衣坐起，忽有所感，便想向同舟的旅人诵一句古人的诗，以寄此刻羁旅之意。</li>
+<li><code>optionActs</code>：</li>
+<p>1. 诵张继《枫桥夜泊》：「月落乌啼霜满天，江枫渔火对愁眠」</p>
+<p>2. 诵杜牧《泊秦淮》：「烟笼寒水月笼沙，夜泊秦淮近酒家」</p>
+<p>3. 诵李白《静夜思》：「床前明月光，疑是地上霜」</p>
+<p>4. 诵王维《山居秋暝》：「空山新雨后，天气晚来秋」</p>
+<li><code>answer</code>：0</li>
+<p></p>
+<h3>示例 2 · 词牌（ci）</h3>
+<li>原题：<code>「但愿人长久，千里共婵娟」的词牌名是？</code></li>
+<li><code>scenario</code>：中秋夜，友人斟酒相劝，叹道：「苏子此词，把人间聚散写尽了。」他望着天上月，问你：这首依的是何调？你略一沉吟，便要答他。</li>
+<li><code>optionActs</code>：</li>
+<p>1. 答：依《水调歌头》——「明月几时有，把酒问青天」</p>
+<p>2. 答：依《念奴娇》——「大江东去，浪淘尽」</p>
+<p>3. 答：依《西江月》——「明月别枝惊鹊，清风半夜鸣蝉」</p>
+<p>4. 答：依《满江红》——「怒发冲冠，凭栏处」</p>
+<li><code>answer</code>：0</li>
+<p></p>
+<h3>示例 3 · 下一句（shi）</h3>
+<li>原题：<code>「野火烧不尽」的下一句是？</code></li>
+<li><code>scenario</code>：你与童子在古原上送别，望着离离原草。童子仰头问你：「野火烧不尽」之后，该怎么接？你笑着要往下背。</li>
+<li><code>optionActs</code>：</li>
+<p>1. 接：『春风吹又生』</p>
+<p>2. 接：『一岁一枯荣』</p>
+<p>3. 接：『又送王孙去』</p>
+<p>4. 接：『萋萋满别情』</p>
+<li><code>answer</code>：0</li>
+<p></p>
+<h3>示例 4 · 下联（lian）</h3>
+<li>原题：上联「两个黄鹂鸣翠柳」，下联是？</li>
+<li><code>scenario</code>：草堂初成，你在门上题了上联「两个黄鹂鸣翠柳」，想再补一句，与它对仗成趣。访客在旁催促：下句写什么？</li>
+<li><code>optionActs</code>：</li>
+<p>1. 补：『一行白鹭上青天』</p>
+<p>2. 补：『门泊东吴万里船』</p>
+<p>3. 补：『窗含西岭千秋雪』</p>
+<p>4. 补：『柳暗花明又一村』</p>
+<li><code>answer</code>：0</li>
+<p></p>
+<h3>示例 5 · 写的是哪处（shi）</h3>
+<li>原题：杜甫「会当凌绝顶，一览众山小」写的是哪座山？</li>
+<li><code>scenario</code>：你登临一座名山，望见齐鲁大地青峦连绵。同伴道：杜工部写「会当凌绝顶，一览众山小」，说的便是眼前这座——你道是哪座？</li>
+<li><code>optionActs</code>：</li>
+<p>1. 答：是华山</p>
+<p>2. 答：是庐山</p>
+<p>3. 答：是泰山</p>
+<p>4. 答：是黄山</p>
+<li><code>answer</code>：2</li>
+<p></p>
+<blockquote>注意示例 4 的干扰项 2、3 同出杜诗，但作为「紧接上联的对句」是错误的——这正是题目本意（考对仗位置），情境中仍 plausible，保留即可。</blockquote>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>六、引擎/界面最小改动清单（给执行窗口）</h2>
+<p></p>
+<p>只动 <code>js/ui/modals.js</code> 两处，其余不动。</p>
+<p></p>
+<p><b>1) <code>showQuiz(q)</code> 渲染段（约 126–144 行）</b></p>
+<p></p>
+<pre class='code'>
+// 原：const opts = (q.options || []).map((o, i) =&gt; {
+//        const text = isChoice ? o.text : o; ...
+// 改：
+const stemText = q.scenario ? q.scenario : q.stem;
+const optTextOf = (o, i) =&gt;
+  isChoice ? o.text
+  : (q.optionActs &amp;&amp; q.optionActs[i] != null ? q.optionActs[i] : o);
+const opts = (q.options || []).map((o, i) =&gt; `
+  &lt;button class=&quot;opt&quot; data-i=&quot;${i}&quot;&gt;&lt;span class=&quot;idx&quot;&gt;${&#x27;ABCD&#x27;[i]}&lt;/span&gt;
+    &lt;span&gt;${esc(personalize(optTextOf(o, i), this.playerName))}&lt;/span&gt;&lt;/button&gt;`).join(&#x27;&#x27;);
+// 题面处把 ${esc(personalize(q.stem,...))} 改为 ${esc(personalize(stemText, this.playerName))}
+</pre>
+<p></p>
+<p>角标 <code>ABCD</code> 可保留（仅作序号），也可在 <code>scenario</code> 存在时隐藏——建议保留，便于无障碍与调试。</p>
+<p></p>
+<p><b>2) <code>showQuizResult(q, ans, ok)</code> 结果行（约 189 行）</b></p>
+<p></p>
+<pre class='code'>
+// 原：正确答案：${&#x27;ABCD&#x27;[q.answer]}．${esc(q.options[q.answer])}
+// 改：
+const correctAct = (q.optionActs &amp;&amp; q.optionActs[q.answer] != null)
+  ? q.optionActs[q.answer] : q.options[q.answer];
+// 用它替换 q.options[q.answer]，前缀仍可用 ${&#x27;ABCD&#x27;[q.answer]}．
+</pre>
+<p></p>
+<p><code>game.js</code> <code>doQuiz</code>：不改（索引判定保持不变）。</p>
+<p><code>config.js</code>：不改（仍按 <code>enabled</code> 过滤）。</p>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>七、文案写作规范（叙事设计约束）</h2>
+<p></p>
+<p>1. 统一第二人称「你」；运行时由 <code>personalize()</code> 注入玩家名号，数据文件勿写 <code>{name}</code>。</p>
+<p>2. 情境须落在与题目相关的<b>地点 / 时刻 / 动作</b>上（枫桥→夜泊钟声；中秋→苏词；古原→送别），不可凭空套景。</p>
+<p>3. 每个选项动作必须点出<b>具体诗人 + 作品 + 至少一句名句</b>，使「选哪个」一目了然且彼此可区分。</p>
+<p>4. 干扰项在情境中要 plausibly 可做，但按文学事实错误（换诗人 / 换诗 / 换对句 / 换地）。</p>
+<p>5. 情境结尾给明确意图动词：想诵 / 要答 / 接着背 / 补一句 / 道是哪座。</p>
+<p>6. 不替玩家下结论，不解释「这象征什么」；把余韵留给玩家。</p>
+<p>7. 篇幅：<code>scenario</code> 40–90 字；单条 <code>optionAct</code> 12–30 字。</p>
+<p>8. <code>analysis</code> 原样保留（解释事实），不必改写；若改须保证与 <code>answer</code> 对应。</p>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>八、落地分批建议</h2>
+<p></p>
+<li><b>阶段 A（手感验证）</b>：改 <code>modals.js</code> + 先转 <code>shi</code> 23 题（含示例 1/3/5），上线前由编辑试玩，确认「不觉得在考试」且无歧义。</li>
+<li><b>阶段 B（全覆盖）</b>：转 <code>ci</code> 16、<code>lian</code> 13、<code>mix</code> 15，共 49 题。</li>
+<li><b>同步内容包</b>：改完 <code>config/questions.json</code> 后，运行 <code>build_feihua_content.mjs</code> 重新生成根目录 <code>feihua-content.json</code>（防部署被云端配置覆盖回旧版）。</li>
+<li><b>缓存版本</b>：入口 <code>index.html</code> 相关 <code>?v=</code> 统一 bump（如 <code>20260818softquiz</code>）。</li>
+<li><b>部署</b>：由执行窗口按现有双平台流程决定，本方案不涉及。</li>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>九、验收与回归</h2>
+<p></p>
+<p>新增校验脚本 <code>tests/quiz-situational.test.mjs</code>：</p>
+<p></p>
+<pre class='code'>
+// 伪代码要点
+for (const q of cfg.questions) {
+  if (q.type !== &#x27;knowledge&#x27;) continue;
+  if (q.scenario &amp;&amp; q.optionActs) {
+    assert(q.optionActs.length === q.options.length, &#x27;optionActs 与 options 等长&#x27;);
+    assert(q.answer &gt;= 0 &amp;&amp; q.answer &lt; q.options.length, &#x27;answer 下标合法&#x27;);
+  }
+}
+// 取一道带 scenario 的题，模拟点击 answer 下标 → 引擎 ok===true；点击错误下标 → ok===false
+</pre>
+<p></p>
+<p>验收清单：</p>
+<p></p>
+<li>[ ] 带 <code>scenario</code> 的题显示情境，不显示原 <code>stem</code></li>
+<li>[ ] <code>optionActs</code> 与 <code>options</code> 顺序一致，点击正确项下标判定为对</li>
+<li>[ ] 缺 <code>scenario</code>/<code>optionActs</code> 的旧题仍按原样式渲染（向后兼容）</li>
+<li>[ ] 答错时结果行显示「正确动作」而非裸答案</li>
+<li>[ ] 倒计时、属性奖励、灵感奖惩与原来一致</li>
+<li>[ ] <code>feihua-content.json</code> 已同步、<code>?v=</code> 已 bump</li>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>十、风险与边界</h2>
+<p></p>
+<li><b>致命风险</b>：<code>optionActs</code> 与 <code>options</code> 顺序错位 → 判定整题错乱。校验脚本必须卡死「等长 + 下标合法」。</li>
+<li>干扰项若诗意牵强会出戏，需编辑把关，不可机器硬凑。</li>
+<li><code>choice</code>（创作抉择）本次不碰；若日后也情境化，可复用同一套 <code>scenario</code> 字段。</li>
+<li>不改 <code>game.js</code> 是硬约束——任何「让情境影响判定」的念头都会破坏索引判定，必须拒绝。</li>
+<p></p>
+<p>---</p>
+<p></p>
+<h2>十一、交接清单（执行窗口照此逐项做）</h2>
+<p></p>
+<p>1. 读取本文第三、四、五节，理解字段规范与改写范式。</p>
+<p>2. 按第八节阶段 A，先改 <code>modals.js</code>（第六节两处），转 <code>shi</code> 23 题。</p>
+<p>3. 写并跑 <code>tests/quiz-situational.test.mjs</code>（第九节）。</p>
+<p>4. 阶段 B 转剩余 26 题。</p>
+<p>5. 跑 <code>build_feihua_content.mjs</code> 同步内容包；bump <code>?v=</code>。</p>
+<p>6. 按验收清单逐条核对，确认向后兼容与判定正确。</p>
+<p></p></section></main></body></html>

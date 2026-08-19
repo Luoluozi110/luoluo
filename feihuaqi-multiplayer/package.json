@@ -1,0 +1,13 @@
+{
+  "name": "feihuaqi-multiplayer",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "飞花棋（回合制大富翁）多人交互参考实现：服务器权威 WebSocket 房间 + 浏览器端客户端",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node server/test-smoke.mjs"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

@@ -1,0 +1,19 @@
+# 本地运行缓存、依赖与历史同步副本（均可重新生成）
+.workbuddy/
+.backup/
+extracted/
+node_modules/
+**/node_modules/
+
+# 本地诊断与部署输出
+*.log
+*.exit
+*.tmp
+*.bak
+*.pyc
+__pycache__/
+
+# 操作系统与编辑器元数据
+.DS_Store
+Thumbs.db
+.vscode/

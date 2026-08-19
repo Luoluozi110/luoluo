@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《飞花棋》文案优化评审稿</title>
+<style>
+  :root{
+    --ink:#292522; --ink2:#6b625a; --paper:#faf7f2;
+    --card:#fffdf9; --line:#e6ded2;
+    --zhu:#a02818; --zhu2:#c24632; --zhuBg:#f8eae4;
+    --bo:#1f4e3d; --boBg:#e7f0e9; --qishi:#4a3a63; --qiBg:#ede9f5;
+    --cizong:#5b4030; --ciBg:#f2ece6;
+    --amber:#8a5a13; --amberBg:#f6ecd8;
+    --p0:#a02818; --p1:#8a5a13; --p2:#1f4e3d;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:"Songti SC","STSong","SimSun","Noto Serif SC",serif;
+    background:var(--paper); color:var(--ink);
+    line-height:1.85; font-size:16px; letter-spacing:.02em;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:880px; margin:0 auto; padding:48px 32px 96px;}
+  header{text-align:center; padding:34px 0 30px; border-bottom:1px solid var(--line); margin-bottom:38px;}
+  header .kicker{font-size:13px; letter-spacing:.4em; color:var(--zhu2); margin-bottom:14px;}
+  h1{font-size:30px; font-weight:700; color:var(--ink); letter-spacing:.06em;}
+  header .sub{font-size:14px; color:var(--ink2); margin-top:14px; line-height:1.9;}
+  header .sub b{color:var(--zhu); font-weight:700;}
+  h2{font-size:21px; font-weight:700; margin:52px 0 18px; padding-left:14px; border-left:4px solid var(--zhu2); color:var(--ink); letter-spacing:.04em;}
+  h3{font-size:17px; font-weight:700; margin:30px 0 12px; color:var(--zhu);}
+  p{margin:12px 0; color:var(--ink);}
+  .lead{font-size:17px;}
+  .judge{
+    background:var(--zhuBg); border:1px solid #f0cdc2; border-radius:10px;
+    padding:22px 26px; margin:26px 0; font-size:18px;
+  }
+  .judge b{color:var(--zhu);}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px 24px; margin:18px 0;}
+  .quote{border-left:3px solid var(--line); padding:6px 0 6px 18px; color:var(--ink2); font-style:normal; margin:12px 0;}
+  .quote em{color:var(--ink); font-style:normal;}
+  code,pre{
+    font-family:"JetBrains Mono","Consolas",monospace; font-size:13.5px;
+    background:#f4eee4; border:1px solid #ece2d2; border-radius:6px;
+  }
+  code{padding:1px 6px; color:var(--zhu);}
+  pre{padding:14px 16px; overflow-x:auto; line-height:1.7; color:var(--ink);}
+  pre code{background:none; border:none; padding:0; color:inherit;}
+  table{width:100%; border-collapse:collapse; margin:18px 0; font-size:14.5px;}
+  th,td{border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top;}
+  th{background:#f3ece1; font-weight:700; color:#4a423a; white-space:nowrap;}
+  td .tag{display:inline-block; font-size:12px; padding:0 8px; border-radius:20px; margin-right:6px; font-weight:700;}
+  .tag.p0{background:#fbeae6; color:var(--p0);}
+  .tag.p1{background:#f6ecd8; color:var(--p1);}
+  .tag.p2{background:#e7f0e9; color:var(--p2);}
+  ul,ol{margin:12px 0 12px 26px;}
+  li{margin:7px 0;}
+  .check{list-style:none; margin-left:4px;}
+  .check li{padding-left:26px; position:relative;}
+  .check li::before{content:""; position:absolute; left:0; top:.55em; width:13px; height:13px; border:1.5px solid var(--zhu2); border-radius:3px;}
+  .pri{display:flex; gap:16px; align-items:flex-start; margin:18px 0; padding:20px; background:var(--card); border:1px solid var(--line); border-radius:12px;}
+  .pri .n{flex:0 0 46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; color:#fff; background:var(--zhu2);}
+  .pri .tx{flex:1;}
+  .pri h4{font-size:17px; margin-bottom:4px;}
+  .pri p{color:var(--ink2); font-size:15px;}
+  .school{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:18px 0;}
+  .school .s{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px;}
+  .school .s h5{font-size:16px; margin-bottom:8px;}
+  .school .s p{font-size:13.5px; color:var(--ink2);}
+  .s.bo h5{color:var(--bo);} .s.qishi h5{color:var(--qishi);} .s.cizong h5{color:var(--cizong);}
+  .s.bo{border-top:3px solid var(--bo);} .s.qishi{border-top:3px solid var(--qishi);} .s.cizong{border-top:3px solid var(--cizong);}
+  .foot{margin-top:60px; padding-top:22px; border-top:1px solid var(--line); font-size:13px; color:var(--ink2); text-align:center;}
+  .foot a{color:var(--zhu);}
+  @media(max-width:680px){ .school{grid-template-columns:1fr;} th,td{font-size:13px;} .wrap{padding:24px 18px 72px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">NARRATIVE REVIEW · 飞花棋</div>
+  <h1>《飞花棋》文案优化评审稿</h1>
+  <div class="sub">评审基线：`feihuaqi-playable/` 网页版实际可玩构建 · 仅做文案与叙事评审，不改代码 / 配置 / 数值<br>
+  范围：流派选择 · 奇遇 · 传世名篇 · 文心 · 天象 · 题库解析 · NPC 机制提示 · 战斗流程 · HUD 与结算</div>
+</header>
+
+<div class="judge">
+  一句话判断：现有文案<b>有文化、有画面、规则清楚</b>；下一阶段要补的是<b>有动机、有关系、有回声</b>。
+</div>
+
+<h2>一、现有优势</h2>
+<div class="card">
+  <h3>1. 世界的语汇已经形成</h3>
+  <p>“科场、文心、灵感、文体、文风、风潮、金榜、殿试、图鉴阁”彼此支撑，几乎没有现代网游式的突兀跳出。`motto + flavor` 把三派从属性入口提升成三种写作人格：</p>
+  <div class="school">
+    <div class="s bo"><h5>博闻</h5><p>以积累和引证为力量，知识即笔力。</p></div>
+    <div class="s qishi"><h5>奇士</h5><p>以偏锋和突破解局，灵机即转机。</p></div>
+    <div class="s cizong"><h5>辞宗</h5><p>以落笔与表达压场，言辞即锋芒。</p></div>
+  </div>
+  <p style="font-size:14px;color:var(--ink2);">后续应沿着「不同的写法 = 不同的看世界方式」继续深化。</p>
+
+  <h3>2. 奇遇卡已有场景感</h3>
+  <p>「卖字换酒」「老农问字」「落第榜下」「病中得句」都有明确的地点、动作与代价；其中「落第榜下」尤其接近游戏叙事——把失败、历史典故与下一次行动放在同一情境。</p>
+
+  <h3>3. 机制反馈不是纯数字</h3>
+  <p><code>mechHints.js</code> 已把 NPC 机制翻译成「所长 / 所短 / 行藏」，结算会告诉玩家“正中破绽”或“招牌未遭针对”。这是玩法系统可被叙事化的关键接口。</p>
+
+  <h3>4. 题目解析有教育价值</h3>
+  <p>题库不止给答案，还解释作者、上下文、干扰项与识别方法，适合做「学完一题，顺便记住一个世界细节」的知识循环。</p>
+</div>
+
+<h2>二、优先级总表</h2>
+<table>
+  <tr><th>优先级</th><th>问题</th><th>影响</th><th>建议落点</th></tr>
+  <tr><td><span class="tag p0">P0</span></td><td>缺少贯穿全局的主角动机与阶段回声</td><td>玩家知道在走格子，不一定知道在经历什么</td><td>开局、三阶段过渡、殿试、结算各补 1 段短叙事</td></tr>
+  <tr><td><span class="tag p0">P0</span></td><td>奇遇选择大多只改奖励，缺少可感知后果</td><td>选择容易退化为“哪边数值高”</td><td>choice 增加 <code>resultText</code>，必要时加轻量状态标签</td></tr>
+  <tr><td><span class="tag p1">P1</span></td><td>典故密度高，主叙事常被出处打断</td><td>有文化但不够贴身，像在读注释</td><td>主文案先写“此刻发生什么”，出处移到次级信息</td></tr>
+  <tr><td><span class="tag p1">P1</span></td><td>NPC 有机制名，缺个人声音</td><td>对手像模板集合，不像“人”</td><td>增加 <code>intro / winLine / loseLine / weaknessLine</code></td></tr>
+  <tr><td><span class="tag p1">P1</span></td><td>战斗流程文案偏系统术语</td><td>规则能懂，情绪不够</td><td>标题从“机制结算”改成“交锋回响 / 察招结果”等</td></tr>
+  <tr><td><span class="tag p2">P2</span></td><td>题库与界面存在语体断裂</td><td>古风世界偶尔被现代表达拉出戏</td><td>清理现代选项，统一时代语域</td></tr>
+  <tr><td><span class="tag p2">P2</span></td><td>长短不均、句式重复</td><td>高频游玩后出现“同一张卡的感觉”</td><td>建字数、句式、意象、结尾动作的内容规范</td></tr>
+</table>
+
+<h2>三、最终建议排序（若只能做三件事）</h2>
+<div class="pri"><div class="n">1</div><div class="tx"><h4>给 choice 增加 <code>resultText</code>，让选择产生即时回声</h4><p>选择不再是“选哪边奖励”，而是玩家确实做了一件事。</p></div></div>
+<div class="pri"><div class="n">2</div><div class="tx"><h4>给具名 NPC 加一句登场动作与一句战后反应</h4><p>让机制名背后先站一个人，再谈数值。</p></div></div>
+<div class="pri"><div class="n">3</div><div class="tx"><h4>补开局、阶段过渡、殿试、结算四个短叙事节点</h4><p>建立“赶考的一程”的整体感。</p></div></div>
+
+<p>三项均不重做玩法，却能把游戏从「古典题材策略卡牌」推向「玩家正在经历一段自己的科场故事」。</p>
+
+<h2>四、P0 · 叙事主线</h2>
+<div class="card">
+  <h3>最小主线（四段式叙事回路）</h3>
+  <div class="quote"><em>你不是为了证明自己“懂得最多”，而是要在一路遇见的人和事里，找到属于自己的落笔之道，并把它带到金殿。</em></div>
+  <p style="font-size:14px;color:var(--ink2);">这句话不必原样展示，但应成为全部文案的判断标准。</p>
+  <ul>
+    <li><b>开局——你为何赴考：</b>县试放榜那日，先生没问你能不能中，只问：“若这一回仍无人看见你的文章，你还写不写？” 你收好行囊，往京城去。</li>
+    <li><b>乡试圈——认识自己的写法：</b>博闻「你记下了这句。还未成篇，却已在腹中生根。」／奇士「众人都往前走，你偏从旁处看了一眼。灵机因此留下。」／辞宗「这一笔没有白落。纸面不语，功夫记得。」</li>
+    <li><b>会试圈——让对手成为镜子：</b>只信熟路的人 / 宁可不惊人也不肯失手的人 / 看似学你实则逼你换一个自己的人。</li>
+    <li><b>殿试——让前面的选择回来：</b>王侍郎“跨场适应”承接主线回声：<div class="quote"><em>连续用同一文体：「前两场皆以一锋破题，今日还要走旧路么？」<br>主动换体：「知道换笔，才知道守成不是本事。」<br>曾经高分压卷：「你上回以势压人，今日可还压得住自己的急？」</em></div></li>
+  </ul>
+</div>
+
+<h2>五、P0 · 让选择产生回声</h2>
+<div class="card">
+  <p>最小改法：<b>每个选择增加一条 1—2 句的结果回声</b>，在奖励结算后显示或写入战报。建议字段：</p>
+<pre><code>{
+  "text": "还他五色笔，从此老实读书",
+  "resultText": "你把五色笔放回枕边。梦醒时，手中空了，心里却多了一点自己的分量。",
+  "effect": { "attrs": { "si": 3 }, "inspiration": -5 }
+}</code></pre>
+  <h3>示例 · E006「江郎才尽」</h3>
+  <p>梦里，郭璞来索那支寄放多年的五色笔。他不催，只伸着手。窗外风过，案上旧稿一页页翻动，像是在替你回答：这些年写下的，究竟有多少是自己的？</p>
+  <ul>
+    <li><b>还他五色笔，承认自己还差得远</b> → <span class="quote"><em>五色光从指间退去。你重新铺纸，第一笔写得很慢，却没有借谁的声名。</em></span></li>
+    <li><b>强留彩笔，再逼自己写出一篇</b> → <span class="quote"><em>你攥紧那支笔，连夜搜尽枯肠。天亮时文章成了，墨色却像从骨头里榨出来的。</em></span></li>
+  </ul>
+  <p style="font-size:14px;color:var(--ink2);">两条路不再是“思力换灵感 / 笔力换灵感”，而是“承认不足”与“以透支换锋芒”。</p>
+</div>
+
+<h2>六、P1 · 典故服务当下</h2>
+<div class="card">
+  <p>采用<b>三层典故结构</b>：<b>现场层</b>（看见什么、做什么、失去什么）→ <b>意义层</b>（让你想到什么、逼你作何选择）→ <b>出处层</b>（历史典故 / 原句 / 作者）。</p>
+  <p>当前不少奇遇从出处层开始；建议把出处放到卡片次级区域，主文案先让玩家进入现场。典故不删——它是《飞花棋》独特资产——但从“主持人讲解”退到“玩家发现的知识层”。</p>
+  <h3>推荐格式</h3>
+<pre><code>标题：推敲之苦
+主文案：你在一个字上停了三日。写下去，似乎不妥；删掉它，又觉得整篇少了一口气。
+选择：留在案前把这个字磨到天明 / 先放下笔让文章喘一口气
+典故：贾岛曾在「推」与「敲」之间反复斟酌……（次级区）</code></pre>
+  <p>长度建议：common 60–100 字 · rare 80–130 字 · legend 100–160 字（超出拆主文案+次级典故）。</p>
+</div>
+
+<h2>七、P1 · 给 NPC 加“人声”</h2>
+<div class="card">
+  <p>当前开场较统一（“某某拦路请教”）。不给每个 NPC 写长传记，每个具名 NPC 只加 3—4 条短句即可：</p>
+<pre><code>{
+  "id": "zhou_xiaoman", "name": "周小满", "title": "蒙学童子",
+  "intro": "周小满把卷子抱在胸前，先看了看你的笔，又偷偷看了一眼自己的。",
+  "winLine": "他抿着嘴，把错题一一记下，临走还回头问你那个字怎么写。",
+  "loseLine": "他笑得很快，像是早知道这一场会输，却仍把卷子递了过来。",
+  "weaknessLine": "你换体落笔后，他明显愣了一下：原来文章还可以这样写。"
+}</code></pre>
+  <h3>NPC 声音方向</h3>
+  <table>
+    <tr><th>类型</th><th>声音关键词</th><th class="nogap" style="border:none;background:transparent;"></th><th>不应说成</th></tr>
+    <tr><td>童生</td><td>直白、好胜、偶尔嘴硬</td><td></td><td>老成的“本官/在下深谙”</td></tr>
+    <tr><td>秀才</td><td>讲究体面、会绕弯、有比较心</td><td></td><td>只会报机制的系统提示</td></tr>
+    <tr><td>举人</td><td>自信、会试探玩家、懂得留手</td><td></td><td>数值更高的秀才</td></tr>
+    <tr><td>进士</td><td>克制、精确、话少但有压力</td><td></td><td>夸张的江湖挑衅</td></tr>
+    <tr><td>主考官</td><td>不轻易表态，以批注和停顿施压</td><td></td><td>连续解释规则</td></tr>
+  </table>
+  <p style="font-size:14px;color:var(--ink2);">机制名也可更贴近人物习惯：识破重复→「看穿旧路」、稳稿压迫→「不失一字」、追加骰→「见势加锋」、文债耗神→「余墨被催干」。底层模板名保留，玩家可见名传达情绪与行为。</p>
+</div>
+
+<h2>八、P1 · 战斗 UI 从系统阶段转向玩家动作</h2>
+<div class="card">
+  <table>
+    <tr><th>当前</th><th>建议副标题</th><th>玩家正在做</th></tr>
+    <tr><td>② 审题</td><td>② 先定其意</td><td>决定我如何理解题目</td></tr>
+    <tr><td>③ 选文体</td><td>③ 选择落笔之体</td><td>决定我用什么形式说话</td></tr>
+    <tr><td>④ 选风格</td><td>④ 定下文章气口</td><td>决定我以何种情绪说话</td></tr>
+    <tr><td>⑤ 掷灵感骰</td><td>⑤ 看这一笔起势</td><td>决定临场爆发与资源投入</td></tr>
+    <tr><td>⑥ 算分对决</td><td>⑥ 卷面相见</td><td>看双方写法如何碰撞</td></tr>
+  </table>
+  <p>高频 UI 替换：<code>机制结算</code> → <code>交锋回响</code>；<code>招牌·破绽·修正</code> → <code>你如何破招，对手如何应变</code>；<code>确定得分</code> → <code>定稿落笔</code>。</p>
+  <p><b>胜：</b><span class="quote"><em>这一笔落定，对方的卷面静了。你赢的不是声势，是把所选的路走到了尽头。</em></span></p>
+  <p><b>负：</b><span class="quote"><em>这一场，你的句子没能压住他的锋。别急着收笔——榜还在前头，下一场可换一条路。</em></span></p>
+  <p><b>平：</b><span class="quote"><em>两卷相持，胜负只差一线。你们都没有写错，只是这一回，谁也没有写到最后。</em></span></p>
+</div>
+
+<h2>九、P2 · 统一时代语域</h2>
+<div class="card">
+  <ul>
+    <li><code>拍下来发给同窗看</code> → <code>摹下此景，寄与同窗共赏</code></li>
+    <li><code>只看风景，不写一字</code> → <code>记住此景，暂不落笔</code></li>
+  </ul>
+  <p class="quote"><em>原则：错误选项可以不高雅，但不能穿越。</em></p>
+  <p>普通玩家入口只显示“玩法设置 / 内容版本”；“配置来源”与自定义 JSON 说明移入“高级”弹窗；结算页尽量不出现“维度、参数、回退、机制”等工程词。</p>
+  <p>第二人称保留，但避免每句都以“你”开头：<span class="quote"><em>石桥尽头，河灯一盏盏顺水而下。故乡的秋夜，也该是这样的光。</em></span></p>
+</div>
+
+<h2>十、新内容自查规范摘要</h2>
+<div class="card">
+  <p><b>奇遇卡：</b>至少含一个看得见的物件 + 一个正在发生的动作 + 一个与玩家有关的压力/诱惑；choice 两选须代表不同价值取向而非奖励高低；每选一条回声；典故最多承担一项功能。</p>
+  <p><b>NPC：</b>一句登场动作 + 一句胜负后反应 + 一句破绽被击中时的反应 + 一个“他不会说”的禁语或语气约束。</p>
+  <p><b>战斗反馈：</b>按「发生了什么 → 为什么发生 → 玩家因此获得什么启示」三段写。</p>
+  <p><b>题库解析：</b>首屏先给一句答案与记忆钩子，长解析拆“为什么对 / 为什么容易错”，避免每题变成同一种结构。</p>
+</div>
+
+<h2>十一、最小实现批次</h2>
+<table>
+  <tr><th>批次</th><th>内容</th><th>风险</th></tr>
+  <tr><td><b>A</b><br><span style="font-size:12px;color:var(--ink2)">只改字符串</span></td><td>重写高频字符串、10–15 张常见奇遇首段、清理题库现代选项、战斗标题、胜负句、弱化普通玩家可见的“配置来源”</td><td>最低</td></tr>
+  <tr><td><b>B</b><br><span style="font-size:12px;color:var(--ink2)">加字段</span></td><td><code>choices[].resultText</code>、<code>npcs[].intro</code>、<code>winLine/loseLine/weaknessLine</code>、<code>questions[].analysisShort</code>——全部可选、缺省沿用旧文案</td><td>很小</td></tr>
+  <tr><td><b>C</b><br><span style="font-size:12px;color:var(--ink2)">系统增强</span></td><td>三阶段过渡短场景、选择状态标签、殿试定向评语、图鉴个人战绩注记</td><td>待 A/B 验证后</td></tr>
+</table>
+<p style="font-size:14px;color:var(--ink2);">当前系统更适合<b>短回声 + 跨场记忆</b>，不建议一开始就做大规模分支剧情。</p>
+
+<h2>十二、验收清单（摘）</h2>
+<div class="card">
+  <ul class="check">
+    <li>玩家不看典故出处，也能理解当前发生了什么</li>
+    <li>开局说明“为什么出发”，结算回应“这一程留下了什么”</li>
+    <li>每个 choice 两项在价值上不同，而不只是奖励不同</li>
+    <li>选择后 1 个界面内能看到文本回声</li>
+    <li>去掉名字仍能凭说话方式区分连续三名 NPC 中的至少两人</li>
+    <li>没有现代手机、社交媒体或后台配置词汇穿透古风场景</li>
+    <li>战斗阶段标题既能说明规则，也能说明玩家正在做的叙事动作</li>
+  </ul>
+</div>
+
+<div class="foot">
+  交付：HTML 版评审稿 · 生成于 2026-08-16 · 另附 <b>《飞花棋-文案优化执行摘要.md》</b> 提供“先做三件事”的落地清单
+</div>
+
+</div>
+</body>
+</html>
