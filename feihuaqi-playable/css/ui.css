@@ -3,6 +3,18 @@
 /* ========================================================== HUD */
 #hud { position: absolute; inset: 0; pointer-events: none; z-index: 20; }
 #hud > * { pointer-events: auto; }
+#leftHudRail, #actionDock { display: contents; pointer-events: none; }
+#leftHudRail > *, #rightHudRail > *, #actionDock button, #actionDock #logBox { pointer-events: auto; }
+
+/* 天象数量会动态变化；右侧改为流式栏，文心面板始终排在全部天象之后。 */
+#rightHudRail {
+  position: absolute;
+  right: calc(var(--safe-right) + var(--edge-gap));
+  top: calc(var(--safe-top) + 62px);
+  display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
+  max-height: calc(100% - var(--safe-top) - var(--safe-bottom) - 80px);
+  pointer-events: none;
+}
 
 .panel {
   border-radius: 7px;
@@ -138,9 +150,7 @@
 
 /* --- 右上：天象角标（下移到菜单按钮下方，给右上角菜单让位） --- */
 #skyBadges {
-  position: absolute;
-  right: calc(var(--safe-right) + var(--edge-gap));
-  top: calc(var(--safe-top) + 62px);
+  position: static;
   display: flex; flex-direction: column; gap: 7px; align-items: flex-end;
 }
 .sky-badge {
@@ -151,15 +161,14 @@
   color: #dde6ff; font-size: 12.5px; letter-spacing: .1em;
   box-shadow: 0 6px 16px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.18);
   animation: popIn .4s var(--ease-back);
+  max-width: min(320px, calc(100vw - var(--safe-left) - var(--safe-right) - 24px));
 }
 .sky-badge .st { width: 14px; height: 14px; }
 .sky-badge .left { font-size: 11px; opacity: .75; }
 
 /* --- 右侧：文心栏（跟随天象角标下移） --- */
 #talentBar {
-  position: absolute;
-  right: calc(var(--safe-right) + var(--edge-gap));
-  top: calc(var(--safe-top) + 138px);
+  position: relative;
   width: 156px;
   padding: 10px;
 }
@@ -1042,6 +1051,24 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 .lb-row.top2 { background: linear-gradient(90deg, rgba(176,176,182,.18), rgba(127,149,207,.07)); }
 .lb-row.top3 { background: linear-gradient(90deg, rgba(180,132,92,.16), rgba(127,149,207,.07)); }
 
+/* 中等宽度下，254px 左面板会侵入居中的 340px 灵感条；改为同栏纵向流动。 */
+@media (min-width: 601px) and (max-width: 900px) {
+  #leftHudRail {
+    position: absolute;
+    left: calc(var(--safe-left) + var(--edge-gap));
+    top: calc(var(--safe-top) + var(--edge-gap));
+    width: 254px;
+    display: flex; flex-direction: column; gap: 10px;
+    pointer-events: none;
+  }
+  #leftHudRail #attrPanel,
+  #leftHudRail #inspBar {
+    position: relative;
+    width: 100%;
+    transform: none;
+  }
+}
+
 /* ==================================================== 移动端适配（竖屏手机 ≤600px）
    原 HUD 各面板用固定像素定位，窄屏会互相重叠并盖住棋盘；战斗台两名「对阵者」默认并排会被压扁；
    结算页雷达与六维默认左右排、窄屏挤成一团。以下在窄屏重排 HUD / 战斗台 / 结算页，并收紧弹窗内边距。 */
@@ -1075,10 +1102,16 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
   #inspBar .ih b { font-size: 15px; }
   .brush { height: 22px; margin-top: 4px; }
 
-  #skyBadges { right: calc(var(--safe-right) + 8px); top: calc(var(--safe-top) + 58px); gap: 5px; }
+  #rightHudRail {
+    right: calc(var(--safe-right) + 8px);
+    top: calc(var(--safe-top) + 58px);
+    gap: 8px;
+    max-height: calc(100% - var(--safe-top) - var(--safe-bottom) - 70px);
+  }
+  #skyBadges { gap: 5px; }
   .sky-badge { font-size: var(--text-meta); padding: 4px 9px; }
   .sky-badge .st { width: 12px; height: 12px; }
-  #talentBar { right: calc(var(--safe-right) + 8px); top: calc(var(--safe-top) + 124px); width: 132px; padding: 8px; }
+  #talentBar { width: 132px; padding: 8px; }
   #talentBar .th { font-size: var(--text-meta); margin-bottom: 4px; }
   .slot { height: 36px; font-size: var(--text-micro); line-height: 1.3; }
 
@@ -1088,10 +1121,32 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
     top: auto; width: 38px; height: 38px;
   }
 
-  #rollZone { left: 50%; right: auto; top: auto; bottom: calc(var(--safe-bottom) + 54px); transform: translateX(-50%); gap: 7px; }
+  /* 底部信息改为单一行动栈：战报、toast、按钮与回合号按内容高度自动互让。 */
+  #actionDock {
+    position: absolute;
+    left: calc(var(--safe-left) + 8px);
+    right: calc(var(--safe-right) + 8px);
+    bottom: calc(var(--safe-bottom) + 10px);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 92px);
+    pointer-events: none;
+  }
+  #actionDock #logBox {
+    position: relative; order: 0;
+    width: min(100%, 360px); max-height: 68px;
+    padding: 7px 10px;
+  }
+  #actionDock #logBox div { display: none; }
+  #actionDock #logBox div:nth-last-child(-n + 2) { display: block; }
+  #actionDock #toastZone {
+    position: static; order: 1; transform: none;
+    width: min(100%, 560px); max-height: min(34dvh, 180px); overflow: hidden;
+  }
+  #actionDock #rollZone { position: static; order: 2; transform: none; gap: 7px; }
+  #actionDock #turnInfo { position: static; order: 3; transform: none; }
   #rollBtn { width: 122px; height: 68px; border-radius: 10px; padding: 6px 10px; gap: 8px; font-size: 20px; }
   .roll-die { flex-basis: 38px; width: 38px; height: 38px; }
-  #turnInfo { bottom: calc(var(--safe-bottom) + 14px); font-size: var(--text-meta); padding: 6px 11px; }
+  #turnInfo { font-size: var(--text-meta); padding: 6px 11px; }
 
   /* 弹窗 / 卷轴收紧内边距，短屏可滚；正文与可操作文字不再继续缩小。 */
   .scroll-frame { padding: 18px 16px; }
@@ -1167,7 +1222,9 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
   #turnInfo { bottom: calc(var(--safe-bottom) + 8px); }
 }
 @media (orientation: landscape) and (max-height: 500px) and (max-width: 600px) {
-  #rollZone { transform: translateX(-50%) scale(.82); transform-origin: 50% 100%; }
+  #actionDock { gap: 5px; max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 58px); }
+  #actionDock #logBox { display: none; }
+  #actionDock #rollZone { transform: scale(.82); transform-origin: 50% 100%; }
 }
 
 /* 平板/横屏矮视口（>600px 宽）：桌面布局在 501–820px 高下，对阵区与按钮面板

@@ -55,6 +55,7 @@ export class Hud {
   constructor(root) {
     this.root = root;
     root.innerHTML = `
+      <div id="leftHudRail">
       <div id="attrPanel" class="panel paper">
         <div class="ph"><span class="ph-left"><span class="pc-ico">❖</span><b>六维才学</b></span><span class="ph-right">
           <span id="phaseTag">乡试圈</span><span id="pnameTag" class="pname"></span>
@@ -81,7 +82,9 @@ export class Hud {
           </div>
         </div></div>
       </div>
+      </div>
 
+      <div id="rightHudRail">
       <div id="skyBadges"></div>
 
       <div id="talentBar" class="panel paper">
@@ -96,10 +99,8 @@ export class Hud {
           <div id="synList" class="syn-list"></div>
         </div></div>
       </div>
+      </div>
 
-      <div id="logBox" class="panel paper"></div>
-
-      <div id="turnInfo">第 <b id="turnNum">0</b> 回合</div>
       <button id="viewAngleBtn" type="button" hidden aria-label="地图视角" title="切换地图俯角">
         <svg viewBox="0 0 26 22" aria-hidden="true" focusable="false">
           <path d="M3 8.5 13 3l10 5.5L13 14 3 8.5Z"/>
@@ -107,13 +108,16 @@ export class Hud {
         </svg>
         <span class="view-angle-copy"><span class="view-angle-name">视角</span><b id="viewAngleValue">28°</b></span>
       </button>
+      <div id="actionDock">
+      <div id="logBox" class="panel paper"></div>
+      <div id="toastZone"></div>
       <div id="rollZone">
         <button class="btn btn-ink" id="abilityBtn">修习</button>
         <button class="btn btn-ink" id="planBtn" style="display:none">布局谋篇</button>
         <button class="btn btn-primary" id="rollBtn"><span class="roll-die" aria-hidden="true"><svg viewBox="0 0 46 46"><rect x="3" y="3" width="40" height="40" rx="9"/><circle cx="14" cy="14" r="3"/><circle cx="32" cy="14" r="3"/><circle cx="23" cy="23" r="3"/><circle cx="14" cy="32" r="3"/><circle cx="32" cy="32" r="3"/></svg></span><span class="roll-label">掷骰</span></button>
       </div>
-
-      <div id="toastZone"></div>`;
+      <div id="turnInfo">第 <b id="turnNum">0</b> 回合</div>
+      </div>`;
 
     this.prev = {};
     this.onTalent = null;   // 点击已拥有文心时回调（由 app.js 注入，打开详情）
@@ -165,6 +169,7 @@ export class Hud {
     window.addEventListener('resize', () => this._onViewportChange());
     window.addEventListener('orientationchange', () => this._onViewportChange());
     this._applyCollapse();
+    this._onViewportChange();
     this.el.list.innerHTML = ATTR_KEYS.map(k =>
       `<div class="attr-row ${CREATIVE_KEYS.includes(k) ? 'creative' : 'basic'}" data-k="${k}">
         <i class="dot"></i><span class="nm">${ATTR_NAMES[k]}</span><span class="vl">5</span></div>`).join('');
