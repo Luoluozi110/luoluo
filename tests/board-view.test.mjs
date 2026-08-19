@@ -18,10 +18,11 @@ import {
   projectScreenDelta
 } from '../js/ui/boardView.js';
 
-test('2.5D 镜头模式仅由明确查询参数开启', () => {
-  assert.equal(resolveBoardViewMode(''), BOARD_VIEW_MODE.FLAT);
+test('桌面入口默认启用 2.5D，同时允许查询参数显式关闭', () => {
+  assert.equal(resolveBoardViewMode(''), BOARD_VIEW_MODE.PERSPECTIVE);
   assert.equal(resolveBoardViewMode('?boardView=25d'), BOARD_VIEW_MODE.PERSPECTIVE);
   assert.equal(resolveBoardViewMode('?boardView=2.5d'), BOARD_VIEW_MODE.PERSPECTIVE);
+  assert.equal(resolveBoardViewMode('?boardView=flat'), BOARD_VIEW_MODE.FLAT);
   assert.equal(normalizeBoardViewMode('unknown'), BOARD_VIEW_MODE.FLAT);
 });
 

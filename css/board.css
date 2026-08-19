@@ -1,4 +1,4 @@
-/* board.css —— 镜头可切换棋盘（默认平面；?boardView=25d 开启 2.5D 预览） */
+/* board.css —— 镜头可切换棋盘（桌面默认 2.5D；?boardView=flat 显式关闭） */
 
 #scene {
   position: absolute; inset: 0;

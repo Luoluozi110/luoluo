@@ -1,7 +1,7 @@
 /**
  * boardView.js —— 棋盘镜头模式、设备降级与投影尺寸工具。
  *
- * 当前默认仍为 flat；用 ?boardView=25d 开启 2.5D 预览。屏幕平移、统一缩放与
+ * 桌面高画质默认启用 2.5D；用 ?boardView=flat 可显式关闭。屏幕平移、统一缩放与
  * 世界投影由三个独立 DOM 层承接，HUD 与模态始终留在屏幕空间。
  */
 
@@ -42,7 +42,7 @@ export function normalizeBoardViewMode(value) {
 export function resolveBoardViewMode(search = '') {
   let value = '';
   try { value = new URLSearchParams(String(search || '')).get('boardView') || ''; } catch (_) { /* ignore */ }
-  return normalizeBoardViewMode(value);
+  return value ? normalizeBoardViewMode(value) : BOARD_VIEW_MODE.PERSPECTIVE;
 }
 
 export function normalizeBoardViewAngle(value) {
