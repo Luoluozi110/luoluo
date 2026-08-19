@@ -511,8 +511,8 @@ html[data-quality="low"] #resultScreen {
   .cell.hint::after { border-color: rgba(240,162,184,.7); }
 }
 
-/* 小屏或粗指针设备默认保留清晰平面棋盘；2.5D 仍可在桌面高画质入口验收。 */
-@media (max-width: 600px), (pointer: coarse) {
+/* 粗指针触屏设备保留清晰平面棋盘；窄桌面面板仍可使用 2.5D 角度控制。 */
+@media (pointer: coarse) {
   #scene {
     perspective: none !important;
     --board-camera-pitch: 0deg !important;
