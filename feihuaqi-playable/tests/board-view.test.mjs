@@ -67,10 +67,10 @@ test('模式应用只写 scene/HTML 属性和 CSS 变量', () => {
   assert.equal(vars.get('--board-camera-pitch'), '0deg');
 });
 
-test('低画质、小屏或粗指针会把请求的 2.5D 拍平', () => {
+test('低画质或粗指针会拍平，窄桌面面板仍保留 2.5D', () => {
   assert.equal(resolveEffectiveBoardViewMode('25d'), '25d');
   assert.equal(resolveEffectiveBoardViewMode('25d', { quality: 'low' }), 'flat');
-  assert.equal(resolveEffectiveBoardViewMode('25d', { compact: true }), 'flat');
+  assert.equal(resolveEffectiveBoardViewMode('25d', { compact: true }), 'flat', '底层仍支持显式紧凑降级');
   assert.equal(resolveEffectiveBoardViewMode('25d', { coarse: true }), 'flat');
   assert.equal(resolveEffectiveBoardViewMode('flat'), 'flat');
 });

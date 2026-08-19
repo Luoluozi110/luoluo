@@ -13,7 +13,7 @@ import {
   resolveBoardViewAngle,
   resolveBoardViewMode,
   resolveEffectiveBoardViewMode
-} from './boardView.js?v=20260820angledefault';
+} from './boardView.js?v=20260820anglecontrol2';
 
 const UNIT = 46;        // 原版单环格距：42px 格面 + 4px 间距
 const GRID = 21;        // 兼容旧单环；三圈布局按各 ring.grid 计算
@@ -268,14 +268,9 @@ export class BoardView {
     const doc = typeof document !== 'undefined' ? document : null;
     const win = typeof window !== 'undefined' ? window : null;
     const quality = doc?.documentElement?.getAttribute('data-quality') || 'high';
-    const width = this.root?.clientWidth || win?.innerWidth || 1280;
-    const height = this.root?.clientHeight || win?.innerHeight || 720;
-    // 与 board.css 的 max-width:600px / 粗指针拍平规则保持同一边界，
-    // 避免恰好 600px 时 CSS 已拍平但角度按钮仍误判为可用。
-    const compact = Math.min(width, height) <= 600;
     const coarse = !!(win?.matchMedia && win.matchMedia('(pointer: coarse)').matches);
     const effective = resolveEffectiveBoardViewMode(this.requestedViewMode, {
-      quality, compact, coarse
+      quality, coarse
     });
     return applyEffectiveBoardViewMode(this.root, effective, doc, this.viewAngle);
   }
