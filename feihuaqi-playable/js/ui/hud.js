@@ -180,7 +180,8 @@ export class Hud {
     if (this.el.schoolProgress) {
       if (s.abilityState) {
         const ab = s.abilityState;
-        this.el.schoolProgress.innerHTML = `<span class="school-progress-name">三功修习</span><span>心得 ${Number(ab.insight) || 0}　筹策 ${Number((ab.strategy || {}).points) || 0}　稿页 ${Number((ab.manuscript || {}).pages) || 0}</span>`;
+        const planName = { steady: '缓急策', guard: '守成策', switch: '转锋策' }[(ab.strategy || {}).plan] || '未定策';
+        this.el.schoolProgress.innerHTML = `<span class="school-progress-name">三功修习</span><span>心得 ${Number(ab.insight) || 0}　筹策 ${Number((ab.strategy || {}).charges) || 0} · ${planName}　稿页 ${Number((ab.manuscript || {}).pages) || 0}</span>`;
       } else if (mech.type === 'bowen') {
         const need = Number(mech.knowledgeThreshold) || 2;
         this.el.schoolProgress.innerHTML = `<span class="school-progress-name">博闻·开卷</span><span>知识 ${Math.min(need, Number(ss.knowledge) || 0)}/${need}</span>`;
@@ -233,7 +234,7 @@ export class Hud {
     }
     if (this.el.ability) {
       const ab = s.abilityState || {};
-      this.el.ability.textContent = `修习·${Number(ab.insight) || 0}/${Number((ab.manuscript || {}).pages) || 0}`;
+      this.el.ability.textContent = `修习·心${Number(ab.insight) || 0} 策${Number((ab.strategy || {}).charges) || 0} 稿${Number((ab.manuscript || {}).pages) || 0}`;
       this.el.ability.disabled = !this._rollOn;
     }
 

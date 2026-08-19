@@ -46,7 +46,7 @@ assert(Album.applyMasteryMechanics(bowenBase,'bowen',1)===bowenBase, 'Lv1 不增
 assert(Album.applyMasteryMechanics(bowenBase,'bowen',3).knowledgeThreshold===2, '博闻 Lv3 threshold 仍为 2');
 assert(Album.applyMasteryMechanics(bowenBase,'bowen',4).knowledgeThreshold===1, '博闻 Lv4 threshold→1');
 assert(Album.applyMasteryMechanics(bowenBase,'bowen',5).knowledgeInsightBonus===1, '博闻 Lv5 点睛 +1 心得');
-assert(Album.applyMasteryMechanics(qishiBase,'qishi',5).inspirationBonusRate===0.28 && Album.applyMasteryMechanics(qishiBase,'qishi',5).strategyChargePlus===2, '奇士 Lv5 灵感轻增益 + 筹策上限 2');
+assert(Album.applyMasteryMechanics(qishiBase,'qishi',5).inspirationBonusRate===0.28 && Album.applyMasteryMechanics(qishiBase,'qishi',5).strategyChargePlus===2, '奇士 Lv5 灵感轻增益 + 阶段筹策 2');
 assert(Album.applyMasteryMechanics(qishiBase,'qishi',2).inspirationBonusRate===0.22, '奇士 Lv2 rate→0.22');
 assert(Album.applyMasteryMechanics(cizongBase,'cizong_bi',4).manuscriptCapPlus===3, '辞宗 Lv4 稿匣上限加成 3');
 assert(Album.applyMasteryMechanics(cizongBase,'cizong_bi',5).firstFinishedPagePlus===2, '辞宗 Lv5 首次成篇额外 2 稿页');

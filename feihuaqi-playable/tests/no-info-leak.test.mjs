@@ -47,7 +47,7 @@ const guard = data => new Proxy(data, {
   }
 });
 
-const session = guard({ passiveTalents: [], chapter: null, usedPolish: false });
+const session = guard({ passiveTalents: [], usedPolish: false });
 const out = guard({ result: 'lose', style: 'ci', dicePips: [2], upset: false });
 assert.doesNotThrow(() => game.applyAbilityBattleGrowth(session, out), '成长只读取已选文体、已掷骰面与已发生结果');
 assert.equal(game.s.abilityState.familiarity.ci, 1);

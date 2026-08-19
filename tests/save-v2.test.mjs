@@ -139,6 +139,19 @@ console.log('\n[2] 历史存档兼容边界');
     ok(migrated.state.school === cfg.schools[1], 'v4 school 重新关联当前配置');
     ok(migrated.state.schoolState && Array.isArray(migrated.state.schoolState.settledBattleIds), 'v5 schoolState 默认值已补齐');
   }
+
+  const v6 = Save.serializeRun(g);
+  v6.v = 6;
+  v6.state.abilityState.study = { focus: ['ci'], progress: { ci: 2 } };
+  v6.state.abilityState.strategy = { points: 2, refillPhase: 'child', freeChapterPhases: { child: true } };
+  const strategyMigrated = Save.deserializeRun(v6, cfg);
+  ok(strategyMigrated.ok, 'v6 反应式筹策档迁移成功');
+  if (strategyMigrated.ok) {
+    eq(strategyMigrated.state.abilityState.strategy.charges, 2, 'v6 剩余筹策迁移为阶段充能');
+    eq(strategyMigrated.state.abilityState.strategy.plan, 'guard', 'v6 默认迁移为守成策');
+    ok(!('points' in strategyMigrated.state.abilityState.strategy) && !('freeChapterPhases' in strategyMigrated.state.abilityState.strategy), '旧调步/立章状态已清理');
+    ok(strategyMigrated.state.abilityState.study.nextFocus.includes('ci'), '旧研修方向迁移为下阶段队列');
+  }
 }
 
 /* ================= 用例 3：损坏 / 非法存档恢复 ================= */

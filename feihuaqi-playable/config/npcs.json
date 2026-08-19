@@ -14,12 +14,12 @@
         "title": "蒙学童子",
         "style": "shi",
         "attrs": {
-          "shi": 10,
-          "ci": 4,
-          "lian": 3,
-          "bi": 4,
-          "xue": 4,
-          "si": 3
+          "shi": 11,
+          "ci": 5,
+          "lian": 4,
+          "bi": 5,
+          "xue": 5,
+          "si": 5
         },
         "mech": {
           "version": 1,
@@ -63,12 +63,12 @@
         "title": "村塾学子",
         "style": "ci",
         "attrs": {
-          "shi": 4,
-          "ci": 10,
-          "lian": 3,
-          "bi": 4,
-          "xue": 3,
-          "si": 4
+          "shi": 5,
+          "ci": 11,
+          "lian": 4,
+          "bi": 5,
+          "xue": 4,
+          "si": 6
         },
         "mech": {
           "version": 1,
@@ -113,12 +113,12 @@
         "title": "启蒙幼童",
         "style": "lian",
         "attrs": {
-          "shi": 4,
-          "ci": 3,
-          "lian": 10,
-          "bi": 3,
-          "xue": 4,
-          "si": 4
+          "shi": 5,
+          "ci": 4,
+          "lian": 11,
+          "bi": 4,
+          "xue": 5,
+          "si": 6
         },
         "mech": {
           "version": 1,
@@ -157,12 +157,12 @@
         "title": "私塾蒙童",
         "style": "bi",
         "attrs": {
-          "shi": 4,
-          "ci": 4,
-          "lian": 3,
-          "bi": 10,
-          "xue": 3,
-          "si": 4
+          "shi": 5,
+          "ci": 5,
+          "lian": 4,
+          "bi": 11,
+          "xue": 4,
+          "si": 6
         },
         "mech": {
           "version": 1,
@@ -196,12 +196,12 @@
         "title": "初学蒙生",
         "style": "xue",
         "attrs": {
-          "shi": 4,
-          "ci": 3,
-          "lian": 4,
-          "bi": 4,
-          "xue": 10,
-          "si": 3
+          "shi": 5,
+          "ci": 4,
+          "lian": 5,
+          "bi": 5,
+          "xue": 11,
+          "si": 5
         },
         "mech": {
           "version": 1,
@@ -239,12 +239,12 @@
         "title": "开蒙学童",
         "style": "si",
         "attrs": {
-          "shi": 3,
-          "ci": 4,
-          "lian": 4,
-          "bi": 4,
-          "xue": 3,
-          "si": 10
+          "shi": 4,
+          "ci": 5,
+          "lian": 5,
+          "bi": 5,
+          "xue": 4,
+          "si": 12
         },
         "mech": {
           "version": 1,
@@ -272,7 +272,12 @@
           }
         }
       }
-    ]
+    ],
+    "balanceVersion": 2,
+    "difficultyBoost": {
+      "allAttrs": 1,
+      "wisdomExtra": 1
+    }
   },
   {
     "id": "xiucai",
@@ -289,12 +294,12 @@
         "title": "庠序生员",
         "style": "shi",
         "attrs": {
-          "shi": 15,
-          "ci": 9,
-          "lian": 5,
-          "bi": 9,
-          "xue": 6,
-          "si": 6
+          "shi": 17,
+          "ci": 11,
+          "lian": 7,
+          "bi": 11,
+          "xue": 8,
+          "si": 9
         },
         "mech": {
           "version": 1,
@@ -328,12 +333,12 @@
         "title": "县学秀才",
         "style": "ci",
         "attrs": {
-          "shi": 6,
-          "ci": 15,
-          "lian": 5,
-          "bi": 6,
-          "xue": 9,
-          "si": 9
+          "shi": 8,
+          "ci": 17,
+          "lian": 7,
+          "bi": 8,
+          "xue": 11,
+          "si": 12
         },
         "mech": {
           "version": 1,
@@ -371,12 +376,12 @@
         "title": "儒学生员",
         "style": "lian",
         "attrs": {
-          "shi": 6,
-          "ci": 9,
-          "lian": 15,
-          "bi": 6,
-          "xue": 6,
-          "si": 6
+          "shi": 8,
+          "ci": 11,
+          "lian": 17,
+          "bi": 8,
+          "xue": 8,
+          "si": 9
         },
         "mech": {
           "version": 1,
@@ -414,12 +419,12 @@
         "title": "府学秀才",
         "style": "bi",
         "attrs": {
-          "shi": 6,
-          "ci": 6,
-          "lian": 5,
-          "bi": 15,
-          "xue": 9,
-          "si": 9
+          "shi": 8,
+          "ci": 8,
+          "lian": 7,
+          "bi": 17,
+          "xue": 11,
+          "si": 12
         },
         "mech": {
           "version": 1,
@@ -457,12 +462,12 @@
         "title": "廪膳生员",
         "style": "xue",
         "attrs": {
-          "shi": 9,
-          "ci": 6,
-          "lian": 6,
-          "bi": 6,
-          "xue": 15,
-          "si": 6
+          "shi": 11,
+          "ci": 8,
+          "lian": 8,
+          "bi": 8,
+          "xue": 17,
+          "si": 9
         },
         "mech": {
           "version": 1,
@@ -506,12 +511,12 @@
         "title": "邑庠秀才",
         "style": "si",
         "attrs": {
-          "shi": 6,
-          "ci": 9,
-          "lian": 6,
-          "bi": 6,
-          "xue": 6,
-          "si": 15
+          "shi": 8,
+          "ci": 11,
+          "lian": 8,
+          "bi": 8,
+          "xue": 8,
+          "si": 18
         },
         "mech": {
           "version": 1,
@@ -545,7 +550,12 @@
           }
         }
       }
-    ]
+    ],
+    "balanceVersion": 2,
+    "difficultyBoost": {
+      "allAttrs": 2,
+      "wisdomExtra": 1
+    }
   },
   {
     "id": "juren",
@@ -562,12 +572,12 @@
         "title": "乡试解元",
         "style": "shi",
         "attrs": {
-          "shi": 27,
-          "ci": 14,
-          "lian": 11,
-          "bi": 14,
-          "xue": 13,
-          "si": 11
+          "shi": 30,
+          "ci": 17,
+          "lian": 14,
+          "bi": 17,
+          "xue": 16,
+          "si": 16
         },
         "mech": {
           "version": 1,
@@ -607,12 +617,12 @@
         "title": "公车举人",
         "style": "ci",
         "attrs": {
-          "shi": 13,
-          "ci": 27,
-          "lian": 11,
-          "bi": 13,
-          "xue": 14,
-          "si": 12
+          "shi": 16,
+          "ci": 30,
+          "lian": 14,
+          "bi": 16,
+          "xue": 17,
+          "si": 17
         },
         "mech": {
           "version": 1,
@@ -653,12 +663,12 @@
         "title": "鹿鸣宴客",
         "style": "lian",
         "attrs": {
-          "shi": 13,
-          "ci": 14,
-          "lian": 27,
-          "bi": 11,
-          "xue": 13,
-          "si": 12
+          "shi": 16,
+          "ci": 17,
+          "lian": 30,
+          "bi": 14,
+          "xue": 16,
+          "si": 17
         },
         "mech": {
           "version": 1,
@@ -696,12 +706,12 @@
         "title": "乙榜举人",
         "style": "bi",
         "attrs": {
-          "shi": 13,
-          "ci": 13,
-          "lian": 11,
-          "bi": 27,
-          "xue": 14,
-          "si": 12
+          "shi": 16,
+          "ci": 16,
+          "lian": 14,
+          "bi": 30,
+          "xue": 17,
+          "si": 17
         },
         "mech": {
           "version": 1,
@@ -735,12 +745,12 @@
         "title": "孝廉举人",
         "style": "xue",
         "attrs": {
-          "shi": 14,
-          "ci": 13,
-          "lian": 13,
-          "bi": 12,
-          "xue": 27,
-          "si": 11
+          "shi": 17,
+          "ci": 16,
+          "lian": 16,
+          "bi": 15,
+          "xue": 30,
+          "si": 16
         },
         "mech": {
           "version": 1,
@@ -778,12 +788,12 @@
         "title": "秋闱中式",
         "style": "si",
         "attrs": {
-          "shi": 13,
-          "ci": 14,
-          "lian": 13,
-          "bi": 12,
-          "xue": 11,
-          "si": 27
+          "shi": 16,
+          "ci": 17,
+          "lian": 16,
+          "bi": 15,
+          "xue": 14,
+          "si": 32
         },
         "mech": {
           "version": 1,
@@ -821,7 +831,12 @@
           }
         }
       }
-    ]
+    ],
+    "balanceVersion": 2,
+    "difficultyBoost": {
+      "allAttrs": 3,
+      "wisdomExtra": 2
+    }
   },
   {
     "id": "jinshi",
@@ -838,12 +853,12 @@
         "title": "殿前进士",
         "style": "shi",
         "attrs": {
-          "shi": 33,
-          "ci": 17,
-          "lian": 15,
-          "bi": 17,
-          "xue": 17,
-          "si": 18
+          "shi": 37,
+          "ci": 21,
+          "lian": 19,
+          "bi": 21,
+          "xue": 21,
+          "si": 24
         },
         "mech": {
           "version": 1,
@@ -885,12 +900,12 @@
         "title": "同进士出身",
         "style": "ci",
         "attrs": {
-          "shi": 18,
-          "ci": 33,
-          "lian": 15,
-          "bi": 17,
-          "xue": 17,
-          "si": 17
+          "shi": 22,
+          "ci": 37,
+          "lian": 19,
+          "bi": 21,
+          "xue": 21,
+          "si": 23
         },
         "mech": {
           "version": 1,
@@ -929,12 +944,12 @@
         "title": "进士及第",
         "style": "lian",
         "attrs": {
-          "shi": 17,
-          "ci": 17,
-          "lian": 33,
-          "bi": 15,
-          "xue": 17,
-          "si": 18
+          "shi": 21,
+          "ci": 21,
+          "lian": 37,
+          "bi": 19,
+          "xue": 21,
+          "si": 24
         },
         "mech": {
           "version": 1,
@@ -978,12 +993,12 @@
         "title": "翰林庶吉士",
         "style": "bi",
         "attrs": {
-          "shi": 17,
-          "ci": 17,
-          "lian": 15,
-          "bi": 33,
-          "xue": 17,
-          "si": 18
+          "shi": 21,
+          "ci": 21,
+          "lian": 19,
+          "bi": 37,
+          "xue": 21,
+          "si": 24
         },
         "mech": {
           "version": 1,
@@ -1017,12 +1032,12 @@
         "title": "赐进士出身",
         "style": "xue",
         "attrs": {
-          "shi": 18,
-          "ci": 17,
-          "lian": 17,
-          "bi": 15,
-          "xue": 33,
-          "si": 17
+          "shi": 22,
+          "ci": 21,
+          "lian": 21,
+          "bi": 19,
+          "xue": 37,
+          "si": 23
         },
         "mech": {
           "version": 1,
@@ -1060,12 +1075,12 @@
         "title": "甲科进士",
         "style": "si",
         "attrs": {
-          "shi": 17,
-          "ci": 18,
-          "lian": 17,
-          "bi": 15,
-          "xue": 17,
-          "si": 33
+          "shi": 21,
+          "ci": 22,
+          "lian": 21,
+          "bi": 19,
+          "xue": 21,
+          "si": 39
         },
         "mech": {
           "version": 1,
@@ -1109,7 +1124,12 @@
           }
         }
       }
-    ]
+    ],
+    "balanceVersion": 2,
+    "difficultyBoost": {
+      "allAttrs": 4,
+      "wisdomExtra": 2
+    }
   },
   {
     "id": "zhukaoguan",
@@ -1126,12 +1146,12 @@
         "title": "礼部侍郎",
         "style": "shi",
         "attrs": {
-          "shi": 46,
-          "ci": 20,
-          "lian": 20,
-          "bi": 20,
-          "xue": 20,
-          "si": 22
+          "shi": 51,
+          "ci": 25,
+          "lian": 25,
+          "bi": 25,
+          "xue": 25,
+          "si": 30
         },
         "mech": {
           "version": 1,
@@ -1177,12 +1197,12 @@
         "title": "翰林学士",
         "style": "ci",
         "attrs": {
-          "shi": 22,
-          "ci": 46,
-          "lian": 20,
-          "bi": 20,
-          "xue": 20,
-          "si": 20
+          "shi": 27,
+          "ci": 51,
+          "lian": 25,
+          "bi": 25,
+          "xue": 25,
+          "si": 28
         },
         "mech": {
           "version": 1,
@@ -1228,12 +1248,12 @@
         "title": "国子监祭酒",
         "style": "bi",
         "attrs": {
-          "shi": 20,
-          "ci": 20,
-          "lian": 20,
-          "bi": 46,
-          "xue": 20,
-          "si": 22
+          "shi": 25,
+          "ci": 25,
+          "lian": 25,
+          "bi": 51,
+          "xue": 25,
+          "si": 30
         },
         "mech": {
           "version": 1,
@@ -1268,12 +1288,12 @@
         "style": "lian",
         "weight": 10,
         "attrs": {
-          "shi": 18,
-          "ci": 18,
-          "lian": 50,
-          "bi": 18,
-          "xue": 58,
-          "si": 18
+          "shi": 23,
+          "ci": 23,
+          "lian": 55,
+          "bi": 23,
+          "xue": 63,
+          "si": 26
         },
         "mech": {
           "signature": {
@@ -1302,6 +1322,11 @@
     "battles": 1,
     "themes": [
       "huaigu"
-    ]
+    ],
+    "balanceVersion": 2,
+    "difficultyBoost": {
+      "allAttrs": 5,
+      "wisdomExtra": 3
+    }
   }
 ]

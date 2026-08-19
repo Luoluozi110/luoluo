@@ -1260,6 +1260,7 @@ export class Game {
       if (gate.transition) this.s.ringId = gate.transition;
       this.s.phaseGateSeen[gate.phase] = true;
       this.s.phase = gate.phase;
+      this.refillStrategy(gate.phase);
       if (typeof this.ui.syncStageRing === 'function') this.ui.syncStageRing(this.s);
       if (typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gate, this.s);
       // 二次同步是故障自愈：阶段弹窗曾是唯一切圈入口，任何旧 UI/缓存路径都会留下外圈+透明棋子。
@@ -1403,6 +1404,12 @@ export class Game {
         const mult = this.skyActive('battle_reward_mult') ? 2 : 1;
         return base * mult;
       })(),
+      projLoseInspFor(style) {
+        let loss = Number(this.projLoseInsp) || 0;
+        if (style === 'lian') loss = Math.min(0, loss + (Number((this.styleSystem.lian || {}).lossInspirationReduce) || 1));
+        if (g.strategyCanTrigger('guard')) loss = Math.min(0, loss + (Number((g.strategyPlans().guard || {}).lossReduce) || 2));
+        return loss;
+      },
 
       // 综合相性（基矩阵 + 门派文风 + 当朝风潮），供玩家抉择/UI 展示；不含气势连捷。
       affinityOf(manner) {
@@ -2118,6 +2125,7 @@ export class Game {
   async runPalace() {
     const s = this.s;
     s.phase = 'palace';
+    this.refillStrategy('palace');
     s.reachedEnd = true;
     if (this.cfg.board.layout === 'concentric_spiral') s.ringId = 'palace';
     this.ui.onState(s);

@@ -227,27 +227,6 @@ export class Modals {
   }
 
   /* ---------------------------------------------------- 方案 B · 三功 */
-  askStrategyMove(dice, points, opts = {}) {
-    return new Promise(resolve => {
-      const maxDelta = Math.max(1, Math.min(2, Number(opts.maxDelta) || 1));
-      const far = maxDelta >= 2 && Number(points) >= 2
-        ? `<button class="opt" data-d="-2"><b>徐行两格</b><span>${dice} → ${Math.max(1, dice - 2)}（筹策 −2）</span></button>
-           <button class="opt" data-d="2"><b>疾行两格</b><span>${dice} → ${Math.min(8, dice + 2)}（筹策 −2）</span></button>` : '';
-      const ov = this.open(`<div class="modal scroll-frame paper" style="width:min(520px,calc(100vw - 24px))">
-        <div class="mtitle"><h2>思力·调步</h2><span class="mtag">筹策 ${Number(points) || 0}</span></div>
-        <div class="dianggu">移动骰已掷出 ${dice}。每调整一格消耗 1 筹策；地图内容不会因此额外揭示。</div>
-        <div class="opt-list">
-          <button class="opt" data-d="-1"><b>缓行一格</b><span>${dice} → ${Math.max(1, dice - 1)}</span></button>
-          <button class="opt" data-d="1"><b>疾行一格</b><span>${dice} → ${Math.min(8, dice + 1)}</span></button>
-          ${far}
-          <button class="opt" data-d="0"><b>依骰而行</b><span>保留筹策</span></button>
-        </div></div>`);
-      ov.querySelectorAll('[data-d]').forEach(b => b.addEventListener('click', () => {
-        const d = Number(b.dataset.d) || 0; this.close(ov); resolve(d);
-      }));
-    });
-  }
-
   showAbilityPanel(game) {
     const ov = this.open(`<div class="modal scroll-frame paper ability-panel" style="width:min(680px,calc(100vw - 24px))"></div>`);
     const box = ov.querySelector('.ability-panel');
@@ -256,18 +235,20 @@ export class Modals {
       const mc = game.abilityConfig().manuscript || {};
       const tc = game.techniqueConfig();
       const focus = new Set(a.study.focus || []);
+      const nextFocus = new Set(a.study.nextFocus || a.study.focus || []);
+      const plans = game.strategyPlans();
+      const currentPlan = plans[a.strategy.plan] || {};
       const attrs = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
       const attrNames = { shi: '诗力', ci: '词力', lian: '联力', bi: '笔力', xue: '学力', si: '思力' };
       box.innerHTML = `<div class="mtitle"><h2>三功修习</h2><span class="mtag">成长 · 调度 · 沉淀</span></div>
         ${notice ? `<div class="analysis">${esc(notice)}</div>` : ''}
-        <div class="dianggu"><b>心得 ${a.insight}/${game.insightCap()}</b>　筹策 ${a.strategy.points}/${game.strategyCap()}　稿页 ${a.manuscript.pages}/${game.manuscriptCap()}　残页 ${a.manuscript.fragments}</div>
-        <hr class="hr-ink"/><h3>学力·研修位 ${a.study.focus.length}/${game.studySlots()}</h3>
-        <div class="opt-list">${attrs.map(k => `<button class="opt" data-focus="${k}"><b>${focus.has(k) ? '✓ ' : ''}${attrNames[k]}</b><span>进度 ${Number(a.study.progress[k]) || 0}/${Number((game.abilityConfig().study || {}).progressNeed) || 3}</span></button>`).join('')}</div>
-        <div class="dianggu">思力·易策：消耗 1 筹策，把尚未兑现的研修进度一并转向。
-          <select data-redirect-from>${a.study.focus.map(k => `<option value="${k}">${attrNames[k]}</option>`).join('')}</select>
-          → <select data-redirect-to>${attrs.filter(k => !focus.has(k)).map(k => `<option value="${k}">${attrNames[k]}</option>`).join('')}</select>
-          <button class="btn btn-ink" data-redirect ${a.strategy.points < 1 ? 'disabled' : ''}>易策</button>
-        </div>
+        <div class="dianggu"><b>心得 ${a.insight}/${game.insightCap()}</b>　筹策 ${a.strategy.charges}/${game.strategyCap()}　稿页 ${a.manuscript.pages}/${game.manuscriptCap()}　残页 ${a.manuscript.fragments}</div>
+        <hr class="hr-ink"/><h3>思力·阶段预案</h3>
+        <div class="dianggu">当前：<b>${esc(currentPlan.name || '未定')}</b>。预案满足条件时自动发动，不中断回合；此处选择将在下阶段生效。</div>
+        <div class="opt-list">${Object.entries(plans).map(([id, p]) => `<button class="opt" data-strategy-plan="${id}"><b>${a.strategy.nextPlan === id ? '✓ ' : ''}${esc(p.name || id)}</b><span>${esc(p.desc || '')}${a.strategy.plan === id ? ' · 当前生效' : ''}</span></button>`).join('')}</div>
+        <h3>学力·研修位 ${a.study.focus.length}/${game.studySlots()}</h3>
+        <div class="dianggu">当前研修：${a.study.focus.map(k => attrNames[k]).join('、')}。调整只在下阶段生效，既有进度会原样保留。</div>
+        <div class="opt-list">${attrs.map(k => `<button class="opt" data-focus="${k}"><b>${nextFocus.has(k) ? '✓ ' : ''}${attrNames[k]}</b><span>进度 ${Number(a.study.progress[k]) || 0}/${Number((game.abilityConfig().study || {}).progressNeed) || 3}${focus.has(k) ? ' · 当前在修' : ''}</span></button>`).join('')}</div>
         <h3>分配心得</h3><div class="opt-list">${attrs.map(k => `<button class="opt" data-insight="${k}" ${a.insight < game.insightCost(k) ? 'disabled' : ''}><b>${attrNames[k]} +1</b><span>消耗 ${game.insightCost(k)} 心得</span></button>`).join('')}</div>
         <h3>笔力·稿本</h3><div class="opt-list">
           <button class="opt" data-manuscript="polish"><b>润色</b><span>下一场首次追加少耗 ${Number(mc.polishDiscount) || 2} 灵感</span></button>
@@ -277,13 +258,12 @@ export class Modals {
         <h3>技法筹备（方案 C）</h3><div class="dianggu">${['shi','ci','lian'].map(k => `${attrNames[k]}技法经验 ${Number(a.technique.xp[k]) || 0} · 阶 ${Number(a.technique.level[k]) || 0}/${(tc.thresholds || []).length}`).join('　')}</div>
         <div class="btn-row"><button class="btn btn-primary" data-close>收卷</button></div>`;
       box.querySelectorAll('[data-focus]').forEach(b => b.addEventListener('click', () => {
-        const ok = game.toggleStudyFocus(b.dataset.focus); render(ok ? '研修方向已调整。' : '至少保留一个方向，且不能超过研修位上限。');
+        const ok = game.toggleStudyFocus(b.dataset.focus); render(ok ? '下阶段研修方向已更新。' : '至少保留一个方向，且不能超过研修位上限。');
       }));
-      box.querySelector('[data-redirect]')?.addEventListener('click', () => {
-        const from = box.querySelector('[data-redirect-from]')?.value;
-        const to = box.querySelector('[data-redirect-to]')?.value;
-        const r = game.redirectStudy(from, to); render(r.ok ? `易策完成，转移 ${r.moved} 点研修进度。` : r.reason);
-      });
+      box.querySelectorAll('[data-strategy-plan]').forEach(b => b.addEventListener('click', () => {
+        const ok = game.setNextStrategyPlan(b.dataset.strategyPlan);
+        render(ok ? '下阶段预案已更新；当前阶段仍按原预案执行。' : '预案不可用。');
+      }));
       box.querySelectorAll('[data-insight]').forEach(b => b.addEventListener('click', () => {
         const r = game.spendInsight(b.dataset.insight); render(r.ok ? '心得已经兑现。' : r.reason);
       }));

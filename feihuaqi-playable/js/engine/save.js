@@ -17,7 +17,7 @@
 
 export const RUN_SAVE_KEY = 'feihua_run_save';               // 自动存档槽（每回合结束）
 export const RUN_SAVE_MANUAL_KEY = 'feihua_run_save_manual'; // 手动存档槽（菜单「保存当前进度」）
-export const RUN_SAVE_VERSION = 6;
+export const RUN_SAVE_VERSION = 7;
 export const SAVE_WARN_BYTES = 3 * 1024 * 1024;              // 体积预警阈值 3MB
 
 const LOG_MAX = 200;   // 超过则截断
@@ -171,16 +171,30 @@ function migrateRun(obj) {
   // v6：方案 B 三功 + 方案 C 技法经验契约。旧档从零开始，不追溯补发。
   if (!state.abilityState || typeof state.abilityState !== 'object') {
     state.abilityState = {
-      version: 1, insight: 0,
+      version: 2, insight: 0,
       familiarity: { shi: 0, ci: 0, lian: 0 },
-      study: { focus: ['shi'], progress: {} },
-      strategy: { points: 0, refillPhase: '', freeChapterPhases: {} },
+      study: { focus: ['shi'], nextFocus: ['shi'], progress: {} },
+      strategy: { charges: 0, refillPhase: '', plan: 'guard', nextPlan: 'guard', freeUsed: false },
       manuscript: { pages: 0, fragments: 0, volumes: 0, polish: 0, bonusPagePhases: {}, schoolPagePhases: {}, firstPolishPhases: {} },
       lastStyle: null, phaseStyles: {},
       technique: { version: 1, xp: { shi: 0, ci: 0, lian: 0 }, level: { shi: 0, ci: 0, lian: 0 },
         unlocked: { shi: [], ci: [], lian: [] }, equipped: { shi: [], ci: [], lian: [] } }
     };
   }
+  // v7：反应式筹策迁移为阶段预案。旧剩余点数作为当前阶段充能保留，旧章法标记废弃。
+  const ab = state.abilityState;
+  ab.version = Math.max(2, Number(ab.version) || 1);
+  ab.study = (ab.study && typeof ab.study === 'object') ? ab.study : { focus: ['shi'], progress: {} };
+  ab.study.nextFocus = Array.isArray(ab.study.nextFocus)
+    ? ab.study.nextFocus : (Array.isArray(ab.study.focus) ? ab.study.focus.slice() : ['shi']);
+  const oldStrategy = (ab.strategy && typeof ab.strategy === 'object') ? ab.strategy : {};
+  ab.strategy = {
+    charges: Math.max(0, Number(oldStrategy.charges ?? oldStrategy.points) || 0),
+    refillPhase: String(oldStrategy.refillPhase || ''),
+    plan: ['steady','guard','switch'].includes(oldStrategy.plan) ? oldStrategy.plan : 'guard',
+    nextPlan: ['steady','guard','switch'].includes(oldStrategy.nextPlan) ? oldStrategy.nextPlan : 'guard',
+    freeUsed: !!oldStrategy.freeUsed
+  };
   return { v: RUN_SAVE_VERSION, savedAt: Number(obj.savedAt) || Date.now(), state };
 }
 
@@ -315,16 +329,23 @@ export function deserializeRun(rawObj, cfg) {
   out.schoolState.settledBattleIds = Array.isArray(out.schoolState.settledBattleIds) ? out.schoolState.settledBattleIds.slice(-40) : [];
   out.abilityState = (out.abilityState && typeof out.abilityState === 'object') ? out.abilityState : {};
   const ab = out.abilityState;
-  ab.version = Math.max(1, Number(ab.version) || 1);
+  ab.version = Math.max(2, Number(ab.version) || 1);
   ab.insight = Math.max(0, Number(ab.insight) || 0);
   ab.familiarity = Object.assign({ shi: 0, ci: 0, lian: 0 }, ab.familiarity || {});
-  ab.study = Object.assign({ focus: ['shi'], progress: {} }, ab.study || {});
+  ab.study = Object.assign({ focus: ['shi'], nextFocus: ['shi'], progress: {} }, ab.study || {});
   ab.study.focus = Array.isArray(ab.study.focus) ? ab.study.focus.filter(k => ['shi','ci','lian','bi','xue','si'].includes(k)) : ['shi'];
   if (!ab.study.focus.length) ab.study.focus = ['shi'];
+  ab.study.nextFocus = Array.isArray(ab.study.nextFocus) ? ab.study.nextFocus.filter(k => ['shi','ci','lian','bi','xue','si'].includes(k)) : ab.study.focus.slice();
+  if (!ab.study.nextFocus.length) ab.study.nextFocus = ab.study.focus.slice();
   ab.study.progress = (ab.study.progress && typeof ab.study.progress === 'object') ? ab.study.progress : {};
-  ab.strategy = Object.assign({ points: 0, refillPhase: '', freeChapterPhases: {} }, ab.strategy || {});
-  ab.strategy.points = Math.max(0, Number(ab.strategy.points) || 0);
-  ab.strategy.freeChapterPhases = (ab.strategy.freeChapterPhases && typeof ab.strategy.freeChapterPhases === 'object') ? ab.strategy.freeChapterPhases : {};
+  const strategyCfg = (((cfg || {}).attrs || {}).abilitySystem || {}).strategy || {};
+  const planIds = Object.keys(strategyCfg.plans || {});
+  const defaultPlan = planIds.includes(strategyCfg.defaultPlan) ? strategyCfg.defaultPlan : (planIds[0] || 'guard');
+  ab.strategy = Object.assign({ charges: 0, refillPhase: '', plan: defaultPlan, nextPlan: defaultPlan, freeUsed: false }, ab.strategy || {});
+  ab.strategy.charges = Math.max(0, Number(ab.strategy.charges) || 0);
+  ab.strategy.plan = planIds.includes(ab.strategy.plan) ? ab.strategy.plan : defaultPlan;
+  ab.strategy.nextPlan = planIds.includes(ab.strategy.nextPlan) ? ab.strategy.nextPlan : ab.strategy.plan;
+  ab.strategy.freeUsed = !!ab.strategy.freeUsed;
   ab.manuscript = Object.assign({ pages: 0, fragments: 0, volumes: 0, polish: 0, bonusPagePhases: {}, schoolPagePhases: {}, firstPolishPhases: {} }, ab.manuscript || {});
   for (const k of ['pages','fragments','volumes','polish']) ab.manuscript[k] = Math.max(0, Number(ab.manuscript[k]) || 0);
   ab.manuscript.bonusPagePhases = (ab.manuscript.bonusPagePhases && typeof ab.manuscript.bonusPagePhases === 'object') ? ab.manuscript.bonusPagePhases : {};
