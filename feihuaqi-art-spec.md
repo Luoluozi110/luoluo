@@ -147,3 +147,52 @@ function objGroup(inner) {
 ```
 - `S(inner, vb)` 为本文件基础封装，产出 `<svg viewBox fill=none round ...>`。
 - `ensureDefs()` 在 `board.build()` 与 `app.boot()` 各调用一次（幂等），注入共享 `ta-*` 资源；任何资产渲染前已就绪。
+
+---
+
+## 九、2.5D 棋盘迁移接口（准备阶段）
+
+当前默认仍是平面俯视；桌面高画质开发预览可在地址后增加 `?boardView=25d`。镜头参数集中在
+`js/ui/boardView.js`，禁止在格子或 HUD 中散落硬编码 `rotateX()` / `perspective()`。系统同时记录
+`data-board-view`（用户请求）与 `data-board-view-effective`（设备实际启用）；省电档、小屏与粗指针
+设备即使请求 2.5D 也自动回退 `flat`。
+
+### 固定层级
+
+1. `#scene`：天空、远山、花瓣与透视容器；只持有 `perspective`，不参与棋盘手势。
+2. `#boardCamera`：屏幕空间平移与整体 `lift`；单指拖动直接写这一层的屏幕 `dx/dy`。
+3. `#boardZoom`：只承担统一缩放；捏合中心公式保持在屏幕空间。
+4. `#boardProjection`：只承担 pitch / yaw；不得混入玩家平移或缩放。
+5. `#boardWrap`：只把棋盘世界原点居中，不承担镜头参数。
+6. `#board`：岛体、园景、格子与棋子；资产高度通过以下 CSS 变量表达：
+   - `--board-island-z`
+   - `--board-world-z`
+   - `--board-tile-z`
+   - `--board-piece-z`
+   - `--board-billboard-pitch`
+   - `--board-billboard-yaw`
+7. `#hud` / 模态 / 战斗台 / 骰子飘字：保持屏幕空间锚定，严禁随棋盘倾斜。
+
+### 世界物件规则
+
+- `ground`：岛体、道路、湖面、格子和棋子影子，随 `#boardProjection` 投影一次。
+- `billboard`：人物、亭台立面与需要直立的树冠，世界层只保存锚点，精灵子层用
+  `--board-billboard-*` 抵消镜头旋转；棋子已按此结构拆成 anchor / sprite。
+- `screen`：HUD、模态、骰子和飘字，不进入棋盘 DOM 变换链。
+- 当前 `CENTER_GARDEN_ART` 同时包含湖面与亭台，正式默认启用 2.5D 前必须拆成 ground 湖面和
+  billboard 亭台，避免现成斜视插画被二次透视。
+- 每个格子必须保留 `data-cell-id`、`data-cell-type`、`data-ring` 与 `--cell-row`；未来树木和门楼
+  按这些字段挂接，不再靠解析中文名称决定位置。地标建筑禁止覆盖格面，只能落在中央景区、
+  路线外侧或独立装饰锚点。
+- 2.5D 下格子按 `--cell-row` 排序；新增世界物件必须声明所属行，避免前景物件被后排覆盖。
+- 手势层在投影外侧，拖拽和捏合直接使用屏幕坐标；只有点击空白世界坐标时才允许做反投影，
+  透视命中不能用简单 `cos(pitch)` 近似。
+- `fit()` 与 `panBounds()` 必须使用投影后四角包围盒；resize 后重新 clamp，指针捕获丢失时清空状态。
+- 省电档、小屏与粗指针设备必须同时关闭 perspective、translateZ、`preserve-3d` 和大面积模糊，
+  不得让 2.5D 模式绕过既有性能预算。
+
+### 验收入口
+
+- 平面基线：`/?boardView=flat&quality=high`
+- 2.5D 预览：`/?boardView=25d&quality=high`
+- 2.5D 降级：`/?boardView=25d&quality=low`（请求值为 25d，实际值应为 flat）
