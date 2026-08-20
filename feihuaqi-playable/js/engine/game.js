@@ -109,8 +109,9 @@ export class Game {
   studySlots(attrs = this.s && this.s.attrs, school = this.s && this.s.school) {
     const c = this.abilityConfig().study || {};
     const mech = this.schoolMechanics(school);
+    const albumPlus = Number(this.s && this.s.albumState && this.s.albumState.flags && this.s.albumState.flags.studySlotPlus) || 0;
     return Math.max(1, Math.min(Number(c.maxSlots) || 3,
-      (Number(c.baseSlots) || 1) + Math.floor((Number(attrs && attrs.xue) || 0) / (Number(c.slotPerXue) || 12)) + (Number(mech.studySlotsPlus) || 0)));
+      (Number(c.baseSlots) || 1) + Math.floor((Number(attrs && attrs.xue) || 0) / (Number(c.slotPerXue) || 12)) + (Number(mech.studySlotsPlus) || 0) + albumPlus));
   }
 
   insightCap(attrs = this.s && this.s.attrs) {
@@ -132,7 +133,8 @@ export class Game {
   strategyCap(attrs = this.s && this.s.attrs, school = this.s && this.s.school) {
     const c = this.abilityConfig().strategy || {};
     const mech = this.schoolMechanics(school);
-    return Math.max(1, (Number(c.maxCharges) || 3) + (Number(mech.strategyMaxPlus) || 0));
+    const albumPlus = Number(this.s && this.s.albumState && this.s.albumState.flags && this.s.albumState.flags.strategyCapPlus) || 0;
+    return Math.max(1, (Number(c.maxCharges) || 3) + (Number(mech.strategyMaxPlus) || 0) + albumPlus);
   }
 
   strategyIncome(attrs = this.s && this.s.attrs, school = this.s && this.s.school) {
@@ -278,7 +280,9 @@ export class Game {
     const previousPlan = a.strategy.plan;
     a.strategy.refillPhase = phase;
     a.strategy.plan = a.strategy.nextPlan;
-    a.strategy.charges = this.strategyIncome();
+    const albumStartBonus = Math.max(0, Number(this.s.albumState && this.s.albumState.flags && this.s.albumState.flags.strategyStartPlus) || 0);
+    if (this.s.albumState && this.s.albumState.flags) this.s.albumState.flags.strategyStartPlus = 0;
+    a.strategy.charges = Math.min(this.strategyCap(), this.strategyIncome() + albumStartBonus);
     a.strategy.freeUsed = false;
     a.study.focus = a.study.nextFocus.slice(0, this.studySlots());
     if (!a.study.focus.length) a.study.focus = this.createAbilityState(this.s.attrs, this.s.school).study.focus;
@@ -432,6 +436,7 @@ export class Game {
       if (this.ui && this.ui.toast) this.ui.toast(`◆ ${school.name}造诣 ${Album.masteryLevelName(this.masteryLevel)}，${R.ATTR_NAMES[school.attr]} +${_masteryGain}`);
     }
     this.applyLoadout(opts.loadout || []);
+    this.applyAlbumStartEffects();
 
     // 照我传灯·跨局传承：若开局消费了传承，落日志 + 提示
     if (this._inheritApplied) {
@@ -455,11 +460,17 @@ export class Game {
     return { theme: pick(themes), manner: pick(manners) };
   }
 
-  /** 应用图鉴装配奖励（最多 LOADOUT_MAX 项，开局一次性生效） */
+  /** 应用图鉴装配：旧 reward 仍开局生效；成长型名篇写入本局状态并按分支启用。 */
   applyLoadout(cards) {
     const list = (cards || []).slice(0, Album.LOADOUT_MAX);
+    const store = Album.loadStore();
+    this.s.albumState = { progress: {}, branches: {}, flags: {} };
     for (const card of list) {
       const r = card.reward || {};
+      const p = Album.normalizeAlbumProgress(store.progress && store.progress[card.id]);
+      this.s.albumState.progress[card.id] = p;
+      const branch = p.branch || '';
+      if (branch) this.s.albumState.branches[card.id] = branch;
       this.s.loadout.push(card.id);
       if (r.type === 'attr' && R.ATTR_KEYS.includes(r.attr)) {
         this.s.attrs[r.attr] = Math.max(0, (this.s.attrs[r.attr] || 0) + (Number(r.value) || 0));
@@ -476,8 +487,135 @@ export class Game {
       } else if (r.type === 'title' && r.title) {
         this.s.titles.push(r.title);
       }
-      this.push(`图鉴装配「${card.name}」——${card.rewardDesc || ''}`);
+      const progress = this.s.albumState.progress[card.id];
+      const branchId = this.s.albumState.branches[card.id];
+      const branchName = (card.branches || []).find(b => b.id === branchId)?.name;
+      this.push(`图鉴装配「${card.name}」${progress.level ? `·Lv${progress.level}` : ''}${branchName ? `·${branchName}` : ''}——${card.rewardDesc || ''}`);
     }
+  }
+
+  albumCard(cardId) {
+    return (this.cfg.album || []).find(c => c.id === cardId) || null;
+  }
+
+  albumProgress(cardId) {
+    const a = this.ensureAlbumState();
+    return a && a.progress[cardId] ? a.progress[cardId] : Album.emptyAlbumProgress();
+  }
+
+  ensureAlbumState() {
+    if (!this.s) return null;
+    const state = (this.s.albumState && typeof this.s.albumState === 'object') ? this.s.albumState : {};
+    state.progress = Album.normalizeAlbumProgressMap(state.progress);
+    state.branches = state.branches && typeof state.branches === 'object' ? state.branches : {};
+    state.flags = state.flags && typeof state.flags === 'object' ? state.flags : {};
+    this.s.albumState = state;
+    return state;
+  }
+
+  albumBranch(cardId, branchId) {
+    const card = this.albumCard(cardId);
+    const selected = Album.chooseAlbumBranch(Album.loadStore(), card, branchId);
+    if (!selected.ok) return selected;
+    const p = this.albumProgress(cardId);
+    p.branch = branchId; p.branchLocked = true;
+    const a = this.ensureAlbumState();
+    a.progress[cardId] = p; a.branches[cardId] = branchId;
+    this.push(`名篇「${card.name}」选择路线：${selected.branch.name}`);
+    this.ui.onState(this.s); this.onForceSave?.();
+    return { ok: true, branch: selected.branch };
+  }
+
+  activeAlbumEffects(trigger, ctx = {}) {
+    const a = this.ensureAlbumState();
+    const effects = [];
+    for (const [id, branchId] of Object.entries(a?.branches || {})) {
+      const card = this.albumCard(id); const p = a.progress[id];
+      if (!card || !p || p.level < 1) continue;
+      const branch = Album.branchById(card, branchId);
+      for (const ef of (branch?.effects || card.effects || [])) {
+        if (ef.trigger !== trigger || (ef.minLevel && p.level < Number(ef.minLevel))) continue;
+        if (ef.style && ef.style !== ctx.style) continue;
+        if (ef.result && ef.result !== ctx.result) continue;
+        if (ef.phase && ef.phase !== ctx.phase) continue;
+        if (ef.onlyIf && !ctx[ef.onlyIf]) continue;
+        const key = `${id}:${branchId}:${trigger}:${ef.name || ef.type}:${ctx.eventKey || ctx.battleId || ctx.phase || ''}`;
+        if (ef.once && a.flags[key]) continue;
+        effects.push({ ...ef, card, progress: p, _key: key });
+      }
+    }
+    return effects;
+  }
+
+  _markAlbumEffect(ef) {
+    if (!ef || !ef.once) return;
+    const a = this.ensureAlbumState();
+    a.flags[ef._key] = true;
+  }
+
+  _applyAlbumEffect(ef, ctx = {}) {
+    const v = Number(ef.value) || 0;
+    const a = this.ensureAbilityState();
+    if (ef.type === 'attr' && R.ATTR_KEYS.includes(ef.attr)) this.addAttrs({ [ef.attr]: v }, { raw: true });
+    else if (ef.type === 'inspiration') this.addInspiration(v, `名篇·${ef.card.name}`);
+    else if (ef.type === 'inspirationMax' && v > 0) {
+      this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, this.s.inspirationMax + v);
+      this.s.inspiration = Math.min(this.s.inspirationMax, this.s.inspiration);
+    } else if (ef.type === 'insight') this.gainInsight(v, `名篇·${ef.card.name}`);
+    else if (ef.type === 'manuscript') a.manuscript.pages = Math.min(this.manuscriptCap(), a.manuscript.pages + Math.max(0, v));
+    else if (ef.type === 'strategy') {
+      const gain = Math.max(0, v);
+      if (ctx.trigger === 'start') this.s.albumState.flags.strategyStartPlus = Math.max(0, Number(this.s.albumState.flags.strategyStartPlus) || 0) + gain;
+      else a.strategy.charges = Math.min(this.strategyCap(), a.strategy.charges + gain);
+    } else if (ef.type === 'studySlot') this.s.albumState.flags.studySlotPlus = Math.max(0, Number(this.s.albumState.flags.studySlotPlus) || 0) + Math.max(0, v);
+    else if (ef.type === 'techniqueXp' && R.CREATIVE_KEYS.includes(ef.style || ctx.style)) {
+      const style = ef.style || ctx.style;
+      const tc = this.techniqueConfig();
+      a.technique.xp[style] = (Number(a.technique.xp[style]) || 0) + Math.max(0, v);
+      a.technique.level[style] = (tc.thresholds || []).filter(t => a.technique.xp[style] >= Number(t)).length;
+    }
+    this._markAlbumEffect(ef);
+    this.push(`名篇「${ef.card.name}」·${ef.name || '篇后余韵'}：${ef.desc || ''}`);
+  }
+
+  applyAlbumStartEffects() {
+    for (const ef of this.activeAlbumEffects('start', { phase: this.s.phase })) this._applyAlbumEffect(ef, { phase: this.s.phase, trigger: 'start' });
+    const a = this.ensureAbilityState();
+    if (a) {
+      a.strategy.charges = Math.min(this.strategyCap(), a.strategy.charges + Math.max(0, Number(this.s.albumState.flags.strategyStartPlus) || 0));
+      this.s.albumState.flags.strategyStartPlus = 0;
+    }
+  }
+
+  applyAlbumOutcomeEffects(trigger, out = {}) {
+    const ctx = { ...out, style: out.style, result: out.result, phase: this.s.phase, battleId: out.battleId };
+    for (const ef of this.activeAlbumEffects(trigger, ctx)) this._applyAlbumEffect(ef, ctx);
+  }
+
+  albumScorePct(style, phase = this.s.phase) {
+    return this.activeAlbumEffects('score', { style, phase })
+      .filter(ef => ef.type === 'pct')
+      .reduce((sum, ef) => sum + (Number(ef.value) || 0), 0);
+  }
+
+  recordAlbumBattle(out) {
+    const ids = Array.isArray(this.s.loadout) ? this.s.loadout : [];
+    if (!ids.length) return [];
+    const store = Album.loadStore();
+    store.progress = Album.normalizeAlbumProgressMap(store.progress);
+    const changes = [];
+    for (const id of ids) {
+      const card = this.albumCard(id);
+      if (!card) continue;
+      const branch = this.s.albumState?.branches?.[id] || '';
+      const res = Album.addAlbumProgress(store.progress, card, { result: out.result, style: out.style, branch });
+      if (res) changes.push({ id, card, ...res });
+    }
+    Album.saveStore(store);
+    for (const x of changes) {
+      if (x.leveledUp) this.push(`传世名篇「${x.card.name}」精进至 Lv${x.after.level}·${Album.albumLevelName(x.after.level)}`);
+    }
+    return changes;
   }
 
   push(text) {
@@ -1101,6 +1239,13 @@ export class Game {
         await this.ui.showQuizResult(q, ans, false);
       }
     }
+    this.applyAlbumOutcomeEffects('quiz', {
+      result: (!ans.timedOut && ans.index >= 0 && (q.type === 'choice' || ans.index === q.answer)) ? 'win' : 'lose',
+      style: ['shi', 'ci', 'lian'].includes(q.category) ? q.category : undefined,
+      phase: s.phase,
+      eventKey: q.id
+    });
+    this.ui.onState(s);
   }
 
   /* ------------------------------------------------------ 辞宗战后轻奇遇 */
@@ -1151,6 +1296,7 @@ export class Game {
     if (ev.kind === 'choice') {
       await this.applyEventChoice(ev, idx);
     } else await this.applyEffect(ev.effect || {});
+    this.applyAlbumOutcomeEffects('event', { phase: this.s.phase, eventKey: ev.id });
     return true;
   }
 
@@ -1178,6 +1324,7 @@ export class Game {
     } else {
       await this.applyEffect(ev.effect || {});
     }
+    this.applyAlbumOutcomeEffects('event', { phase: s.phase, eventKey: ev.id });
     this.ui.onState(s);
   }
 
@@ -1267,6 +1414,7 @@ export class Game {
       this.s.phaseGateSeen[gate.phase] = true;
       this.s.phase = gate.phase;
       this.refillStrategy(gate.phase);
+      this.applyAlbumOutcomeEffects('phase', { phase: gate.phase, eventKey: gate.phase });
       if (typeof this.ui.syncStageRing === 'function') this.ui.syncStageRing(this.s);
       if (typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gate, this.s);
       // 二次同步是故障自愈：阶段弹窗曾是唯一切圈入口，任何旧 UI/缓存路径都会留下外圈+透明棋子。
@@ -1607,6 +1755,11 @@ export class Game {
         else if (ef.type === 'syn_pct') pct.push({ source: 'synergy', label: `羁绊·${sy.name}`, value: Number(ef.value) || 0 });
       }
     }
+
+      // 成长型名篇的 score 修正与阶段预案一样属于公开、非交互的作品修正。
+    const albumPct = this.albumScorePct(style, session.isPalace ? 'palace' : s.phase);
+    if (albumPct) pct.push({ source: 'album', label: '名篇·成长效果', value: albumPct });
+    this.applyAlbumOutcomeEffects('score', { style, phase: session.isPalace ? 'palace' : s.phase, eventKey: session.battleId || `${s.turn}:${style}` });
 
     // 阶段预案只读取已选文体与上一场历史；满足条件即自动发动，不插入战斗交互。
     const planPct = this.strategyBattlePct(session, style);
@@ -1977,6 +2130,8 @@ export class Game {
       this.push(`不敌「${session.npc.fullName || session.npc.name}」`);
     }
     if (abilityOn) this.applyAbilityBattleGrowth(session, out);
+    this.applyAlbumOutcomeEffects('battle', out);
+    this.recordAlbumBattle(out);
     if (session.isPalace) s.palaceDone++;
 
     // 气势连捷：维护连续同风格胜场。胜→累加；换风格→以新风格起 1；败→清零；平局同风格保留（不惩罚）。

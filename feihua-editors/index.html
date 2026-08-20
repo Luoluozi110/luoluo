@@ -232,7 +232,7 @@
 <!-- ============================ 传世名篇编辑器 ============================ -->
 <section class="section wrap" id="album-section">
   <div class="toolbar">
-    <span class="lead">传世名篇管理（解锁条件 / 奖励 / 典故）</span>
+    <span class="lead">传世名篇管理（解锁条件 / 奖励 / 成长 / 分支 / 典故）</span>
     <div class="spacer"></div>
     <button class="btn" id="albumBtnImport">导入 album.json</button>
     <button class="btn" id="albumBtnExport">导出 album.json</button>
@@ -280,7 +280,9 @@
     <div class="row2"><div class="field"><label>名篇 ID（如 A013）</label><input id="album-id" placeholder="A013" /></div><div class="field"><label>名称</label><input id="album-name" placeholder="如：传世名篇" /></div></div>
     <div class="field"><label>解锁条件</label><div id="albumUnlockBox"></div></div>
     <div class="field"><label>奖励</label><div id="albumRewardBox"></div></div>
-    <div class="field"><label>奖励展示文案</label><input id="album-reward-desc" placeholder="如：开局诗力 +2" /></div>
+    <div class="field"><label>奖励展示文案</label><input id="album-reward-desc" placeholder="如：开局诗力 +2；成长路线可选" /></div>
+    <div class="field"><label>成长参数 JSON（跨局 XP；可留空对象）</label><textarea id="album-growth-json" rows="4" spellcheck="false" placeholder='{"baseXp":1,"winXp":1,"style":"shi","styleXp":1}'></textarea><div class="hint">支持 baseXp / winXp / drawXp / loseXp / style / styleXp；XP 达到 3 / 8 / 16 时升至 Lv2 / Lv3 / Lv4。</div></div>
+    <div class="field"><label>成长分支 JSON（至少一条；效果 trigger/type 必须来自引擎契约）</label><textarea id="album-branches-json" rows="12" spellcheck="false" placeholder='[{"id":"route_a","name":"路线甲","minLevel":1,"effects":[{"trigger":"start","type":"insight","value":1,"name":"开篇","desc":"开局心得 +1"}]}]'></textarea><div class="hint">trigger：start / battle / quiz / event / phase / score；type：attr / inspiration / inspirationMax / insight / manuscript / strategy / studySlot / techniqueXp / pct。可选 style、result、phase、minLevel、once。</div></div>
     <div class="field"><label>典故 / 描述</label><textarea id="album-text" placeholder="名篇典故与解锁叙事…"></textarea></div>
     <div class="modal-actions"><button class="btn ghost" id="albumCancel">取消</button><button class="btn primary" id="albumSave">保存名篇</button></div>
   </div>

@@ -16,8 +16,11 @@ export const ALBUM_KEY = 'feihua_album';
 export const SAVECODE_KEY = 'feihua_savecode';
 export const REINCARNATE_KEY = 'feihua_reincarnate_v1';
 export const LOADOUT_MAX = 2;
-export const STORE_VERSION = 2;          // v2: 新增 mastery（流派熟练度）
+export const STORE_VERSION = 3;          // v3: 传世名篇成长、分支与熟练度
 export const SAVECODE_VERSION = 2;
+export const ALBUM_LEVEL_THRESHOLDS = [0, 3, 8, 16];
+export const ALBUM_LEVEL_NAMES = ['初见篇章', '熟读成诵', '融会贯通', '传世定稿'];
+const ALBUM_STYLES = ['shi', 'ci', 'lian'];
 export const SAVECODE_PREFIX = 'FHQS2';
 const SAVECODE_MAX_CHARS = 6 * 1024 * 1024;
 
@@ -70,6 +73,91 @@ export function normalizeMastery(raw) {
 /* 流派机制按等级增强表（等级 1 = 现网基线，不增强）。
  * 方向贴合各派性格、给深度而不整体膨胀；Lv5 有单点"质变"。
  */
+export function albumLevelFromXp(xp) {
+  const x = Math.max(0, Number(xp) || 0);
+  let lv = 1;
+  for (let i = 0; i < ALBUM_LEVEL_THRESHOLDS.length; i++) if (x >= ALBUM_LEVEL_THRESHOLDS[i]) lv = i + 1;
+  return lv;
+}
+export function albumLevelName(level) {
+  return ALBUM_LEVEL_NAMES[Math.max(1, Math.min(ALBUM_LEVEL_NAMES.length, Number(level) || 1)) - 1];
+}
+export function emptyAlbumProgress() {
+  return { xp: 0, level: 1, branch: '', branchLocked: false, uses: 0, wins: 0, draws: 0, losses: 0, styleUses: { shi: 0, ci: 0, lian: 0 }, flags: {} };
+}
+export function normalizeAlbumProgress(raw) {
+  const base = emptyAlbumProgress();
+  if (!raw || typeof raw !== 'object') return base;
+  const xp = Math.max(0, Number(raw.xp) || 0);
+  base.xp = xp; base.level = albumLevelFromXp(xp);
+  base.branch = typeof raw.branch === 'string' ? raw.branch : '';
+  base.branchLocked = !!raw.branchLocked;
+  base.uses = Math.max(0, Number(raw.uses) || 0);
+  base.wins = Math.max(0, Number(raw.wins) || 0);
+  base.draws = Math.max(0, Number(raw.draws) || 0);
+  base.losses = Math.max(0, Number(raw.losses) || 0);
+  for (const k of ALBUM_STYLES) base.styleUses[k] = Math.max(0, Number(raw.styleUses && raw.styleUses[k]) || 0);
+  base.flags = raw.flags && typeof raw.flags === 'object' ? { ...raw.flags } : {};
+  return base;
+}
+export function normalizeAlbumProgressMap(raw) {
+  const out = {};
+  if (!raw || typeof raw !== 'object') return out;
+  for (const [id, value] of Object.entries(raw)) if (typeof id === 'string' && id) out[id] = normalizeAlbumProgress(value);
+  return out;
+}
+export function albumXpGain(card, out = {}) {
+  const g = card && card.growth || {};
+  let xp = Number(g.baseXp) || 1;
+  if (out.result === 'win') xp += Number(g.winXp) || 1;
+  else if (out.result === 'draw') xp += Number(g.drawXp) || 1;
+  else xp += Number(g.loseXp) || 1;
+  if (out.style && g.style === out.style) xp += Number(g.styleXp) || 1;
+  return Math.max(1, Math.floor(xp));
+}
+export function addAlbumProgress(map, card, out = {}) {
+  if (!card || !card.id) return null;
+  const before = normalizeAlbumProgress(map[card.id]);
+  const after = normalizeAlbumProgress(before);
+  const gain = albumXpGain(card, out);
+  after.xp += gain; after.level = albumLevelFromXp(after.xp);
+  after.uses += 1;
+  if (out.result === 'win') after.wins += 1;
+  else if (out.result === 'draw') after.draws += 1;
+  else if (out.result === 'lose') after.losses += 1;
+  if (out.style && ALBUM_STYLES.includes(out.style)) after.styleUses[out.style] += 1;
+  if (out.branch && !after.branchLocked) { after.branch = out.branch; after.branchLocked = true; }
+  map[card.id] = after;
+  return { before, after, gained: gain, leveledUp: after.level > before.level };
+}
+export function cardBranches(card) {
+  return Array.isArray(card && card.branches) ? card.branches.filter(b => b && b.id) : [];
+}
+export function branchById(card, id) {
+  return cardBranches(card).find(b => b.id === id) || null;
+}
+
+/**
+ * 在跨局图鉴存档中选择名篇路线。路线一经选择即锁定，避免同一张名篇
+ * 在每局开始前反复切换而失去构筑取舍；返回结果不依赖 DOM，装配 UI 与
+ * 引擎读档都可复用。
+ */
+export function chooseAlbumBranch(store, card, branchId) {
+  if (!store || !card || !card.id) return { ok: false, reason: '名篇不存在' };
+  const branch = branchById(card, branchId);
+  if (!branch) return { ok: false, reason: '名篇分支不存在' };
+  const normalized = normalizeStore(store);
+  const p = normalized.progress[card.id] || emptyAlbumProgress();
+  if (p.branchLocked && p.branch !== branchId) return { ok: false, reason: '该名篇路线已定型' };
+  if (p.branch === branchId) return { ok: true, branch, progress: p, store: normalized };
+  const need = Math.max(1, Number(branch.minLevel) || 1);
+  if (p.level < need) return { ok: false, reason: `名篇等级不足（需 Lv${need}）` };
+  p.branch = branchId;
+  p.branchLocked = true;
+  normalized.progress[card.id] = p;
+  return { ok: true, branch, progress: p, store: normalized };
+}
+
 const MASTERY_MECH = {
   bowen: {
     // knowledgeThreshold: 2→1 于 Lv4 开始（阈值不能低于 1，Lv4/5 共享）
@@ -166,7 +254,8 @@ export function emptyStore() {
     },
     unlocked: [],
     loadout: [],
-    mastery: emptyMastery()
+    mastery: emptyMastery(),
+    progress: {}
   };
 }
 
@@ -190,6 +279,7 @@ export function normalizeStore(raw) {
     ? raw.loadout.filter(x => typeof x === 'string' && base.unlocked.includes(x)).slice(0, LOADOUT_MAX)
     : [];
   base.mastery = normalizeMastery(raw.mastery);
+  base.progress = normalizeAlbumProgressMap(raw.progress);
   return base;
 }
 
