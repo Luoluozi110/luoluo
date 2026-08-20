@@ -1,0 +1,4 @@
+{
+  "_comment": "云端自动同步地址。游戏启动时拉取此 url 的 feihua-content.json 并合并进配置，使所有玩家自动同步编辑器的改动。留空则关闭自动同步（可在游戏菜单『载入自定义配置 → 云端同步地址』中临时设置，或填入你的 GitHub raw 地址）。",
+  "url": "https://raw.githubusercontent.com/Luoluozi110/luoluo/main/feihua-content.json"
+}
