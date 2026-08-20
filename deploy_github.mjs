@@ -84,25 +84,19 @@ async function main() {
   const treeRes = await req('POST', `/repos/${OWNER}/${REPO}/git/trees`, { tree });
   console.log('tree sha:', treeRes.sha);
 
-  let parentSha = null;
-  if (FONTS_ONLY) {
-    const ref = await req('GET', `/repos/${OWNER}/${REPO}/git/refs/heads/main`);
-    parentSha = ref.object.sha;
-  }
+  // main 始终存在：以当前 main 为父节点，PATCH 前进（不再造孤儿提交）
+  const ref = await req('GET', `/repos/${OWNER}/${REPO}/git/refs/heads/main`);
+  const parentSha = ref.object.sha;
+  const MSG = process.argv[3] || (FONTS_ONLY ? 'feihuaqi: 补充自托管字体（Noto Serif SC）' : 'feihuaqi playable: 桃花岛·飞花棋 部署版');
   const commit = await req('POST', `/repos/${OWNER}/${REPO}/git/commits`, {
-    message: FONTS_ONLY ? 'feihuaqi: 补充自托管字体（Noto Serif SC）' : 'feihuaqi playable: 桃花岛·飞花棋 部署版',
+    message: MSG,
     tree: treeRes.sha,
     parents: parentSha ? [parentSha] : [],
   });
   console.log('commit sha:', commit.sha);
 
-  if (FONTS_ONLY) {
-    await req('PATCH', `/repos/${OWNER}/${REPO}/git/refs/heads/main`, { sha: commit.sha });
-    console.log('已更新 main (追加字体)');
-  } else {
-    await req('POST', `/repos/${OWNER}/${REPO}/git/refs`, { ref: 'refs/heads/main', sha: commit.sha });
-    console.log('已创建 main 分支');
-  }
+  await req('PATCH', `/repos/${OWNER}/${REPO}/git/refs/heads/main`, { sha: commit.sha });
+  console.log('已更新 main (父提交=' + parentSha + ')');
 }
 
 main().then(() => console.log('DONE')).catch((e) => { console.error('ERR', e.message); process.exit(1); });
