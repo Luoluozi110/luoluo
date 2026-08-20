@@ -25,6 +25,7 @@ window.GAME_ALBUM = [
         "id": "bold",
         "name": "豪情入篇",
         "minLevel": 1,
+        "desc": "以诗立身，开局灵感与诗体战力层层拔高，越战越酣。",
         "effects": [
           {
             "trigger": "start",
@@ -67,6 +68,7 @@ window.GAME_ALBUM = [
         "id": "swift",
         "name": "快意成章",
         "minLevel": 1,
+        "desc": "稿页与灵感随身，胜平皆有所获，落笔即成篇。",
         "effects": [
           {
             "trigger": "start",
@@ -132,6 +134,7 @@ window.GAME_ALBUM = [
         "id": "proofread",
         "name": "校勘入骨",
         "minLevel": 1,
+        "desc": "开局心得，答题与平局皆增益，校书如琢玉。",
         "effects": [
           {
             "trigger": "start",
@@ -172,6 +175,7 @@ window.GAME_ALBUM = [
         "id": "teach",
         "name": "转益多师",
         "minLevel": 1,
+        "desc": "增研修位，败中亦能求师，旁通百家之长。",
         "effects": [
           {
             "trigger": "start",
@@ -232,6 +236,7 @@ window.GAME_ALBUM = [
         "id": "saveInk",
         "name": "惜墨守心",
         "minLevel": 1,
+        "desc": "守灵感上限，败局少损、残稿留痕，后手不断。",
         "effects": [
           {
             "trigger": "start",
@@ -272,6 +277,7 @@ window.GAME_ALBUM = [
         "id": "recover",
         "name": "五色复笔",
         "minLevel": 1,
+        "desc": "稿页与灵感回血，败中复得神思，平局成稿。",
         "effects": [
           {
             "trigger": "start",
@@ -335,6 +341,7 @@ window.GAME_ALBUM = [
         "id": "rank",
         "name": "金榜定名",
         "minLevel": 1,
+        "desc": "殿试专项强化，灵感上限与殿试得分、稿本齐飞。",
         "effects": [
           {
             "trigger": "start",
@@ -377,6 +384,7 @@ window.GAME_ALBUM = [
         "id": "streak",
         "name": "连捷成势",
         "minLevel": 1,
+        "desc": "筹策与连胜加成，殿试一路高歌，捷报传世。",
         "effects": [
           {
             "trigger": "start",
@@ -438,6 +446,7 @@ window.GAME_ALBUM = [
         "id": "mentor",
         "name": "薪火相传",
         "minLevel": 1,
+        "desc": "心得为主轴，授业答题皆进，阶段再加研修位。",
         "effects": [
           {
             "trigger": "start",
@@ -478,6 +487,7 @@ window.GAME_ALBUM = [
         "id": "garden",
         "name": "满园成章",
         "minLevel": 1,
+        "desc": "稿本为主轴，胜平败皆有稿，佳作相传四方。",
         "effects": [
           {
             "trigger": "start",
@@ -540,6 +550,7 @@ window.GAME_ALBUM = [
         "id": "draft",
         "name": "快构成篇",
         "minLevel": 1,
+        "desc": "筹策开道，下笔成章，诗体技法与灵感速盈。",
         "effects": [
           {
             "trigger": "start",
@@ -581,6 +592,7 @@ window.GAME_ALBUM = [
         "id": "plot",
         "name": "腹有奇谋",
         "minLevel": 1,
+        "desc": "心得与平局蓄势，败中藏策，阶段谋篇增益。",
         "effects": [
           {
             "trigger": "start",
@@ -642,6 +654,7 @@ window.GAME_ALBUM = [
         "id": "travel",
         "name": "采风入笔",
         "minLevel": 1,
+        "desc": "稿页打底，奇遇入卷、触景生情，万里成法。",
         "effects": [
           {
             "trigger": "start",
@@ -681,6 +694,7 @@ window.GAME_ALBUM = [
         "id": "roam",
         "name": "游观得间",
         "minLevel": 1,
+        "desc": "灵感上限与见闻并进，平局游兴、入景换境。",
         "effects": [
           {
             "trigger": "start",
@@ -740,6 +754,7 @@ window.GAME_ALBUM = [
         "id": "grind",
         "name": "百炼不折",
         "minLevel": 1,
+        "desc": "灵感上限护体，败中磨出心得稿页，再磨一寸。",
         "effects": [
           {
             "trigger": "start",
@@ -781,6 +796,7 @@ window.GAME_ALBUM = [
         "id": "focus",
         "name": "守拙专一",
         "minLevel": 1,
+        "desc": "研修位加成，日课不辍，功到自然成稿进阶。",
         "effects": [
           {
             "trigger": "start",
@@ -844,6 +860,7 @@ window.GAME_ALBUM = [
         "id": "polish",
         "name": "推敲入微",
         "minLevel": 1,
+        "desc": "稿页开道，词体加成、平局吟安，句眼成法。",
         "effects": [
           {
             "trigger": "start",
@@ -886,6 +903,7 @@ window.GAME_ALBUM = [
         "id": "cycle",
         "name": "回环有余",
         "minLevel": 1,
+        "desc": "灵感与回环余韵，词体平胜皆悟，新调入卷。",
         "effects": [
           {
             "trigger": "start",
@@ -951,6 +969,7 @@ window.GAME_ALBUM = [
         "id": "parallel",
         "name": "对举成锋",
         "minLevel": 1,
+        "desc": "开局筹策，工对加成，联体平局与传承皆强。",
         "effects": [
           {
             "trigger": "start",
@@ -993,6 +1012,7 @@ window.GAME_ALBUM = [
         "id": "echo",
         "name": "唱和回响",
         "minLevel": 1,
+        "desc": "心得起手，联体获胜平局皆得，广结文友研修。",
         "effects": [
           {
             "trigger": "start",
@@ -1055,6 +1075,7 @@ window.GAME_ALBUM = [
         "id": "copy",
         "name": "传抄成势",
         "minLevel": 1,
+        "desc": "稿页翻倍起手，传抄入市添灵感，名篇广传。",
         "effects": [
           {
             "trigger": "start",
@@ -1095,6 +1116,7 @@ window.GAME_ALBUM = [
         "id": "publish",
         "name": "刊行自立",
         "minLevel": 1,
+        "desc": "灵感上限大涨，刊行有酬、读者回响，新卷频出。",
         "effects": [
           {
             "trigger": "start",
@@ -1156,6 +1178,7 @@ window.GAME_ALBUM = [
         "id": "deep",
         "name": "深读一经",
         "minLevel": 1,
+        "desc": "心得扎实起手，读书得气，平局与阶段皆入法。",
         "effects": [
           {
             "trigger": "start",
@@ -1196,6 +1219,7 @@ window.GAME_ALBUM = [
         "id": "wide",
         "name": "博涉群书",
         "minLevel": 1,
+        "desc": "研修位加成，群书旁通、触类旁通，学以成文。",
         "effects": [
           {
             "trigger": "start",

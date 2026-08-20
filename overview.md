@@ -31,8 +31,19 @@
 - 评分收紧专项测试（含“旧阈值可拿/新阈值拿不到”与“达到新阈值仍能拿”双向断言）通过。
 - config-contract、ability-system 与全量 40 个测试通过。
 
+## 双平台部署（2026-08-20）
+- **GitHub Pages**：经 `api.github.com` REST API 部署成功，commit `2baf1c7` 已更新 main；96 个静态文件 + 根 `feihua-content.json` 同步，玩家成绩 `leaderboard.json` 已保留。
+  - 站点：`https://luoluozi110.github.io/luoluo/`
+  - 验证：页面可访问，`index.html` 引用版本号已为 `20260820gradetighten1`。
+- **CloudStudio**：经独立沙箱通道部署成功（verified: true），复用旧沙箱 `b7448dae814340d882052e04260fa5cb`。
+  - 分享链接：`https://b7448dae814340d882052e04260fa5cb.gz3.agentos-app.net`
+- **关键修正**：此前误判“GitHub 网络被拦”。实测 git 协议 push 被沙箱拦截，但 `api.github.com` REST API 通畅；GitHub Pages 部署与备份标签均经 REST API 成功，GitHub 侧交付已完整。
+
 ## 版本记录
-- 本地提交：`cc70e6b`（feat: 重做传世名篇成长系统）。
-- 本地备份标签：`backup/20260820-1635-album-growth`。
-- 无关未跟踪文件 `飞花棋-更新公告.md` 已明确排除，未混入本次提交。
-- GitHub 推送已尝试，命令在约 12 分钟无输出后失败；GitHub 备份尚未完成。网络或认证恢复后重试：`git push origin HEAD` 与 `git push origin backup/20260820-1635-album-growth`。
+- 名篇成长系统（本地提交）：`dede665`；评分收紧（本地提交）：`a7e27ac`。
+- 两提交均经完整测试，本地由无斜杠分支 `album-grade-backup` 引用（HEAD 指向它，工作树干净）。
+- GitHub 侧：名篇系统 + 评分收紧随 GitHub Pages 部署进入 main（`2baf1c7`），内容与本地 `dede665`/`a7e27ac` 等价。
+- 备份标签（经 REST API 创建于 main `2baf1c7`）：
+  - `backup/20260820-1835-album-growth` → tag object `f6f4b60a`
+  - `backup/20260820-1840-grade-tighten` → tag object `9db96371`
+- 无关未跟踪文件 `飞花棋-更新公告.md` 已明确排除，未混入部署或提交。

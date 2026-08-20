@@ -297,11 +297,18 @@ export class AlbumUI {
     const nextXp = growth.level < Album.ALBUM_LEVEL_THRESHOLDS.length
       ? Album.ALBUM_LEVEL_THRESHOLDS[growth.level] : null;
     const branches = Album.cardBranches(card);
-    const branchHtml = branches.length ? `<div class="ac-branches"><div class="ac-branch-title">成长路线：${growth.branchLocked ? `已定「${esc(branches.find(b => b.id === growth.branch)?.name || growth.branch)}」` : '请选择一条'}</div>${branches.map(b => {
+    const selectedBranch = branches.find(b => b.id === growth.branch);
+    const branchTitle = growth.branchLocked
+      ? `已定「${esc(selectedBranch?.name || growth.branch)}」${selectedBranch?.desc ? `：${esc(selectedBranch.desc)}` : ''}`
+      : '请选择一条';
+    const branchHtml = branches.length ? `<div class="ac-branches"><div class="ac-branch-title">成长路线：${branchTitle}</div>${branches.map(b => {
       const need = Number(b.minLevel) || 1;
       const active = growth.branch === b.id;
       const disabled = growth.level < need || growth.branchLocked && !active;
-      return `<button type="button" class="ac-branch ${active ? 'on' : ''}" data-branch="${esc(b.id)}" data-id="${esc(card.id)}" ${disabled ? 'disabled' : ''}>${esc(b.name)}${need > 1 ? ` · Lv${need}` : ''}</button>`;
+      return `<div class="ac-branch-item">
+        <button type="button" class="ac-branch ${active ? 'on' : ''}" data-branch="${esc(b.id)}" data-id="${esc(card.id)}" ${disabled ? 'disabled' : ''}>${esc(b.name)}${need > 1 ? ` · Lv${need}` : ''}</button>
+        ${b.desc ? `<div class="ac-branch-desc">${esc(b.desc)}</div>` : ''}
+      </div>`;
     }).join('')}</div>` : '';
     const growthHtml = `<div class="ac-growth">Lv${growth.level} ${esc(Album.albumLevelName(growth.level))} · XP ${growth.xp}${nextXp != null ? ` / ${nextXp}` : ' · 已满级'}</div>`;
 
