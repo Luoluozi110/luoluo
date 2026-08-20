@@ -1587,8 +1587,12 @@ export class Game {
       previewDiceScore(style, pips) {
         return R.styleDiceScore(style, pips, this.styleSystem, R.BATTLE_COEF.diceMult, 0);
       },
+      extraDicePct(extraCount = 0) {
+        const per = Number((g.cfg.inspiration || {}).extraDicePct) || 0;
+        return Math.max(0, Number(extraCount) || 0) * per;
+      },
       extraDiceCost(style, extraIndex = 1) {
-        const base = Number((g.cfg.inspiration || {}).extraDiceCost) || 3;
+        const base = Number((g.cfg.inspiration || {}).extraDiceCost) || 5;
         let discount = 0;
         if (style === 'ci' && extraIndex === 1) discount += Number((this.styleSystem.ci || {}).firstExtraDiscount) || 0;
         const a = g.ensureAbilityState();
@@ -1658,6 +1662,7 @@ export class Game {
 
     // 多枚灵感骰支持：dice 可为点数数组（每枚一枚），也可仍是单数字向后兼容。
     // 总点数 = 各枚求和，与「灵感骰 = 点数 × diceMult」公式自洽；lucky_six 取「任一枚为 6」。
+    // 追加骰的收益另按每枚配置百分比进入作品乘区，避免只靠随机骰面。
     const dicePips = Array.isArray(dice) ? dice.slice() : [Number(dice) || 1];
     const totalPips = dicePips.reduce((a, b) => a + (Number(b) || 0), 0) || 1;
     const hasSix = dicePips.includes(6);
@@ -1669,6 +1674,9 @@ export class Game {
     const schoolMech = this.schoolMechanics();
     const schoolDicePlus = schoolMech.type === 'cizong_bi'
       ? Math.min(Number(schoolMech.creativeDicePlus) || 0, Number(schoolMech.freeDiceCap) || 5) : 0;
+    const extraDicePct = extraDice > 0
+      ? (typeof session.extraDicePct === 'function' ? session.extraDicePct(extraDice) : extraDice * (Number((this.cfg.inspiration || {}).extraDicePct) || 0))
+      : 0;
 
     // 相性 2.0：四层叠加（基矩阵 / 门派文风 / 当朝风潮 / 气势连捷）
     const base = R.affinityValue(af.matrix, manner, session.theme);
@@ -1844,6 +1852,14 @@ export class Game {
         source: 'npcWeak',
         label: `破绽·${(mechOut.wea && mechOut.wea.shutdownLevel) === 'partial' ? '部分压制' : '压制'}`,
         value: mechOut.mods.playerBonusPct
+      });
+    }
+
+    if (extraDicePct > 0 && diceFixed == null) {
+      pct.push({
+        source: 'extraDice',
+        label: `追加骰·${extraDice}枚`,
+        value: extraDicePct
       });
     }
 

@@ -235,19 +235,24 @@ export class BattleStage {
         armTimer(() => finish());                       // 进入追加阶段：再给一整段时限，超时自动结算
       };
 
-      const extraCap = this.cfg && this.cfg.inspiration ? (Number(this.cfg.inspiration.maxExtraDice) || 4) : 4;
+      const extraCap = this.cfg && this.cfg.inspiration ? (Number(this.cfg.inspiration.maxExtraDice) || 2) : 2;
       const renderExtra = () => {
         const total = pips.reduce((a, b) => a + b, 0);
+        const extraCount = Math.max(0, pips.length - 1);
         const preview = typeof session.previewDiceScore === 'function' ? session.previewDiceScore(style, pips) : { score: total * dm };
         const score = preview.score;
-        const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length) : (Number(this.cfg?.inspiration?.extraDiceCost) || 3);
-        const canExtra = !hasFixed() && session.inspiration >= extraCost && pips.length - 1 < extraCap;
+        const extraPct = typeof session.extraDicePct === 'function'
+          ? session.extraDicePct(extraCount)
+          : extraCount * (Number(this.cfg?.inspiration?.extraDicePct) || 0);
+        const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length) : (Number(this.cfg?.inspiration?.extraDiceCost) || 5);
+        const canExtra = !hasFixed() && session.inspiration >= extraCost && extraCount < extraCap;
         const pipHtml = pips.map(n => `<span class="dice-pip">${'①②③④⑤⑥'[n - 1]}</span>`).join('');
-        panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → 临场发挥 ${score} 分${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
+        const extraHint = extraPct > 0 ? ` · 作品乘区 +${Math.round(extraPct * 100)}%` : '';
+        panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → 临场发挥 ${score} 分${extraHint}${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
           <div class="dice-pips">${pipHtml}</div>
           <div class="pick-row">
             ${canExtra
-              ? `<button class="pick" id="btExtra"><div class="pn">➕ 多掷一枚</div><div class="pv">灵感 −${extraCost}（可叠加）</div></button>`
+              ? `<button class="pick" id="btExtra"><div class="pn">➕ 多掷一枚</div><div class="pv">灵感 −${extraCost} · 作品乘区再 +${Math.round((typeof session.extraDicePct === 'function' ? session.extraDicePct(1) : (Number(this.cfg?.inspiration?.extraDicePct) || 0)) * 100)}%</div></button>`
               : `<button class="pick" disabled><div class="pn">${hasFixed() ? '固定骰·不可叠' : '灵感不足'}</div></button>`}
             <button class="pick" id="btConfirm"><div class="pn">确定得分</div><div class="pv">以 ${pips.length} 枚结算</div></button>
           </div>`;
@@ -256,7 +261,7 @@ export class BattleStage {
       };
 
       const addExtra = () => {
-        const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length) : (Number(this.cfg?.inspiration?.extraDiceCost) || 3);
+        const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length) : (Number(this.cfg?.inspiration?.extraDiceCost) || 5);
         if (done || session.inspiration < extraCost || hasFixed() || pips.length - 1 >= extraCap) return;
         if (typeof session.spendExtraDice === 'function') session.spendExtraDice(extraCost);
         else session.spendInspiration(extraCost, '追加灵感骰');
@@ -267,8 +272,11 @@ export class BattleStage {
         armTimer(() => finish());
       };
 
-      const firstCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, 1) : (Number(this.cfg?.inspiration?.extraDiceCost) || 3);
-      panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">本体结构公开结算；首次追加耗 ${firstCost} 灵感，最多可追加 ${extraCap} 枚　·　限时 ${this.seconds} 秒</span></div>
+      const firstCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, 1) : (Number(this.cfg?.inspiration?.extraDiceCost) || 5);
+      const extraPctPerDie = typeof session.extraDicePct === 'function'
+        ? session.extraDicePct(1)
+        : (Number(this.cfg?.inspiration?.extraDicePct) || 0);
+      panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">本体结构公开结算；首次追加耗 ${firstCost} 灵感，作品乘区 +${Math.round(extraPctPerDie * 100)}%，最多可追加 ${extraCap} 枚　·　限时 ${this.seconds} 秒</span></div>
         <div class="pick-row"><button class="pick battle-roll" id="btRoll"><div class="pn">掷 骰</div>
         <div class="pv">听天由命，也听人事</div></button></div>`;
       panel.querySelector('#btRoll').addEventListener('click', () => doRoll(false));

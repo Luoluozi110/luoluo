@@ -48,3 +48,15 @@
   - `backup/20260820-1840-grade-tighten` → tag object `9db96371`
 - 本轮备份：`backup/20260820-2206-album-editor-sync`（源 `cfd92a8`）、`backup/20260820-2210-album-editor-online`（线上 `bfd6002`）、`backup/20260820-2214-deploy-parent-fix`（脚本 `701bf31`）。
 - 无关未跟踪文件 `飞花棋-更新公告.md` 已明确排除，未混入部署或提交。
+
+## 灵感骰收益调整（2026-08-20）
+### 改动
+- 追加灵感骰成本由每枚 8 点降为 5 点，最多追加 2 枚保持不变。
+- 新增 `config/inspiration.json` 的 `extraDicePct: 0.06`：每追加一枚骰，额外获得 +6% 作品乘区；追加两枚累计 +12%。
+- 追加骰原有随机骰面分仍保留，百分比修正与相性、风潮、文心等现有 `pctMods` 同区叠加，作用于整件作品基础分。
+- 战斗界面在追加阶段实时显示当前乘区收益和下一枚追加收益；缓存版本统一更新为 `20260820inspdicepct1`。
+- 新增 `feihuaqi-playable/tests/extra-dice-pct.test.mjs`，覆盖配置、成本、百分比叠加、整件作品乘区、骰面分保留和结算明细。
+
+### 验证
+- 追加骰专项测试通过。
+- `game.js`、`battle.js` 与专项测试 JavaScript 语法检查通过。

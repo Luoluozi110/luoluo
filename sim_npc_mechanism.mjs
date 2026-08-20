@@ -60,8 +60,8 @@ function decide(strategy, session, rand) {
   const a = session.playerAttrs;
   const allow = ['shi','ci','lian'].filter(s => session.canUseStyle ? session.canUseStyle(s) : true);
   // 追加骰灵感成本与硬上限（与 config/inspiration.json 一致；仿真用它给策略建模真实资源代价）
-  const extraCost = Number(base.inspiration.extraDiceCost) || 3;
-  const extraCap = Number(base.inspiration.maxExtraDice) || 4;   // 最多追加几枚
+  const extraCost = Number(base.inspiration.extraDiceCost) || 5;
+  const extraCap = Number(base.inspiration.maxExtraDice) || 2;   // 最多追加几枚
   const hardCap = extraCap + 1;                                   // 总骰数硬上限（基础1 + 追加extraCap）
   // 镜像局从 session 快照取可用灵感，模拟「先掷基础骰、按成本追加直到不够或触顶」
   const rollMaybe = (maxDice) => {

@@ -22,6 +22,14 @@ for (const [bid,br] of Object.entries(board.branches||{})) {
 }
 board.cellById = byId; board.gateOf={};
 for (const [g,b] of Object.entries(board.branchGates||{})) board.gateOf[b]=Number(g);
+board.route = Array.isArray(board.route) && board.route.length
+  ? board.route.map((x,i)=>({ ring:x.ring||'outer', cellId:Number(x.cellId ?? x.id ?? i) }))
+  : (board.mainRing||[]).map((c,i)=>({ ring:c.ring||'main', cellId:Number(c.id ?? i) }));
+board.routeCells = board.route.map((step,i)=>{
+  const cell = byId.get(step.cellId) || board.mainRing[i];
+  return cell ? { ...cell, id:i, routeIndex:i, ring:step.ring||cell.ring||'main' } : null;
+}).filter(Boolean);
+board.routeSize = board.routeCells.length;
 board.laps = Number(board.laps)||2; board.ringSize = board.mainRing.length;
 baseCfg.questions = (baseCfg.questions||[]).filter(q=>q.enabled!==false);
 baseCfg.events = (baseCfg.events||[]).filter(e=>e.enabled!==false);
@@ -66,10 +74,12 @@ function makeUI(rand, quizAcc, pUse){
       for (const m of session.manners){ const v=session.affinityOf(m); if(v>mv){mv=v;manner=m;} }
       // 基础一枚灵感骰（免费）
       const pips = [1+Math.floor(rand()*6)];
-      // 多掷：灵感可负担且本次愿意追加时，叠一枚（每枚 -3 灵感）
+      // 多掷：灵感可负担且本次愿意追加时，叠一枚（每枚 -5 灵感）
+      const extraCost = Number(session.cfg?.inspiration?.extraDiceCost || baseCfg.inspiration.extraDiceCost) || 5;
+      const extraCap = Number(baseCfg.inspiration.maxExtraDice) || 2;
       let guard=0;
-      while (session.inspiration >= 3 && guard++ < 12) {
-        if (rand() < (pUse||0)) { if (!session.spendInspiration(3, '追加灵感骰')) break; pips.push(1+Math.floor(rand()*6)); }
+      while (session.inspiration >= extraCost && pips.length - 1 < extraCap && guard++ < 12) {
+        if (rand() < (pUse||0)) { if (!session.spendInspiration(extraCost, '追加灵感骰')) break; pips.push(1+Math.floor(rand()*6)); }
         else break;
       }
       return session.resolve(style, manner, pips);
