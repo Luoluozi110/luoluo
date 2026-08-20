@@ -69,22 +69,22 @@ const held = de.state.passive.find(t => t.id === 'T004');
 ok(held && held.effect.attrs.xue === 3, '重载后生效副本 = 学力+3（Lv2 效果保留）');
 ok(de.state.attrs.xue === (g.s.attrs.xue), '重载后学力累计值与升级后一致');
 
-console.log('== 升级立即落盘：手动槽同步（继续上局优先读手动槽）==');
+console.log('== 升级立即落盘：手动槽同步（含跨局继承基线）==');
 const g2 = new Game(cfg, makeUI(), rng);
 g2.start('shixian', { name: '测' });
-g2.s.inspiration = 60; g2.s.inspirationMax = 60;
+g2.s.inspiration = 999; g2.s.inspirationMax = 999;
 g2.onSavePoint = () => saveRun(g2, RUN_SAVE_KEY);
 g2.onForceSave = () => { saveRun(g2, RUN_SAVE_KEY); const m = loadRun(RUN_SAVE_MANUAL_KEY); if (m && !m.__corrupt && m.state && !m.state.over) saveRun(g2, RUN_SAVE_MANUAL_KEY); };
 g2.grantTalent(T004, { silent: true });
-// 玩家先「保存当前进度」（手动槽 = Lv1）
+// 继承上局 T004 的 Lv2（跨局保持），手动槽基线即 Lv2
 saveRun(g2, RUN_SAVE_MANUAL_KEY);
-ok(loadRun(RUN_SAVE_MANUAL_KEY).state.talentLevels.T004 === 1, '手动槽基线 = Lv1');
+ok(loadRun(RUN_SAVE_MANUAL_KEY).state.talentLevels.T004 === 2, '手动槽基线 = 继承 Lv2');
 // 再升级 → 应同步手动槽
 const r2 = g2.upgradeTalent('T004');
-ok(r2.ok && r2.level === 2, 'T004 升级至 Lv2');
+ok(r2.ok && r2.level === 3, 'T004 从继承 Lv2 升级至 Lv3');
 const best2 = loadBestRun(); // 优先手动槽
 const de2 = deserializeRun(best2.obj, cfg);
-ok(de2.state.talentLevels.T004 === 2, '继续上局（手动槽优先）重载后 = Lv2（手动槽已同步升级）');
+ok(de2.state.talentLevels.T004 === 3, '继续上局（手动槽优先）重载后 = Lv3（手动槽已同步升级）');
 
 console.log('== 跨场会话快照：本场锁定、下一场更新、重载后继续更新 ==');
 const g3 = new Game(cfg, makeUI(), rng);

@@ -658,8 +658,10 @@ export class Game {
 
     if (!opts.silent) await this.ui.showTalentGain(talent);
 
-    // 持有副本按当前等级（Lv1）生效；升级时原地替换 effect/cost，不污染 cfg 模板。
-    const lvl1 = this.leveledTalent(talent, 1);
+    // 持有副本按「继承等级」生效：读取图鉴记录的历史最高等级（跨局保持），
+    // 升级时原地替换 effect/cost，不污染 cfg 模板。
+    const startLv = Math.max(1, Codex.getTalentLevel(talent.id) || 1);
+    const lvl1 = this.leveledTalent(talent, startLv);
 
     if (list.length >= max) {
       const idx = await this.ui.askReplaceTalent(talent, list.slice());
@@ -677,7 +679,11 @@ export class Game {
     }
     this.applyTalentFlat(lvl1);
     this.applyTalentInstant(lvl1);
-    s.talentLevels[talent.id] = 1;
+    s.talentLevels[talent.id] = startLv;
+    if (startLv > 1) {
+      this.push(`文心「${talent.name}」承袭前世修为，自 Lv${startLv} 起`);
+      if (this.ui && this.ui.toast) this.ui.toast(`✦ 文心·${talent.name} 承袭 Lv${startLv}`);
+    }
     s.events.talents++;
 
     // 文心「洛阳纸贵」：每获得一枚新文心，灵感 +2（含替换所得）
@@ -757,7 +763,7 @@ export class Game {
     }
 
     s.talentLevels[id] = newLevel;
-    Codex.recordTalentLevel && Codex.recordTalentLevel(id, newLevel);
+    Codex.recordTalentLevel(id, newLevel);   // 图鉴：记录历史最高等级（跨局保持）
     this.push(`文心「${t.name}」精进至 Lv${newLevel}`);
     this.ui.onState(s);
     // 升级效果与日志一并立即落盘，使「存档重载 / 继续上局」都能还原到升级后状态，

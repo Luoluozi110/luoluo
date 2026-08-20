@@ -11,6 +11,7 @@
  *   foeStats: 对象，键同为 `${tierId}|${name}`，值为 { w, d, l }（胜/平/负场次，跨局累计）
  *   talents:  数组，元素为文心 id
  *   synergies: 数组，元素为羁绊 id（集齐成员后首次激活即记入，跨局累计收集进度）
+ *   talentLevels: 对象，键为文心 id，值为该文心「历史最高等级」（跨局累计，供再次获得时继承）
  */
 
 export const CODEX_KEY = 'feihua_codex';
@@ -39,7 +40,7 @@ function hasLS() {
 }
 
 export function emptyCodex() {
-  return { v: CODEX_VERSION, foes: [], foeStats: {}, talents: [], synergies: [], foeCognition: {}, sky: [] };
+  return { v: CODEX_VERSION, foes: [], foeStats: {}, talents: [], synergies: [], foeCognition: {}, sky: [], talentLevels: {} };
 }
 
 /** 容错归一：坏数据不至于让游戏起不来 */
@@ -73,6 +74,13 @@ export function normalizeCodex(raw) {
         meets: Math.max(0, Number(o.meets) || 0),
         weaknessHits: Math.max(0, Number(o.weaknessHits) || 0)
       };
+    }
+  }
+  // 文心历史最高等级：兼容旧档（无 talentLevels）时回落为空对象
+  if (raw.talentLevels && typeof raw.talentLevels === 'object') {
+    for (const [k, v] of Object.entries(raw.talentLevels)) {
+      if (typeof k !== 'string') continue;
+      base.talentLevels[k] = Math.max(1, Math.round(Number(v) || 1));
     }
   }
   return base;
@@ -175,6 +183,28 @@ export function recordTalent(id) {
   c.talents.push(id);
   saveCodex(c);
   return true;
+}
+
+/**
+ * 记录一枚文心的「历史最高等级」（跨局累计，供再次获得时继承）。
+ * 仅在突破旧记录时写入，避免无谓落盘。返回是否为「新高度」。
+ */
+export function recordTalentLevel(id, level) {
+  if (!id) return false;
+  const c = loadCodex();
+  const lv = Math.max(1, Math.round(Number(level) || 1));
+  const prev = Number(c.talentLevels[id]) || 1;
+  if (lv <= prev) return false;
+  c.talentLevels[id] = lv;
+  saveCodex(c);
+  return true;
+}
+
+/** 读取某文心的历史最高等级；未记录过返回 1（Lv1 起步） */
+export function getTalentLevel(id) {
+  if (!id) return 1;
+  const c = loadCodex();
+  return Number(c.talentLevels[id]) || 1;
 }
 
 export function hasFoe(tierId, name) {
