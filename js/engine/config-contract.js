@@ -255,6 +255,40 @@
     }
 
     for (const key of ['sky', 'album', 'synergies']) if (key in cfg) uniqueIds(cfg[key], key);
+    if ('album' in cfg && Array.isArray(cfg.album)) cfg.album.forEach((card, i) => {
+      const p = `album[${i}]`;
+      if (!text(card.name)) add(`${p}.name`, '名篇名称不能为空');
+      if (!isObj(card.unlock) || !text(card.unlock.type) || !finite(card.unlock.min) || Number(card.unlock.min) < 1) add(`${p}.unlock`, '解锁条件必须包含 type 与正数 min');
+      if (!isObj(card.reward) || !text(card.reward.type)) add(`${p}.reward`, '旧奖励字段必须保留且包含 type');
+      if (card.growth != null) {
+        if (!isObj(card.growth)) add(`${p}.growth`, '成长配置必须是对象');
+        else for (const k of ['baseXp', 'winXp', 'drawXp', 'loseXp', 'styleXp']) if (card.growth[k] != null && (!finite(card.growth[k]) || Number(card.growth[k]) < 0)) add(`${p}.growth.${k}`, '成长经验必须是非负数字');
+      }
+      if (card.branches != null) {
+        if (!Array.isArray(card.branches) || card.branches.length < 1) add(`${p}.branches`, '成长型名篇至少需要一条分支');
+        else {
+          const branchIds = new Set();
+          card.branches.forEach((branch, j) => {
+            const bp = `${p}.branches[${j}]`;
+            if (!isObj(branch) || !text(branch.id) || !text(branch.name)) add(bp, '分支必须包含唯一 id 与名称');
+            else if (branchIds.has(branch.id)) add(`${bp}.id`, `分支 ID 重复：${branch.id}`, 'duplicate_id');
+            else branchIds.add(branch.id);
+            if (branch && (!finite(branch.minLevel) || Number(branch.minLevel) < 1)) add(`${bp}.minLevel`, '分支最低等级必须是正数');
+            if (branch && !Array.isArray(branch.effects)) add(`${bp}.effects`, '分支必须包含 effects 数组');
+            else if (branch) branch.effects.forEach((ef, k) => {
+              const ep = `${bp}.effects[${k}]`;
+              if (!isObj(ef) || !['start', 'battle', 'quiz', 'event', 'phase', 'score'].includes(ef.trigger)) add(`${ep}.trigger`, '效果触发点非法');
+              const types = ['attr', 'inspiration', 'inspirationMax', 'insight', 'manuscript', 'strategy', 'studySlot', 'techniqueXp', 'pct'];
+              if (!isObj(ef) || !types.includes(ef.type)) add(`${ep}.type`, '效果类型非法');
+              if (ef && ef.style != null && !STYLE_KEYS.has(ef.style)) add(`${ep}.style`, '效果文体非法');
+              if (ef && ef.result != null && !['win', 'draw', 'lose'].includes(ef.result)) add(`${ep}.result`, '效果结果条件非法');
+              if (ef && ef.phase != null && !text(ef.phase)) add(`${ep}.phase`, '效果阶段条件非法');
+              if (ef && ef.value != null && !finite(ef.value)) add(`${ep}.value`, '效果数值必须是有限数字');
+            });
+          });
+        }
+      }
+    });
     if ('grades' in cfg && !isObj(cfg.grades)) add('grades', '必须是对象');
     if ('narrative' in cfg && !isObj(cfg.narrative)) add('narrative', '必须是对象');
     if ('npc-mechanics' in cfg && !isObj(cfg['npc-mechanics'])) add('npc-mechanics', '必须是对象');

@@ -30,7 +30,7 @@ const STATE_KEYS = [
   'lap', 'routeIndex', 'ringId', 'phaseGateSeen', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
   'quiz', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
   'zeitgeist', 'prologueSeen', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
-  'talentLevels', 'schoolState', 'abilityState', 'over', 'reachedEnd', 'endReason', 'log'
+  'talentLevels', 'schoolState', 'abilityState', 'albumState', 'over', 'reachedEnd', 'endReason', 'log'
 ];
 
 /**
@@ -87,6 +87,43 @@ function idsOf(arr) {
   return (Array.isArray(arr) ? arr : [])
     .map(t => (typeof t === 'string' ? t : (t && t.id)))
     .filter(x => typeof x === 'string' && x);
+}
+
+function normalizeAlbumState(raw) {
+  const src = raw && typeof raw === 'object' ? raw : {};
+  const progress = {};
+  if (src.progress && typeof src.progress === 'object') {
+    for (const [id, value] of Object.entries(src.progress)) {
+      if (typeof id !== 'string' || !id) continue;
+      const p = value && typeof value === 'object' ? value : {};
+      const xp = Math.max(0, Number(p.xp) || 0);
+      progress[id] = {
+        xp,
+        level: xp >= 16 ? 4 : xp >= 8 ? 3 : xp >= 3 ? 2 : 1,
+        branch: typeof p.branch === 'string' ? p.branch.slice(0, 40) : '',
+        branchLocked: !!p.branchLocked,
+        uses: Math.max(0, Number(p.uses) || 0),
+        wins: Math.max(0, Number(p.wins) || 0),
+        draws: Math.max(0, Number(p.draws) || 0),
+        losses: Math.max(0, Number(p.losses) || 0),
+        styleUses: {
+          shi: Math.max(0, Number(p.styleUses && p.styleUses.shi) || 0),
+          ci: Math.max(0, Number(p.styleUses && p.styleUses.ci) || 0),
+          lian: Math.max(0, Number(p.styleUses && p.styleUses.lian) || 0)
+        },
+        flags: p.flags && typeof p.flags === 'object' ? { ...p.flags } : {}
+      };
+    }
+  }
+  const branches = {};
+  if (src.branches && typeof src.branches === 'object') {
+    for (const [id, branch] of Object.entries(src.branches)) if (typeof id === 'string' && typeof branch === 'string') branches[id] = branch.slice(0, 40);
+  }
+  return {
+    progress,
+    branches,
+    flags: src.flags && typeof src.flags === 'object' ? { ...src.flags } : {}
+  };
 }
 
 /* ------------------------------------------------ 序列化 */
@@ -182,6 +219,7 @@ function migrateRun(obj) {
     };
   }
   // v7：反应式筹策迁移为阶段预案。旧剩余点数作为当前阶段充能保留，旧章法标记废弃。
+  state.albumState = normalizeAlbumState(state.albumState);
   const ab = state.abilityState;
   ab.version = Math.max(2, Number(ab.version) || 1);
   ab.study = (ab.study && typeof ab.study === 'object') ? ab.study : { focus: ['shi'], progress: {} };
@@ -318,6 +356,7 @@ export function deserializeRun(rawObj, cfg) {
   out.talentState.flags = (out.talentState.flags && typeof out.talentState.flags === 'object') ? out.talentState.flags : {};
   out.talentState.activeUses = (out.talentState.activeUses && typeof out.talentState.activeUses === 'object') ? out.talentState.activeUses : {};
   out.schoolState = (out.schoolState && typeof out.schoolState === 'object') ? out.schoolState : {};
+  out.albumState = normalizeAlbumState(out.albumState);
   const schoolAliases = { tongru: 'bowen', cizong: 'cizong_bi', shixian: 'bowen', liansheng: 'bowen' };
   if (schoolAliases[out.school && out.school.id]) {
     const target = (cfg.schools || []).find(x => x.id === schoolAliases[out.school.id]);

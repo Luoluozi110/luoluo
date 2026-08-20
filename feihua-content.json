@@ -4679,12 +4679,12 @@
           "title": "蒙学童子",
           "style": "shi",
           "attrs": {
-            "shi": 10,
-            "ci": 4,
-            "lian": 3,
-            "bi": 4,
-            "xue": 4,
-            "si": 3
+            "shi": 11,
+            "ci": 5,
+            "lian": 4,
+            "bi": 5,
+            "xue": 5,
+            "si": 5
           },
           "mech": {
             "version": 1,
@@ -4728,12 +4728,12 @@
           "title": "村塾学子",
           "style": "ci",
           "attrs": {
-            "shi": 4,
-            "ci": 10,
-            "lian": 3,
-            "bi": 4,
-            "xue": 3,
-            "si": 4
+            "shi": 5,
+            "ci": 11,
+            "lian": 4,
+            "bi": 5,
+            "xue": 4,
+            "si": 6
           },
           "mech": {
             "version": 1,
@@ -4778,12 +4778,12 @@
           "title": "启蒙幼童",
           "style": "lian",
           "attrs": {
-            "shi": 4,
-            "ci": 3,
-            "lian": 10,
-            "bi": 3,
-            "xue": 4,
-            "si": 4
+            "shi": 5,
+            "ci": 4,
+            "lian": 11,
+            "bi": 4,
+            "xue": 5,
+            "si": 6
           },
           "mech": {
             "version": 1,
@@ -4822,12 +4822,12 @@
           "title": "私塾蒙童",
           "style": "bi",
           "attrs": {
-            "shi": 4,
-            "ci": 4,
-            "lian": 3,
-            "bi": 10,
-            "xue": 3,
-            "si": 4
+            "shi": 5,
+            "ci": 5,
+            "lian": 4,
+            "bi": 11,
+            "xue": 4,
+            "si": 6
           },
           "mech": {
             "version": 1,
@@ -4861,12 +4861,12 @@
           "title": "初学蒙生",
           "style": "xue",
           "attrs": {
-            "shi": 4,
-            "ci": 3,
-            "lian": 4,
-            "bi": 4,
-            "xue": 10,
-            "si": 3
+            "shi": 5,
+            "ci": 4,
+            "lian": 5,
+            "bi": 5,
+            "xue": 11,
+            "si": 5
           },
           "mech": {
             "version": 1,
@@ -4904,12 +4904,12 @@
           "title": "开蒙学童",
           "style": "si",
           "attrs": {
-            "shi": 3,
-            "ci": 4,
-            "lian": 4,
-            "bi": 4,
-            "xue": 3,
-            "si": 10
+            "shi": 4,
+            "ci": 5,
+            "lian": 5,
+            "bi": 5,
+            "xue": 4,
+            "si": 12
           },
           "mech": {
             "version": 1,
@@ -4937,7 +4937,12 @@
             }
           }
         }
-      ]
+      ],
+      "balanceVersion": 2,
+      "difficultyBoost": {
+        "allAttrs": 1,
+        "wisdomExtra": 1
+      }
     },
     {
       "id": "xiucai",
@@ -4954,12 +4959,12 @@
           "title": "庠序生员",
           "style": "shi",
           "attrs": {
-            "shi": 15,
-            "ci": 9,
-            "lian": 5,
-            "bi": 9,
-            "xue": 6,
-            "si": 6
+            "shi": 17,
+            "ci": 11,
+            "lian": 7,
+            "bi": 11,
+            "xue": 8,
+            "si": 9
           },
           "mech": {
             "version": 1,
@@ -4993,12 +4998,12 @@
           "title": "县学秀才",
           "style": "ci",
           "attrs": {
-            "shi": 6,
-            "ci": 15,
-            "lian": 5,
-            "bi": 6,
-            "xue": 9,
-            "si": 9
+            "shi": 8,
+            "ci": 17,
+            "lian": 7,
+            "bi": 8,
+            "xue": 11,
+            "si": 12
           },
           "mech": {
             "version": 1,
@@ -5036,12 +5041,12 @@
           "title": "儒学生员",
           "style": "lian",
           "attrs": {
-            "shi": 6,
-            "ci": 9,
-            "lian": 15,
-            "bi": 6,
-            "xue": 6,
-            "si": 6
+            "shi": 8,
+            "ci": 11,
+            "lian": 17,
+            "bi": 8,
+            "xue": 8,
+            "si": 9
           },
           "mech": {
             "version": 1,
@@ -5079,12 +5084,12 @@
           "title": "府学秀才",
           "style": "bi",
           "attrs": {
-            "shi": 6,
-            "ci": 6,
-            "lian": 5,
-            "bi": 15,
-            "xue": 9,
-            "si": 9
+            "shi": 8,
+            "ci": 8,
+            "lian": 7,
+            "bi": 17,
+            "xue": 11,
+            "si": 12
           },
           "mech": {
             "version": 1,
@@ -5122,12 +5127,12 @@
           "title": "廪膳生员",
           "style": "xue",
           "attrs": {
-            "shi": 9,
-            "ci": 6,
-            "lian": 6,
-            "bi": 6,
-            "xue": 15,
-            "si": 6
+            "shi": 11,
+            "ci": 8,
+            "lian": 8,
+            "bi": 8,
+            "xue": 17,
+            "si": 9
           },
           "mech": {
             "version": 1,
@@ -5171,12 +5176,12 @@
           "title": "邑庠秀才",
           "style": "si",
           "attrs": {
-            "shi": 6,
-            "ci": 9,
-            "lian": 6,
-            "bi": 6,
-            "xue": 6,
-            "si": 15
+            "shi": 8,
+            "ci": 11,
+            "lian": 8,
+            "bi": 8,
+            "xue": 8,
+            "si": 18
           },
           "mech": {
             "version": 1,
@@ -5210,7 +5215,12 @@
             }
           }
         }
-      ]
+      ],
+      "balanceVersion": 2,
+      "difficultyBoost": {
+        "allAttrs": 2,
+        "wisdomExtra": 1
+      }
     },
     {
       "id": "juren",
@@ -5227,12 +5237,12 @@
           "title": "乡试解元",
           "style": "shi",
           "attrs": {
-            "shi": 27,
-            "ci": 14,
-            "lian": 11,
-            "bi": 14,
-            "xue": 13,
-            "si": 11
+            "shi": 30,
+            "ci": 17,
+            "lian": 14,
+            "bi": 17,
+            "xue": 16,
+            "si": 16
           },
           "mech": {
             "version": 1,
@@ -5272,12 +5282,12 @@
           "title": "公车举人",
           "style": "ci",
           "attrs": {
-            "shi": 13,
-            "ci": 27,
-            "lian": 11,
-            "bi": 13,
-            "xue": 14,
-            "si": 12
+            "shi": 16,
+            "ci": 30,
+            "lian": 14,
+            "bi": 16,
+            "xue": 17,
+            "si": 17
           },
           "mech": {
             "version": 1,
@@ -5318,12 +5328,12 @@
           "title": "鹿鸣宴客",
           "style": "lian",
           "attrs": {
-            "shi": 13,
-            "ci": 14,
-            "lian": 27,
-            "bi": 11,
-            "xue": 13,
-            "si": 12
+            "shi": 16,
+            "ci": 17,
+            "lian": 30,
+            "bi": 14,
+            "xue": 16,
+            "si": 17
           },
           "mech": {
             "version": 1,
@@ -5361,12 +5371,12 @@
           "title": "乙榜举人",
           "style": "bi",
           "attrs": {
-            "shi": 13,
-            "ci": 13,
-            "lian": 11,
-            "bi": 27,
-            "xue": 14,
-            "si": 12
+            "shi": 16,
+            "ci": 16,
+            "lian": 14,
+            "bi": 30,
+            "xue": 17,
+            "si": 17
           },
           "mech": {
             "version": 1,
@@ -5400,12 +5410,12 @@
           "title": "孝廉举人",
           "style": "xue",
           "attrs": {
-            "shi": 14,
-            "ci": 13,
-            "lian": 13,
-            "bi": 12,
-            "xue": 27,
-            "si": 11
+            "shi": 17,
+            "ci": 16,
+            "lian": 16,
+            "bi": 15,
+            "xue": 30,
+            "si": 16
           },
           "mech": {
             "version": 1,
@@ -5443,12 +5453,12 @@
           "title": "秋闱中式",
           "style": "si",
           "attrs": {
-            "shi": 13,
-            "ci": 14,
-            "lian": 13,
-            "bi": 12,
-            "xue": 11,
-            "si": 27
+            "shi": 16,
+            "ci": 17,
+            "lian": 16,
+            "bi": 15,
+            "xue": 14,
+            "si": 32
           },
           "mech": {
             "version": 1,
@@ -5486,7 +5496,12 @@
             }
           }
         }
-      ]
+      ],
+      "balanceVersion": 2,
+      "difficultyBoost": {
+        "allAttrs": 3,
+        "wisdomExtra": 2
+      }
     },
     {
       "id": "jinshi",
@@ -5503,12 +5518,12 @@
           "title": "殿前进士",
           "style": "shi",
           "attrs": {
-            "shi": 33,
-            "ci": 17,
-            "lian": 15,
-            "bi": 17,
-            "xue": 17,
-            "si": 18
+            "shi": 37,
+            "ci": 21,
+            "lian": 19,
+            "bi": 21,
+            "xue": 21,
+            "si": 24
           },
           "mech": {
             "version": 1,
@@ -5550,12 +5565,12 @@
           "title": "同进士出身",
           "style": "ci",
           "attrs": {
-            "shi": 18,
-            "ci": 33,
-            "lian": 15,
-            "bi": 17,
-            "xue": 17,
-            "si": 17
+            "shi": 22,
+            "ci": 37,
+            "lian": 19,
+            "bi": 21,
+            "xue": 21,
+            "si": 23
           },
           "mech": {
             "version": 1,
@@ -5594,12 +5609,12 @@
           "title": "进士及第",
           "style": "lian",
           "attrs": {
-            "shi": 17,
-            "ci": 17,
-            "lian": 33,
-            "bi": 15,
-            "xue": 17,
-            "si": 18
+            "shi": 21,
+            "ci": 21,
+            "lian": 37,
+            "bi": 19,
+            "xue": 21,
+            "si": 24
           },
           "mech": {
             "version": 1,
@@ -5643,12 +5658,12 @@
           "title": "翰林庶吉士",
           "style": "bi",
           "attrs": {
-            "shi": 17,
-            "ci": 17,
-            "lian": 15,
-            "bi": 33,
-            "xue": 17,
-            "si": 18
+            "shi": 21,
+            "ci": 21,
+            "lian": 19,
+            "bi": 37,
+            "xue": 21,
+            "si": 24
           },
           "mech": {
             "version": 1,
@@ -5682,12 +5697,12 @@
           "title": "赐进士出身",
           "style": "xue",
           "attrs": {
-            "shi": 18,
-            "ci": 17,
-            "lian": 17,
-            "bi": 15,
-            "xue": 33,
-            "si": 17
+            "shi": 22,
+            "ci": 21,
+            "lian": 21,
+            "bi": 19,
+            "xue": 37,
+            "si": 23
           },
           "mech": {
             "version": 1,
@@ -5725,12 +5740,12 @@
           "title": "甲科进士",
           "style": "si",
           "attrs": {
-            "shi": 17,
-            "ci": 18,
-            "lian": 17,
-            "bi": 15,
-            "xue": 17,
-            "si": 33
+            "shi": 21,
+            "ci": 22,
+            "lian": 21,
+            "bi": 19,
+            "xue": 21,
+            "si": 39
           },
           "mech": {
             "version": 1,
@@ -5774,7 +5789,12 @@
             }
           }
         }
-      ]
+      ],
+      "balanceVersion": 2,
+      "difficultyBoost": {
+        "allAttrs": 4,
+        "wisdomExtra": 2
+      }
     },
     {
       "id": "zhukaoguan",
@@ -5791,12 +5811,12 @@
           "title": "礼部侍郎",
           "style": "shi",
           "attrs": {
-            "shi": 46,
-            "ci": 20,
-            "lian": 20,
-            "bi": 20,
-            "xue": 20,
-            "si": 22
+            "shi": 51,
+            "ci": 25,
+            "lian": 25,
+            "bi": 25,
+            "xue": 25,
+            "si": 30
           },
           "mech": {
             "version": 1,
@@ -5842,12 +5862,12 @@
           "title": "翰林学士",
           "style": "ci",
           "attrs": {
-            "shi": 22,
-            "ci": 46,
-            "lian": 20,
-            "bi": 20,
-            "xue": 20,
-            "si": 20
+            "shi": 27,
+            "ci": 51,
+            "lian": 25,
+            "bi": 25,
+            "xue": 25,
+            "si": 28
           },
           "mech": {
             "version": 1,
@@ -5893,12 +5913,12 @@
           "title": "国子监祭酒",
           "style": "bi",
           "attrs": {
-            "shi": 20,
-            "ci": 20,
-            "lian": 20,
-            "bi": 46,
-            "xue": 20,
-            "si": 22
+            "shi": 25,
+            "ci": 25,
+            "lian": 25,
+            "bi": 51,
+            "xue": 25,
+            "si": 30
           },
           "mech": {
             "version": 1,
@@ -5933,12 +5953,12 @@
           "style": "lian",
           "weight": 10,
           "attrs": {
-            "shi": 18,
-            "ci": 18,
-            "lian": 50,
-            "bi": 18,
-            "xue": 58,
-            "si": 18
+            "shi": 23,
+            "ci": 23,
+            "lian": 55,
+            "bi": 23,
+            "xue": 63,
+            "si": 26
           },
           "mech": {
             "signature": {
@@ -5967,7 +5987,12 @@
       "battles": 1,
       "themes": [
         "huaigu"
-      ]
+      ],
+      "balanceVersion": 2,
+      "difficultyBoost": {
+        "allAttrs": 5,
+        "wisdomExtra": 3
+      }
     }
   ],
   "affinity": {
@@ -10492,5 +10517,1242 @@
     "branches": {},
     "branchCells": [],
     "branchGates": {}
-  }
+  },
+  "album": [
+    {
+      "id": "A001",
+      "name": "仰天大笑",
+      "unlock": {
+        "type": "styleWins",
+        "style": "shi",
+        "min": 10
+      },
+      "reward": {
+        "type": "attr",
+        "attr": "shi",
+        "value": 2
+      },
+      "rewardDesc": "开局诗力 +2；名篇可成长并选择“豪情”或“快意”路线",
+      "growth": {
+        "baseXp": 1,
+        "winXp": 1,
+        "style": "shi",
+        "styleXp": 1
+      },
+      "branches": [
+        {
+          "id": "bold",
+          "name": "豪情入篇",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "inspiration",
+              "value": 1,
+              "name": "起兴",
+              "desc": "开局灵感 +1"
+            },
+            {
+              "trigger": "score",
+              "type": "pct",
+              "style": "shi",
+              "value": 0.03,
+              "minLevel": 2,
+              "name": "诗胆",
+              "desc": "以诗出战，作品 +3%"
+            },
+            {
+              "trigger": "battle",
+              "type": "insight",
+              "result": "win",
+              "style": "shi",
+              "value": 1,
+              "minLevel": 3,
+              "name": "豪兴余韵",
+              "desc": "以诗获胜，心得 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "techniqueXp",
+              "style": "shi",
+              "value": 1,
+              "minLevel": 4,
+              "name": "诗脉流传",
+              "desc": "以诗结算额外获得技法经验"
+            }
+          ]
+        },
+        {
+          "id": "swift",
+          "name": "快意成章",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "manuscript",
+              "value": 1,
+              "name": "腹稿",
+              "desc": "开局稿页 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "win",
+              "style": "shi",
+              "value": 1,
+              "minLevel": 2,
+              "name": "诗成兴尽",
+              "desc": "以诗获胜，灵感 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "win",
+              "style": "shi",
+              "value": 1,
+              "minLevel": 3,
+              "name": "落笔成篇",
+              "desc": "以诗获胜，稿页 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "draw",
+              "style": "shi",
+              "value": 1,
+              "minLevel": 4,
+              "name": "不尽诗意",
+              "desc": "以诗平局，灵感 +1"
+            }
+          ]
+        }
+      ],
+      "text": "「仰天大笑出门去，我辈岂是蓬蒿人。」——李白《南陵别儿童入京》。以诗出战十捷，笑声可裂金石。"
+    },
+    {
+      "id": "A002",
+      "name": "一字之师",
+      "unlock": {
+        "type": "quizzes",
+        "min": 30
+      },
+      "reward": {
+        "type": "attr",
+        "attr": "xue",
+        "value": 2
+      },
+      "rewardDesc": "开局学力 +2；名篇可成长为“校勘”或“转益”",
+      "growth": {
+        "baseXp": 1,
+        "drawXp": 1
+      },
+      "branches": [
+        {
+          "id": "proofread",
+          "name": "校勘入骨",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "insight",
+              "value": 1,
+              "name": "一字千金",
+              "desc": "开局心得 +1"
+            },
+            {
+              "trigger": "quiz",
+              "type": "insight",
+              "result": "win",
+              "value": 1,
+              "minLevel": 2,
+              "name": "改字得意",
+              "desc": "答对知识题，心得 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "draw",
+              "value": 1,
+              "minLevel": 3,
+              "name": "细改成篇",
+              "desc": "论战平局，稿页 +1"
+            },
+            {
+              "trigger": "phase",
+              "type": "inspiration",
+              "value": 1,
+              "minLevel": 4,
+              "name": "校勘阶段",
+              "desc": "进入新阶段，灵感 +1"
+            }
+          ]
+        },
+        {
+          "id": "teach",
+          "name": "转益多师",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "studySlot",
+              "value": 1,
+              "name": "门生相授",
+              "desc": "本局研修位 +1"
+            },
+            {
+              "trigger": "quiz",
+              "type": "insight",
+              "result": "lose",
+              "value": 1,
+              "minLevel": 2,
+              "name": "错中求师",
+              "desc": "答题失误后心得 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "techniqueXp",
+              "value": 1,
+              "minLevel": 3,
+              "name": "旁通百家",
+              "desc": "每场论战额外获得技法经验"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "draw",
+              "value": 1,
+              "minLevel": 4,
+              "name": "平分秋色",
+              "desc": "论战平局，灵感 +1"
+            }
+          ]
+        }
+      ],
+      "text": "郑谷改齐己《早梅》「数枝开」为「一枝开」，齐己下拜，时人谓之一字师。积三十答之功，方知一字千金。"
+    },
+    {
+      "id": "A003",
+      "name": "江郎才尽·悔",
+      "unlock": {
+        "type": "fengbi",
+        "min": 1
+      },
+      "reward": {
+        "type": "inspiration",
+        "value": 2
+      },
+      "rewardDesc": "开局灵感 +2；可走“惜墨”或“复笔”路线",
+      "growth": {
+        "baseXp": 1,
+        "loseXp": 1
+      },
+      "branches": [
+        {
+          "id": "saveInk",
+          "name": "惜墨守心",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "inspirationMax",
+              "value": 2,
+              "name": "惜墨",
+              "desc": "灵感上限 +2"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "lose",
+              "value": 1,
+              "minLevel": 2,
+              "name": "留有余墨",
+              "desc": "论战失败，少损 1 点灵感"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "lose",
+              "value": 1,
+              "minLevel": 3,
+              "name": "败中存稿",
+              "desc": "论战失败，残稿转为 1 页稿本"
+            },
+            {
+              "trigger": "battle",
+              "type": "strategy",
+              "value": 1,
+              "minLevel": 4,
+              "name": "后手未尽",
+              "desc": "论战结算后筹策 +1"
+            }
+          ]
+        },
+        {
+          "id": "recover",
+          "name": "五色复笔",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "manuscript",
+              "value": 1,
+              "name": "五色旧笔",
+              "desc": "开局稿页 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "win",
+              "value": 1,
+              "minLevel": 2,
+              "name": "复得神思",
+              "desc": "论战获胜，灵感 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "insight",
+              "result": "lose",
+              "value": 1,
+              "minLevel": 3,
+              "name": "失而复得",
+              "desc": "论战失败，心得 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "draw",
+              "value": 2,
+              "minLevel": 4,
+              "name": "悔笔成稿",
+              "desc": "论战平局，稿页 +2"
+            }
+          ]
+        }
+      ],
+      "text": "江淹夜梦郭璞索还五色笔，尔后为诗绝无美句。才尽者未必无才，只是墨干；知墨会干，才懂惜墨。"
+    },
+    {
+      "id": "A004",
+      "name": "连中三元",
+      "unlock": {
+        "type": "palaceSweep",
+        "min": 1
+      },
+      "reward": {
+        "type": "talent",
+        "talent": "T099",
+        "name": "三元及第",
+        "desc": "殿试得分 +5%"
+      },
+      "rewardDesc": "旧文心奖励保留；成长路线可选“金榜”或“连捷”",
+      "growth": {
+        "baseXp": 2,
+        "winXp": 1
+      },
+      "branches": [
+        {
+          "id": "rank",
+          "name": "金榜定名",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "inspirationMax",
+              "value": 2,
+              "name": "三元气象",
+              "desc": "灵感上限 +2"
+            },
+            {
+              "trigger": "score",
+              "type": "pct",
+              "phase": "palace",
+              "value": 0.03,
+              "minLevel": 2,
+              "name": "金殿文章",
+              "desc": "殿试作品 +3%"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "win",
+              "phase": "palace",
+              "value": 1,
+              "minLevel": 3,
+              "name": "御批成卷",
+              "desc": "殿试获胜，稿页 +1"
+            },
+            {
+              "trigger": "phase",
+              "type": "inspiration",
+              "phase": "palace",
+              "value": 2,
+              "minLevel": 4,
+              "name": "三元入殿",
+              "desc": "进入殿试，灵感 +2"
+            }
+          ]
+        },
+        {
+          "id": "streak",
+          "name": "连捷成势",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "strategy",
+              "value": 1,
+              "name": "连捷筹策",
+              "desc": "开局筹策 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "pct",
+              "result": "win",
+              "value": 0.03,
+              "minLevel": 2,
+              "name": "三试连环",
+              "desc": "获胜后下一场作品 +3%"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "win",
+              "phase": "palace",
+              "value": 1,
+              "minLevel": 3,
+              "name": "连中余势",
+              "desc": "殿试获胜，灵感 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "techniqueXp",
+              "result": "win",
+              "minLevel": 4,
+              "name": "捷报传世",
+              "desc": "胜利额外获得技法经验"
+            }
+          ]
+        }
+      ],
+      "text": "乡试解元、会试会元、殿试状元，三试皆第一，谓之连中三元。有唐至清，得者不过十数人。"
+    },
+    {
+      "id": "A005",
+      "name": "桃李满园",
+      "unlock": {
+        "type": "wins",
+        "min": 50
+      },
+      "reward": {
+        "type": "title",
+        "title": "桃李先生"
+      },
+      "rewardDesc": "称号“桃李先生”；成长路线强化心得或稿本",
+      "growth": {
+        "baseXp": 1,
+        "drawXp": 1
+      },
+      "branches": [
+        {
+          "id": "mentor",
+          "name": "薪火相传",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "insight",
+              "value": 2,
+              "name": "门生满座",
+              "desc": "开局心得 +2"
+            },
+            {
+              "trigger": "battle",
+              "type": "insight",
+              "result": "win",
+              "value": 1,
+              "minLevel": 2,
+              "name": "授业有成",
+              "desc": "获胜心得 +1"
+            },
+            {
+              "trigger": "quiz",
+              "type": "insight",
+              "result": "win",
+              "value": 1,
+              "minLevel": 3,
+              "name": "传经",
+              "desc": "答对知识题心得 +1"
+            },
+            {
+              "trigger": "phase",
+              "type": "studySlot",
+              "value": 1,
+              "minLevel": 4,
+              "name": "桃李成行",
+              "desc": "每阶段研修位 +1"
+            }
+          ]
+        },
+        {
+          "id": "garden",
+          "name": "满园成章",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "manuscript",
+              "value": 1,
+              "name": "满园稿香",
+              "desc": "开局稿页 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "win",
+              "value": 1,
+              "minLevel": 2,
+              "name": "佳作相传",
+              "desc": "获胜稿页 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "draw",
+              "value": 1,
+              "minLevel": 3,
+              "name": "同门唱和",
+              "desc": "平局灵感 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "lose",
+              "value": 1,
+              "minLevel": 4,
+              "name": "败稿可教",
+              "desc": "失败保留 1 页稿本"
+            }
+          ]
+        }
+      ],
+      "text": "“桃李不言，下自成蹊。”——《史记·李将军列传》。与四方文友对坐争锋而胜出者，门庭自然成蹊。"
+    },
+    {
+      "id": "A006",
+      "name": "倚马千言",
+      "unlock": {
+        "type": "wins",
+        "min": 25
+      },
+      "reward": {
+        "type": "attr",
+        "attr": "si",
+        "value": 2
+      },
+      "rewardDesc": "开局思力 +2；成长为“快构”或“奇谋”",
+      "growth": {
+        "baseXp": 1,
+        "winXp": 1
+      },
+      "branches": [
+        {
+          "id": "draft",
+          "name": "快构成篇",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "strategy",
+              "value": 1,
+              "name": "倚马筹策",
+              "desc": "开局筹策 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "win",
+              "value": 1,
+              "minLevel": 2,
+              "name": "下笔成章",
+              "desc": "获胜稿页 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "techniqueXp",
+              "style": "shi",
+              "value": 1,
+              "minLevel": 3,
+              "name": "快笔入技",
+              "desc": "以诗结算额外技法经验"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "win",
+              "value": 1,
+              "minLevel": 4,
+              "name": "一挥而就",
+              "desc": "获胜灵感 +1"
+            }
+          ]
+        },
+        {
+          "id": "plot",
+          "name": "腹有奇谋",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "insight",
+              "value": 1,
+              "name": "胸中丘壑",
+              "desc": "开局心得 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "strategy",
+              "result": "draw",
+              "value": 1,
+              "minLevel": 2,
+              "name": "以平养势",
+              "desc": "平局筹策 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "lose",
+              "value": 1,
+              "minLevel": 3,
+              "name": "败中有策",
+              "desc": "失败灵感损失减少 1 点"
+            },
+            {
+              "trigger": "phase",
+              "type": "techniqueXp",
+              "value": 2,
+              "minLevel": 4,
+              "name": "阶段谋篇",
+              "desc": "进入新阶段技法经验 +2"
+            }
+          ]
+        }
+      ],
+      "text": "袁虎倚马前作露布文七纸，手不辍笔。二十五战之后，下笔已不须寻思。"
+    },
+    {
+      "id": "A007",
+      "name": "行万里路",
+      "unlock": {
+        "type": "events",
+        "min": 40
+      },
+      "reward": {
+        "type": "attr",
+        "attr": "bi",
+        "value": 2
+      },
+      "rewardDesc": "开局笔力 +2；成长为“采风”或“游观”",
+      "growth": {
+        "baseXp": 1,
+        "winXp": 1
+      },
+      "branches": [
+        {
+          "id": "travel",
+          "name": "采风入笔",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "manuscript",
+              "value": 1,
+              "name": "行箧旧稿",
+              "desc": "开局稿页 +1"
+            },
+            {
+              "trigger": "event",
+              "type": "manuscript",
+              "value": 1,
+              "minLevel": 2,
+              "name": "山川入卷",
+              "desc": "触发奇遇，稿页 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "win",
+              "minLevel": 3,
+              "value": 1,
+              "name": "触景生情",
+              "desc": "获胜灵感 +1"
+            },
+            {
+              "trigger": "event",
+              "type": "techniqueXp",
+              "value": 1,
+              "minLevel": 4,
+              "name": "万里成法",
+              "desc": "奇遇后技法经验 +1"
+            }
+          ]
+        },
+        {
+          "id": "roam",
+          "name": "游观得间",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "inspirationMax",
+              "value": 2,
+              "name": "胸藏万景",
+              "desc": "灵感上限 +2"
+            },
+            {
+              "trigger": "event",
+              "type": "insight",
+              "value": 1,
+              "minLevel": 2,
+              "name": "见闻成思",
+              "desc": "触发奇遇，心得 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "draw",
+              "value": 1,
+              "minLevel": 3,
+              "name": "游兴未尽",
+              "desc": "平局稿页 +1"
+            },
+            {
+              "trigger": "phase",
+              "type": "inspiration",
+              "value": 1,
+              "minLevel": 4,
+              "name": "入景换境",
+              "desc": "进入新阶段，灵感 +1"
+            }
+          ]
+        }
+      ],
+      "text": "“读万卷书，行万里路。”——董其昌《画禅室随笔》。四十番奇遇入怀，山川草木皆成笔底烟云。"
+    },
+    {
+      "id": "A008",
+      "name": "铁杵成针",
+      "unlock": {
+        "type": "games",
+        "min": 5
+      },
+      "reward": {
+        "type": "inspiration",
+        "value": 2
+      },
+      "rewardDesc": "开局灵感 +2；成长为“磨砺”或“专一”",
+      "growth": {
+        "baseXp": 1,
+        "loseXp": 1
+      },
+      "branches": [
+        {
+          "id": "grind",
+          "name": "百炼不折",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "inspirationMax",
+              "value": 2,
+              "name": "铁杵心",
+              "desc": "灵感上限 +2"
+            },
+            {
+              "trigger": "battle",
+              "type": "insight",
+              "result": "lose",
+              "value": 1,
+              "minLevel": 2,
+              "name": "磨中有悟",
+              "desc": "失败心得 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "lose",
+              "value": 1,
+              "minLevel": 3,
+              "name": "磨痕成稿",
+              "desc": "失败稿页 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "draw",
+              "value": 1,
+              "minLevel": 4,
+              "name": "再磨一寸",
+              "desc": "平局灵感 +1"
+            }
+          ]
+        },
+        {
+          "id": "focus",
+          "name": "守拙专一",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "studySlot",
+              "value": 1,
+              "name": "专一研修",
+              "desc": "研修位 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "techniqueXp",
+              "style": "shi",
+              "value": 1,
+              "minLevel": 2,
+              "name": "日课不辍",
+              "desc": "以诗结算技法经验 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "win",
+              "value": 1,
+              "minLevel": 3,
+              "name": "功到自然",
+              "desc": "获胜稿页 +1"
+            },
+            {
+              "trigger": "phase",
+              "type": "insight",
+              "value": 2,
+              "minLevel": 4,
+              "name": "十年一日",
+              "desc": "进入新阶段心得 +2"
+            }
+          ]
+        }
+      ],
+      "text": "李白见老媪磨杵，问之，曰欲作针。白感其言，还卒业。五局不辍者，已得此媪三分意思。"
+    },
+    {
+      "id": "A009",
+      "name": "两句三年得",
+      "unlock": {
+        "type": "styleWins",
+        "style": "ci",
+        "min": 10
+      },
+      "reward": {
+        "type": "attr",
+        "attr": "ci",
+        "value": 2
+      },
+      "rewardDesc": "开局词力 +2；成长为“推敲”或“回环”",
+      "growth": {
+        "baseXp": 1,
+        "style": "ci",
+        "styleXp": 1
+      },
+      "branches": [
+        {
+          "id": "polish",
+          "name": "推敲入微",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "manuscript",
+              "value": 1,
+              "name": "三年稿",
+              "desc": "开局稿页 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "pct",
+              "style": "ci",
+              "value": 0.03,
+              "minLevel": 2,
+              "name": "字字推敲",
+              "desc": "以词出战，作品 +3%"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "draw",
+              "style": "ci",
+              "value": 1,
+              "minLevel": 3,
+              "name": "吟安一字",
+              "desc": "词体平局稿页 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "techniqueXp",
+              "style": "ci",
+              "value": 1,
+              "minLevel": 4,
+              "name": "句眼成法",
+              "desc": "以词结算技法经验 +1"
+            }
+          ]
+        },
+        {
+          "id": "cycle",
+          "name": "回环有余",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "inspiration",
+              "value": 1,
+              "name": "余韵",
+              "desc": "开局灵感 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "draw",
+              "style": "ci",
+              "value": 1,
+              "minLevel": 2,
+              "name": "回环不尽",
+              "desc": "词体平局灵感 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "insight",
+              "result": "win",
+              "style": "ci",
+              "value": 1,
+              "minLevel": 3,
+              "name": "慢工成悟",
+              "desc": "词体获胜心得 +1"
+            },
+            {
+              "trigger": "phase",
+              "type": "manuscript",
+              "value": 1,
+              "minLevel": 4,
+              "name": "新调入卷",
+              "desc": "进入新阶段稿页 +1"
+            }
+          ]
+        }
+      ],
+      "text": "“两句三年得，一吟双泪流。”——贾岛《题诗后》。以词十捷，字字皆是熬出来的。"
+    },
+    {
+      "id": "A010",
+      "name": "属对如流",
+      "unlock": {
+        "type": "styleWins",
+        "style": "lian",
+        "min": 10
+      },
+      "reward": {
+        "type": "attr",
+        "attr": "lian",
+        "value": 2
+      },
+      "rewardDesc": "开局联力 +2；成长为“对举”或“唱和”",
+      "growth": {
+        "baseXp": 1,
+        "style": "lian",
+        "styleXp": 1
+      },
+      "branches": [
+        {
+          "id": "parallel",
+          "name": "对举成锋",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "strategy",
+              "value": 1,
+              "name": "联锋",
+              "desc": "开局筹策 +1"
+            },
+            {
+              "trigger": "score",
+              "type": "pct",
+              "style": "lian",
+              "value": 0.04,
+              "minLevel": 2,
+              "name": "工对",
+              "desc": "以联出战，作品 +4%"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "draw",
+              "style": "lian",
+              "value": 1,
+              "minLevel": 3,
+              "name": "对成则和",
+              "desc": "联体平局灵感 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "techniqueXp",
+              "style": "lian",
+              "value": 1,
+              "minLevel": 4,
+              "name": "联脉传承",
+              "desc": "以联结算技法经验 +1"
+            }
+          ]
+        },
+        {
+          "id": "echo",
+          "name": "唱和回响",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "insight",
+              "value": 1,
+              "name": "应对如流",
+              "desc": "开局心得 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "insight",
+              "result": "win",
+              "style": "lian",
+              "value": 1,
+              "minLevel": 2,
+              "name": "相与唱和",
+              "desc": "联体获胜心得 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "draw",
+              "style": "lian",
+              "value": 2,
+              "minLevel": 3,
+              "name": "对句成稿",
+              "desc": "联体平局稿页 +2"
+            },
+            {
+              "trigger": "phase",
+              "type": "studySlot",
+              "value": 1,
+              "minLevel": 4,
+              "name": "广结文友",
+              "desc": "进入新阶段研修位 +1"
+            }
+          ]
+        }
+      ],
+      "text": "解缙幼有奇才，应对如流，一座尽惊。以联十捷，上下句已在唇齿之间。"
+    },
+    {
+      "id": "A011",
+      "name": "洛阳纸贵",
+      "unlock": {
+        "type": "maxTotal",
+        "min": 2200
+      },
+      "reward": {
+        "type": "inspiration",
+        "value": 2
+      },
+      "rewardDesc": "开局灵感 +2；成长为“传抄”或“刊行”",
+      "growth": {
+        "baseXp": 2,
+        "winXp": 1
+      },
+      "branches": [
+        {
+          "id": "copy",
+          "name": "传抄成势",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "manuscript",
+              "value": 2,
+              "name": "纸贵先声",
+              "desc": "开局稿页 +2"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "win",
+              "value": 1,
+              "minLevel": 2,
+              "name": "纸贵一页",
+              "desc": "获胜稿页 +1"
+            },
+            {
+              "trigger": "event",
+              "type": "inspiration",
+              "value": 1,
+              "minLevel": 3,
+              "name": "传抄入市",
+              "desc": "奇遇后灵感 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "techniqueXp",
+              "result": "win",
+              "value": 1,
+              "minLevel": 4,
+              "name": "名篇广传",
+              "desc": "获胜技法经验 +1"
+            }
+          ]
+        },
+        {
+          "id": "publish",
+          "name": "刊行自立",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "inspirationMax",
+              "value": 3,
+              "name": "洛阳纸张",
+              "desc": "灵感上限 +3"
+            },
+            {
+              "trigger": "battle",
+              "type": "inspiration",
+              "result": "win",
+              "value": 1,
+              "minLevel": 2,
+              "name": "刊行有酬",
+              "desc": "获胜灵感 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "insight",
+              "result": "draw",
+              "value": 1,
+              "minLevel": 3,
+              "name": "读者回响",
+              "desc": "平局心得 +1"
+            },
+            {
+              "trigger": "phase",
+              "type": "manuscript",
+              "value": 2,
+              "minLevel": 4,
+              "name": "新卷刊行",
+              "desc": "进入新阶段稿页 +2"
+            }
+          ]
+        }
+      ],
+      "text": "左思十年而成《三都赋》，豪贵之家竞相传写，洛阳为之纸贵。单局总评臻于探花之境，方知一纸难求。"
+    },
+    {
+      "id": "A012",
+      "name": "韦编三绝",
+      "unlock": {
+        "type": "quizzes",
+        "min": 80
+      },
+      "reward": {
+        "type": "attr",
+        "attr": "xue",
+        "value": 2
+      },
+      "rewardDesc": "开局学力 +2；成长为“深读”或“广涉”",
+      "growth": {
+        "baseXp": 1,
+        "drawXp": 1
+      },
+      "branches": [
+        {
+          "id": "deep",
+          "name": "深读一经",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "insight",
+              "value": 2,
+              "name": "韦编旧痕",
+              "desc": "开局心得 +2"
+            },
+            {
+              "trigger": "quiz",
+              "type": "inspiration",
+              "result": "win",
+              "value": 1,
+              "minLevel": 2,
+              "name": "读书得气",
+              "desc": "答对题目灵感 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "insight",
+              "result": "draw",
+              "value": 1,
+              "minLevel": 3,
+              "name": "读而能思",
+              "desc": "平局心得 +1"
+            },
+            {
+              "trigger": "phase",
+              "type": "techniqueXp",
+              "value": 2,
+              "minLevel": 4,
+              "name": "经史入法",
+              "desc": "进入新阶段技法经验 +2"
+            }
+          ]
+        },
+        {
+          "id": "wide",
+          "name": "博涉群书",
+          "minLevel": 1,
+          "effects": [
+            {
+              "trigger": "start",
+              "type": "studySlot",
+              "value": 1,
+              "name": "博涉",
+              "desc": "研修位 +1"
+            },
+            {
+              "trigger": "quiz",
+              "type": "techniqueXp",
+              "result": "win",
+              "value": 1,
+              "minLevel": 2,
+              "name": "群书旁通",
+              "desc": "答对题目技法经验 +1"
+            },
+            {
+              "trigger": "event",
+              "type": "insight",
+              "value": 1,
+              "minLevel": 3,
+              "name": "触类旁通",
+              "desc": "奇遇后心得 +1"
+            },
+            {
+              "trigger": "battle",
+              "type": "manuscript",
+              "result": "win",
+              "value": 1,
+              "minLevel": 4,
+              "name": "学以成文",
+              "desc": "获胜稿页 +1"
+            }
+          ]
+        }
+      ],
+      "text": "孔子晚而喜《易》，读之韦编三绝。八十答之功非一日可就，简册磨断处，学问始入骨。"
+    }
+  ]
 }

@@ -69,7 +69,7 @@ export class AlbumUI {
           <button class="btn btn-ink btn-sm panel-back" data-back>返回改选流派</button>
           <div class="title-ink" style="font-size:32px;text-align:center">裝 配 名 篇</div>
           <div class="subtitle" style="text-align:center;margin-top:4px">
-            流派「${esc(o.schoolName || '—')}」已定　·　最多携带 ${Album.LOADOUT_MAX} 张传世名篇，其效力于开局一次性生效
+            流派「${esc(o.schoolName || '—')}」已定　·　最多携带 ${Album.LOADOUT_MAX} 张传世名篇；名篇可成长、定路线，效果在对应事件中生效
           </div>
           <div class="lo-tip">已解锁 ${unlockedCount} / ${this.cards.length} 篇；未解锁者仅存剪影，达成条件后自现真容。</div>
         </div>
@@ -91,7 +91,15 @@ export class AlbumUI {
     if (sc) sc.addEventListener('scroll', () => { this._loScrollTop = sc.scrollTop; });
 
     this.loadoutEl.querySelectorAll('.album-card:not(.locked)').forEach(b =>
-      b.addEventListener('click', () => this._toggle(b.dataset.id, store)));
+      b.addEventListener('click', e => {
+        if (e.target.closest('[data-branch]')) return;
+        this._toggle(b.dataset.id, store);
+      }));
+    this.loadoutEl.querySelectorAll('[data-branch]').forEach(b =>
+      b.addEventListener('click', e => {
+        e.preventDefault(); e.stopPropagation();
+        this._chooseBranch(b.dataset.id, b.dataset.branch);
+      }));
     this.loadoutEl.querySelector('[data-back]').addEventListener('click', () => {
       this.closeLoadout();
       if (o.onBack) o.onBack();
@@ -117,6 +125,15 @@ export class AlbumUI {
       this.selected.push(id);
     }
     this._renderLoadout(store);
+  }
+
+  _chooseBranch(id, branchId) {
+    const card = this.cards.find(c => c.id === id);
+    const result = Album.chooseAlbumBranch(Album.loadStore(), card, branchId);
+    if (!result.ok) { alert(result.reason); return; }
+    Album.saveStore(result.store);
+    this._renderLoadout(Album.loadStore());
+    if (this.albumEl.classList.contains('on')) this._renderAlbum();
   }
 
   /* ==================================================== 图鉴界面 */
@@ -275,7 +292,18 @@ export class AlbumUI {
     const unlocked = store.unlocked.includes(card.id);
     const on = opts.pick && this.selected.includes(card.id);
     const prog = Album.progressOf(card, store.stats);
+    const growth = Album.normalizeAlbumProgress(store.progress && store.progress[card.id]);
     const pct = Math.min(100, Math.round(100 * prog.cur / prog.need));
+    const nextXp = growth.level < Album.ALBUM_LEVEL_THRESHOLDS.length
+      ? Album.ALBUM_LEVEL_THRESHOLDS[growth.level] : null;
+    const branches = Album.cardBranches(card);
+    const branchHtml = branches.length ? `<div class="ac-branches"><div class="ac-branch-title">成长路线：${growth.branchLocked ? `已定「${esc(branches.find(b => b.id === growth.branch)?.name || growth.branch)}」` : '请选择一条'}</div>${branches.map(b => {
+      const need = Number(b.minLevel) || 1;
+      const active = growth.branch === b.id;
+      const disabled = growth.level < need || growth.branchLocked && !active;
+      return `<button type="button" class="ac-branch ${active ? 'on' : ''}" data-branch="${esc(b.id)}" data-id="${esc(card.id)}" ${disabled ? 'disabled' : ''}>${esc(b.name)}${need > 1 ? ` · Lv${need}` : ''}</button>`;
+    }).join('')}</div>` : '';
+    const growthHtml = `<div class="ac-growth">Lv${growth.level} ${esc(Album.albumLevelName(growth.level))} · XP ${growth.xp}${nextXp != null ? ` / ${nextXp}` : ' · 已满级'}</div>`;
 
     if (!unlocked) {
       return `<div class="album-card locked" data-id="${card.id}">
@@ -285,13 +313,15 @@ export class AlbumUI {
         <div class="ac-prog"><i style="width:${pct}%"></i></div>
       </div>`;
     }
-    return `<button class="album-card unlocked ${on ? 'on' : ''}" data-id="${card.id}">
+    return `<div class="album-card unlocked ${on ? 'on' : ''}" data-id="${card.id}">
       ${on ? '<span class="ac-flag">已装配</span>' : ''}
       <div class="ac-name">${esc(card.name)}</div>
+      ${growthHtml}
       <div class="ac-reward">${esc(card.rewardDesc || '（无数值加成）')}</div>
       <div class="ac-text">${esc(firstSentence(card.text))}</div>
       <div class="ac-cond done">${esc(Album.conditionText(card, store.stats))} ✓</div>
-    </button>`;
+      ${branchHtml}
+    </div>`;
   }
 
   /* ================================================ 本局新解锁 */
