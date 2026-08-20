@@ -32,18 +32,19 @@
 - config-contract、ability-system 与全量 40 个测试通过。
 
 ## 双平台部署（2026-08-20）
-- **GitHub Pages**：经 `api.github.com` REST API 部署成功，commit `2baf1c7` 已更新 main；96 个静态文件 + 根 `feihua-content.json` 同步，玩家成绩 `leaderboard.json` 已保留。
+- **GitHub Pages**：已恢复并同步完整可玩版，commit `bfd6002` 已更新 main；96 个静态文件 + 根 `feihua-content.json` 同步，`leaderboard.json` 已保留。
   - 站点：`https://luoluozi110.github.io/luoluo/`
-  - 验证：页面可访问，`index.html` 引用版本号已为 `20260820gradetighten1`。
+  - 验证：页面可访问，`index.html` 引用版本号已为 `20260820albumdesc1`，名篇分支说明已上线。
 - **CloudStudio**：经独立沙箱通道部署成功（verified: true），复用旧沙箱 `b7448dae814340d882052e04260fa5cb`。
   - 分享链接：`https://b7448dae814340d882052e04260fa5cb.gz3.agentos-app.net`
-- **关键修正**：此前误判“GitHub 网络被拦”。实测 git 协议 push 被沙箱拦截，但 `api.github.com` REST API 通畅；GitHub Pages 部署与备份标签均经 REST API 成功，GitHub 侧交付已完整。
+- **关键修正**：修复一次文档部署误删 Pages 游戏树的问题；`bfd6002` 从现有 main 快进恢复完整静态文件，之后部署脚本统一以当前 main 为父提交，避免再生成孤儿提交。
 
 ## 版本记录
 - 名篇成长系统（本地提交）：`dede665`；评分收紧（本地提交）：`a7e27ac`。
 - 两提交均经完整测试，本地由无斜杠分支 `album-grade-backup` 引用（HEAD 指向它，工作树干净）。
-- GitHub 侧：名篇系统 + 评分收紧随 GitHub Pages 部署进入 main（`2baf1c7`），内容与本地 `dede665`/`a7e27ac` 等价。
-- 备份标签（经 REST API 创建于 main `2baf1c7`）：
+- GitHub 侧：名篇系统 + 评分收紧 + 分支说明随 GitHub Pages 部署进入 main（`bfd6002`），内容与本地 `dede665`/`a7e27ac`/`cfd92a8` 等价。
+- 历史备份标签（经 REST API 创建于此前的 main `2baf1c7`）：
   - `backup/20260820-1835-album-growth` → tag object `f6f4b60a`
   - `backup/20260820-1840-grade-tighten` → tag object `9db96371`
+- 本轮备份：`backup/20260820-2206-album-editor-sync`（源 `cfd92a8`）、`backup/20260820-2210-album-editor-online`（线上 `bfd6002`）、`backup/20260820-2214-deploy-parent-fix`（脚本 `701bf31`）。
 - 无关未跟踪文件 `飞花棋-更新公告.md` 已明确排除，未混入部署或提交。
