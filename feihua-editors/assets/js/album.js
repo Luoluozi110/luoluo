@@ -54,7 +54,7 @@
     const out = { ...e };
     out.trigger = TRIGGERS.some(x => x[0] === e.trigger) ? e.trigger : "start";
     out.type = EFFECT_TYPES.some(x => x[0] === e.type) ? e.type : "inspiration";
-    out.value = Number.isFinite(Number(e.value)) ? Number(e.value) : 0;
+    if (e.value != null && Number.isFinite(Number(e.value))) out.value = Number(e.value); else if (Object.prototype.hasOwnProperty.call(out, "value")) delete out.value;
     if (e.minLevel != null) out.minLevel = Math.max(1, Number(e.minLevel) || 1);
     if (e.style && STYLES.includes(e.style)) out.style = e.style; else delete out.style;
     if (e.result && RESULTS.some(x => x[0] === e.result)) out.result = e.result; else delete out.result;
@@ -111,7 +111,7 @@
         if (!TRIGGERS.some(x => x[0] === ef.trigger)) e.push(w + " 分支「" + b.id + "」触发点非法：" + ef.trigger);
         if (!EFFECT_TYPES.some(x => x[0] === ef.type)) e.push(w + " 分支「" + b.id + "」效果类型非法：" + ef.type);
         if (ef.type === "attr" && !ATTR_KEYS.includes(ef.attr)) e.push(w + " 分支「" + b.id + "」属性效果缺少合法 attr");
-        if (!Number.isFinite(Number(ef.value))) e.push(w + " 分支「" + b.id + "」效果数值非法");
+        if (ef.value != null && !Number.isFinite(Number(ef.value))) e.push(w + " 分支「" + b.id + "」效果数值非法");
         if (ef.style && !STYLES.includes(ef.style)) e.push(w + " 分支「" + b.id + "」文体条件非法");
         if (ef.result && !RESULTS.some(x => x[0] === ef.result)) e.push(w + " 分支「" + b.id + "」结果条件非法");
         if (ef.minLevel != null && (!Number.isInteger(Number(ef.minLevel)) || Number(ef.minLevel) < Number(b.minLevel))) e.push(w + " 分支「" + b.id + "」效果等级不能低于分支等级");
@@ -131,7 +131,7 @@
 
   function rewardEditor(r) { const attrs = ATTR_KEYS.map(k => `<option value="${k}" ${r.attr === k ? "selected" : ""}>${C.ATTR[k]}</option>`).join(""); const o = opts(REWARD_TYPES, r.type); let extra = ""; if (r.type === "attr") extra = `<select id="album-reward-attr">${attrs}</select><input type="number" id="album-reward-value" value="${r.value || 0}"/>`; else if (r.type === "talent") extra = `<input id="album-reward-talent" list="talentList" value="${C.esc(r.talent || "")}" placeholder="文心 ID"/><input id="album-reward-name" value="${C.esc(r.name || "")}" placeholder="文心名称（可选）"/>`; else if (r.type === "title") extra = `<input id="album-reward-title" value="${C.esc(r.title || "")}" placeholder="称号"/>`; else extra = `<input id="album-reward-value" type="number" value="${r.value || 0}"/>`; return `<div class="row2"><select id="album-reward-type">${o}</select><div id="album-reward-extra" style="display:flex;gap:6px">${extra}</div></div>`; }
   function unlockEditor(u) { const styles = { shi: "诗", ci: "词", lian: "联" }; return `<div class="row2"><select id="album-unlock-type">${opts(UNLOCK_TYPES, u.type)}</select><select id="album-unlock-style" style="display:${u.type === "styleWins" ? "" : "none"}">${opts(Object.entries(styles), u.style)}</select><input type="number" id="album-unlock-min" value="${u.min || 1}" min="1"/></div>`; }
-  function branchEffectEditor(ef, bi, ei) { const attrs = opts([["", "属性不限"], ...ATTR_KEYS.map(k => [k, C.ATTR[k]])], ef.attr); const styles = opts([["", "文体不限"], ...STYLES.map(k => [k, { shi: "诗", ci: "词", lian: "联" }[k]])], ef.style); return `<div class="album-effect-row" data-effect-row="${bi}:${ei}"><select data-ef="trigger">${opts(TRIGGERS, ef.trigger)}</select><select data-ef="type">${opts(EFFECT_TYPES, ef.type)}</select><input type="number" step="any" data-ef="value" value="${Number(ef.value) || 0}" title="效果数值"/><input type="number" min="1" step="1" data-ef="minLevel" value="${ef.minLevel || 1}" title="生效等级"/><select data-ef="result">${opts(RESULTS, ef.result)}</select><input type="text" data-ef="name" value="${C.esc(ef.name || "")}" placeholder="效果名称 / 备注"/><button type="button" class="opt-del" data-effect-del="${bi}:${ei}" title="删除效果">×</button><details class="effect-advanced"><summary>条件：文体 / 属性 / 阶段</summary><div class="row2"><select data-ef="style">${styles}</select><select data-ef="attr">${attrs}</select><input type="text" data-ef="phase" value="${C.esc(ef.phase || "")}" placeholder="阶段条件，如 palace"/><input type="text" data-ef="desc" value="${C.esc(ef.desc || "")}" placeholder="玩家可见效果说明"/></div></details></div>`; }
+  function branchEffectEditor(ef, bi, ei) { const attrs = opts([["", "属性不限"], ...ATTR_KEYS.map(k => [k, C.ATTR[k]])], ef.attr); const styles = opts([["", "文体不限"], ...STYLES.map(k => [k, { shi: "诗", ci: "词", lian: "联" }[k]])], ef.style); return `<div class="album-effect-row" data-effect-row="${bi}:${ei}"><select data-ef="trigger">${opts(TRIGGERS, ef.trigger)}</select><select data-ef="type">${opts(EFFECT_TYPES, ef.type)}</select><input type="number" step="any" data-ef="value" value="${ef.value == null ? "" : Number(ef.value)}" title="效果数值"/><input type="number" min="1" step="1" data-ef="minLevel" value="${ef.minLevel || 1}" title="生效等级"/><select data-ef="result">${opts(RESULTS, ef.result)}</select><input type="text" data-ef="name" value="${C.esc(ef.name || "")}" placeholder="效果名称 / 备注"/><button type="button" class="opt-del" data-effect-del="${bi}:${ei}" title="删除效果">×</button><details class="effect-advanced"><summary>条件：文体 / 属性 / 阶段</summary><div class="row2"><select data-ef="style">${styles}</select><select data-ef="attr">${attrs}</select><input type="text" data-ef="phase" value="${C.esc(ef.phase || "")}" placeholder="阶段条件，如 palace"/><input type="text" data-ef="desc" value="${C.esc(ef.desc || "")}" placeholder="玩家可见效果说明"/></div></details></div>`; }
   function renderGrowthEditor() {
     const box = document.getElementById("album-growth-editor"); if (!box || !state.form) return;
     const g = state.form.growth || {};
@@ -160,7 +160,8 @@
     const f = state.form; syncGrowthFromDom(); f.id = valueOf("album-id").trim(); f.name = valueOf("album-name").trim(); f.text = valueOf("album-text").trim(); f.rewardDesc = valueOf("album-reward-desc").trim();
     const ut = valueOf("album-unlock-type"); f.unlock = { type: ut, min: Math.max(1, numberValue("album-unlock-min", 1)) }; if (ut === "styleWins") f.unlock.style = valueOf("album-unlock-style");
     const rt = valueOf("album-reward-type"); f.reward = { type: rt }; if (rt === "attr") { f.reward.attr = valueOf("album-reward-attr"); f.reward.value = numberValue("album-reward-value", 0); } else if (rt === "inspiration" || rt === "inspirationMax") f.reward.value = numberValue("album-reward-value", 0); else if (rt === "talent") { f.reward.talent = valueOf("album-reward-talent").trim(); f.reward.name = valueOf("album-reward-name").trim(); } else f.reward.title = valueOf("album-reward-title").trim();
-    const growth = safeJson(valueOf("album-growth-json"), null); if (!growth || typeof growth !== "object" || Array.isArray(growth)) throw new Error("growth 必须是 JSON 对象");
+    syncGrowthFromDom();
+    const growth = state.form.growth && typeof state.form.growth === "object" ? state.form.growth : safeJson(valueOf("album-growth-json"), null); if (!growth || typeof growth !== "object" || Array.isArray(growth)) throw new Error("growth 必须是 JSON 对象");
     const branches = state.form.branches || []; f.growth = normalizeGrowth(growth); f.branches = normalizeBranches(branches); return normalizeCard(f);
   }
   function syncFormFromBranchDom() {
@@ -195,7 +196,7 @@
     document.getElementById("albumOverlay").addEventListener("change", e => { if (e.target.id === "album-unlock-type") document.getElementById("albumUnlockBox").innerHTML = unlockEditor({ type: e.target.value, min: 1, style: "shi" }); if (e.target.id === "album-reward-type") document.getElementById("albumRewardBox").innerHTML = rewardEditor({ type: e.target.value }); if (e.target.dataset.ef) { syncFormFromBranchDom(); renderBranchesEditor(); } });
     document.getElementById("albumBranchesEditor");
     document.getElementById("album-branches-editor").addEventListener("input", () => syncFormFromBranchDom());
-    document.getElementById("album-growth-editor").addEventListener("input", () => syncGrowthFromDom());
+    document.getElementById("album-growth-editor").addEventListener("input", () => { syncGrowthFromDom(); const ta = document.getElementById("album-growth-json"); if (ta) ta.value = JSON.stringify(state.form.growth || {}, null, 2); });
     document.getElementById("album-growth-editor").addEventListener("change", () => syncGrowthFromDom());
     document.getElementById("album-growth-json").addEventListener("change", () => { const parsed = safeJson(valueOf("album-growth-json"), null); if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) { C.toast("growth 必须是 JSON 对象"); renderGrowthEditor(); return; } state.form.growth = normalizeGrowth(parsed); renderGrowthEditor(); C.toast("已载入成长 JSON，可继续校验后保存"); });
     document.getElementById("album-branches-json").addEventListener("change", () => { const parsed = safeJson(valueOf("album-branches-json"), null); if (!Array.isArray(parsed)) { C.toast("branches 必须是 JSON 数组"); renderBranchesEditor(); return; } state.form.branches = normalizeBranches(parsed); renderBranchesEditor(); C.toast("已载入分支 JSON，可继续校验后保存"); });
