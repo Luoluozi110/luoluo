@@ -237,6 +237,9 @@
     <button class="btn" id="albumBtnImport">导入 album.json</button>
     <button class="btn" id="albumBtnExport">导出 album.json</button>
     <button class="btn" id="albumBtnStats">校验</button>
+    <button class="btn" id="albumBtnUndo" title="撤销最近一次名篇数据变更">撤销</button>
+    <button class="btn" id="albumBtnRedo" title="恢复已撤销的名篇数据变更">重做</button>
+    <button class="btn" id="albumBtnReset">重置默认</button>
     <button class="btn primary" id="albumBtnAdd">＋ 新增名篇</button>
     <input type="file" id="albumFileInput" accept=".json,application/json" style="display:none" />
   </div>
@@ -281,13 +284,14 @@
     <div class="field"><label>解锁条件</label><div id="albumUnlockBox"></div></div>
     <div class="field"><label>奖励</label><div id="albumRewardBox"></div></div>
     <div class="field"><label>奖励展示文案</label><input id="album-reward-desc" placeholder="如：开局诗力 +2；成长路线可选" /></div>
-    <div class="field"><label>成长参数 JSON（跨局 XP；可留空对象）</label><textarea id="album-growth-json" rows="4" spellcheck="false" placeholder='{"baseXp":1,"winXp":1,"style":"shi","styleXp":1}'></textarea><div class="hint">支持 baseXp / winXp / drawXp / loseXp / style / styleXp；XP 达到 3 / 8 / 16 时升至 Lv2 / Lv3 / Lv4。</div></div>
-    <div class="field"><label>成长分支 JSON（至少一条；效果 trigger/type 必须来自引擎契约）</label><textarea id="album-branches-json" rows="12" spellcheck="false" placeholder='[{"id":"route_a","name":"路线甲","minLevel":1,"effects":[{"trigger":"start","type":"insight","value":1,"name":"开篇","desc":"开局心得 +1"}]}]'></textarea><div class="hint">trigger：start / battle / quiz / event / phase / score；type：attr / inspiration / inspirationMax / insight / manuscript / strategy / studySlot / techniqueXp / pct。可选 style、result、phase、minLevel、once。</div></div>
+    <div class="field"><label>成长参数（跨局 XP）</label><div id="album-growth-editor" class="style-grid"></div><details style="margin-top:8px"><summary class="dim">高级：查看 / 编辑成长 JSON</summary><textarea id="album-growth-json" rows="4" spellcheck="false" placeholder='{"baseXp":1,"winXp":1,"style":"shi","styleXp":1}'></textarea></details><div class="hint">支持基础 / 胜 / 平 / 负 / 文体 XP 与对应文体；XP 达到 3 / 8 / 16 时升至 Lv2 / Lv3 / Lv4。高级字段会原样保留。</div></div>
+    <div class="field"><label>成长分支（可视化编辑）</label><div id="album-branches-editor"></div><div class="row2" style="margin-top:8px"><button class="btn sm" id="albumBranchAdd" type="button">＋ 添加分支</button><button class="btn sm" id="albumBranchSort" type="button">按解锁等级排序</button><button class="btn sm ghost" id="albumBranchLink" type="button">从其他分支复制效果</button></div><details style="margin-top:10px"><summary class="dim">高级：查看 / 编辑分支 JSON</summary><textarea id="album-branches-json" rows="10" spellcheck="false" placeholder='[{"id":"route_a","name":"路线甲","minLevel":1,"effects":[{"trigger":"start","type":"insight","value":1,"name":"开篇","desc":"开局心得 +1"}]}]'></textarea></details><div class="hint">分支是名篇主线的成长路线：主线保留解锁与基础奖励；分支只描述路线差异。可排序、复制效果、预览关系图。trigger：start / battle / quiz / event / phase / score；type：attr / inspiration / inspirationMax / insight / manuscript / strategy / studySlot / techniqueXp / pct。</div></div>
     <div class="field"><label>典故 / 描述</label><textarea id="album-text" placeholder="名篇典故与解锁叙事…"></textarea></div>
-    <div class="modal-actions"><button class="btn ghost" id="albumCancel">取消</button><button class="btn primary" id="albumSave">保存名篇</button></div>
+    <div class="modal-actions"><button class="btn ghost" id="albumRelationBtn" type="button">查看主线·分支关系</button><button class="btn ghost" id="albumCancel">取消</button><button class="btn primary" id="albumSave">保存名篇</button></div>
   </div>
 </div>
-<div class="overlay" id="albumPreviewOverlay"><div class="modal" style="width:min(520px,100%)"><h3>名篇预览</h3><div id="albumPreviewBody"></div><div class="modal-actions"><button class="btn primary" id="albumClose">关闭</button></div></div></div>
+<div class="overlay" id="albumPreviewOverlay"><div class="modal" style="width:min(620px,100%)"><h3>名篇预览</h3><div id="albumPreviewBody"></div><div class="modal-actions"><button class="btn primary" id="albumClose">关闭</button></div></div></div>
+<div class="overlay" id="albumRelationOverlay"><div class="modal" style="width:min(720px,100%)"><h3>主线·分支关系预览</h3><div id="albumRelationBody"></div><div class="modal-actions"><button class="btn primary" id="albumRelationClose">关闭</button></div></div></div>
 
 <!-- =================== 相性：预览有效相性弹窗 =================== -->
 <div class="overlay" id="affPreviewOverlay">

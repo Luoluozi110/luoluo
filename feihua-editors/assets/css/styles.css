@@ -348,6 +348,23 @@ footer{text-align:center;color:var(--ink2);font-size:12px;margin-top:30px}
 .board-preview-card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
 #boardSidesBody input{width:100%;font-size:13px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:#fff}
 
+/* ===================== 传世名篇：主线 / 分支可视化编辑 ===================== */
+.album-branch-card{border:1px solid var(--line);border-left:4px solid var(--zhu);border-radius:10px;padding:10px 12px;margin:8px 0;background:#fffdf7}
+.album-branch-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.album-branch-head strong{color:var(--zhu)}
+.album-branch-card .branch-fields{display:grid;grid-template-columns:minmax(100px,1fr) minmax(140px,1.5fr) 100px;gap:8px}
+.album-branch-card input,.album-branch-card select{width:100%;border:1px solid var(--line);border-radius:7px;padding:6px 8px;background:#fff;font:inherit;color:var(--ink)}
+.album-effect-row{display:grid;grid-template-columns:90px 120px 70px 90px minmax(120px,1fr) 30px;gap:6px;align-items:center;margin:6px 0;padding:7px;background:var(--paper2);border-radius:8px}
+.album-effect-row input,.album-effect-row select{min-width:0}
+.album-effect-row .effect-advanced{grid-column:1/-1;font-size:11px;color:var(--ink2);word-break:break-all}
+.album-mainline{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--gold);border-radius:10px;background:#fff8e7;margin:8px 0 12px}
+.album-mainline .mainline-dot{width:11px;height:11px;border-radius:50%;background:var(--gold);flex:none}
+.album-relation{display:grid;grid-template-columns:1fr 40px 1fr;gap:10px;align-items:center}
+.album-relation-main,.album-relation-branch{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fffdf7}
+.album-relation-arrow{text-align:center;color:var(--zhu);font-size:22px}
+.album-validation{margin:8px 0;padding:8px 10px;border-radius:8px;background:#fbe9e4;color:var(--bad);border:1px solid #e6bdb2;font-size:12px;line-height:1.6}
+@media(max-width:680px){.album-branch-card .branch-fields{grid-template-columns:1fr 1fr}.album-effect-row{grid-template-columns:1fr 1fr}.album-relation{grid-template-columns:1fr}.album-relation-arrow{transform:rotate(90deg)}}
+
 /* ===================== 奇遇↔文心 关联 ===================== */
 .dim{color:var(--ink2)}
 .badge.src-ev{background:#e6f4ea;color:#2e7d32}

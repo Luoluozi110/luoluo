@@ -265,8 +265,8 @@
         else for (const k of ['baseXp', 'winXp', 'drawXp', 'loseXp', 'styleXp']) if (card.growth[k] != null && (!finite(card.growth[k]) || Number(card.growth[k]) < 0)) add(`${p}.growth.${k}`, '成长经验必须是非负数字');
       }
       if (card.branches != null) {
-        if (!Array.isArray(card.branches) || card.branches.length < 1) add(`${p}.branches`, '成长型名篇至少需要一条分支');
-        else {
+        if (!Array.isArray(card.branches)) add(`${p}.branches`, '成长分支必须是数组');
+        else if (card.branches.length > 0) {
           const branchIds = new Set();
           card.branches.forEach((branch, j) => {
             const bp = `${p}.branches[${j}]`;
@@ -283,6 +283,7 @@
               if (ef && ef.style != null && !STYLE_KEYS.has(ef.style)) add(`${ep}.style`, '效果文体非法');
               if (ef && ef.result != null && !['win', 'draw', 'lose'].includes(ef.result)) add(`${ep}.result`, '效果结果条件非法');
               if (ef && ef.phase != null && !text(ef.phase)) add(`${ep}.phase`, '效果阶段条件非法');
+              if (ef && ef.minLevel != null && (!Number.isInteger(Number(ef.minLevel)) || Number(ef.minLevel) < 1 || Number(ef.minLevel) < Number(branch.minLevel || 1))) add(`${ep}.minLevel`, '效果生效等级必须是不低于分支等级的正整数');
               if (ef && ef.value != null && !finite(ef.value)) add(`${ep}.value`, '效果数值必须是有限数字');
             });
           });
