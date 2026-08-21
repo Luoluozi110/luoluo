@@ -87,7 +87,67 @@
   function undo() { if (!state.undo.length) return; state.redo.push(snapshot()); state.cards = state.undo.pop().map(normalizeCard); save(); renderList(); updateHistoryButtons(); C.toast("已撤销名篇数据变更"); }
   function redo() { if (!state.redo.length) return; state.undo.push(snapshot()); state.cards = state.redo.pop().map(normalizeCard); save(); renderList(); updateHistoryButtons(); C.toast("已恢复名篇数据变更"); }
   function save() { const ok = C.store("album", state.cards); C.setStatus("album", "已自动保存 " + new Date().toLocaleTimeString("zh-CN", { hour12: false })); updateHistoryButtons(); return ok; }
-  function loadData() { const raw = C.load("album", null); state.cards = (Array.isArray(raw) ? raw : (window.GAME_ALBUM || [])).map(normalizeCard); if (!raw) C.store("album", state.cards); updateHistoryButtons(); }
+  function mergeSeedEffect(seed, raw) {
+    return normalizeEffect({ ...seed, ...(raw && typeof raw === "object" ? raw : {}) });
+  }
+  function mergeSeedBranch(seed, raw, index) {
+    const source = raw && typeof raw === "object" ? raw : {};
+    const seedEffects = Array.isArray(seed.effects) ? seed.effects : [];
+    const rawEffects = Array.isArray(source.effects) ? source.effects : [];
+    const used = new Set();
+    const effects = seedEffects.map((effect, effectIndex) => {
+      // 优先按稳定名称/触发器匹配，旧数据没有名称时再按序号补齐。
+      let matchIndex = rawEffects.findIndex((candidate, candidateIndex) => {
+        if (used.has(candidateIndex) || !candidate || typeof candidate !== "object") return false;
+        return (candidate.name && effect.name && candidate.name === effect.name)
+          || (candidate.trigger === effect.trigger && candidate.type === effect.type);
+      });
+      if (matchIndex < 0 && rawEffects[effectIndex] && !used.has(effectIndex)) matchIndex = effectIndex;
+      if (matchIndex >= 0) used.add(matchIndex);
+      return mergeSeedEffect(effect, matchIndex >= 0 ? rawEffects[matchIndex] : null);
+    });
+    // 保留编辑器中新增的自定义效果，不让同步过程误删用户内容。
+    rawEffects.forEach((effect, effectIndex) => {
+      if (!used.has(effectIndex)) effects.push(normalizeEffect(effect));
+    });
+    return normalizeBranches([{ ...seed, ...source, id: seed.id || source.id || `route_${index + 1}`, effects }])[0];
+  }
+  function mergeSeedCard(seed, raw) {
+    const source = raw && typeof raw === "object" ? raw : {};
+    const seedBranches = Array.isArray(seed.branches) ? seed.branches : [];
+    const rawBranches = Array.isArray(source.branches) ? source.branches : [];
+    const used = new Set();
+    const branches = seedBranches.map((branch, branchIndex) => {
+      let matchIndex = rawBranches.findIndex((candidate, candidateIndex) => !used.has(candidateIndex) && candidate && candidate.id === branch.id);
+      if (matchIndex < 0 && rawBranches[branchIndex] && !used.has(branchIndex)) matchIndex = branchIndex;
+      if (matchIndex >= 0) used.add(matchIndex);
+      return mergeSeedBranch(branch, matchIndex >= 0 ? rawBranches[matchIndex] : null, branchIndex);
+    });
+    rawBranches.forEach((branch, branchIndex) => {
+      if (!used.has(branchIndex)) branches.push(normalizeBranches([branch])[0]);
+    });
+    return normalizeCard({ ...seed, ...source,
+      growth: { ...(seed.growth || {}), ...(source.growth && typeof source.growth === "object" ? source.growth : {}) },
+      branches
+    });
+  }
+  function syncWithSeed(raw) {
+    const seed = Array.isArray(window.GAME_ALBUM) ? window.GAME_ALBUM.map(normalizeCard) : [];
+    if (!seed.length) return { cards: (Array.isArray(raw) ? raw : []).map(normalizeCard), changed: false };
+    const incoming = Array.isArray(raw) ? raw : [];
+    const byId = new Map(incoming.filter(c => c && c.id).map(c => [String(c.id), c]));
+    const cards = seed.map(card => mergeSeedCard(card, byId.get(card.id))).concat(
+      incoming.filter(c => c && !seed.some(seedCard => seedCard.id === c.id)).map(normalizeCard)
+    );
+    return { cards, changed: JSON.stringify(cards) !== JSON.stringify(incoming.map(normalizeCard)) };
+  }
+  function loadData() {
+    const raw = C.load("album", null);
+    const synced = syncWithSeed(raw);
+    state.cards = synced.cards;
+    if (!Array.isArray(raw) || synced.changed) C.store("album", state.cards);
+    updateHistoryButtons();
+  }
 
   function unlockText(u) { const labels = Object.fromEntries(UNLOCK_TYPES), styles = { shi: "诗", ci: "词", lian: "联" }; return (labels[u.type] || u.type) + (u.type === "styleWins" ? "以" + (styles[u.style] || u.style) + "出战 " : " ") + u.min + " 次"; }
   function rewardText(r) { const a = C.ATTR; if (!r) return "（无奖励）"; if (r.type === "attr") return (a[r.attr] || r.attr) + " +" + r.value; if (r.type === "inspiration") return "灵感 +" + r.value; if (r.type === "inspirationMax") return "灵感上限 +" + r.value; if (r.type === "talent") return "文心「" + (r.name || r.talent || "未指定") + "」"; return "称号「" + (r.title || "未指定") + "」"; }
