@@ -566,16 +566,17 @@ function writeCloudCache(url, project) {
   catch (_) { /* 缓存不可写不影响同步结果 */ }
 }
 
-/** 拉取云端配置：保留缓存击穿以获取编辑器刚发布的内容，并以 AbortController 限制弱网等待。 */
+/** 拉取云端配置：以 no-cache 复用 HTTP 缓存（ETag/304 不重下），并以 AbortController 限制弱网等待。
+ *  不再追加 _cb 时间戳击穿缓存——GitHub raw 带 ETag，内容更新时条件请求会回 200 新体，
+ *  未更新时回 304，重复访问零重传；同时保留「编辑器发布即生效」的语义。 */
 async function fetchCloudConfig(url, opts = {}) {
   const timeoutMs = Number(opts.timeoutMs) || CLOUD_REQUEST_TIMEOUT_MS;
   const controller = typeof AbortController === 'function' ? new AbortController() : null;
   let timer;
   try {
-    const sep = url.includes('?') ? '&' : '?';
     timer = setTimeout(() => controller && controller.abort(), timeoutMs);
-    const res = await fetch(url + sep + '_cb=' + Date.now(), {
-      cache: 'no-store',
+    const res = await fetch(url, {
+      cache: 'no-cache',
       signal: controller ? controller.signal : undefined
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -667,9 +668,16 @@ function maybeResyncCloud() {
   }).finally(() => { cloudSyncRunning = false; });
 }
 
-/** 第一次进入对局前等待有限时的同步收尾，保证新建棋盘不会拿到半更新配置。 */
+/** 第一次进入对局：缓存配置已在 boot 阶段（prepareCloudConfig）应用，故进局直接用，
+ *  不再硬等远端校验，避免弱网/跨境链路把首局卡住数秒。仅给一个很短的宽限窗口收尾，
+ *  远端刷新仍在后台进行，返回主菜单时由 maybeResyncCloud 应用到下一局。 */
 async function waitForCloudBeforeGame() {
-  try { await cloudSyncPromise; } catch (_) { /* fetchCloudConfig 已降级为 null */ }
+  try {
+    await Promise.race([
+      cloudSyncPromise,
+      new Promise(resolve => setTimeout(resolve, 600))
+    ]);
+  } catch (_) { /* fetchCloudConfig 已降级为 null */ }
   announceCloudSync();
 }
 

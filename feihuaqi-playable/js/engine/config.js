@@ -22,7 +22,8 @@ export const configSource = {};   // { attrs: 'config' | 'config-dev' }
 async function loadOne(name) {
   for (const dir of ['config', 'config-dev']) {
     try {
-      const res = await fetch(`${dir}/${name}.json`, { cache: 'no-store' });
+      // no-cache：浏览器仍发条件请求复用（304 不重下），兼顾「部署即更新」与「重复访问不重传」。
+      const res = await fetch(`${dir}/${name}.json`, { cache: 'no-cache' });
       if (!res.ok) continue;
       const text = await res.text();
       const data = JSON.parse(text.replace(/^\uFEFF/, ''));
@@ -57,7 +58,7 @@ export async function loadConfig() {
 export async function loadCloudUrl() {
   for (const dir of ['config', 'config-dev']) {
     try {
-      const res = await fetch(`${dir}/cloud.json`, { cache: 'no-store' });
+      const res = await fetch(`${dir}/cloud.json`, { cache: 'no-cache' });
       if (!res.ok) continue;
       const o = JSON.parse(await res.text());
       if (o && typeof o.url === 'string' && o.url.trim()) return o.url.trim();

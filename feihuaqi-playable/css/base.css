@@ -1,22 +1,16 @@
 /* base.css —— 设计令牌、字体、通用控件（全案第 6 章美术规范） */
 
-/* 自托管思源宋体（Noto Serif SC）：从系统本地可变字体切出 400/700 两档，
-   子集化到 GBK 全字符集 + 游戏文本（约 2.2 万字，覆盖玩家任意起名），压为 woff2 置于
-   fonts/noto-serif-sc/。断网可用、woff2 已压缩。如需把「汇文明朝体」一并随包分发，
-   把正版 woff2 放入 fonts/ 并补一条 @font-face 即可（见美术资产规范）。 */
+/* 自托管思源宋体（Noto Serif SC）：subset 到 GBK 全字符集 + 游戏文本（约 2.2 万字，
+   覆盖玩家任意起名），压为 woff2 置于 fonts/noto-serif-sc/。断网可用、woff2 已压缩。
+   只保留 400 一档：移动端省去 700 字重的 4.4MB 下载，粗体由 font-synthesis:weight
+   （见 :root 下方 html,body 声明）从 400 合成，视觉几乎无差。如需把「汇文明朝体」一并
+   随包分发，把正版 woff2 放入 fonts/ 并补一条 @font-face 即可（见美术资产规范）。 */
 @font-face {
   font-family: "Noto Serif SC";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
   src: url("../fonts/noto-serif-sc/NotoSerifSC-400.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Noto Serif SC";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("../fonts/noto-serif-sc/NotoSerifSC-700.woff2") format("woff2");
 }
 
 :root {
