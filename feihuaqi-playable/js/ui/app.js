@@ -3,24 +3,24 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260820inspdicepct1';
-import { Game } from '../engine/game.js?v=20260820inspdicepct1';
-import { BoardView } from './board.js?v=20260820inspdicepct1';
-import { Hud, radarSVG } from './hud.js?v=20260820inspdicepct1';
-import { Modals } from './modals.js?v=20260820inspdicepct1';
-import { BattleStage } from './battle.js?v=20260820inspdicepct1';
-import { AlbumUI } from './album.js?v=20260820inspdicepct1';
-import { CodexUI } from './codex.js?v=20260820inspdicepct1';
-import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260820inspdicepct1';
-import { initQuality, getTier, setTier } from './quality.js?v=20260820inspdicepct1';
-import { ATTR_NAMES } from '../engine/rules.js?v=20260820inspdicepct1';
-import * as Album from '../engine/album.js?v=20260820inspdicepct1';
-import * as Codex from '../engine/codex.js?v=20260820inspdicepct1';
-import { initAudio } from './audio.js?v=20260820inspdicepct1';
-import { setScene, setTension, setStage } from './music.js?v=20260820inspdicepct1';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260820inspdicepct1';
-import { Leaderboard } from './leaderboard.js?v=20260820inspdicepct1';
-import { personalize } from './namefmt.js?v=20260820inspdicepct1';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260822secretfinal1';
+import { Game } from '../engine/game.js?v=20260822secretfinal1';
+import { BoardView } from './board.js?v=20260822secretfinal1';
+import { Hud, radarSVG } from './hud.js?v=20260822secretfinal1';
+import { Modals } from './modals.js?v=20260822secretfinal1';
+import { BattleStage } from './battle.js?v=20260822secretfinal1';
+import { AlbumUI } from './album.js?v=20260822secretfinal1';
+import { CodexUI } from './codex.js?v=20260822secretfinal1';
+import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260822secretfinal1';
+import { initQuality, getTier, setTier } from './quality.js?v=20260822secretfinal1';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260822secretfinal1';
+import * as Album from '../engine/album.js?v=20260822secretfinal1';
+import * as Codex from '../engine/codex.js?v=20260822secretfinal1';
+import { initAudio } from './audio.js?v=20260822secretfinal1';
+import { setScene, setTension, setStage } from './music.js?v=20260822secretfinal1';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260822secretfinal1';
+import { Leaderboard } from './leaderboard.js?v=20260822secretfinal1';
+import { personalize } from './namefmt.js?v=20260822secretfinal1';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -386,6 +386,15 @@ function makeUi() {
       return out;
     },
     showPalaceIntro: () => modals.showPalaceIntro(),
+    askHiddenFinal: meta => modals.askHiddenFinal(meta),
+    showHiddenFinalRing: async () => {
+      setScene('board');
+      setTension(0.25);
+      if (board.showHiddenFinalRing) await board.showHiddenFinalRing();
+      setTension(0.55);
+    },
+    showHiddenFinalVictory: (out, npc) => modals.showHiddenFinalVictory(out, npc),
+    showHiddenFinalDefeat: (out, npc) => modals.showHiddenFinalDefeat(out, npc),
     showResult: sum => showResult(sum)
   };
 }

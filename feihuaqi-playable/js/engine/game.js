@@ -424,6 +424,7 @@ export class Game {
       plannedMoveDice: null,                         // 布局谋篇待作用的下一枚地图移动骰（瞬时状态）
       npcMech: { history: {}, palace: {} },          // NPC 三机制跨场状态
       loadout: [], titles: [],
+      secretFinal: { eligible: false, invited: false, entered: false, completed: false, result: '' },
       over: false, reachedEnd: false, endReason: '',
       log: []
     };
@@ -1527,6 +1528,7 @@ export class Game {
         return m;
       })(),
       isPalace: !!opts.isPalace,
+      isHiddenFinal: !!opts.isHiddenFinal,
       // 殿试跨场适应层数（若本场为殿试且这是机制主考官）：供 UI 出「场间评语」
       palaceLayers: (() => {
         if (!opts.isPalace || !(npc && npc.mech)) return 0;
@@ -2295,7 +2297,82 @@ export class Game {
     const session = this.createSession(opts);
     const out = await this.ui.runBattle(session);
     await this.settleBattle(session, out);
-    return out.result;
+    return opts && opts.returnOutcome ? out : out.result;
+  }
+
+  hiddenFinalConfig() {
+    return (this.cfg.board && this.cfg.board.hiddenFinalRing) || null;
+  }
+
+  /**
+   * 隐藏终圈资格只读取已经公开、已经发生的状态：跨局名篇收集、本局开局锁定的
+   * 流派造诣，以及刚刚结算完成的殿试双方作品分。默认“一倍优势”按 2 倍分数解释。
+   */
+  hiddenFinalEligibility(palaceOut) {
+    const cfg = this.hiddenFinalConfig();
+    const req = (cfg && cfg.requirements) || {};
+    const cards = this.cfg.album || [];
+    const store = Album.loadStore();
+    const unlocked = new Set(store.unlocked || []);
+    const albumCount = cards.filter(c => c && unlocked.has(c.id)).length;
+    const allAlbums = cards.length > 0 && albumCount === cards.length;
+    const masteryNeed = Math.max(1, Number(req.masteryLevel) || Album.MASTERY_LEVELS);
+    const masteryLevel = Math.max(1, Number(this.s.masteryLevel) || 1);
+    const playerScore = Math.max(0, Number(palaceOut && palaceOut.selfCalc && palaceOut.selfCalc.total) || 0);
+    const opponentScore = Math.max(0, Number(palaceOut && palaceOut.oppCalc && palaceOut.oppCalc.total) || 0);
+    const scoreRatioNeed = Math.max(1, Number(req.palaceScoreRatio) || 2);
+    const doubleScoreWin = palaceOut && palaceOut.result === 'win'
+      && opponentScore > 0 && playerScore >= opponentScore * scoreRatioNeed;
+    return {
+      eligible: !!cfg && (!req.allAlbums || allAlbums) && masteryLevel >= masteryNeed && !!doubleScoreWin,
+      allAlbums, albumCount, albumTotal: cards.length,
+      masteryLevel, masteryNeed,
+      playerScore, opponentScore, scoreRatioNeed,
+      doubleScoreWin: !!doubleScoreWin
+    };
+  }
+
+  hiddenFinalFoe() {
+    const tier = (this.cfg.npcs || []).find(n => n && n.isHiddenFinal);
+    const pick = tier && Array.isArray(tier.npcs) ? tier.npcs[0] : null;
+    return tier && pick ? this._npcFromPick(tier, pick) : null;
+  }
+
+  async runHiddenFinal(meta = {}) {
+    const s = this.s;
+    const cfg = this.hiddenFinalConfig();
+    const npc = this.hiddenFinalFoe();
+    if (!cfg || !npc) return this.endGame('jinbang');
+
+    const cells = Array.isArray(cfg.cells) ? cfg.cells : [];
+    s.phase = 'secret';
+    s.ringId = cfg.id || 'secret';
+    s.secretFinal = {
+      eligible: true, invited: true, entered: true, completed: false, result: '',
+      cellId: Number(cfg.startCellId) || Number(cells[0] && cells[0].id) || 0,
+      qualification: { ...meta }
+    };
+    this.refillStrategy('secret');
+    this.ui.onState(s);
+    if (typeof this.ui.showHiddenFinalRing === 'function') await this.ui.showHiddenFinalRing(s, cfg);
+    s.secretFinal.cellId = Number(cfg.battleCellId) || Number(cells[cells.length - 1] && cells[cells.length - 1].id) || s.secretFinal.cellId;
+
+    const themes = Array.isArray(npc.themes) && npc.themes.length ? npc.themes : ['huaigu'];
+    const out = await this.doBattle({
+      npc, theme: themes[0], isHiddenFinal: true, returnOutcome: true,
+      label: `${cfg.name || '桃源终圈'}·终点论战`
+    });
+    s.secretFinal.completed = true;
+    s.secretFinal.result = out.result;
+    s.secretFinal.playerScore = Number(out.selfCalc && out.selfCalc.total) || 0;
+    s.secretFinal.opponentScore = Number(out.oppCalc && out.oppCalc.total) || 0;
+    if (out.result === 'win') {
+      if (typeof this.ui.showHiddenFinalVictory === 'function') await this.ui.showHiddenFinalVictory(out, npc);
+      await this.endGame('taoyuan');
+    } else {
+      if (typeof this.ui.showHiddenFinalDefeat === 'function') await this.ui.showHiddenFinalDefeat(out, npc);
+      await this.endGame('secret_loss');
+    }
   }
 
   /* ------------------------------------------------------ 殿试 */
@@ -2354,6 +2431,7 @@ export class Game {
       }
     }
 
+    let palaceOut = null;
     for (let i = 0; i < n; i++) {
       if (s.inspiration <= 0) {
         this.ui.toast('灵感枯竭，余下场次弃权记负');
@@ -2365,14 +2443,24 @@ export class Game {
         const ef = t.effect || {};
         if (ef.type === 'palace_insp') this.addInspiration(Number(ef.value) || 0, `文心·${t.name}`);
       }
-      await this.doBattle({
+      palaceOut = await this.doBattle({
         npc: palaceFoes[i], theme: themes[i], isPalace: true,
+        returnOutcome: true,
         label: `殿试第 ${i + 1} 场·${names[i]}`
       });
     }
     if (s.palaceWins >= n) this.ui.toast('殿试全胜——金榜题名！');
     // 照我传灯·跨局传承：殿试结算时尝试点亮下一局传承火种
     this._maybePendReincarnate();
+    if (s.palaceWins >= n) {
+      const eligibility = this.hiddenFinalEligibility(palaceOut);
+      s.secretFinal = Object.assign({}, s.secretFinal || {}, eligibility);
+      if (eligibility.eligible && typeof this.ui.askHiddenFinal === 'function') {
+        s.secretFinal.invited = true;
+        const enter = await this.ui.askHiddenFinal(eligibility);
+        if (enter) return this.runHiddenFinal(eligibility);
+      }
+    }
     await this.endGame(s.palaceWins >= n ? 'jinbang' : 'palace');
   }
 
@@ -2417,7 +2505,9 @@ export class Game {
       fengbi: '灵感耗尽，就此封笔——江郎才尽·悔',
       turnlimit: '岁月不居，六十回合已尽',
       palace: '殿试已毕，静候放榜',
-      jinbang: this.cfg.board.layout === 'concentric_spiral' ? '殿试一决夺魁，金榜题名！' : '殿试三连捷，金榜题名！'
+      jinbang: this.cfg.board.layout === 'concentric_spiral' ? '殿试一决夺魁，金榜题名！' : '殿试三连捷，金榜题名！',
+      taoyuan: '终圈胜桃花仙人，万卷归心，走出桃源。',
+      secret_loss: '金榜已定，桃源终问留待来局。'
     }[reason] || '对局结束';
     summary.state = s;
     Object.assign(summary, this.commitAlbum(summary));
@@ -2438,7 +2528,7 @@ export class Game {
       }
     } catch (e) { /* 熟练度累计失败不阻断结算 */ }
     // 通关（金榜题名）→ 提交分数到云端排行榜（解耦：由 app.js 注入 onVictory）
-    if (summary.reason === 'jinbang' && typeof this.onVictory === 'function') {
+    if (['jinbang', 'taoyuan', 'secret_loss'].includes(summary.reason) && typeof this.onVictory === 'function') {
       try { this.onVictory((s.playerName || '无名氏'), summary.total); } catch (_) { /* 提交失败不阻断结算 */ }
     }
     await this.ui.showResult(summary);

@@ -4303,5 +4303,27 @@ window.GAME_BOARD = {
   ],
   "branches": {},
   "branchCells": [],
-  "branchGates": {}
+  "branchGates": {},
+  "hiddenFinalRing": {
+    "id": "secret",
+    "name": "桃源终圈",
+    "grid": 3,
+    "startCellId": 1000,
+    "battleCellId": 1007,
+    "requirements": {
+      "allAlbums": true,
+      "masteryLevel": 5,
+      "palaceScoreRatio": 2
+    },
+    "cells": [
+      { "id": 1000, "ringIndex": 0, "type": "secret_path", "name": "桃门" },
+      { "id": 1001, "ringIndex": 1, "type": "secret_path", "name": "花影" },
+      { "id": 1002, "ringIndex": 2, "type": "secret_path", "name": "忘机" },
+      { "id": 1003, "ringIndex": 3, "type": "secret_path", "name": "涤心" },
+      { "id": 1004, "ringIndex": 4, "type": "secret_path", "name": "照水" },
+      { "id": 1005, "ringIndex": 5, "type": "secret_path", "name": "无字" },
+      { "id": 1006, "ringIndex": 6, "type": "secret_path", "name": "问真" },
+      { "id": 1007, "ringIndex": 7, "type": "battle", "name": "桃源终卷" }
+    ]
+  }
 };

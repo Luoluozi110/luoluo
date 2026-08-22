@@ -57,10 +57,17 @@
       prologue: { title: "", text: "", button: "" },
       zeitgeist: { kind: "", title: "", lead: "", note: "", button: "" },
       stageChange: { kind: "", names: { xiucai: "", juren: "", jinshi: "" }, titleTpl: "", buttonTpl: "", default: "", middle: "", inner: "" },
-      lap2Intro: { title: "", text: "", button: "" }
+      lap2Intro: { title: "", text: "", button: "" },
+      hiddenFinal: {
+        invite: { kind: "", title: "", text: "", enterButton: "", declineButton: "" },
+        victory: { kind: "", title: "", text: "", button: "" },
+        defeat: { kind: "", title: "", text: "", button: "" }
+      }
     };
     for (const k of ["prologue", "zeitgeist", "stageChange", "lap2Intro"]) d[k] = Object.assign({}, d[k], n[k] || {});
     d.stageChange.names = Object.assign({ xiucai: "", juren: "", jinshi: "" }, (n.stageChange || {}).names || {});
+    for (const k of ["invite", "victory", "defeat"])
+      d.hiddenFinal[k] = Object.assign({}, d.hiddenFinal[k], ((n.hiddenFinal || {})[k]) || {});
     return d;
   }
 
@@ -119,6 +126,9 @@
     if (!String((n.stageChange || {}).middle || "").trim()) e.push({ g: "叙事弹窗", msg: "阶段晋阶·中圈文案为空" });
     if (!String((n.stageChange || {}).inner || "").trim()) e.push({ g: "叙事弹窗", msg: "阶段晋阶·内圈文案为空" });
     if (!String((n.lap2Intro || {}).text || "").trim()) e.push({ g: "叙事弹窗", msg: "会试圈文案为空" });
+    if (!String((((n.hiddenFinal || {}).invite || {}).text) || "").trim()) e.push({ g: "叙事弹窗", msg: "隐藏终圈·邀请文案为空" });
+    if (!String((((n.hiddenFinal || {}).victory || {}).text) || "").trim()) e.push({ g: "叙事弹窗", msg: "隐藏终圈·胜利文案为空" });
+    if (!String((((n.hiddenFinal || {}).defeat || {}).text) || "").trim()) e.push({ g: "叙事弹窗", msg: "隐藏终圈·失败文案为空" });
     return e;
   }
 
@@ -136,7 +146,7 @@
       `<div class="stat"><b>${state.schools.length}</b><span>流派文案</span></div>` +
       `<div class="stat"><b>${(state.grades.grades || []).length}</b><span>段位档</span></div>` +
       `<div class="stat"><b>${Object.keys(state.grades.comments || {}).length}</b><span>维度评语</span></div>` +
-      `<div class="stat"><b>4</b><span>叙事弹窗</span></div>` +
+      `<div class="stat"><b>5</b><span>叙事弹窗组</span></div>` +
       `<div class="stat"><b>${issues}</b><span>校验问题</span></div>`;
   }
 
@@ -214,10 +224,12 @@
 
     /* —— 叙事弹窗文案（narrative.json · 开局/阶段切换） —— */
     const N = state.narrative || {};
-    const nv = (s) => [s.title, s.lead, s.note, s.button, s.text, s.kind, s.middle, s.inner, s.default, s.titleTpl, s.buttonTpl].join(" ");
+    const nv = (s) => s && typeof s === "object"
+      ? Object.values(s).map(v => v && typeof v === "object" ? nv(v) : String(v || "")).join(" ")
+      : String(s || "");
     const nvNames = (N.stageChange && N.stageChange.names) || {};
-    const narrativeMatch = !q || "叙事弹窗".includes(q) || "开局".includes(q) || "阶段切换".includes(q) || "序章".includes(q) || "文风".includes(q) || "晋阶".includes(q) || "会试圈".includes(q)
-      || [N.prologue, N.zeitgeist, N.stageChange, N.lap2Intro].some(s => s && nv(s).toLowerCase().includes(q))
+    const narrativeMatch = !q || "叙事弹窗".includes(q) || "开局".includes(q) || "阶段切换".includes(q) || "序章".includes(q) || "文风".includes(q) || "晋阶".includes(q) || "会试圈".includes(q) || "隐藏终圈".includes(q) || "桃源".includes(q)
+      || [N.prologue, N.zeitgeist, N.stageChange, N.lap2Intro, N.hiddenFinal].some(s => s && nv(s).toLowerCase().includes(q))
       || Object.values(nvNames).join(" ").toLowerCase().includes(q);
     if (narrativeMatch) {
       const prologueCard = `
@@ -253,8 +265,26 @@
           <label class="copy-lbl">正文</label>${field("narrative.lap2Intro.text", N.lap2Intro && N.lap2Intro.text, 5, "童生圈的试炼渐远…")}
           <label class="copy-lbl">确认按钮文案</label>${field("narrative.lap2Intro.button", N.lap2Intro && N.lap2Intro.button, 1, "进入会试圈")}
         </div></div>`;
-      html.push(`<h4 class="copy-group">叙事弹窗文案（narrative.json · 开局序章 / 当朝文风 / 阶段晋阶 / 会试圈）</h4>`
-        + prologueCard + zeitgeistCard + stageCard + lap2Card);
+      const H = N.hiddenFinal || {};
+      const I = H.invite || {}, V = H.victory || {}, D = H.defeat || {};
+      const hiddenCard = `
+        <div class="q-card"><div class="meta"><span class="q-id">hiddenFinal</span><span class="badge r-common">隐藏终圈（邀请 / 胜负结局）</span></div><div class="q-main">
+          <label class="copy-lbl">邀请·角标 kind</label>${field("narrative.hiddenFinal.invite.kind", I.kind, 1, "桃 源 终 卷")}
+          <label class="copy-lbl">邀请·标题</label>${field("narrative.hiddenFinal.invite.title", I.title, 1, "金榜之外，尚有一问")}
+          <label class="copy-lbl">邀请·正文</label>${field("narrative.hiddenFinal.invite.text", I.text, 6, "隐藏终圈邀请文案")}
+          <label class="copy-lbl">邀请·进入按钮</label>${field("narrative.hiddenFinal.invite.enterButton", I.enterButton, 1, "循花入终圈")}
+          <label class="copy-lbl">邀请·拒绝按钮</label>${field("narrative.hiddenFinal.invite.declineButton", I.declineButton, 1, "止步金榜")}
+          <label class="copy-lbl">胜利·角标 kind</label>${field("narrative.hiddenFinal.victory.kind", V.kind, 1, "桃 花 仙 人")}
+          <label class="copy-lbl">胜利·标题</label>${field("narrative.hiddenFinal.victory.title", V.title, 1, "此心已过万重山")}
+          <label class="copy-lbl">胜利·正文</label>${field("narrative.hiddenFinal.victory.text", V.text, 7, "战胜陈之微后的终章")}
+          <label class="copy-lbl">胜利·按钮</label>${field("narrative.hiddenFinal.victory.button", V.button, 1, "携一枝桃花归去")}
+          <label class="copy-lbl">失败·角标 kind</label>${field("narrative.hiddenFinal.defeat.kind", D.kind, 1, "桃 源 留 问")}
+          <label class="copy-lbl">失败·标题</label>${field("narrative.hiddenFinal.defeat.title", D.title, 1, "终卷未竟")}
+          <label class="copy-lbl">失败·正文</label>${field("narrative.hiddenFinal.defeat.text", D.text, 6, "终圈失败但保留金榜的文案")}
+          <label class="copy-lbl">失败·按钮</label>${field("narrative.hiddenFinal.defeat.button", D.button, 1, "记下此问")}
+        </div></div>`;
+      html.push(`<h4 class="copy-group">叙事弹窗文案（narrative.json · 开局 / 阶段 / 隐藏终圈）</h4>`
+        + prologueCard + zeitgeistCard + stageCard + lap2Card + hiddenCard);
     }
 
     list.innerHTML = html.join("");

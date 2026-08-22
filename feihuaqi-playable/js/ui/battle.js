@@ -425,7 +425,7 @@ export class BattleStage {
     const btn = document.createElement('button');
     btn.className = 'btn btn-primary';
     btn.style.marginTop = '12px';
-    btn.textContent = session.isPalace ? '继续殿试' : '收笔';
+    btn.textContent = session.isHiddenFinal ? '观终卷' : session.isPalace ? '继续殿试' : '收笔';
     this.el.appendChild(btn);
     await new Promise(r => btn.addEventListener('click', r));
   }

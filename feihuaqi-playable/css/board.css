@@ -245,9 +245,27 @@
   border-color: rgba(166, 55, 88, .82);
   box-shadow: 0 5px 0 rgba(105, 35, 57, .27), 0 8px 12px rgba(0,0,0,.23), inset 0 0 0 2px rgba(221, 100, 133, .56);
 }
+#scene .cell.ring-secret {
+  z-index: 9;
+  background: linear-gradient(155deg, rgba(255,244,248,.98), rgba(233,166,190,.96));
+  border-color: rgba(150, 43, 85, .9);
+  box-shadow: 0 6px 0 rgba(91, 25, 53, .3), 0 10px 18px rgba(0,0,0,.3), inset 0 0 0 2px rgba(255,222,235,.72);
+}
 .cell.ring-outer .cname { color: #205f5b; }
 .cell.ring-middle .cname { color: #815812; }
 .cell.ring-inner .cname { color: #81334c; }
+#scene .cell.ring-secret .cname { color: #7b2347; font-weight: 700; }
+
+#scene.secret-final-on .world-scene { filter: saturate(.72) brightness(.72) blur(1px); opacity: .55; }
+#scene.secret-final-on .island,
+#scene.secret-final-on .island-inner { filter: hue-rotate(310deg) saturate(1.2); }
+.cell.t-secret_path .glyph {
+  width: 12px; height: 12px; flex-basis: 12px; margin: 0 0 4px;
+  border-radius: 70% 30% 65% 35%;
+  background: radial-gradient(circle at 35% 30%, #fff4f8 0 20%, #d95184 24% 58%, #8f294f 62% 100%);
+  transform: rotate(35deg);
+}
+#scene .cell.ring-secret.t-battle { transform: scale(1.12); border-width: 2px; }
 
 /* 四季边 */
 .cell.season-spring { background: linear-gradient(165deg, #e6f2dc, #c6e0b4); }

@@ -69,6 +69,12 @@
         ? t.themes.map(s => String(s).trim()).filter(Boolean)
         : ["yongwu", "songbie", "huaigu"];
     }
+    if (t.isHiddenFinal) {
+      out.isHiddenFinal = true;
+      out.themes = Array.isArray(t.themes) && t.themes.length
+        ? t.themes.map(s => String(s).trim()).filter(Boolean)
+        : ["huaigu"];
+    }
     return out;
   }
 
@@ -222,7 +228,9 @@
     }
     list.innerHTML = tiers.map((t, dispTi) => {
       const ti = state.tiers.indexOf(t);
-      const finalTag = t.isFinal ? `<span class="badge src">殿试档 · ${t.battles} 场</span>` : "";
+      const finalTag = t.isHiddenFinal
+        ? `<span class="badge src">隐藏终圈</span>`
+        : t.isFinal ? `<span class="badge src">殿试档 · ${t.battles} 场</span>` : "";
       const npcRows = t.npcs.length ? t.npcs.map((n, ni) => `
         <div class="npc-row" data-key="${ti}:${ni}">
           <div class="npc-id"><b>${C.esc(n.name || "（未命名）")}</b>${n.mech ? '<span class="badge src mech-badge" title="三机制对手">三机制</span>' : ""}${n.weight != null ? `<span class="badge ${n.weight === 0 ? "danger" : ""}" title="本阶段出战权重（越大越常出现；0=不出战）">权重${n.weight}</span>` : ""}${n.id ? `<span class="npc-title" style="opacity:.6">${C.esc(n.id)}</span>` : ""}${styleChip(n.style)}${n.title ? ` <span class="npc-title">${C.esc(n.title)}</span>` : ""}</div>
@@ -268,7 +276,7 @@
     if (src) {
       state.tierForm = {
         id: src.id, tier: tierLabel(src), rangeMin: Number(src.range[0]), rangeMax: Number(src.range[1]),
-        desc: src.desc, isFinal: !!src.isFinal, battles: src.battles || 3,
+        desc: src.desc, isFinal: !!src.isFinal, isHiddenFinal: !!src.isHiddenFinal, battles: src.battles || 3,
         themes: (src.themes || []).join(",")
       };
     } else {
@@ -301,6 +309,10 @@
       t.isFinal = true;
       t.battles = Math.max(1, Number(form.battles) || 3);
       t.themes = String(form.themes || "").split(/[,，\s]+/).map(s => s.trim()).filter(Boolean);
+    }
+    if (form.isHiddenFinal) {
+      t.isHiddenFinal = true;
+      t.themes = String(form.themes || "huaigu").split(/[,，\s]+/).map(s => s.trim()).filter(Boolean);
     }
     return t;
   }

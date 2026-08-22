@@ -140,6 +140,15 @@ export class BoardView {
           this.addCell(board, cell, c.col + offset, c.row + offset, c.season, false, ring.id);
         }
       }
+      const hidden = cfg.board.hiddenFinalRing;
+      if (hidden && Array.isArray(hidden.cells)) {
+        const grid = Number(hidden.grid) || 3;
+        const offset = Math.floor((maxGrid - grid) / 2);
+        for (const cell of hidden.cells) {
+          const c = mainCoord(cell.ringIndex ?? cell.id, grid);
+          this.addCell(board, cell, c.col + offset, c.row + offset, c.season, false, hidden.id || 'secret');
+        }
+      }
     } else {
       for (const cell of cfg.board.mainRing) {
         const c = mainCoord(cell.id);
@@ -181,13 +190,14 @@ export class BoardView {
   /** 根据路线进度读取当前实际圈层；配置缺失时安全回退外圈。 */
   routeRingOf(stateOrIndex = 0) {
     if (this.cfg.board.layout !== 'concentric_spiral') return null;
+    if (typeof stateOrIndex === 'object' && stateOrIndex && stateOrIndex.ringId === 'secret') return 'secret';
     const index = typeof stateOrIndex === 'object'
       ? Number(stateOrIndex.routeIndex ?? stateOrIndex.pos)
       : Number(stateOrIndex);
     const safeIndex = Math.max(0, Math.floor(index || 0));
     const ring = (this.cfg.board.route || [])[safeIndex]?.ring
       || this.cellRings.get(this.routeCellId(safeIndex));
-    return ['outer', 'middle', 'inner'].includes(ring) ? ring : 'outer';
+    return ['outer', 'middle', 'inner', 'secret'].includes(ring) ? ring : 'outer';
   }
 
   /**
@@ -234,8 +244,9 @@ export class BoardView {
   /** 分阶段显现：童生/秀才只见外圈，举人显现中圈，进士及殿试显现内圈。 */
   setVisibleRing(ringId = 'outer') {
     if (this.cfg.board.layout !== 'concentric_spiral') return;
-    const allowed = new Set(['outer', 'middle', 'inner']);
+    const allowed = new Set(['outer', 'middle', 'inner', 'secret']);
     this.visibleRing = allowed.has(ringId) ? ringId : 'outer';
+    this.root.classList.toggle('secret-final-on', this.visibleRing === 'secret');
     this.cellEls.forEach((el, id) => {
       const ring = this.cellRings.get(id);
       const visible = ring === this.visibleRing;
@@ -557,6 +568,7 @@ export class BoardView {
   }
 
   cellIdOf(state) {
+    if (state && state.ringId === 'secret' && state.secretFinal) return Number(state.secretFinal.cellId);
     return this.cfg.board.layout === 'concentric_spiral'
       ? this.routeCellId(state.routeIndex ?? state.pos)
       : state.pos;
@@ -591,6 +603,25 @@ export class BoardView {
     void this.piece.offsetWidth;
     this.piece.classList.add('hop');
     await sleep(150);
+  }
+
+  /** 隐藏终圈没有掷骰与分支：显现小环后，棋子沿七个叙事路径格走到唯一论战格。 */
+  async showHiddenFinalRing() {
+    const hidden = this.cfg.board.hiddenFinalRing || {};
+    const cells = Array.isArray(hidden.cells) ? hidden.cells : [];
+    if (!cells.length) return;
+    this.clearHint();
+    this.setVisibleRing(hidden.id || 'secret');
+    this.setPiecePos(Number(hidden.startCellId) || Number(cells[0].id));
+    await sleep(360);
+    for (const cell of cells.slice(1)) {
+      play('move');
+      this.setPiecePos(cell.id);
+      this.piece.classList.remove('hop');
+      void this.piece.offsetWidth;
+      this.piece.classList.add('hop');
+      await sleep(130);
+    }
   }
 
   highlight(cell) {

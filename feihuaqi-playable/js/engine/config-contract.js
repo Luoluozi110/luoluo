@@ -219,6 +219,34 @@
         if (b.layout === 'concentric_spiral') {
           if (!Array.isArray(b.rings) || b.rings.length !== 3) add('board.rings', '三圈地图必须恰好包含三个圈层');
           if (!Array.isArray(b.phaseGates) || b.phaseGates.length < 2) add('board.phaseGates', '三圈地图至少需要两个阶段门');
+          const h = b.hiddenFinalRing;
+          if (!isObj(h)) add('board.hiddenFinalRing', '必须提供独立的隐藏终圈配置');
+          else {
+            if (!text(h.id) || !text(h.name)) add('board.hiddenFinalRing', '必须包含 id 与名称');
+            if (!Array.isArray(h.cells) || h.cells.length < 2 || h.cells.length > 16) add('board.hiddenFinalRing.cells', '隐藏终圈必须包含 2～16 个格子');
+            else {
+              const hiddenIds = new Set();
+              let battles = 0;
+              h.cells.forEach((cell, i) => {
+                const p = `board.hiddenFinalRing.cells[${i}]`;
+                const id = Number(cell && cell.id);
+                if (!Number.isInteger(id)) add(`${p}.id`, '必须是整数');
+                else if (hiddenIds.has(id) || cellIds.has(id)) add(`${p}.id`, `格子 ID 重复：${id}`, 'duplicate_id');
+                else hiddenIds.add(id);
+                if (cell && cell.type === 'battle') battles++;
+                else if (!cell || cell.type !== 'secret_path') add(`${p}.type`, '除终点论战格外只能使用 secret_path');
+              });
+              if (battles !== 1) add('board.hiddenFinalRing.cells', '隐藏终圈必须且只能有一个论战格');
+              if (!hiddenIds.has(Number(h.startCellId))) add('board.hiddenFinalRing.startCellId', '未引用隐藏终圈格子', 'missing_ref');
+              if (!hiddenIds.has(Number(h.battleCellId))) add('board.hiddenFinalRing.battleCellId', '未引用隐藏终圈格子', 'missing_ref');
+              const battle = h.cells.find(c => Number(c.id) === Number(h.battleCellId));
+              if (!battle || battle.type !== 'battle') add('board.hiddenFinalRing.battleCellId', '必须指向唯一论战格');
+            }
+            const req = h.requirements;
+            if (!isObj(req) || req.allAlbums !== true || Number(req.masteryLevel) !== 5 || Number(req.palaceScoreRatio) !== 2) {
+              add('board.hiddenFinalRing.requirements', '隐藏资格必须要求流派 Lv5 且殿试得分达到对手 2 倍');
+            }
+          }
         }
       }
     }
@@ -238,7 +266,9 @@
 
     if ('npcs' in cfg) {
       uniqueIds(cfg.npcs, 'npcs');
-      if (Array.isArray(cfg.npcs)) cfg.npcs.forEach((tier, i) => {
+      if (Array.isArray(cfg.npcs)) {
+        if (cfg.npcs.filter(tier => tier && tier.isHiddenFinal).length !== 1) add('npcs', '必须且只能提供一个隐藏终圈对手档');
+        cfg.npcs.forEach((tier, i) => {
         if (!isObj(tier)) return;
         if (!Array.isArray(tier.npcs) || !tier.npcs.length) add(`npcs[${i}].npcs`, '档位必须包含对手数组');
         else {
@@ -250,8 +280,26 @@
               seen.add(npc.id);
             }
           });
+          if (tier.isHiddenFinal) {
+            if (tier.npcs.length !== 1) add(`npcs[${i}].npcs`, '隐藏终圈必须且只能配置一名对手');
+            const npc = tier.npcs[0] || {};
+            const attrs = npc.attrs || {};
+            const total = ['shi','ci','lian','bi','xue','si'].reduce((n, k) => n + (Number(attrs[k]) || 0), 0);
+            if (npc.name !== '陈之微' || npc.title !== '桃花仙人') add(`npcs[${i}].npcs[0]`, '隐藏终圈对手必须为「陈之微·桃花仙人」');
+            if (total !== 300) add(`npcs[${i}].npcs[0].attrs`, `六维总和必须为 300，当前为 ${total}`);
+          }
         }
-      });
+        });
+      }
+    }
+
+    if ('narrative' in cfg) {
+      const hidden = cfg.narrative && cfg.narrative.hiddenFinal;
+      if (!isObj(hidden)) add('narrative.hiddenFinal', '必须提供隐藏终圈邀请、胜利与失败文案');
+      else for (const key of ['invite', 'victory', 'defeat']) {
+        const block = hidden[key];
+        if (!isObj(block) || !text(block.title) || !text(block.text)) add(`narrative.hiddenFinal.${key}`, '必须包含标题与正文');
+      }
     }
 
     for (const key of ['sky', 'album', 'synergies']) if (key in cfg) uniqueIds(cfg[key], key);

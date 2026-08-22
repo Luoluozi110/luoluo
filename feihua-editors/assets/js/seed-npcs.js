@@ -1304,5 +1304,30 @@ window.GAME_NPCS = [
     "themes": [
       "huaigu"
     ]
+  },
+  {
+    "id": "taohuaxian",
+    "tier": "桃源终卷",
+    "desc": "仅在隐藏终圈登场，不进入常规对手池。六维均衡，总和严格为 300。",
+    "isHiddenFinal": true,
+    "themes": [
+      "huaigu"
+    ],
+    "npcs": [
+      {
+        "id": "chen_zhiwei",
+        "name": "陈之微",
+        "title": "桃花仙人",
+        "weight": 0,
+        "attrs": {
+          "shi": 50,
+          "ci": 50,
+          "lian": 50,
+          "bi": 50,
+          "xue": 50,
+          "si": 50
+        }
+      }
+    ]
   }
 ];

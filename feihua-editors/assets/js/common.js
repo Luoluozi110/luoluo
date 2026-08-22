@@ -386,7 +386,7 @@
           <tr><th>流派文案</th><th>段位档</th><th>维度评语</th><th>叙事弹窗</th><th>校验问题</th></tr>
           <tr><td class="num">${cSchools.length}</td><td class="num">${(Array.isArray(cGrades.grades) ? cGrades.grades.length : 0)}</td>
               <td class="num">${Object.keys(cGrades.comments || {}).length}</td>
-              <td class="num">${(cNarr.prologue || cNarr.zeitgeist || cNarr.stageChange || cNarr.lap2Intro) ? 4 : 0}</td>
+              <td class="num">${[cNarr.prologue, cNarr.zeitgeist, cNarr.stageChange, cNarr.lap2Intro, cNarr.hiddenFinal].filter(Boolean).length}</td>
               <td class="num">${cIssues.length ? `<span style="color:var(--bad)">${cIssues.length}</span>` : "0"}</td></tr>
         </table>
       </div>

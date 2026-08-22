@@ -401,11 +401,21 @@ console.log('[12] 叙事文案编辑器：初始化 / 列表渲染 / 内联编�
     ok(copy.get().grades.comments.wencai === seedGrades.comments.wencai, '段位评语重置回种子');
   }
 
-  // 叙事弹窗文案（narrative）：默认 4 块 + 内联编辑 → state + localStorage + 导出保留结构
+  // 叙事弹窗文案（narrative）：默认 5 组 + 内联编辑 → state + localStorage + 导出保留结构
   {
     const N = copy.get().narrative || {};
-    ok(!!(N.prologue && N.zeitgeist && N.stageChange && N.lap2Intro), '叙事弹窗默认含 4 块（序章/文风/晋阶/会试圈）', Object.keys(N).join('/'));
-    ok(document.querySelectorAll('#copylist textarea[data-path^="narrative."]').length >= 20, '叙事弹窗字段渲染', document.querySelectorAll('#copylist textarea[data-path^="narrative."]').length);
+    ok(!!(N.prologue && N.zeitgeist && N.stageChange && N.lap2Intro && N.hiddenFinal), '叙事弹窗默认含 5 组（含隐藏终圈）', Object.keys(N).join('/'));
+    ok(document.querySelectorAll('#copylist textarea[data-path^="narrative."]').length >= 30, '叙事弹窗字段渲染（含隐藏终圈）', document.querySelectorAll('#copylist textarea[data-path^="narrative."]').length);
+    const hiddenText = document.querySelector('#copylist textarea[data-path="narrative.hiddenFinal.victory.text"]');
+    ok(hiddenText != null, '隐藏终圈胜利文案文本域存在');
+    if (hiddenText) {
+      hiddenText.value = '冒烟测试·桃源终章';
+      fire(hiddenText, 'input');
+      await new Promise(r => setTimeout(r, 500));
+      ok(copy.get().narrative.hiddenFinal.victory.text === '冒烟测试·桃源终章', '隐藏终圈胜利文案写入 state');
+      ok(copy.exportNarrativeRaw().hiddenFinal.victory.text === '冒烟测试·桃源终章', '导出 narrative.json 含隐藏终圈改动');
+      copy.importData({ narrative: window.GAME_NARRATIVE }, true);
+    }
     const np = document.querySelector('#copylist textarea[data-path="narrative.prologue.text"]');
     ok(np != null, '开局序章正文文本域存在');
     if (np) {

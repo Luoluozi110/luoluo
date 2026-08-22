@@ -98,6 +98,21 @@ export function normalizeConfig(cfg) {
     ? board.route.map((x, i) => ({ ring: x.ring || 'outer', cellId: Number(x.cellId ?? x.id ?? i) }))
     : (board.mainRing || []).map((c, i) => ({ ring: c.ring || 'main', cellId: Number(c.id ?? i) }));
   board.phaseGates = Array.isArray(board.phaseGates) ? board.phaseGates : [];
+  if (board.hiddenFinalRing && typeof board.hiddenFinalRing === 'object') {
+    const hidden = board.hiddenFinalRing;
+    hidden.id = String(hidden.id || 'secret');
+    hidden.grid = Math.max(3, Number(hidden.grid) || 3);
+    hidden.cells = Array.isArray(hidden.cells) ? hidden.cells.map((cell, i) => ({
+      ...cell,
+      id: Number(cell.id ?? (1000 + i)),
+      ringIndex: Number(cell.ringIndex ?? i),
+      type: cell.type || 'secret_path',
+      name: cell.name || `桃径·${i + 1}`
+    })) : [];
+    hidden.startCellId = Number(hidden.startCellId ?? (hidden.cells[0] && hidden.cells[0].id));
+    hidden.battleCellId = Number(hidden.battleCellId ?? (hidden.cells[hidden.cells.length - 1] && hidden.cells[hidden.cells.length - 1].id));
+    hidden.requirements = Object.assign({ allAlbums: true, masteryLevel: 5, palaceScoreRatio: 2 }, hidden.requirements || {});
+  }
 
   // 支线格类型：优先用 branchCells，否则按契约 "ping/quiz/event/battle/landmark" 顺序推导
   const BRANCH_TYPES = ['ping', 'quiz', 'event', 'battle', 'landmark'];

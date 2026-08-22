@@ -47,6 +47,16 @@ badRoute.board.route[0].cellId = 99999;
 result = validateConfig(badRoute);
 assert.ok(result.errors.some(x => x.path === 'board.route[0].cellId'));
 
+const badSecretGate = clone(raw);
+badSecretGate.board.hiddenFinalRing.requirements.allAlbums = false;
+result = validateConfig(badSecretGate);
+assert.ok(result.errors.some(x => x.path === 'board.hiddenFinalRing.requirements'));
+
+const badSecretNpc = clone(raw);
+badSecretNpc.npcs.find(t => t.isHiddenFinal).npcs[0].attrs.si = 49;
+result = validateConfig(badSecretNpc);
+assert.ok(result.errors.some(x => x.path.endsWith('.attrs')));
+
 const badAlbumBranch = clone(raw);
 badAlbumBranch.album[0].branches[0].id = badAlbumBranch.album[0].branches[1].id;
 result = validateConfig(badAlbumBranch);
