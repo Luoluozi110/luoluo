@@ -98,6 +98,67 @@
   }
   function normalizeAll(arr) { return (Array.isArray(arr) ? arr : []).map(normalizeOne); }
 
+  /* ---------------- 游戏内柔性文案 ----------------
+   * 游戏端 showQuiz() 的显示优先级必须在编辑器里一眼可见：
+   * knowledge 题有 scenario / optionActs 时显示它们，否则回退到 stem / options。
+   * 同步只触碰这两个字段，不会覆盖题干、答案、解析或题库属性。
+   */
+  function hasSituationalCopy(q) {
+    return q && q.type === "knowledge" &&
+      (!!String(q.scenario || "").trim() || (Array.isArray(q.optionActs) && q.optionActs.some(x => String(x || "").trim())));
+  }
+  function runtimeOptionText(q, index) {
+    if (!q || !Array.isArray(q.options)) return "";
+    const option = q.options[index];
+    if (q.type === "knowledge") {
+      const act = Array.isArray(q.optionActs) ? String(q.optionActs[index] || "").trim() : "";
+      return act || String(option || "").trim();
+    }
+    return String(option && typeof option === "object" ? option.text || "" : option || "").trim();
+  }
+  function runtimeCopyFields(q) {
+    if (!q || q.type !== "knowledge") return { scenario: "", optionActs: [] };
+    return {
+      scenario: String(q.scenario || "").trim(),
+      optionActs: Array.isArray(q.optionActs) ? q.optionActs.map(x => String(x || "").trim()) : []
+    };
+  }
+  function syncRuntimeCopy() {
+    const runtime = Array.isArray(window.GAME_QUESTIONS) ? window.GAME_QUESTIONS : [];
+    const byId = new Map(runtime.map(q => [q.id, q]));
+    let updated = 0, matched = 0;
+    state.questions.forEach(q => {
+      const source = byId.get(q.id);
+      if (!source || q.type !== "knowledge" || source.type !== "knowledge") return;
+      matched++;
+      const prev = runtimeCopyFields(q);
+      const next = runtimeCopyFields(source);
+      if (JSON.stringify(prev) !== JSON.stringify(next)) {
+        if (next.scenario || next.optionActs.some(Boolean)) {
+          q.scenario = next.scenario;
+          q.optionActs = next.optionActs;
+        } else {
+          delete q.scenario;
+          delete q.optionActs;
+        }
+        updated++;
+      }
+    });
+    if (updated) { save(); renderList(); }
+    return { updated, matched, sourceCount: runtime.length };
+  }
+  function runtimeSyncSummary() {
+    const runtime = Array.isArray(window.GAME_QUESTIONS) ? window.GAME_QUESTIONS : [];
+    const byId = new Map(runtime.map(q => [q.id, q]));
+    let stale = 0;
+    state.questions.forEach(q => {
+      const source = byId.get(q.id);
+      if (source && q.type === "knowledge" && source.type === "knowledge" &&
+          JSON.stringify(runtimeCopyFields(q)) !== JSON.stringify(runtimeCopyFields(source))) stale++;
+    });
+    return { stale, sourceCount: runtime.length };
+  }
+
   function validate(q, allQuestions, selfIndex) {
     const errors = [];
     if (!q.id) errors.push("题目 ID 不能为空");
@@ -167,12 +228,22 @@
     const on = state.questions.filter(q => q.enabled).length;
     const k = state.questions.filter(q => q.type === "knowledge").length;
     const c = state.questions.filter(q => q.type === "choice").length;
+    const flexible = state.questions.filter(hasSituationalCopy).length;
+    const sync = runtimeSyncSummary();
     document.getElementById("statStrip").innerHTML = `
       <div class="stat"><b>${total}</b><span>题目总数</span></div>
       <div class="stat"><b>${on}</b><span>已启用</span></div>
       <div class="stat"><b>${total - on}</b><span>已禁用</span></div>
       <div class="stat"><b>${k}</b><span>知识题</span></div>
-      <div class="stat"><b>${c}</b><span>抉择题</span></div>`;
+      <div class="stat"><b>${c}</b><span>抉择题</span></div>
+      <div class="stat runtime-stat"><b>${flexible}</b><span>柔性题面</span></div>`;
+    const syncBtn = document.getElementById("btnSyncRuntime");
+    if (syncBtn) {
+      syncBtn.textContent = sync.stale ? `同步游戏文案（${sync.stale}）` : "同步游戏文案";
+      syncBtn.title = sync.stale
+        ? `发现 ${sync.stale} 道题与游戏内柔性文案不一致，点击仅同步情境与行动文案`
+        : "仅同步游戏内情境与行动文案，保留题干、答案、解析等题库字段";
+    }
   }
 
   function renderList() {
@@ -192,6 +263,8 @@
         const mark = (q.type === "knowledge" && i === q.answer) ? " ✓" : "";
         return C.esc(t) + mark;
       }).join("　|　");
+      const runtimeStem = q.scenario || q.stem || "（未填写）";
+      const runtimeActions = q.options.map((_, i) => runtimeOptionText(q, i));
       return `<div class="q-card" data-idx="${idx}">
         <div class="meta">
           <span class="q-id">${C.esc(q.id)}</span>
@@ -200,13 +273,18 @@
           <span class="pill ${q.enabled ? "on" : "off"}" data-toggle="${idx}" title="点击切换启用/禁用">${q.enabled ? "启用" : "禁用"}</span>
         </div>
         <div class="q-main">
-          <p class="q-stem">${C.esc(q.scenario || q.stem)}</p>
+          <p class="q-stem"><span class="q-copy-label">题库题干</span>${C.esc(q.stem)}</p>
           <div class="q-tags">
             <span class="t">${CATEGORY[q.category] || q.category}</span>
-            ${q.scenario ? `<span class="t">柔性题面</span>` : ""}
+            ${hasSituationalCopy(q) ? `<span class="t">柔性题面</span>` : ""}
             <span class="t">${q.options.length} 选项</span>
           </div>
-          <div class="q-opts">${C.esc(optText)}</div>
+          <div class="q-opts"><span class="q-copy-label">题库选项</span>${C.esc(optText)}</div>
+          <div class="q-runtime-copy">
+            <span class="runtime-copy-label">游戏内显示 · ${hasSituationalCopy(q) ? "柔性答题" : "回退文案"}</span>
+            <p class="runtime-copy-stem">${C.esc(runtimeStem)}</p>
+            <div class="q-runtime-actions">${runtimeActions.map((text, i) => `<span>${"ABCD"[i] || (i + 1)}．${C.esc(text || "（未填写）")}</span>`).join("")}</div>
+          </div>
         </div>
         <div class="q-actions">
           <button class="btn sm" data-edit="${idx}">编辑</button>
@@ -293,7 +371,7 @@
           <span class="ord">${i + 1}</span>
           <input type="radio" name="ed-answer" value="${i}" ${checked} title="设为正确答案"/>
           <input type="text" class="opt-text" value="${C.esc(o)}" placeholder="标准答案文本"/>
-          <input type="text" class="opt-act" maxlength="60" value="${C.esc(act)}" placeholder="游戏内行动文案（柔性题填写，5–60 字）"/>
+          <span class="opt-act-wrap"><small>游戏内行动</small><input type="text" class="opt-act" maxlength="60" value="${C.esc(act)}" placeholder="柔性题填写，5–60 字"/></span>
           <button class="opt-del" data-delopt="${i}" title="删除此选项">×</button>
         </div>`;
       } else {
@@ -307,6 +385,33 @@
         </div>`;
       }
     }).join("");
+    updateRuntimePreview();
+  }
+
+  function updateRuntimePreview() {
+    const panel = document.getElementById("edRuntimeCopyPanel");
+    if (!panel || !state.form) return;
+    const isKnowledge = state.form.type === "knowledge";
+    const scenario = isKnowledge ? String(state.form.scenario || "").trim() : "";
+    const stem = scenario || String(state.form.stem || "").trim() || "（未填写题面）";
+    const stemEl = document.getElementById("edRuntimeStem");
+    const optionsEl = document.getElementById("edRuntimeOptions");
+    const resultEl = document.getElementById("edRuntimeResult");
+    stemEl.textContent = stem;
+    optionsEl.innerHTML = (state.form.options || []).map((option, i) => {
+      const text = isKnowledge ? runtimeOptionText(state.form, i) : runtimeOptionText(state.form, i);
+      return `<li>${C.esc(text || "（未填写）")}</li>`;
+    }).join("");
+    if (isKnowledge) {
+      const answer = Number.isInteger(Number(state.form.answer)) ? Number(state.form.answer) : -1;
+      const answerText = answer >= 0 && answer < state.form.options.length ? runtimeOptionText(state.form, answer) : "（尚未指定正确答案）";
+      const answerMark = answer >= 0 && answer < state.form.options.length ? ("ABCD"[answer] || String(answer + 1)) + "．" : "";
+      const lead = scenario ? "当如是" : "正确答案";
+      const analysis = String(state.form.analysis || "").trim() || "（本题暂无解析）";
+      resultEl.innerHTML = `答错 / 超时时显示：<b>${lead}：${answerMark}${C.esc(answerText)}</b><br/>解析：${C.esc(analysis)}`;
+    } else {
+      resultEl.innerHTML = `选中后显示抉择结果；解析：${C.esc(String(state.form.analysis || "").trim() || "（本题暂无说明）")}`;
+    }
   }
 
   function collectForm() {
@@ -461,6 +566,14 @@
     document.getElementById("btnAdd").addEventListener("click", () => openEditor(-1));
     document.getElementById("btnExport").addEventListener("click", exportData);
     document.getElementById("btnStats").addEventListener("click", showStats);
+    document.getElementById("btnSyncRuntime").addEventListener("click", () => {
+      const summary = runtimeSyncSummary();
+      if (!summary.sourceCount) { C.toast("没有找到游戏题库原始数据"); return; }
+      if (!summary.stale) { C.toast("游戏内柔性文案已是最新"); return; }
+      if (!confirm(`将同步 ${summary.stale} 道题的游戏内情境与行动文案。\n\n题干、选项原文、答案、解析和题库属性不会被覆盖。继续吗？`)) return;
+      const result = syncRuntimeCopy();
+      C.toast(`游戏文案同步完成：更新 ${result.updated} 道题`);
+    });
     document.getElementById("btnImport").addEventListener("click", () => document.getElementById("fileInput").click());
     document.getElementById("fileInput").addEventListener("change", e => {
       if (e.target.files[0]) importFile(e.target.files[0]);
@@ -494,6 +607,7 @@
         const attr = row.querySelector(".opt-attr").value || null;
         if (state.form.options[i]) { state.form.options[i].attr = attr; }
       }
+      updateRuntimePreview();
     });
     document.getElementById("ed-options").addEventListener("input", e => {
       const row = e.target.closest(".opt-row");
@@ -505,12 +619,14 @@
       } else if (state.form.options[i]) {
         state.form.options[i].text = row.querySelector(".opt-text").value;
       }
+      updateRuntimePreview();
     });
     ["ed-id", "ed-stem", "ed-scenario", "ed-analysis"].forEach(id => {
       document.getElementById(id).addEventListener("input", e => {
         if (!state.form) return;
         const key = id.replace("ed-", "");
         state.form[key] = e.target.value;
+        updateRuntimePreview();
       });
     });
     document.getElementById("ed-difficulty").addEventListener("change", e => { if (state.form) state.form.difficulty = Number(e.target.value); });
@@ -544,6 +660,7 @@
 
   global.QB = {
     init, get: () => state.questions, add: q => { state.questions.push(normalizeOne(q)); save(); renderList(); },
-    exportObj: () => state.questions, validateAll, importData, renderList
+    exportObj: () => state.questions, validateAll, importData, renderList,
+    syncRuntimeCopy, runtimeSyncSummary
   };
 })(window);

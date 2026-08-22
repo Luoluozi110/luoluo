@@ -43,6 +43,7 @@
     <span class="lead">题目管理</span>
     <div class="spacer"></div>
     <button class="btn" id="btnImport">导入 JSON</button>
+    <button class="btn" id="btnSyncRuntime" title="仅同步游戏内情境与行动文案，保留题干、答案、解析等题库字段">同步游戏文案</button>
     <button class="btn" id="btnExport">导出 questions.json</button>
     <button class="btn" id="btnStats">统计</button>
     <button class="btn primary" id="btnAdd">＋ 新增题目</button>
@@ -404,13 +405,13 @@
       </div>
     </div>
     <div class="field">
-      <label>题干</label>
+      <label>题库题干（无柔性题面时的游戏回退文案）</label>
       <textarea id="ed-stem" placeholder="请输入题目内容…"></textarea>
     </div>
     <div class="field" id="knowledgeSituationalField">
-      <label>游戏内情境（柔性题面，可选）</label>
+      <label>游戏内题面（柔性答题显示，可选）</label>
       <textarea id="ed-scenario" maxlength="160" placeholder="以玩家正在经历的场景引出问题，20–160 字；留空则继续使用传统题干。"></textarea>
-      <div class="hint">填写情境后，每个选项都必须填写对应的“游戏内行动文案”；情境和行动文案均不能使用 {name} 占位符。</div>
+      <div class="hint">游戏端会优先显示这里的情境；填写后，每个选项都必须填写对应的“游戏内行动文案”。情境和行动文案均不能使用 {name} 占位符。</div>
     </div>
     <div class="field">
       <label id="optLabel">选项（勾选圆圈标记正确答案）</label>
@@ -418,8 +419,30 @@
       <button class="btn sm opt-add" id="ed-addopt">＋ 添加选项</button>
       <div class="hint" id="optHint"></div>
     </div>
+    <div class="runtime-copy-panel" id="edRuntimeCopyPanel">
+      <div class="runtime-copy-head">
+        <div>
+          <span class="runtime-copy-kicker">GAME COPY</span>
+          <strong>游戏内显示预览</strong>
+        </div>
+        <span class="runtime-copy-badge">与游戏答题弹窗同步</span>
+      </div>
+      <div class="runtime-copy-block">
+        <span class="runtime-copy-label">题面</span>
+        <p id="edRuntimeStem" class="runtime-copy-stem">—</p>
+      </div>
+      <div class="runtime-copy-block">
+        <span class="runtime-copy-label">玩家可点击的行动</span>
+        <ol id="edRuntimeOptions" class="runtime-copy-options"></ol>
+      </div>
+      <div class="runtime-copy-block runtime-copy-result">
+        <span class="runtime-copy-label">答题后反馈</span>
+        <p id="edRuntimeResult">—</p>
+      </div>
+      <div class="hint">预览反映游戏端的显示优先级：柔性题面 / 行动文案存在时优先显示，否则回退到题库题干 / 选项原文。</div>
+    </div>
     <div class="field">
-      <label>解析 / 说明</label>
+      <label>解析 / 说明（游戏内答题结果会显示）</label>
       <textarea id="ed-analysis" placeholder="答对/选项说明、考点提示…"></textarea>
     </div>
     <div class="field" style="display:flex;align-items:center;gap:8px">

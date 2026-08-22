@@ -50,6 +50,11 @@
     for (const k of Object.keys(b)) {
       if (!out.hasOwnProperty(k)) out[k] = JSON.parse(JSON.stringify(b[k]));
     }
+    // 系统必需内容迁移：旧版 localStorage / 旧工程没有 hiddenFinalRing。
+    // 只在字段缺失时从当前官方种子补齐，不覆盖用户已经编辑过的终圈配置。
+    if (!out.hiddenFinalRing && window.GAME_BOARD && window.GAME_BOARD.hiddenFinalRing) {
+      out.hiddenFinalRing = JSON.parse(JSON.stringify(window.GAME_BOARD.hiddenFinalRing));
+    }
     return out;
   }
   function normalizeSide(s) {
@@ -126,6 +131,7 @@
       C.store("board", state.board);
     } else {
       state.board = normalizeBoard(raw);
+      C.store("board", state.board); // 把自动补齐的系统字段立即写回，刷新后仍可发布
     }
   }
 

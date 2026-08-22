@@ -30,6 +30,15 @@ const { document, localStorage } = window;
 // 必须在 DOMContentLoaded 触发前写入，才能覆盖模块 init() 的真实加载路径。
 const oldTalents = (window.GAME_TALENTS || []).filter(t => !['T034', 'TA08'].includes(t.id));
 localStorage.setItem('feihua_editors_v1_talents', JSON.stringify(oldTalents));
+// 同时模拟隐藏终圈上线前的编辑器缓存：三份旧数据都没有新增的系统字段。
+const oldBoard = JSON.parse(JSON.stringify(window.GAME_BOARD || {}));
+delete oldBoard.hiddenFinalRing;
+localStorage.setItem('feihua_editors_v1_board', JSON.stringify(oldBoard));
+const oldNpcs = (window.GAME_NPCS || []).filter(t => !t.isHiddenFinal);
+localStorage.setItem('feihua_editors_v1_npcs', JSON.stringify(oldNpcs));
+const oldNarrative = JSON.parse(JSON.stringify(window.GAME_NARRATIVE || {}));
+delete oldNarrative.hiddenFinal;
+localStorage.setItem('feihua_editors_v1_copy_narrative', JSON.stringify(oldNarrative));
 
 // JSDOM 的 DOMContentLoaded 在构造返回后异步触发，等待其完成再断言
 await new Promise(resolve => {
@@ -48,6 +57,23 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
 console.log('[1] 十个模块全部初始化（_ready）');
 for (const name of ['QB', 'ADV', 'TALENT', 'NPC', 'AFFINITY', 'SYNERGY', 'BOARD', 'SKY', 'ALBUM', 'COPY']) {
   ok(window[name] && window[name]._ready === true, name + '._ready');
+}
+
+console.log('[1.1] 旧编辑器缓存自动补齐隐藏终圈系统内容');
+{
+  const hiddenBoard = window.BOARD.get().hiddenFinalRing;
+  const hiddenTier = window.NPC.get().find(t => t.isHiddenFinal);
+  const hiddenCopy = window.COPY.get().narrative.hiddenFinal;
+  ok(hiddenBoard && hiddenBoard.cells.length === 8, '旧地图缓存补齐 hiddenFinalRing');
+  ok(hiddenTier && hiddenTier.npcs[0].name === '陈之微', '旧 NPC 缓存补齐陈之微隐藏档');
+  ok((document.querySelector('#npclist')?.textContent || '').includes('陈之微'), 'NPC 编辑器列表显示隐藏 NPC 陈之微');
+  ok(hiddenCopy && hiddenCopy.invite.text && hiddenCopy.victory.text && hiddenCopy.defeat.text, '旧文案缓存补齐邀请/胜利/失败文案');
+  ok(JSON.parse(localStorage.getItem('feihua_editors_v1_board') || '{}').hiddenFinalRing != null, '补齐后的隐藏地图已持久化');
+  ok(JSON.parse(localStorage.getItem('feihua_editors_v1_npcs') || '[]').some(t => t.isHiddenFinal), '补齐后的隐藏 NPC 已持久化');
+  ok(JSON.parse(localStorage.getItem('feihua_editors_v1_copy_narrative') || '{}').hiddenFinal != null, '补齐后的隐藏文案已持久化');
+  let project = null;
+  try { project = window.Common.buildProject(); } catch (_) { /* 由断言给出明确失败 */ }
+  ok(!!project, '旧缓存迁移后可通过工程配置契约并发布');
 }
 
 console.log('[1.5] 题库：柔性知识题读取 → 编辑 → 动态增删选项 → 保存往返');

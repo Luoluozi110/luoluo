@@ -53,6 +53,7 @@
 
   function normalizeNarrative(n) {
     n = n && typeof n === "object" ? clone(n) : {};
+    const officialHidden = ((window.GAME_NARRATIVE || {}).hiddenFinal) || {};
     const d = {
       prologue: { title: "", text: "", button: "" },
       zeitgeist: { kind: "", title: "", lead: "", note: "", button: "" },
@@ -67,7 +68,7 @@
     for (const k of ["prologue", "zeitgeist", "stageChange", "lap2Intro"]) d[k] = Object.assign({}, d[k], n[k] || {});
     d.stageChange.names = Object.assign({ xiucai: "", juren: "", jinshi: "" }, (n.stageChange || {}).names || {});
     for (const k of ["invite", "victory", "defeat"])
-      d.hiddenFinal[k] = Object.assign({}, d.hiddenFinal[k], ((n.hiddenFinal || {})[k]) || {});
+      d.hiddenFinal[k] = Object.assign({}, d.hiddenFinal[k], officialHidden[k] || {}, ((n.hiddenFinal || {})[k]) || {});
     return d;
   }
 
@@ -101,7 +102,8 @@
     state.narrative = normalizeNarrative(rawN != null ? rawN : (window.GAME_NARRATIVE || {}));
     if (!C.load("copy_schools", null)) C.store("copy_schools", state.schools);
     if (!C.load("copy_grades", null)) C.store("copy_grades", state.grades);
-    if (!C.load("copy_narrative", null)) C.store("copy_narrative", state.narrative);
+    // normalizeNarrative 会为旧数据补齐隐藏终圈，始终写回以完成一次性迁移。
+    C.store("copy_narrative", state.narrative);
   }
 
   /* ---------------- 校验（仅文案完整性，不动机制） ---------------- */

@@ -22,9 +22,12 @@
   }
   function loadData() {
     const raw = C.load("npcs", null);
-    if (raw && raw.length) { state.tiers = raw.map(normalizeTier); }
+    if (raw && raw.length) {
+      state.tiers = ensureHiddenFinalTier(raw.map(normalizeTier));
+      C.store("npcs", state.tiers); // 旧档迁移后立即持久化
+    }
     else {
-      state.tiers = (window.GAME_NPCS || []).map(normalizeTier);
+      state.tiers = ensureHiddenFinalTier((window.GAME_NPCS || []).map(normalizeTier));
       C.store("npcs", state.tiers);
     }
   }
@@ -75,6 +78,17 @@
         ? t.themes.map(s => String(s).trim()).filter(Boolean)
         : ["huaigu"];
     }
+    return out;
+  }
+
+  /** 隐藏终圈属于系统必需档：旧 localStorage / 旧工程缺失时从官方种子回填。 */
+  function ensureHiddenFinalTier(tiers) {
+    const out = Array.isArray(tiers) ? tiers : [];
+    const seed = (window.GAME_NPCS || []).find(t => t && t.isHiddenFinal);
+    if (!seed) return out;
+    const i = out.findIndex(t => t && (t.isHiddenFinal || t.id === seed.id));
+    if (i < 0) out.push(normalizeTier(seed));
+    else if (!out[i].isHiddenFinal) out[i] = normalizeTier(seed);
     return out;
   }
 
@@ -578,13 +592,14 @@
   /* ---------------- 导入 / 导出 ---------------- */
   function importData(arr, mode) {
     const norm = arr.map(normalizeTier).filter(t => t.id || t.tier);
-    if (mode) { state.tiers = norm; C.toast("已替换为 " + norm.length + " 档"); }
+    if (mode) { state.tiers = ensureHiddenFinalTier(norm); C.toast("已替换为 " + state.tiers.length + " 档"); }
     else {
       const map = new Map(state.tiers.map((t, i) => [t.id, i]));
       let added = 0, updated = 0;
       norm.forEach(t => { if (map.has(t.id)) { state.tiers[map.get(t.id)] = t; updated++; } else { state.tiers.push(t); added++; } });
       C.toast(`合并完成：新增 ${added}，更新 ${updated}`);
     }
+    state.tiers = ensureHiddenFinalTier(state.tiers);
     save(); renderList();
   }
   function importFile(file) {
