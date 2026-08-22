@@ -21,11 +21,12 @@ import { setScene, setTension, setStage } from './music.js?v=20260822secretfinal
 import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260822secretfinal1';
 import { Leaderboard } from './leaderboard.js?v=20260822secretfinal1';
 import { personalize } from './namefmt.js?v=20260822secretfinal1';
+import { ContentTestUI } from './contentTest.js?v=20260822contenttest1';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
-let cfg, cloudBaseCfg, cloudProject = null, customProject = null, board, hud, modals, battle, schoolEl, resultEl, albumUI, codexUI;
+let cfg, cloudBaseCfg, cloudProject = null, customProject = null, board, hud, modals, battle, schoolEl, resultEl, albumUI, codexUI, contentTestUI;
 let game = null;
 let rolling = false;
 let menuEl = null;
@@ -57,6 +58,7 @@ function ensureSkeleton() {
     <div id="loadout-screen"></div>
     <div id="album-screen"></div>
     <div id="codex-screen"></div>
+    <div id="content-test-screen"></div>
     <div id="resultScreen"></div>
     <div id="topLayer"></div>
     <button id="soundToggle" type="button"></button>`;
@@ -86,9 +88,11 @@ async function boot() {
     cards: cfg.album || []
   });
   codexUI = new CodexUI({ el: $('#codex-screen'), cfg });
+  contentTestUI = new ContentTestUI({ el: $('#content-test-screen'), cfg });
 
   buildMenu();
   openSchoolScreen({ resync: false });
+  if (new URLSearchParams(location.search).get('test') === 'content') openContentTest();
   if (cloudSyncNotice) announceCloudSync();
 }
 
@@ -263,6 +267,7 @@ function buildSchoolScreen() {
         <button class="btn btn-ink" data-album>传世名篇（已解锁 ${store.unlocked.length}/${(cfg.album || []).length}）</button>
         <button class="btn btn-ink" data-codex>图鉴阁（已邂逅 ${foesGot}/${foesTotal}）</button>
         <button class="btn btn-ink" data-save-transfer>存档码（导入／导出）</button>
+        <button class="btn btn-test" data-content-test>版本测试 · 全内容解锁</button>
       </div>
       <div style="font-size:var(--text-meta);color:var(--mo-3);letter-spacing:.08em;margin-top:8px;text-align:center;line-height:1.65">
         择定流派后，可于「装配名篇」中携带至多 ${Album.LOADOUT_MAX} 张图鉴卡入局。
@@ -278,8 +283,22 @@ function buildSchoolScreen() {
     albumUI.openAlbum({ onBack: () => { buildSchoolScreen(); } }));
   schoolEl.querySelector('[data-codex]')?.addEventListener('click', () => codexUI.open('foes'));
   schoolEl.querySelector('[data-save-transfer]')?.addEventListener('click', () => albumUI.openSaveTransfer());
+  schoolEl.querySelector('[data-content-test]')?.addEventListener('click', openContentTest);
   const cont = schoolEl.querySelector('[data-continue]');
   if (cont) cont.addEventListener('click', () => loadGame());
+}
+
+/* ---------------------------------------------------- 版本测试页 */
+function openContentTest() {
+  schoolEl.classList.remove('on');
+  albumUI.closeLoadout();
+  albumUI.closeAlbum();
+  codexUI.close();
+  setScene('menu');
+  contentTestUI.open({
+    onBack: () => openSchoolScreen({ resync: false }),
+    onChanged: () => { if (schoolEl.classList.contains('on')) buildSchoolScreen(); }
+  });
 }
 
 /* ---------------------------------------------------- 装配屏 */
