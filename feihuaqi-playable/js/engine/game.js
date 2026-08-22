@@ -65,23 +65,23 @@ export class Game {
     const choice = this.ui.showBowenChoice ? await this.ui.showBowenChoice() : 'broad';
     if (choice === 'focus') {
       const key = R.CREATIVE_KEYS.slice().sort((a, b) => (s.attrs[a] || 0) - (s.attrs[b] || 0))[0];
-      this.addAttrs({ [key]: 3 }, { noSchoolGrowth: true });
+      this.addAttrs({ [key]: 3 }, { noSchoolGrowth: true, reason: '博闻·专攻一体' });
       st.bowenFocus = key;
       this.push(`博闻·专攻一体：${R.ATTR_NAMES[key]} +3${reason ? `（${reason}）` : ''}`);
     } else if (choice === 'battle') {
-      this.addAttrs({ xue: 2 }, { noSchoolGrowth: true });
+      this.addAttrs({ xue: 2 }, { noSchoolGrowth: true, reason: '博闻·以学驭战' });
       this.addInspiration(2, '博闻·以学驭战');
       st.bowenBattleHint = true;
       this.push(`博闻·以学驭战：学力 +2，灵感 +2`);
     } else {
-      this.addAttrs({ shi: 1, ci: 1, lian: 1 }, { noSchoolGrowth: true });
+      this.addAttrs({ shi: 1, ci: 1, lian: 1 }, { noSchoolGrowth: true, reason: '博闻·兼收并蓄' });
       st.bowenBroad = true;
       this.push(`博闻·兼收并蓄：三体各 +1${reason ? `（${reason}）` : ''}`);
     }
     // 博闻 Lv5 宗师点睛：每次触发额外沉淀 +知识BonusGain 学力（厚积薄发）
     const bonusGain = Number(mech.knowledgeBonusGain) || 0;
     if (bonusGain > 0) {
-      this.addAttrs({ xue: bonusGain }, { noSchoolGrowth: true });
+      this.addAttrs({ xue: bonusGain }, { noSchoolGrowth: true, reason: '博闻·宗师沉潜' });
       this.push(`博闻·宗师沉潜：学力 +${bonusGain}`);
     }
     this.ui.toast(`博闻抉择已兑现：${choice === 'focus' ? '专攻一体' : choice === 'battle' ? '以学驭战' : '兼收并蓄'}`);
@@ -241,7 +241,7 @@ export class Game {
     const cost = this.insightCost(attr);
     if (a.insight < cost) return { ok: false, reason: `心得不足（需 ${cost}）` };
     a.insight -= cost;
-    const got = this.addAttrs({ [attr]: 1 });
+    const got = this.addAttrs({ [attr]: 1 }, { reason: '研修心得' });
     this.push(`研修心得：${R.ATTR_NAMES[attr]} +${got[attr] || 0}`);
     this.ui.onState(this.s);
     this.onForceSave?.();
@@ -482,9 +482,7 @@ export class Game {
         if (t) this.grantTalent(t, { silent: true });
       } else if (r.type === 'inspirationMax') {
         const gain = Math.max(0, Number(r.value) || 0);
-        if (gain > 0) {
-          this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, (Number(this.s.inspirationMax) || 0) + gain);
-        }
+        if (gain > 0) this.addInspirationMax(gain, `名篇·${card.name}`);
       } else if (r.type === 'title' && r.title) {
         this.s.titles.push(r.title);
       }
@@ -557,11 +555,10 @@ export class Game {
   _applyAlbumEffect(ef, ctx = {}) {
     const v = Number(ef.value) || 0;
     const a = this.ensureAbilityState();
-    if (ef.type === 'attr' && R.ATTR_KEYS.includes(ef.attr)) this.addAttrs({ [ef.attr]: v }, { raw: true });
+    if (ef.type === 'attr' && R.ATTR_KEYS.includes(ef.attr)) this.addAttrs({ [ef.attr]: v }, { raw: true, reason: `名篇·${ef.card.name}` });
     else if (ef.type === 'inspiration') this.addInspiration(v, `名篇·${ef.card.name}`);
     else if (ef.type === 'inspirationMax' && v > 0) {
-      this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, this.s.inspirationMax + v);
-      this.s.inspiration = Math.min(this.s.inspirationMax, this.s.inspiration);
+      this.addInspirationMax(v, `名篇·${ef.card.name}`);
     } else if (ef.type === 'insight') this.gainInsight(v, `名篇·${ef.card.name}`);
     else if (ef.type === 'manuscript') a.manuscript.pages = Math.min(this.manuscriptCap(), a.manuscript.pages + Math.max(0, v));
     else if (ef.type === 'strategy') {
@@ -619,10 +616,13 @@ export class Game {
     return changes;
   }
 
-  push(text) {
-    this.s.log.push({ turn: this.s.turn, text });
+  push(text, meta = {}) {
+    const entry = { turn: this.s.turn, text: String(text || ''), ...meta };
+    this.s.log.push(entry);
     // 日志上限：防止长局把存档撑爆（截断保留最近 150 条，与 save.js 的截断阈值一致）
     if (this.s.log.length > 200) this.s.log.splice(0, this.s.log.length - 150);
+    // 日志事件即时推给 HUD；不必等到下一次 onState 才能看见本回合发生了什么。
+    if (this.ui && typeof this.ui.recordLog === 'function') this.ui.recordLog(entry);
   }
 
   /**
@@ -741,7 +741,7 @@ export class Game {
       this.s.attrs[k] = Math.max(0, (this.s.attrs[k] || 0) + v);  // 属性永不为负
       out[k] = v;
     }
-    if (Object.keys(out).length) this.ui.floatAttrs(out, opts.anchor);
+    if (Object.keys(out).length) this.ui.floatAttrs(out, opts.anchor, opts.reason || '属性变化');
     return out;
   }
 
@@ -766,6 +766,19 @@ export class Game {
     this.s.inspiration = R.clamp(before + amount, 0, this.s.inspirationMax);
     const real = this.s.inspiration - before;
     if (real) this.ui.floatInspiration(real, reason);
+    return real;
+  }
+
+  /** 灵感上限变更：与灵感/属性同样给出实时反馈，并保证当前值不越界。 */
+  addInspirationMax(v, reason = '灵感上限') {
+    const gain = Number(v) || 0;
+    if (!gain) return 0;
+    const base = Number(this.cfg.inspiration && this.cfg.inspiration.max) || 0;
+    const before = Number(this.s.inspirationMax) || base;
+    this.s.inspirationMax = Math.max(base, before + gain);
+    this.s.inspiration = Math.min(this.s.inspirationMax, this.s.inspiration);
+    const real = this.s.inspirationMax - before;
+    if (real && this.ui && typeof this.ui.floatInspirationMax === 'function') this.ui.floatInspirationMax(real, reason);
     return real;
   }
 
@@ -896,7 +909,7 @@ export class Game {
       const delta = (Number(ef.value) || 0) - (Number(oldEffect.value) || 0);
       if (delta > 0) {
         const gain = Math.max(0, delta);
-        this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, (Number(this.s.inspirationMax) || 0) + gain);
+        this.addInspirationMax(gain, `文心·${t.name} 精进`);
         this.push(`文心「${t.name}」精进，本局灵感上限 +${gain}`);
       }
     }
@@ -913,7 +926,7 @@ export class Game {
   }
 
   applyTalentFlat(t) {
-    if (t.effect && t.effect.type === 'attr_flat' && t.effect.attrs) this.addAttrs(t.effect.attrs, { raw: true });
+    if (t.effect && t.effect.type === 'attr_flat' && t.effect.attrs) this.addAttrs(t.effect.attrs, { raw: true, reason: `文心·${t.name}` });
   }
   /** 获得时一次性触发的效果（如「胸有成竹」开局灵感 +N），不随替换回滚 */
   applyTalentInstant(t) {
@@ -927,7 +940,7 @@ export class Game {
       const group = String(ef.group || 'inspiration_capacity');
       if (!ts.flags[group]) {
         const gain = Math.max(0, Number(ef.value) || 0);
-        this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, (Number(this.s.inspirationMax) || 0) + gain);
+        this.addInspirationMax(gain, `文心·${t.name}`);
         ts.flags[group] = t.id;
         this.push(`文心「${t.name}」开拓心源，本局灵感上限 +${gain}`);
       }
@@ -1182,7 +1195,7 @@ export class Game {
 
   async doZe(cell) {
     const g = this.cfg.attrs.zeCellGain ?? 1;
-    this.addAttrs({ bi: g, xue: g, si: g });
+    this.addAttrs({ bi: g, xue: g, si: g }, { reason: '仄韵格·基本功' });
     const zc = this.cfg.inspiration.zeCellInsp ?? 1;
     this.addInspiration(zc, '仄韵');
     this.ui.toast(`${cell.name}——仄韵格，基本功精进，灵感 +${zc}`);
@@ -1214,7 +1227,7 @@ export class Game {
         const key = ['shi', 'ci', 'lian'].includes(q.category) ? q.category : 'xue';
         const sky = this.skyActive('quiz_bonus');
         const gain = (this.cfg.attrs.quizCorrectGain ?? 2) + (sky ? Number(sky.card.effect.value || 1) : 0);
-        this.addAttrs({ [key]: gain });
+        this.addAttrs({ [key]: gain }, { reason: '答对考题' });
         this.push(`答对「${q.id}」，${R.ATTR_NAMES[key]} +${gain}`);
         this.addInspiration(this.cfg.inspiration.quizCorrectInsp ?? 0, '答对'); // 核心技能↔燃料闭环
         await this.gainBowenKnowledge('答对知识题');
@@ -1229,7 +1242,7 @@ export class Game {
       if (!ans.timedOut && ans.index >= 0) {
         s.quiz.right++;
         const opt = q.options[ans.index];
-        if (opt && opt.attr) this.addAttrs({ [opt.attr]: this.cfg.attrs.quizCorrectGain ?? 2 });
+        if (opt && opt.attr) this.addAttrs({ [opt.attr]: this.cfg.attrs.quizCorrectGain ?? 2 }, { reason: '创作抉择' });
         this.addInspiration(this.cfg.inspiration.quizCorrectInsp ?? 0, '抉择');
         await this.gainBowenKnowledge('完成抉择');
         for (const t of s.passive) if ((t.effect || {}).type === 'insp_on_quiz') this.triggerTalentLimited(t, `文心·${t.name}`);
@@ -1331,12 +1344,12 @@ export class Game {
 
   async applyEffect(effect) {
     if (!effect) return;
-    if (effect.attrs) this.addAttrs(effect.attrs);
+    if (effect.attrs) this.addAttrs(effect.attrs, { reason: '奇遇所得' });
     if (effect.inspiration) this.addInspiration(Number(effect.inspiration), '奇遇');
     if (effect.inspirationMax) {
       const gain = Math.max(0, Number(effect.inspirationMax) || 0);
       if (gain > 0) {
-        this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, (Number(this.s.inspirationMax) || 0) + gain);
+        this.addInspirationMax(gain, '奇遇·心源拓阔');
         this.push(`心源拓阔，本局灵感上限 +${gain}`);
       }
     }
@@ -1982,7 +1995,7 @@ export class Game {
     const levels = Math.floor(a.familiarity[style] / need);
     if (levels > 0) {
       a.familiarity[style] -= levels * need;
-      this.addAttrs({ [style]: levels });
+      this.addAttrs({ [style]: levels }, { reason: '实战熟练' });
       this.push(`实战熟练：${R.ATTR_NAMES[style]} +${levels}`);
     }
 
@@ -1999,7 +2012,7 @@ export class Game {
       const gain = Math.floor(a.study.progress[attr] / studyNeed);
       if (gain > 0) {
         a.study.progress[attr] -= gain * studyNeed;
-        this.addAttrs({ [attr]: gain });
+        this.addAttrs({ [attr]: gain }, { reason: '学力·研修' });
         this.push(`学力·研修：${R.ATTR_NAMES[attr]} +${gain}`);
       }
     }
@@ -2093,7 +2106,7 @@ export class Game {
           R.expectedScore(session.npc.attrs, out.npcStyle, (this.cfg.attrs || {}).battleFormula),
           this.cfg.attrs.winScale || null);
         gain = Math.max(1, Math.round(gain * scale));
-        this.addAttrs({ [out.style]: gain });
+        this.addAttrs({ [out.style]: gain }, { reason: '论战获胜' });
       }
       if (session.isPalace) { s.palaceWins++; }
       this.push(abilityOn
@@ -2184,13 +2197,13 @@ export class Game {
       const basic = R.BASIC_KEYS || ['bi', 'xue', 'si'];
       const key = basic.slice().sort((a, b) => (s.attrs[a] || 0) - (s.attrs[b] || 0))[0];
       const gain = Number(schoolMech.basicMinGain) || 1;
-      this.addAttrs({ [key]: gain });
+      this.addAttrs({ [key]: gain }, { reason: '辞宗·一战一得' });
       schoolState.basicProgress = schoolState.basicProgress || { bi: 0, xue: 0, si: 0 };
       schoolState.basicProgress[key] = (schoolState.basicProgress[key] || 0) + gain;
       const threshold = Number(schoolMech.basicMinThreshold) || 4;
       if (schoolState.basicProgress[key] >= threshold) {
         schoolState.basicProgress[key] -= threshold;
-        this.addAttrs({ [key]: Number(schoolMech.basicMinAccelerate) || 1 });
+        this.addAttrs({ [key]: Number(schoolMech.basicMinAccelerate) || 1 }, { reason: '辞宗·基础加速' });
       }
       this.push(`辞宗·一战一得：${R.ATTR_NAMES[key]} +${gain}`);
     }
@@ -2275,7 +2288,7 @@ export class Game {
       if (ef.type === 'study_bonus') extra += Number(ef.value) || 0;
     }
     if (extra) for (const k of Object.keys(delta)) delta[k] += extra;
-    const got = this.addAttrs(delta);
+    const got = this.addAttrs(delta, { reason: label });
     if (Object.keys(got).length) this.ui.toast(label);
   }
 

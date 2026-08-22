@@ -229,11 +229,23 @@
   position: absolute;
   left: calc(var(--safe-left) + var(--edge-gap));
   bottom: calc(var(--safe-bottom) + var(--edge-gap));
-  width: 254px; max-height: 132px; overflow-y: auto; overscroll-behavior: contain;
+  width: 286px; max-height: 174px; overflow-y: auto; overscroll-behavior: contain;
   padding: 9px 12px; font-size: var(--text-meta); line-height: 1.65; color: var(--mo-2);
 }
-#logBox div { border-bottom: 1px dotted rgba(120,100,70,.22); padding: 2px 0; }
-#logBox div:last-child { border-bottom: 0; color: var(--zhu); }
+#logBox .log-head { display:flex; align-items:center; justify-content:space-between; gap:8px; padding-bottom:4px; color:var(--mo); font-size:11px; letter-spacing:.08em; }
+#logBox .log-head span { color:var(--mo-3); font-size:10px; }
+#logBox .log-feedback { display:flex; flex-direction:column; gap:4px; }
+#logBox .log-delta { display:grid; grid-template-columns:auto 1fr; gap:0 6px; align-items:baseline; padding:4px 6px; border-radius:6px; background:rgba(61,120,80,.11); border-left:3px solid #4f9a65; animation:logDeltaIn .24s var(--ease-back); }
+#logBox .log-delta.loss { background:rgba(170,67,51,.12); border-left-color:#ba5345; }
+#logBox .log-delta-kind { color:var(--mo-3); font-size:10px; letter-spacing:.06em; }
+#logBox .log-delta b { color:#2d7650; font-family:var(--font-song); font-size:13px; }
+#logBox .log-delta.loss b { color:#aa4034; }
+#logBox .log-delta-reason { grid-column:2; color:var(--mo-2); font-size:10px; line-height:1.35; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#logBox .log-history { margin-top:5px; border-top:1px dotted rgba(120,100,70,.28); }
+#logBox .log-entry { display:grid; grid-template-columns:28px minmax(0,1fr); gap:4px; border-bottom:1px dotted rgba(120,100,70,.22); padding:2px 0; }
+#logBox .log-entry:last-child { border-bottom:0; color:var(--zhu); }
+#logBox .log-turn { color:var(--mo-3); font-variant-numeric:tabular-nums; }
+@keyframes logDeltaIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
 
 /* --- 左上角：静音开关（浮于所有全屏层之上，随时可切） --- */
 #soundToggle {
@@ -1264,8 +1276,8 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
     width: min(100%, 360px); max-height: 68px;
     padding: 7px 10px;
   }
-  #actionDock #logBox div { display: none; }
-  #actionDock #logBox div:nth-last-child(-n + 2) { display: block; }
+  #actionDock #logBox .log-history .log-entry { display: none; }
+  #actionDock #logBox .log-history .log-entry:last-child { display: grid; }
   #actionDock #toastZone {
     position: static; order: 1; transform: none;
     width: min(100%, 560px); max-height: min(34dvh, 180px); overflow: hidden;

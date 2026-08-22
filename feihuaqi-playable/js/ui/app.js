@@ -360,14 +360,21 @@ async function startGame(schoolId, loadout, playerName) {
 /* ---------------------------------------------------- ui 适配器 */
 function makeUi() {
   return {
-    floatAttrs(out) {
+    floatAttrs(out, anchor, reason) {
       const txt = Object.entries(out)
         .map(([k, v]) => `${ATTR_NAMES[k]} ${v > 0 ? '+' : ''}${v}`).join('　');
       if (txt) board.float(txt, 'ink-up');
+      hud.recordChange({ kind: 'attr', values: out, reason });
     },
-    floatInspiration(real) {
+    floatInspiration(real, reason) {
       board.float(`灵感 ${real > 0 ? '+' : ''}${real}`, real >= 0 ? 'ink-up' : 'ink-down');
+      hud.recordChange({ kind: 'inspiration', value: real, reason });
     },
+    floatInspirationMax(real, reason) {
+      board.float(`灵感上限 +${real}`, 'ink-up');
+      hud.recordChange({ kind: 'inspiration-max', value: real, reason });
+    },
+    recordLog: entry => hud.recordLog(entry),
     showTalentGain: t => modals.showTalentGain(t),
     askReplaceTalent: (t, list) => modals.askReplaceTalent(t, list),
     onState(s) { hud.render(s); },
