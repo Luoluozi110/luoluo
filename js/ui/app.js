@@ -7,7 +7,8 @@ import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '..
 import { Game } from '../engine/game.js?v=20260822secretfinal1';
 import { BoardView } from './board.js?v=20260822secretfinal1';
 import { Hud, radarSVG } from './hud.js?v=20260822secretfinal1';
-import { Modals } from './modals.js?v=20260822secretfinal1';
+// 柔性知识题面在 20260822flexquiz1 起使用 scenario / optionActs；独立版本键避免旧模块缓存继续渲染传统题干。
+import { Modals } from './modals.js?v=20260822flexquiz1';
 import { BattleStage } from './battle.js?v=20260822secretfinal1';
 import { AlbumUI } from './album.js?v=20260822secretfinal1';
 import { CodexUI } from './codex.js?v=20260822secretfinal1';
