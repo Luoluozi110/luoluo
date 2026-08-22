@@ -356,10 +356,10 @@
     }
     const isK = type === "knowledge";
     document.getElementById("knowledgeSituationalField").style.display = isK ? "" : "none";
-    document.getElementById("optLabel").textContent = isK ? "选项（勾选圆圈标记正确答案）" : "选项（每项设置修习方向与墨痕回声）";
+    document.getElementById("optLabel").textContent = isK ? "选项（勾选圆圈标记正确答案）" : "选项（每项设置修习方向与倾向回声）";
     document.getElementById("optHint").textContent = isK
       ? "单选知识题：勾选正确答案，游戏答错会扣灵感。"
-      : "创作抉择题：无标准答案；当前研修方向推进进度，旁通方向沉淀为心得。";
+      : "创作抉择题：无标准答案；当前研修方向推进进度，旁通方向沉淀为心得。倾向请从固定标签中选择 1–2 项。";
     if (isK) {
       if (!state.form.options.length || typeof state.form.options[0] !== "string") state.form.options = ["", ""];
       if (!Array.isArray(state.form.optionActs)) state.form.optionActs = [];
@@ -389,16 +389,37 @@
       } else {
         const targetOpts = Object.entries(ATTR)
           .map(([k, v]) => `<option value="${k}" ${o.studyTarget === k ? "selected" : ""}>${v}</option>`).join("");
+        const selectedTags = new Set(o.inkTags || []);
+        const inkButtons = INK_TAGS.map(tag => {
+          const selected = selectedTags.has(tag);
+          return `<button type="button" class="ink-tag-toggle${selected ? " is-selected" : ""}" data-ink-tag="${C.esc(tag)}" aria-pressed="${selected ? "true" : "false"}">${C.esc(tag)}</button>`;
+        }).join("");
         return `<div class="opt-row choice-opt-row" data-i="${i}">
           <span class="ord">${i + 1}</span>
           <input type="text" class="opt-text" value="${C.esc(o.text)}" placeholder="选项内容"/>
           <select class="opt-study-target" title="修习方向">${targetOpts}</select>
-          <input type="text" class="opt-ink-tags" value="${C.esc((o.inkTags || []).join("、"))}" placeholder="墨痕（求真、出新）"/>
+          <div class="choice-ink-picker" role="group" aria-label="倾向标签">
+            <span class="choice-field-label">倾向</span>
+            <div class="choice-ink-tags">${inkButtons}</div>
+            <small>已选 ${selectedTags.size}/2，点击标签切换</small>
+          </div>
           <input type="text" class="opt-result" value="${C.esc(o.resultText || "")}" placeholder="选择后的即时回声"/>
           <button class="opt-del" data-delopt="${i}" title="删除此选项">×</button>
         </div>`;
       }
     }).join("");
+    updateRuntimePreview();
+  }
+
+  function refreshInkPicker(row, tags) {
+    const selected = new Set(tags || []);
+    row.querySelectorAll('[data-ink-tag]').forEach(button => {
+      const on = selected.has(String(button.dataset.inkTag || ''));
+      button.classList.toggle('is-selected', on);
+      button.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    const hint = row.querySelector('.choice-ink-picker small');
+    if (hint) hint.textContent = `已选 ${selected.size}/2，点击标签切换`;
     updateRuntimePreview();
   }
 
@@ -437,7 +458,8 @@
       const text = r.querySelector(".opt-text").value.trim();
       if (type === "choice") {
         const studyTarget = r.querySelector(".opt-study-target").value || "bi";
-        const inkTags = r.querySelector(".opt-ink-tags").value.split(/[、,，]/).map(x => x.trim()).filter(Boolean).slice(0, 2);
+        const inkTags = [...r.querySelectorAll("[data-ink-tag].is-selected")]
+          .map(x => String(x.dataset.inkTag || "").trim()).filter(x => INK_TAGS.includes(x)).slice(0, 2);
         const resultText = r.querySelector(".opt-result").value.trim();
         return { text, studyTarget, inkTags, resultText };
       }
@@ -607,6 +629,23 @@
       renderOptions();
     });
     document.getElementById("ed-options").addEventListener("click", e => {
+      const ink = e.target.closest("[data-ink-tag]");
+      if (ink && state.form && state.form.type === "choice") {
+        const row = ink.closest(".opt-row");
+        const i = Number(row && row.dataset.i);
+        const option = state.form.options[i];
+        const tag = String(ink.dataset.inkTag || "");
+        if (option && INK_TAGS.includes(tag)) {
+          const tags = Array.isArray(option.inkTags) ? option.inkTags.slice() : [];
+          const at = tags.indexOf(tag);
+          if (at >= 0) tags.splice(at, 1);
+          else if (tags.length < 2) tags.push(tag);
+          else { C.toast("每项最多选择 2 个倾向标签"); return; }
+          option.inkTags = tags;
+          refreshInkPicker(row, tags);
+        }
+        return;
+      }
       const del = e.target.closest("[data-delopt]");
       if (del) {
         const i = Number(del.dataset.delopt);
@@ -636,7 +675,6 @@
         state.form.optionActs[i] = row.querySelector(".opt-act").value;
       } else if (state.form.options[i]) {
         state.form.options[i].text = row.querySelector(".opt-text").value;
-        state.form.options[i].inkTags = row.querySelector(".opt-ink-tags").value.split(/[、,，]/).map(x => x.trim()).filter(Boolean).slice(0, 2);
         state.form.options[i].resultText = row.querySelector(".opt-result").value;
       }
       updateRuntimePreview();
