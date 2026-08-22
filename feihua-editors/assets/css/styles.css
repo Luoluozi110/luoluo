@@ -84,6 +84,7 @@ header.bar .title small{font-weight:500;color:var(--ink2);font-size:12px;margin-
 }
 .stat b{display:block;font-size:20px;color:var(--zhu)}
 .stat span{font-size:12px;color:var(--ink2)}
+.stat.runtime-stat b{color:var(--gold)}
 
 /* ============ 工具栏 / 筛选 ============ */
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0 12px}
@@ -120,6 +121,12 @@ header.bar .title small{font-weight:500;color:var(--ink2);font-size:12px;margin-
 .q-tags{display:flex;gap:6px;flex-wrap:wrap;color:var(--ink2);font-size:12.5px}
 .q-tags .t{background:var(--paper2);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
 .q-opts{margin-top:6px;color:var(--ink2);font-size:12.5px;max-height:46px;overflow:hidden}
+.q-copy-label{display:inline-block;margin-right:5px;color:var(--ink2);font-size:11px;font-weight:700;letter-spacing:.04em}
+.q-runtime-copy{margin-top:8px;border:1px solid #e5d3b2;border-radius:9px;padding:8px 10px;background:linear-gradient(135deg,#fffaf0,#f8efdd);font-size:12.5px;color:var(--ink)}
+.q-runtime-copy .runtime-copy-label{font-size:11px;color:var(--zhu);font-weight:800;letter-spacing:.04em}
+.q-runtime-copy .runtime-copy-stem{margin:3px 0 5px;line-height:1.55;word-break:break-word}
+.q-runtime-actions{display:flex;flex-wrap:wrap;gap:5px;margin:0;color:var(--ink2)}
+.q-runtime-actions span{border:1px solid #e6d8bf;border-radius:6px;padding:2px 6px;background:rgba(255,255,255,.6);word-break:break-word}
 .q-actions{display:flex;flex-direction:column;gap:6px;min-width:74px}
 .empty{
   text-align:center;color:var(--ink2);padding:50px 20px;border:2px dashed var(--line);
@@ -182,7 +189,9 @@ header.bar .title small{font-weight:500;color:var(--ink2);font-size:12px;margin-
 .opt-row{display:flex;gap:6px;align-items:center;margin-bottom:7px}
 .opt-row .opt-text{flex:1}
 .opt-row.knowledge-opt-row{display:grid;grid-template-columns:22px 18px minmax(0,1fr) 30px;align-items:center}
-.knowledge-opt-row .opt-act{grid-column:3/4;min-width:0}
+.knowledge-opt-row .opt-act-wrap{grid-column:3/4;display:flex;align-items:center;gap:6px;min-width:0}
+.knowledge-opt-row .opt-act-wrap small{color:var(--zhu);font-size:11px;white-space:nowrap}
+.knowledge-opt-row .opt-act{min-width:0;flex:1}
 .knowledge-opt-row .opt-del{grid-column:4;grid-row:1/3;align-self:stretch}
 .opt-row select{border:1px solid var(--line);border-radius:8px;padding:7px 8px;background:#fff;font-family:inherit}
 .opt-row .ord{width:22px;text-align:center;color:var(--ink2);font-weight:700}
@@ -194,6 +203,26 @@ header.bar .title small{font-weight:500;color:var(--ink2);font-size:12px;margin-
 .msg.err{display:block;background:#fbe9e4;color:var(--bad);border:1px solid #e6bdb2}
 .msg.ok{display:block;background:#eef8f0;color:var(--ok);border:1px solid #bfe0c6}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
+
+/* ============ 题库：游戏内柔性文案预览 ============ */
+.runtime-copy-panel{margin:16px 0 14px;border:1px solid #ddc79c;border-radius:12px;padding:12px 14px;background:linear-gradient(145deg,#fffaf0,#f3e7cf);box-shadow:0 2px 8px rgba(80,50,10,.07)}
+.runtime-copy-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.runtime-copy-head strong{font-size:14px;color:var(--ink)}
+.runtime-copy-kicker{display:block;color:var(--zhu);font-size:10px;font-weight:800;letter-spacing:.14em;line-height:1.1}
+.runtime-copy-badge{border:1px solid #ddc79c;border-radius:20px;padding:2px 8px;color:var(--ink2);font-size:11px;white-space:nowrap;background:rgba(255,255,255,.55)}
+.runtime-copy-block{border-top:1px dashed #dfcda8;padding-top:8px;margin-top:8px}
+.runtime-copy-label{display:block;color:var(--ink2);font-size:11.5px;font-weight:700;margin-bottom:2px}
+.runtime-copy-stem{margin:0;color:var(--ink);font-size:14px;line-height:1.65;word-break:break-word}
+.runtime-copy-options{margin:3px 0 0;padding-left:24px;display:grid;gap:4px;color:var(--ink);font-size:13px}
+.runtime-copy-options li{padding-left:3px;line-height:1.5;word-break:break-word}
+.runtime-copy-options li::marker{color:var(--zhu);font-weight:700}
+.runtime-copy-result p{margin:0;color:var(--ink2);font-size:12.5px;line-height:1.55;word-break:break-word}
+@media(max-width:620px){
+  .runtime-copy-head{align-items:flex-start;flex-direction:column}
+  .runtime-copy-badge{white-space:normal}
+  .knowledge-opt-row{grid-template-columns:22px 18px minmax(0,1fr) 30px}
+  .knowledge-opt-row .opt-act-wrap{align-items:flex-start;flex-direction:column;gap:2px}
+}
 
 /* 效果编辑器（奇遇共用） */
 .eff-box{background:var(--paper2);border:1px dashed var(--line);border-radius:10px;padding:10px 12px}
