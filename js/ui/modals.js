@@ -48,6 +48,23 @@ const NARRATIVE_DEFAULTS = {
     title: '会试圈 · 再入科场',
     text: '童生圈的试炼渐远，你已不再只是初入科场的稚子。\n\n棋盘上的路重新展开，题目更深，对手也将换作秀才与举人之间的较量。前方的每一步，都在检验十年寒窗积下的根基。\n\n收束心神，继续向前；待绕过会试圈，金殿之门便会在尽头开启。',
     button: '进入会试圈'
+  },
+  hiddenFinal: {
+    invite: {
+      kind: '桃 源 终 卷', title: '金榜之外，尚有一问',
+      text: '殿门外桃花逆风而开，一条从未见过的小径浮出水面。桃花仙人陈之微正在终圈等你交最后一卷。',
+      enterButton: '循花入终圈', declineButton: '止步金榜'
+    },
+    victory: {
+      kind: '桃 花 仙 人', title: '此心已过万重山',
+      text: '陈之微收起终卷：“能收万卷于胸中，又不为万卷所役，方算真正走出桃源。”',
+      button: '携一枝桃花归去'
+    },
+    defeat: {
+      kind: '桃 源 留 问', title: '终卷未竟',
+      text: '陈之微并未收走你的金榜：“此问不必今日作答。”终圈仍在那里，等下一次更从容的来路。',
+      button: '记下此问'
+    }
   }
 };
 
@@ -61,7 +78,12 @@ function narrativeOf(cfg) {
     stageChange: Object.assign({}, d.stageChange, src.stageChange || {}, {
       names: Object.assign({}, d.stageChange.names, (src.stageChange || {}).names || {})
     }),
-    lap2Intro: Object.assign({}, d.lap2Intro, src.lap2Intro || {})
+    lap2Intro: Object.assign({}, d.lap2Intro, src.lap2Intro || {}),
+    hiddenFinal: {
+      invite: Object.assign({}, d.hiddenFinal.invite, (src.hiddenFinal || {}).invite || {}),
+      victory: Object.assign({}, d.hiddenFinal.victory, (src.hiddenFinal || {}).victory || {}),
+      defeat: Object.assign({}, d.hiddenFinal.defeat, (src.hiddenFinal || {}).defeat || {})
+    }
   };
 }
 
@@ -171,7 +193,7 @@ export class Modals {
   }
 
   /** 展示判定结果与解析（答错必出解析） */
-  async showQuizResult(q, ans, ok) {
+  async showQuizResult(q, ans, ok, choiceFeedback = null) {
     const ov = this._quizOv;
     if (!ov) return;
     const isChoice = q.type === 'choice';
@@ -202,7 +224,10 @@ export class Modals {
         : `<b>${ans.timedOut ? '超时' : '答错了'}</b>　${q.scenario ? '当如是' : '正确答案'}：${'ABCD'[q.answer]}．${esc(personalize(correctAct, this.playerName))}　${wrongTxt}`;
     play(isChoice || ok ? 'right' : 'wrong');
     sting('reveal');         // 答题揭晓配乐：编钟 + 宫音
-    box.innerHTML = `${head}<br/>${esc(q.analysis || '（本题暂无解析）')}
+    const choiceDetail = isChoice && !ans.timedOut && choiceFeedback
+      ? `<div class="quiz-choice-feedback"><b>${esc(choiceFeedback.resultText || '')}</b><br/><span>${esc(choiceFeedback.rewardText || '')}</span></div>`
+      : '';
+    box.innerHTML = `${head}${choiceDetail}<br/>${esc(q.analysis || '（本题暂无解析）')}
       <div style="margin-top:12px;text-align:right"><button class="btn btn-sm btn-ink" data-ok>知道了</button></div>`;
     ov.querySelector('.modal').appendChild(box);
     const cdEl = ov.querySelector('.countdown');
@@ -240,6 +265,7 @@ export class Modals {
       const currentPlan = plans[a.strategy.plan] || {};
       const attrs = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
       const attrNames = { shi: '诗力', ci: '词力', lian: '联力', bi: '笔力', xue: '学力', si: '思力' };
+      const latestMarks = (Array.isArray(game.s.choiceHistory) ? game.s.choiceHistory : []).slice(-3).reverse();
       box.innerHTML = `<div class="mtitle"><h2>三功修习</h2><span class="mtag">成长 · 调度 · 沉淀</span></div>
         ${notice ? `<div class="analysis">${esc(notice)}</div>` : ''}
         <div class="dianggu"><b>心得 ${a.insight}/${game.insightCap()}</b>　筹策 ${a.strategy.charges}/${game.strategyCap()}　稿页 ${a.manuscript.pages}/${game.manuscriptCap()}　残页 ${a.manuscript.fragments}</div>
@@ -250,6 +276,7 @@ export class Modals {
         <div class="dianggu">当前研修：${a.study.focus.map(k => attrNames[k]).join('、')}。调整只在下阶段生效，既有进度会原样保留。</div>
         <div class="opt-list">${attrs.map(k => `<button class="opt" data-focus="${k}"><b>${nextFocus.has(k) ? '✓ ' : ''}${attrNames[k]}</b><span>进度 ${Number(a.study.progress[k]) || 0}/${Number((game.abilityConfig().study || {}).progressNeed) || 3}${focus.has(k) ? ' · 当前在修' : ''}</span></button>`).join('')}</div>
         <h3>分配心得</h3><div class="opt-list">${attrs.map(k => `<button class="opt" data-insight="${k}" ${a.insight < game.insightCost(k) ? 'disabled' : ''}><b>${attrNames[k]} +1</b><span>消耗 ${game.insightCost(k)} 心得</span></button>`).join('')}</div>
+        ${latestMarks.length ? `<h3>墨痕·最近修习</h3><div class="dianggu">${latestMarks.map(mark => `「${esc(mark.optionText || mark.questionId)}」→ ${esc(attrNames[mark.target] || mark.target)}${mark.inkTags && mark.inkTags.length ? ` · ${esc(mark.inkTags.join('、'))}` : ''}`).join('<br/>')}</div>` : ''}
         <h3>笔力·稿本</h3><div class="opt-list">
           <button class="opt" data-manuscript="polish"><b>润色</b><span>下一场首次追加少耗 ${Number(mc.polishDiscount) || 2} 灵感</span></button>
           <button class="opt" data-manuscript="publish"><b>刊行</b><span>恢复 ${Number(mc.publishInspiration) || 4} 灵感</span></button>
@@ -548,7 +575,8 @@ export class Modals {
         : tpl.default;
     const title = (tpl.titleTpl || '{name}阶段 · 晋阶试').replace(/\{name\}/g, name);
     const button = (tpl.buttonTpl || '进入{name}阶段').replace(/\{name\}/g, name);
-    return this.showStageIntro(title, text, button);
+    const ink = String(gate.inkSummary || '').trim();
+    return this.showStageIntro(title, ink ? `${text}\n\n${ink}` : text, button);
   }
 
   /* ---------------------------------------------------- 当朝文风（风潮） */
@@ -586,7 +614,7 @@ export class Modals {
   }
 
   /* ---------------------------------------------------- 殿试开场 */
-  async showPalaceIntro(themes, names) {
+  async showPalaceIntro(themes, names, inkSummary = '') {
     // 圈数、殿试场次、金榜奖励分全部从配置读取；殿试题材由主考官配置决定
     const boardCfg = this.cfg.board || {};
     const isSpiral = boardCfg.layout === 'concentric_spiral';
@@ -604,12 +632,77 @@ export class Modals {
         <div style="font-size:17px;line-height:2">${laps} 圈科举路已尽，今登金殿。<br/>
           主考官出题 ${sweepN} 道：<b>${themeLabels.join('</b>、<b>')}</b>${isSpiral ? '，一场定榜。' : '，须连场应对。'}<br/>
           <span style="color:var(--zhu)">${isSpiral ? '此场取胜' : `${sweepN} 场全胜`}，可得「${esc((jb || {}).name || '金榜题名')}」圆满分 +${sweepScore}。</span></div>
+        ${String(inkSummary || '').trim() ? `<div class="dianggu" style="margin-top:12px;text-align:left">${esc(String(inkSummary).trim())}</div>` : ''}
         <div class="btn-row"><button class="btn btn-primary" data-ok>整冠入殿</button></div>
       </div>`, 'palace-intro');
     goldBurst(ov, 40);
     await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', r));
     this.close(ov);
   }
+
+  /* ---------------------------------------------------- 隐藏终圈 */
+  /**
+   * 三项条件全部达成后才会调用，因此这里不承担信息侦测，只把玩家已经完成的
+   * 收集、造诣与殿试分数重新列明，并给出一次明确选择。
+   */
+  askHiddenFinal(meta = {}) {
+    const N = narrativeOf(this.cfg).hiddenFinal.invite;
+    const ratio = Number(meta.scoreRatioNeed) || 2;
+    const rows = [
+      `传世名篇 ${Number(meta.albumCount) || 0}/${Number(meta.albumTotal) || 0}`,
+      `本局流派造诣 Lv${Number(meta.masteryLevel) || 1}（要求 Lv${Number(meta.masteryNeed) || 5}）`,
+      `殿试 ${Number(meta.playerScore) || 0} 分 / 主考官 ${Number(meta.opponentScore) || 0} 分（要求 ≥ ${ratio} 倍）`
+    ];
+    return new Promise(resolve => {
+      const ov = this.open(`
+        <div class="modal scroll-frame paper hidden-final-invite" style="text-align:center;width:min(600px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
+          <div class="kind">${esc(N.kind)}</div>
+          <div class="title-ink" style="font-size:42px">${esc(N.title)}</div>
+          <hr class="hr-ink"/>
+          <div style="font-size:16px;line-height:2;white-space:pre-line">${esc(personalize(N.text, this.playerName))}</div>
+          <div style="margin:16px auto 2px;max-width:470px;text-align:left;border:1px solid rgba(139,94,60,.24);border-radius:10px;padding:10px 14px;background:rgba(255,250,232,.42)">
+            ${rows.map(x => `<div style="line-height:1.9;color:var(--mo-2)">✓ ${esc(x)}</div>`).join('')}
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-ink" data-decline>${esc(N.declineButton)}</button>
+            <button class="btn btn-primary" data-enter>${esc(N.enterButton)}</button>
+          </div>
+        </div>`, 'hidden-final-invite');
+      goldBurst(ov, 24);
+      const finish = value => { this.close(ov); resolve(value); };
+      const enter = ov.querySelector('[data-enter]');
+      enter.addEventListener('click', () => finish(true));
+      ov.querySelector('[data-decline]').addEventListener('click', () => finish(false));
+      setTimeout(() => enter.focus(), 30);
+    });
+  }
+
+  async showHiddenFinalOutcome(kind, out, npc) {
+    const N = narrativeOf(this.cfg).hiddenFinal[kind];
+    const won = kind === 'victory';
+    const selfScore = Number(out && out.selfCalc && out.selfCalc.total) || 0;
+    const foeScore = Number(out && out.oppCalc && out.oppCalc.total) || 0;
+    const foeName = npc && npc.name ? npc.name : '陈之微';
+    const foeTitle = npc && npc.title ? npc.title : '桃花仙人';
+    const ov = this.open(`
+      <div class="modal scroll-frame paper hidden-final-outcome" style="text-align:center;width:min(620px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
+        <div class="kind">${esc(N.kind)}</div>
+        <div class="title-ink" style="font-size:42px">${esc(N.title)}</div>
+        <div style="margin-top:7px;color:var(--mo-3);letter-spacing:.1em">${esc(foeTitle)} · ${esc(foeName)}</div>
+        <hr class="hr-ink"/>
+        <div style="font-size:16px;line-height:2.05;white-space:pre-line;text-align:left">${esc(personalize(N.text, this.playerName))}</div>
+        <div style="margin-top:14px;color:${won ? 'var(--zhu)' : 'var(--mo-3)'}">终卷论战：${selfScore} 比 ${foeScore}</div>
+        <div class="btn-row"><button class="btn btn-primary" data-ok>${esc(N.button)}</button></div>
+      </div>`, `hidden-final-${kind}`);
+    if (won) goldBurst(ov, 52);
+    const ok = ov.querySelector('[data-ok]');
+    setTimeout(() => ok.focus(), 30);
+    await new Promise(r => ok.addEventListener('click', r));
+    this.close(ov);
+  }
+
+  showHiddenFinalVictory(out, npc) { return this.showHiddenFinalOutcome('victory', out, npc); }
+  showHiddenFinalDefeat(out, npc) { return this.showHiddenFinalOutcome('defeat', out, npc); }
 
   /* ---------------------------------------------------- 开局起名 */
   /**
@@ -700,6 +793,11 @@ export function talentEffectText(t) {
     case 'planned_dice': return `回合掷移动骰前可指定 1—${e.maxValue || 6} 格；本局每次使用消耗递增（首用 ${e.baseCost || 5}，每次 +${e.costStep || 2}）`;
     case 'dice_mult': return `本场灵感骰倍率 ×${e.value}（高风险高回报）`;
     case 'dice_plus': return `灵感骰点数 +${e.value}`;
+    case 'extra_dice_pct': {
+      const pct = `每追加 1 枚灵感骰，作品乘区额外 +${Math.round((e.value || 0) * 100)}%`;
+      const discount = Number(e.firstCostDiscount) || 0;
+      return discount ? `首枚追加少耗 ${discount} 灵感；${pct}` : pct;
+    }
     case 'copy_affinity': return '复制对手本场风格的相性加成';
     case 'crit': return `${Math.round((e.chance || 0) * 100)}% 概率神来之笔，得分 ×${e.mult}`;
     case 'attr_flat': return Object.entries(e.attrs || {}).map(([k, v]) => `${ATTR_NAMES[k]} +${v}`).join('　');

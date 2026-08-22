@@ -28,9 +28,9 @@ const STATE_KEYS = [
   'school', 'playerName', 'attrs', 'inspiration', 'inspirationMax',
   'passive', 'active', 'track', 'pos', 'branchId', 'branchIndex',
   'lap', 'routeIndex', 'ringId', 'phaseGateSeen', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
-  'quiz', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
+  'quiz', 'choiceHistory', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
   'zeitgeist', 'prologueSeen', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
-  'talentLevels', 'schoolState', 'abilityState', 'albumState', 'over', 'reachedEnd', 'endReason', 'log'
+  'talentLevels', 'schoolState', 'abilityState', 'albumState', 'secretFinal', 'over', 'reachedEnd', 'endReason', 'log'
 ];
 
 /**
@@ -334,7 +334,10 @@ export function deserializeRun(rawObj, cfg) {
   out.routeIndex = Math.max(0, Math.min(routeMax || Number.MAX_SAFE_INTEGER, Number(out.routeIndex ?? out.pos) || 0));
   // 三圈模式中 routeIndex 是唯一位置真源。旧版可能把 ringId 保存为 outer，导致读档后外圈常驻、棋子落在中圈却被隐藏。
   const routeRing = cfg.board && cfg.board.ringOfRouteIndex && cfg.board.ringOfRouteIndex.get(out.routeIndex);
-  if (cfg.board && cfg.board.layout === 'concentric_spiral' && routeRing) {
+  const secretActive = !!(out.secretFinal && out.secretFinal.entered && out.ringId === 'secret');
+  if (secretActive) {
+    out.ringId = 'secret';
+  } else if (cfg.board && cfg.board.layout === 'concentric_spiral' && routeRing) {
     if (out.ringId && String(out.ringId) !== String(routeRing)) {
       warnings.push(`存档圈层「${out.ringId}」与路线位置不一致，已按第 ${out.routeIndex} 格归一为「${routeRing}」`);
     }
@@ -348,6 +351,19 @@ export function deserializeRun(rawObj, cfg) {
   out.turn = Math.max(0, Number(out.turn) || 0);
   out.seenEvents = out.seenEvents instanceof Set ? out.seenEvents : new Set();
   out.usedQuestions = out.usedQuestions instanceof Set ? out.usedQuestions : new Set();
+  out.choiceHistory = (Array.isArray(out.choiceHistory) ? out.choiceHistory : []).map(item => {
+    const src = item && typeof item === 'object' ? item : {};
+    return {
+      questionId: typeof src.questionId === 'string' ? src.questionId.slice(0, 40) : '',
+      optionIndex: Math.max(0, Number(src.optionIndex) || 0),
+      target: ['shi','ci','lian','bi','xue','si'].includes(src.target) ? src.target : 'bi',
+      inkTags: Array.isArray(src.inkTags) ? src.inkTags.map(x => String(x || '').slice(0, 12)).filter(Boolean).slice(0, 2) : [],
+      resultText: typeof src.resultText === 'string' ? src.resultText.slice(0, 180) : '',
+      optionText: typeof src.optionText === 'string' ? src.optionText.slice(0, 120) : '',
+      phase: typeof src.phase === 'string' ? src.phase.slice(0, 24) : '',
+      turn: Math.max(0, Number(src.turn) || 0)
+    };
+  }).slice(-24);
   out.log = Array.isArray(out.log) ? out.log.slice(-LOG_KEEP) : [];
   out.titles = Array.isArray(out.titles) ? out.titles : [];
   out.synergies = Array.isArray(out.synergies) ? out.synergies : [];
@@ -357,6 +373,10 @@ export function deserializeRun(rawObj, cfg) {
   out.talentState.activeUses = (out.talentState.activeUses && typeof out.talentState.activeUses === 'object') ? out.talentState.activeUses : {};
   out.schoolState = (out.schoolState && typeof out.schoolState === 'object') ? out.schoolState : {};
   out.albumState = normalizeAlbumState(out.albumState);
+  out.secretFinal = Object.assign({ eligible: false, invited: false, entered: false, completed: false, result: '' },
+    (out.secretFinal && typeof out.secretFinal === 'object') ? out.secretFinal : {});
+  for (const k of ['eligible', 'invited', 'entered', 'completed']) out.secretFinal[k] = !!out.secretFinal[k];
+  out.secretFinal.result = typeof out.secretFinal.result === 'string' ? out.secretFinal.result : '';
   const schoolAliases = { tongru: 'bowen', cizong: 'cizong_bi', shixian: 'bowen', liansheng: 'bowen' };
   if (schoolAliases[out.school && out.school.id]) {
     const target = (cfg.schools || []).find(x => x.id === schoolAliases[out.school.id]);

@@ -47,6 +47,28 @@ badRoute.board.route[0].cellId = 99999;
 result = validateConfig(badRoute);
 assert.ok(result.errors.some(x => x.path === 'board.route[0].cellId'));
 
+const badSecretGate = clone(raw);
+badSecretGate.board.hiddenFinalRing.requirements.allAlbums = false;
+result = validateConfig(badSecretGate);
+assert.ok(result.errors.some(x => x.path === 'board.hiddenFinalRing.requirements'));
+
+const badSecretNpc = clone(raw);
+badSecretNpc.npcs.find(t => t.isHiddenFinal).npcs[0].attrs.si = 49;
+result = validateConfig(badSecretNpc);
+assert.ok(result.errors.some(x => x.path.endsWith('.attrs')));
+
+const badAlbumBranch = clone(raw);
+badAlbumBranch.album[0].branches[0].id = badAlbumBranch.album[0].branches[1].id;
+result = validateConfig(badAlbumBranch);
+assert.ok(result.errors.some(x => x.code === 'duplicate_id' && x.path.includes('.branches[1].id')));
+const badAlbumEffectLevel = clone(raw);
+badAlbumEffectLevel.album[0].branches[0].effects[0].minLevel = 0;
+result = validateConfig(badAlbumEffectLevel);
+assert.ok(result.errors.some(x => x.path.includes('.branches[0].effects[0].minLevel')));
+const legacyAlbum = clone(raw);
+legacyAlbum.album = legacyAlbum.album.map(card => { delete card.branches; delete card.growth; return card; });
+assert.equal(validateConfig(legacyAlbum).ok, true, '旧名篇无成长字段仍应兼容');
+
 const incomplete = validateProject({ _type: 'feihua-content', talents: raw.talents });
 assert.equal(incomplete.ok, false);
 assert.ok(incomplete.errors.some(x => x.code === 'required'));

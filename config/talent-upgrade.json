@@ -136,20 +136,20 @@
     "levels": [
       {
         "effect": {
-          "type": "dice_plus",
-          "value": 1
+          "type": "extra_dice_pct",
+          "value": 0.03
         }
       },
       {
         "effect": {
-          "type": "dice_plus",
-          "value": 1
+          "type": "extra_dice_pct",
+          "value": 0.04
         }
       },
       {
         "effect": {
-          "type": "dice_plus",
-          "value": 2
+          "type": "extra_dice_pct",
+          "value": 0.05
         }
       }
     ]
@@ -331,20 +331,23 @@
     "levels": [
       {
         "effect": {
-          "type": "dice_plus",
-          "value": 1
+          "type": "extra_dice_pct",
+          "value": 0.02,
+          "firstCostDiscount": 2
         }
       },
       {
         "effect": {
-          "type": "dice_plus",
-          "value": 1
+          "type": "extra_dice_pct",
+          "value": 0.03,
+          "firstCostDiscount": 2
         }
       },
       {
         "effect": {
-          "type": "dice_plus",
-          "value": 2
+          "type": "extra_dice_pct",
+          "value": 0.04,
+          "firstCostDiscount": 3
         }
       }
     ]
@@ -841,29 +844,29 @@
     "levels": [
       {
         "effect": {
-          "type": "dice_plus",
-          "value": 3
+          "type": "extra_dice_pct",
+          "value": 0.08
         },
         "cost": 2
       },
       {
         "effect": {
-          "type": "dice_plus",
-          "value": 4
+          "type": "extra_dice_pct",
+          "value": 0.1
         },
         "cost": 2
       },
       {
         "effect": {
-          "type": "dice_plus",
-          "value": 5
+          "type": "extra_dice_pct",
+          "value": 0.12
         },
         "cost": 2
       },
       {
         "effect": {
-          "type": "dice_plus",
-          "value": 6
+          "type": "extra_dice_pct",
+          "value": 0.14
         },
         "cost": 2
       }

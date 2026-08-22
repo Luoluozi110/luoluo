@@ -120,6 +120,9 @@ export class Hud {
       </div>`;
 
     this.prev = {};
+    this._log = [];
+    this._feedback = [];
+    this._feedbackSeq = 0;
     this.onTalent = null;   // 点击已拥有文心时回调（由 app.js 注入，打开详情）
     this._pas = [];
     this._act = [];
@@ -259,9 +262,9 @@ export class Hud {
           `<span class="syn-chip" title="${sy.desc || ''}">✦ ${sy.name}</span>`).join('')
       : '';
 
-    // 战报
-    this.el.log.innerHTML = s.log.slice(-30).map(l => `<div>[${l.turn}] ${l.text}</div>`).join('');
-    this.el.log.scrollTop = this.el.log.scrollHeight;
+    // 战报与即时数值反馈：数值事件由引擎主动推送，不轮询游戏状态。
+    this._log = Array.isArray(s.log) ? s.log : [];
+    this._renderLog();
 
     this.el.turn.textContent = s.turn;
     const phaseNames = { child: '童生', xiucai: '秀才', juren: '举人', jinshi: '进士', palace: '殿试', lap1: '乡试圈', lap2: '会试圈' };
@@ -277,6 +280,66 @@ export class Hud {
     const list = act ? this._act : this._pas;
     const t = list[Number(slot.dataset.idx)];
     if (t) this.onTalent(t);
+  }
+
+  /** 引擎写入常规日志时立即刷新，避免等到下一次状态同步。 */
+  recordLog(entry) {
+    if (!entry) return;
+    if (!this._log.includes(entry)) this._log = [...this._log, entry];
+    this._renderLog();
+  }
+
+  /** 属性、灵感与上限变化的短时反馈流；最多保留三条，避免遮住操作区。 */
+  recordChange(change = {}) {
+    const kind = change.kind || 'note';
+    const values = change.values || {};
+    const value = Number(change.value) || 0;
+    let detail = '';
+    if (kind === 'attr') {
+      detail = Object.entries(values).map(([key, amount]) => {
+        const n = Number(amount) || 0;
+        return `${ATTR_NAMES[key] || key} ${n > 0 ? '+' : ''}${n}`;
+      }).join('、');
+    } else if (kind === 'inspiration') {
+      detail = `灵感 ${value > 0 ? '+' : ''}${value}`;
+    } else if (kind === 'inspiration-max') {
+      detail = `灵感上限 +${value}`;
+    } else detail = String(change.detail || '状态已变化');
+    if (!detail) return;
+    const tone = kind === 'inspiration' && value < 0
+      ? 'loss'
+      : (kind === 'attr' && Object.values(values).every(v => Number(v) < 0) ? 'loss' : 'gain');
+    const entry = {
+      id: ++this._feedbackSeq,
+      kind,
+      tone,
+      reason: String(change.reason || '即时结算'),
+      detail
+    };
+    this._feedback = [...this._feedback, entry].slice(-3);
+    this._renderLog();
+    const cleanupTimer = setTimeout(() => {
+      this._feedback = this._feedback.filter(item => item.id !== entry.id);
+      this._renderLog();
+    }, 4300);
+    if (cleanupTimer && typeof cleanupTimer.unref === 'function') cleanupTimer.unref();
+  }
+
+  _renderLog() {
+    if (!this.el || !this.el.log) return;
+    const feedback = this._feedback.map(item => `
+      <div class="log-delta ${escapeAttr(item.tone)}">
+        <span class="log-delta-kind">${item.kind === 'attr' ? '才学' : item.kind === 'inspiration-max' ? '心源' : '灵感'}</span>
+        <b>${escapeAttr(item.detail)}</b><span class="log-delta-reason">${escapeAttr(item.reason)}</span>
+      </div>`).join('');
+    const history = this._log.slice(-30).map(item =>
+      `<div class="log-entry"><span class="log-turn">${Number(item.turn) || 0}</span><span>${escapeAttr(item.text)}</span></div>`
+    ).join('');
+    this.el.log.innerHTML = `
+      <div class="log-head"><b>进程记录</b><span>即时反馈</span></div>
+      <div class="log-feedback" aria-live="polite" aria-label="本次资源变化">${feedback}</div>
+      <div class="log-history">${history}</div>`;
+    this.el.log.scrollTop = this.el.log.scrollHeight;
   }
 
   /** 面板收起/展开：移动端默认收起以露出棋盘；状态轻量持久化到 localStorage */
@@ -390,4 +453,7 @@ export class Hud {
   }
 }
 
-function escapeAttr(s) { return String(s).replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+function escapeAttr(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}

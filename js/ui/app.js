@@ -3,29 +3,30 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260820inspdicepct1';
-import { Game } from '../engine/game.js?v=20260820inspdicepct1';
-import { BoardView } from './board.js?v=20260820inspdicepct1';
-import { Hud, radarSVG } from './hud.js?v=20260820inspdicepct1';
-import { Modals } from './modals.js?v=20260820inspdicepct1';
-import { BattleStage } from './battle.js?v=20260820inspdicepct1';
-import { AlbumUI } from './album.js?v=20260820inspdicepct1';
-import { CodexUI } from './codex.js?v=20260820inspdicepct1';
-import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260820inspdicepct1';
-import { initQuality, getTier, setTier } from './quality.js?v=20260820inspdicepct1';
-import { ATTR_NAMES } from '../engine/rules.js?v=20260820inspdicepct1';
-import * as Album from '../engine/album.js?v=20260820inspdicepct1';
-import * as Codex from '../engine/codex.js?v=20260820inspdicepct1';
-import { initAudio } from './audio.js?v=20260820inspdicepct1';
-import { setScene, setTension, setStage } from './music.js?v=20260820inspdicepct1';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260820inspdicepct1';
-import { Leaderboard } from './leaderboard.js?v=20260820inspdicepct1';
-import { personalize } from './namefmt.js?v=20260820inspdicepct1';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260822secretfinal1';
+import { Game } from '../engine/game.js?v=20260822secretfinal1';
+import { BoardView } from './board.js?v=20260822secretfinal1';
+import { Hud, radarSVG } from './hud.js?v=20260822secretfinal1';
+import { Modals } from './modals.js?v=20260822secretfinal1';
+import { BattleStage } from './battle.js?v=20260822secretfinal1';
+import { AlbumUI } from './album.js?v=20260822secretfinal1';
+import { CodexUI } from './codex.js?v=20260822secretfinal1';
+import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260822secretfinal1';
+import { initQuality, getTier, setTier } from './quality.js?v=20260822secretfinal1';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260822secretfinal1';
+import * as Album from '../engine/album.js?v=20260822secretfinal1';
+import * as Codex from '../engine/codex.js?v=20260822secretfinal1';
+import { initAudio } from './audio.js?v=20260822secretfinal1';
+import { setScene, setTension, setStage } from './music.js?v=20260822secretfinal1';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260822secretfinal1';
+import { Leaderboard } from './leaderboard.js?v=20260822secretfinal1';
+import { personalize } from './namefmt.js?v=20260822secretfinal1';
+import { ContentTestUI } from './contentTest.js?v=20260822contenttest1';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
-let cfg, cloudBaseCfg, cloudProject = null, customProject = null, board, hud, modals, battle, schoolEl, resultEl, albumUI, codexUI;
+let cfg, cloudBaseCfg, cloudProject = null, customProject = null, board, hud, modals, battle, schoolEl, resultEl, albumUI, codexUI, contentTestUI;
 let game = null;
 let rolling = false;
 let menuEl = null;
@@ -57,6 +58,7 @@ function ensureSkeleton() {
     <div id="loadout-screen"></div>
     <div id="album-screen"></div>
     <div id="codex-screen"></div>
+    <div id="content-test-screen"></div>
     <div id="resultScreen"></div>
     <div id="topLayer"></div>
     <button id="soundToggle" type="button"></button>`;
@@ -86,9 +88,11 @@ async function boot() {
     cards: cfg.album || []
   });
   codexUI = new CodexUI({ el: $('#codex-screen'), cfg });
+  contentTestUI = new ContentTestUI({ el: $('#content-test-screen'), cfg });
 
   buildMenu();
   openSchoolScreen({ resync: false });
+  if (new URLSearchParams(location.search).get('test') === 'content') openContentTest();
   if (cloudSyncNotice) announceCloudSync();
 }
 
@@ -263,6 +267,7 @@ function buildSchoolScreen() {
         <button class="btn btn-ink" data-album>传世名篇（已解锁 ${store.unlocked.length}/${(cfg.album || []).length}）</button>
         <button class="btn btn-ink" data-codex>图鉴阁（已邂逅 ${foesGot}/${foesTotal}）</button>
         <button class="btn btn-ink" data-save-transfer>存档码（导入／导出）</button>
+        <button class="btn btn-test" data-content-test>版本测试 · 全内容解锁</button>
       </div>
       <div style="font-size:var(--text-meta);color:var(--mo-3);letter-spacing:.08em;margin-top:8px;text-align:center;line-height:1.65">
         择定流派后，可于「装配名篇」中携带至多 ${Album.LOADOUT_MAX} 张图鉴卡入局。
@@ -278,8 +283,22 @@ function buildSchoolScreen() {
     albumUI.openAlbum({ onBack: () => { buildSchoolScreen(); } }));
   schoolEl.querySelector('[data-codex]')?.addEventListener('click', () => codexUI.open('foes'));
   schoolEl.querySelector('[data-save-transfer]')?.addEventListener('click', () => albumUI.openSaveTransfer());
+  schoolEl.querySelector('[data-content-test]')?.addEventListener('click', openContentTest);
   const cont = schoolEl.querySelector('[data-continue]');
   if (cont) cont.addEventListener('click', () => loadGame());
+}
+
+/* ---------------------------------------------------- 版本测试页 */
+function openContentTest() {
+  schoolEl.classList.remove('on');
+  albumUI.closeLoadout();
+  albumUI.closeAlbum();
+  codexUI.close();
+  setScene('menu');
+  contentTestUI.open({
+    onBack: () => openSchoolScreen({ resync: false }),
+    onChanged: () => { if (schoolEl.classList.contains('on')) buildSchoolScreen(); }
+  });
 }
 
 /* ---------------------------------------------------- 装配屏 */
@@ -341,14 +360,21 @@ async function startGame(schoolId, loadout, playerName) {
 /* ---------------------------------------------------- ui 适配器 */
 function makeUi() {
   return {
-    floatAttrs(out) {
+    floatAttrs(out, anchor, reason) {
       const txt = Object.entries(out)
         .map(([k, v]) => `${ATTR_NAMES[k]} ${v > 0 ? '+' : ''}${v}`).join('　');
       if (txt) board.float(txt, 'ink-up');
+      hud.recordChange({ kind: 'attr', values: out, reason });
     },
-    floatInspiration(real) {
+    floatInspiration(real, reason) {
       board.float(`灵感 ${real > 0 ? '+' : ''}${real}`, real >= 0 ? 'ink-up' : 'ink-down');
+      hud.recordChange({ kind: 'inspiration', value: real, reason });
     },
+    floatInspirationMax(real, reason) {
+      board.float(`灵感上限 +${real}`, 'ink-up');
+      hud.recordChange({ kind: 'inspiration-max', value: real, reason });
+    },
+    recordLog: entry => hud.recordLog(entry),
     showTalentGain: t => modals.showTalentGain(t),
     askReplaceTalent: (t, list) => modals.askReplaceTalent(t, list),
     onState(s) { hud.render(s); },
@@ -371,8 +397,8 @@ function makeUi() {
     showLap2Intro: () => modals.showLap2Intro(),
     // 引擎明确要求同步圈层；不再让阶段弹窗承担唯一的状态切换职责。
     syncStageRing: s => board.revealRouteState(s),
-    showStageChange: async gate => {
-      if (modals.showStageChange) await modals.showStageChange(gate);
+    showStageChange: async (gate, state) => {
+      if (modals.showStageChange) await modals.showStageChange(gate, state);
     },
     showZeitgeist: z => modals.showZeitgeist(z),
     askScenic: (cell, cost, curInsp) => modals.askScenic(cell, cost, curInsp),
@@ -385,7 +411,16 @@ function makeUi() {
       setStage(stageFromProgress(game.progress())); // 战后阶段可能已进阶，重新移调
       return out;
     },
-    showPalaceIntro: () => modals.showPalaceIntro(),
+    showPalaceIntro: (themes, names, inkSummary) => modals.showPalaceIntro(themes, names, inkSummary),
+    askHiddenFinal: meta => modals.askHiddenFinal(meta),
+    showHiddenFinalRing: async () => {
+      setScene('board');
+      setTension(0.25);
+      if (board.showHiddenFinalRing) await board.showHiddenFinalRing();
+      setTension(0.55);
+    },
+    showHiddenFinalVictory: (out, npc) => modals.showHiddenFinalVictory(out, npc),
+    showHiddenFinalDefeat: (out, npc) => modals.showHiddenFinalDefeat(out, npc),
     showResult: sum => showResult(sum)
   };
 }
@@ -892,6 +927,12 @@ async function showResult(sum) {
     ? `<div class="result-unlocks paper"><div style="font-size:14px;letter-spacing:.16em;color:var(--zhu);margin-bottom:6px">本局新解锁</div>
        <div class="unlock-row">${unlocks}</div></div>`
     : '';
+  const inkBlock = sum.inkEpilogue
+    ? `<div class="result-mastery paper" style="margin-top:10px;padding:10px 14px;font-size:13px;line-height:1.8">
+      <div style="font-size:14px;letter-spacing:.16em;color:var(--mo-2);margin-bottom:4px">行卷留痕</div>
+      <div>${esc(sum.inkEpilogue)}</div>
+    </div>`
+    : '';
 
   resultEl.innerHTML = `
     <div class="result-wrap">
@@ -915,6 +956,7 @@ async function showResult(sum) {
           <div class="dim-grid">${dims}</div>
           ${unlockBlock}
           ${masteryBlock}
+          ${inkBlock}
         </div>
       </div>
       <div class="result-actions">

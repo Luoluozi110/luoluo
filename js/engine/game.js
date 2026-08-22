@@ -65,23 +65,23 @@ export class Game {
     const choice = this.ui.showBowenChoice ? await this.ui.showBowenChoice() : 'broad';
     if (choice === 'focus') {
       const key = R.CREATIVE_KEYS.slice().sort((a, b) => (s.attrs[a] || 0) - (s.attrs[b] || 0))[0];
-      this.addAttrs({ [key]: 3 }, { noSchoolGrowth: true });
+      this.addAttrs({ [key]: 3 }, { noSchoolGrowth: true, reason: '博闻·专攻一体' });
       st.bowenFocus = key;
       this.push(`博闻·专攻一体：${R.ATTR_NAMES[key]} +3${reason ? `（${reason}）` : ''}`);
     } else if (choice === 'battle') {
-      this.addAttrs({ xue: 2 }, { noSchoolGrowth: true });
+      this.addAttrs({ xue: 2 }, { noSchoolGrowth: true, reason: '博闻·以学驭战' });
       this.addInspiration(2, '博闻·以学驭战');
       st.bowenBattleHint = true;
       this.push(`博闻·以学驭战：学力 +2，灵感 +2`);
     } else {
-      this.addAttrs({ shi: 1, ci: 1, lian: 1 }, { noSchoolGrowth: true });
+      this.addAttrs({ shi: 1, ci: 1, lian: 1 }, { noSchoolGrowth: true, reason: '博闻·兼收并蓄' });
       st.bowenBroad = true;
       this.push(`博闻·兼收并蓄：三体各 +1${reason ? `（${reason}）` : ''}`);
     }
     // 博闻 Lv5 宗师点睛：每次触发额外沉淀 +知识BonusGain 学力（厚积薄发）
     const bonusGain = Number(mech.knowledgeBonusGain) || 0;
     if (bonusGain > 0) {
-      this.addAttrs({ xue: bonusGain }, { noSchoolGrowth: true });
+      this.addAttrs({ xue: bonusGain }, { noSchoolGrowth: true, reason: '博闻·宗师沉潜' });
       this.push(`博闻·宗师沉潜：学力 +${bonusGain}`);
     }
     this.ui.toast(`博闻抉择已兑现：${choice === 'focus' ? '专攻一体' : choice === 'battle' ? '以学驭战' : '兼收并蓄'}`);
@@ -225,6 +225,110 @@ export class Game {
     return got;
   }
 
+  /** 创作抉择兼容旧 attr 字段；新内容以 studyTarget 明确写入修习方向。 */
+  choiceStudyTarget(option) {
+    const target = String((option && (option.studyTarget || option.attr)) || 'bi');
+    return R.ATTR_KEYS.includes(target) ? target : 'bi';
+  }
+
+  choiceResultText(option) {
+    const text = String(option && option.resultText || '').trim();
+    if (text) return text;
+    const picked = String(option && option.text || '这一笔').trim();
+    return `你把「${picked}」记入行卷，留待日后再看。`;
+  }
+
+  choiceInkTags(option) {
+    const tags = Array.isArray(option && option.inkTags) ? option.inkTags : [];
+    return tags.map(x => String(x || '').trim()).filter(Boolean).slice(0, 2);
+  }
+
+  ensureChoiceHistory() {
+    const s = this.s;
+    if (!Array.isArray(s.choiceHistory)) s.choiceHistory = [];
+    return s.choiceHistory;
+  }
+
+  /** 研修进度的唯一推进入口；论战与创作抉择共用同一阈值和属性兑现规则。 */
+  gainStudyProgress(attr, amount = 1, reason = '') {
+    if (!R.ATTR_KEYS.includes(attr)) return { attr, added: 0, progress: 0, need: 1, gained: 0 };
+    const a = this.ensureAbilityState();
+    const need = Math.max(1, Number((this.abilityConfig().study || {}).progressNeed) || 3);
+    const added = Math.max(0, Math.floor(Number(amount) || 0));
+    a.study.progress[attr] = Math.max(0, Number(a.study.progress[attr]) || 0) + added;
+    const gained = Math.floor(a.study.progress[attr] / need);
+    if (gained > 0) {
+      a.study.progress[attr] -= gained * need;
+      this.addAttrs({ [attr]: gained }, { reason: reason || '学力·研修' });
+      this.push(`${reason || '学力·研修'}：${R.ATTR_NAMES[attr]} +${gained}`);
+    }
+    return { attr, added, progress: Number(a.study.progress[attr]) || 0, need, gained };
+  }
+
+  /** 创作抉择只产生一次修习单位：同向推进研修，旁通沉淀为心得。 */
+  applyChoiceStudy(q, optionIndex) {
+    const option = (q && q.options && q.options[optionIndex]) || {};
+    const target = this.choiceStudyTarget(option);
+    const a = this.ensureAbilityState();
+    const focused = (a.study.focus || []).includes(target);
+    let mode = 'insight';
+    let insight = 0;
+    let study = null;
+    if (focused) {
+      mode = 'study';
+      study = this.gainStudyProgress(target, 1, `创作抉择·${q.id}`);
+    } else {
+      insight = this.gainInsight(1, `创作抉择·${q.id}`);
+      // 心得已满时不吞掉收益：转为同方向的一格临场研修。
+      if (!insight) {
+        mode = 'overflow-study';
+        study = this.gainStudyProgress(target, 1, `创作抉择·${q.id}·心得已满`);
+      }
+    }
+    const mark = {
+      questionId: String(q && q.id || ''), optionIndex: Math.max(0, Number(optionIndex) || 0),
+      target, inkTags: this.choiceInkTags(option), resultText: this.choiceResultText(option),
+      optionText: String(option.text || ''), phase: String(this.s.phase || ''), turn: Number(this.s.turn) || 0
+    };
+    const history = this.ensureChoiceHistory();
+    history.push(mark);
+    if (history.length > 24) history.splice(0, history.length - 24);
+    const targetName = R.ATTR_NAMES[target] || target;
+    let rewardText;
+    if (mode === 'insight') rewardText = `修习所得：旁通${targetName}，心得 +${insight}`;
+    else if (study && study.gained) rewardText = `修习所得：${targetName}研修完成，${targetName} +${study.gained}`;
+    else if (mode === 'overflow-study') rewardText = `心得已满，转入${targetName}研修，进度 ${study.progress}/${study.need}`;
+    else rewardText = `修习所得：${targetName}研修进度 +1（${study.progress}/${study.need}）`;
+    this.push(`墨痕·${q.id}：${targetName}${mark.inkTags.length ? `（${mark.inkTags.join('、')}）` : ''}；${rewardText}`);
+    return { ...mark, mode, insight, study, rewardText, targetName };
+  }
+
+  choiceInkSummary(phase) {
+    const history = this.ensureChoiceHistory().filter(x => !phase || x.phase === phase);
+    if (!history.length) return '';
+    const counts = new Map();
+    for (const item of history) for (const tag of item.inkTags || []) counts.set(tag, (counts.get(tag) || 0) + 1);
+    const tag = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+    const latest = history[history.length - 1];
+    const voice = {
+      求真: '你多次先追问意义，再决定如何落笔。',
+      出新: '你不愿只沿熟路成篇，总想替旧景换一个入口。',
+      与人: '你写下的句子，总还留着回应他人的位置。',
+      独行: '你更愿先听清自己心里的声音。',
+      守法: '你珍重前人的法度，也愿从中慢慢练成自己的笔。',
+      惜身: '你知道停笔不是退却，留白也是为了下一次落笔。',
+      燃笔: '你宁肯把当下写尽，也不轻易放过涌来的句子。'
+    };
+    return `本阶段行卷：${voice[tag] || '你在不同写法之间反复斟酌。'} 最近一笔是「${latest.optionText || latest.questionId}」。`;
+  }
+
+  choiceInkEpilogue() {
+    const history = this.ensureChoiceHistory();
+    if (!history.length) return '';
+    const latest = history[history.length - 1];
+    return `行卷留痕：${latest.resultText || `你仍记得「${latest.optionText}」的那一笔。`}`;
+  }
+
   insightCost(attr) {
     const c = this.abilityConfig().growth || {};
     const vals = R.CREATIVE_KEYS.map(k => Number(this.s.attrs[k]) || 0);
@@ -241,7 +345,7 @@ export class Game {
     const cost = this.insightCost(attr);
     if (a.insight < cost) return { ok: false, reason: `心得不足（需 ${cost}）` };
     a.insight -= cost;
-    const got = this.addAttrs({ [attr]: 1 });
+    const got = this.addAttrs({ [attr]: 1 }, { reason: '研修心得' });
     this.push(`研修心得：${R.ATTR_NAMES[attr]} +${got[attr] || 0}`);
     this.ui.onState(this.s);
     this.onForceSave?.();
@@ -413,6 +517,7 @@ export class Game {
       battle: { win: 0, draw: 0, loss: 0, streak: 0, maxStreak: 0, upsets: 0, winsByStyle: { shi: 0, ci: 0, lian: 0 } },
       events: { total: 0, rare: 0, legend: 0, talents: 0, items: 0 },
       quiz: { asked: 0, right: 0 },
+      choiceHistory: [],                              // 创作抉择的墨痕来源；只服务修习反馈与叙事回看
       seenEvents: new Set(), usedQuestions: new Set(),
       palaceWins: 0, palaceDone: 0,
       zeitgeist: this.seedZeitgeist(cfg.affinity),   // 当朝风潮（每局随机，制造变化性）
@@ -424,6 +529,7 @@ export class Game {
       plannedMoveDice: null,                         // 布局谋篇待作用的下一枚地图移动骰（瞬时状态）
       npcMech: { history: {}, palace: {} },          // NPC 三机制跨场状态
       loadout: [], titles: [],
+      secretFinal: { eligible: false, invited: false, entered: false, completed: false, result: '' },
       over: false, reachedEnd: false, endReason: '',
       log: []
     };
@@ -481,9 +587,7 @@ export class Game {
         if (t) this.grantTalent(t, { silent: true });
       } else if (r.type === 'inspirationMax') {
         const gain = Math.max(0, Number(r.value) || 0);
-        if (gain > 0) {
-          this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, (Number(this.s.inspirationMax) || 0) + gain);
-        }
+        if (gain > 0) this.addInspirationMax(gain, `名篇·${card.name}`);
       } else if (r.type === 'title' && r.title) {
         this.s.titles.push(r.title);
       }
@@ -556,11 +660,10 @@ export class Game {
   _applyAlbumEffect(ef, ctx = {}) {
     const v = Number(ef.value) || 0;
     const a = this.ensureAbilityState();
-    if (ef.type === 'attr' && R.ATTR_KEYS.includes(ef.attr)) this.addAttrs({ [ef.attr]: v }, { raw: true });
+    if (ef.type === 'attr' && R.ATTR_KEYS.includes(ef.attr)) this.addAttrs({ [ef.attr]: v }, { raw: true, reason: `名篇·${ef.card.name}` });
     else if (ef.type === 'inspiration') this.addInspiration(v, `名篇·${ef.card.name}`);
     else if (ef.type === 'inspirationMax' && v > 0) {
-      this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, this.s.inspirationMax + v);
-      this.s.inspiration = Math.min(this.s.inspirationMax, this.s.inspiration);
+      this.addInspirationMax(v, `名篇·${ef.card.name}`);
     } else if (ef.type === 'insight') this.gainInsight(v, `名篇·${ef.card.name}`);
     else if (ef.type === 'manuscript') a.manuscript.pages = Math.min(this.manuscriptCap(), a.manuscript.pages + Math.max(0, v));
     else if (ef.type === 'strategy') {
@@ -618,10 +721,13 @@ export class Game {
     return changes;
   }
 
-  push(text) {
-    this.s.log.push({ turn: this.s.turn, text });
+  push(text, meta = {}) {
+    const entry = { turn: this.s.turn, text: String(text || ''), ...meta };
+    this.s.log.push(entry);
     // 日志上限：防止长局把存档撑爆（截断保留最近 150 条，与 save.js 的截断阈值一致）
     if (this.s.log.length > 200) this.s.log.splice(0, this.s.log.length - 150);
+    // 日志事件即时推给 HUD；不必等到下一次 onState 才能看见本回合发生了什么。
+    if (this.ui && typeof this.ui.recordLog === 'function') this.ui.recordLog(entry);
   }
 
   /**
@@ -740,7 +846,7 @@ export class Game {
       this.s.attrs[k] = Math.max(0, (this.s.attrs[k] || 0) + v);  // 属性永不为负
       out[k] = v;
     }
-    if (Object.keys(out).length) this.ui.floatAttrs(out, opts.anchor);
+    if (Object.keys(out).length) this.ui.floatAttrs(out, opts.anchor, opts.reason || '属性变化');
     return out;
   }
 
@@ -765,6 +871,19 @@ export class Game {
     this.s.inspiration = R.clamp(before + amount, 0, this.s.inspirationMax);
     const real = this.s.inspiration - before;
     if (real) this.ui.floatInspiration(real, reason);
+    return real;
+  }
+
+  /** 灵感上限变更：与灵感/属性同样给出实时反馈，并保证当前值不越界。 */
+  addInspirationMax(v, reason = '灵感上限') {
+    const gain = Number(v) || 0;
+    if (!gain) return 0;
+    const base = Number(this.cfg.inspiration && this.cfg.inspiration.max) || 0;
+    const before = Number(this.s.inspirationMax) || base;
+    this.s.inspirationMax = Math.max(base, before + gain);
+    this.s.inspiration = Math.min(this.s.inspirationMax, this.s.inspiration);
+    const real = this.s.inspirationMax - before;
+    if (real && this.ui && typeof this.ui.floatInspirationMax === 'function') this.ui.floatInspirationMax(real, reason);
     return real;
   }
 
@@ -895,7 +1014,7 @@ export class Game {
       const delta = (Number(ef.value) || 0) - (Number(oldEffect.value) || 0);
       if (delta > 0) {
         const gain = Math.max(0, delta);
-        this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, (Number(this.s.inspirationMax) || 0) + gain);
+        this.addInspirationMax(gain, `文心·${t.name} 精进`);
         this.push(`文心「${t.name}」精进，本局灵感上限 +${gain}`);
       }
     }
@@ -912,7 +1031,7 @@ export class Game {
   }
 
   applyTalentFlat(t) {
-    if (t.effect && t.effect.type === 'attr_flat' && t.effect.attrs) this.addAttrs(t.effect.attrs, { raw: true });
+    if (t.effect && t.effect.type === 'attr_flat' && t.effect.attrs) this.addAttrs(t.effect.attrs, { raw: true, reason: `文心·${t.name}` });
   }
   /** 获得时一次性触发的效果（如「胸有成竹」开局灵感 +N），不随替换回滚 */
   applyTalentInstant(t) {
@@ -926,7 +1045,7 @@ export class Game {
       const group = String(ef.group || 'inspiration_capacity');
       if (!ts.flags[group]) {
         const gain = Math.max(0, Number(ef.value) || 0);
-        this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, (Number(this.s.inspirationMax) || 0) + gain);
+        this.addInspirationMax(gain, `文心·${t.name}`);
         ts.flags[group] = t.id;
         this.push(`文心「${t.name}」开拓心源，本局灵感上限 +${gain}`);
       }
@@ -1181,7 +1300,7 @@ export class Game {
 
   async doZe(cell) {
     const g = this.cfg.attrs.zeCellGain ?? 1;
-    this.addAttrs({ bi: g, xue: g, si: g });
+    this.addAttrs({ bi: g, xue: g, si: g }, { reason: '仄韵格·基本功' });
     const zc = this.cfg.inspiration.zeCellInsp ?? 1;
     this.addInspiration(zc, '仄韵');
     this.ui.toast(`${cell.name}——仄韵格，基本功精进，灵感 +${zc}`);
@@ -1213,7 +1332,7 @@ export class Game {
         const key = ['shi', 'ci', 'lian'].includes(q.category) ? q.category : 'xue';
         const sky = this.skyActive('quiz_bonus');
         const gain = (this.cfg.attrs.quizCorrectGain ?? 2) + (sky ? Number(sky.card.effect.value || 1) : 0);
-        this.addAttrs({ [key]: gain });
+        this.addAttrs({ [key]: gain }, { reason: '答对考题' });
         this.push(`答对「${q.id}」，${R.ATTR_NAMES[key]} +${gain}`);
         this.addInspiration(this.cfg.inspiration.quizCorrectInsp ?? 0, '答对'); // 核心技能↔燃料闭环
         await this.gainBowenKnowledge('答对知识题');
@@ -1224,15 +1343,12 @@ export class Game {
       }
       await this.ui.showQuizResult(q, ans, ok);
     } else {
-      // 抉择题无对错，但「超时未选」不算作出抉择——不给属性奖励，并照扣灵感
+      // 抉择题无对错；有效选择只接入心得/研修，不再直接堆叠属性。
       if (!ans.timedOut && ans.index >= 0) {
         s.quiz.right++;
-        const opt = q.options[ans.index];
-        if (opt && opt.attr) this.addAttrs({ [opt.attr]: this.cfg.attrs.quizCorrectGain ?? 2 });
-        this.addInspiration(this.cfg.inspiration.quizCorrectInsp ?? 0, '抉择');
-        await this.gainBowenKnowledge('完成抉择');
+        const feedback = this.applyChoiceStudy(q, ans.index);
         for (const t of s.passive) if ((t.effect || {}).type === 'insp_on_quiz') this.triggerTalentLimited(t, `文心·${t.name}`);
-        await this.ui.showQuizResult(q, ans, true);
+        await this.ui.showQuizResult(q, ans, true, feedback);
       } else {
         this.addInspiration(this.cfg.inspiration.quizWrong ?? -2, '超时');
         this.push(`抉择题「${q.id}」超时未决`);
@@ -1330,12 +1446,12 @@ export class Game {
 
   async applyEffect(effect) {
     if (!effect) return;
-    if (effect.attrs) this.addAttrs(effect.attrs);
+    if (effect.attrs) this.addAttrs(effect.attrs, { reason: '奇遇所得' });
     if (effect.inspiration) this.addInspiration(Number(effect.inspiration), '奇遇');
     if (effect.inspirationMax) {
       const gain = Math.max(0, Number(effect.inspirationMax) || 0);
       if (gain > 0) {
-        this.s.inspirationMax = Math.max(Number(this.cfg.inspiration.max) || 0, (Number(this.s.inspirationMax) || 0) + gain);
+        this.addInspirationMax(gain, '奇遇·心源拓阔');
         this.push(`心源拓阔，本局灵感上限 +${gain}`);
       }
     }
@@ -1409,6 +1525,7 @@ export class Game {
     if (this.s.inspiration <= 0) { this.ui.toast('灵感枯竭，无力应战'); return; }
     const gate = cell.phaseGate;
     if (this.cfg.board.layout === 'concentric_spiral' && gate && !this.s.phaseGateSeen[gate.phase]) {
+      const gateWithInk = Object.assign({}, gate, { inkSummary: this.choiceInkSummary(this.s.phase) });
       // 状态先落定，UI 再展示：即使弹窗/资源加载被中断，棋盘也能按 routeIndex 自愈到正确圈层。
       if (gate.transition) this.s.ringId = gate.transition;
       this.s.phaseGateSeen[gate.phase] = true;
@@ -1416,7 +1533,7 @@ export class Game {
       this.refillStrategy(gate.phase);
       this.applyAlbumOutcomeEffects('phase', { phase: gate.phase, eventKey: gate.phase });
       if (typeof this.ui.syncStageRing === 'function') this.ui.syncStageRing(this.s);
-      if (typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gate, this.s);
+      if (typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gateWithInk, this.s);
       // 二次同步是故障自愈：阶段弹窗曾是唯一切圈入口，任何旧 UI/缓存路径都会留下外圈+透明棋子。
       if (typeof this.ui.syncStageRing === 'function') this.ui.syncStageRing(this.s);
       const tier = (this.cfg.npcs || []).find(n => n.id === gate.exam);
@@ -1527,6 +1644,7 @@ export class Game {
         return m;
       })(),
       isPalace: !!opts.isPalace,
+      isHiddenFinal: !!opts.isHiddenFinal,
       // 殿试跨场适应层数（若本场为殿试且这是机制主考官）：供 UI 出「场间评语」
       palaceLayers: (() => {
         if (!opts.isPalace || !(npc && npc.mech)) return 0;
@@ -1587,10 +1705,34 @@ export class Game {
       previewDiceScore(style, pips) {
         return R.styleDiceScore(style, pips, this.styleSystem, R.BATTLE_COEF.diceMult, 0);
       },
+      /**
+       * 追加骰的独立作品乘区：基础规则与文心分别列项，既供 UI 预览，也让结算明细能说明增益来源。
+       * `extra_dice_pct` 的 value 为「每追加一枚」增加的乘区，避免把旧的骰面加点误当作新机制收益。
+       */
+      extraDiceModifiers(extraCount = 0) {
+        const count = Math.max(0, Number(extraCount) || 0);
+        if (!count) return [];
+        const per = Number((g.cfg.inspiration || {}).extraDicePct) || 0;
+        const mods = per ? [{ source: 'extraDice', label: `追加骰·${count}枚`, value: count * per }] : [];
+        for (const t of [...this.passiveTalents, ...this.usedActive]) {
+          const ef = t.effect || {};
+          if (ef.type !== 'extra_dice_pct') continue;
+          const value = Number(ef.value) || 0;
+          if (value) mods.push({ source: 'talent', label: `文心·${t.name}·追加骰`, value: count * value });
+        }
+        return mods;
+      },
+      extraDicePct(extraCount = 0) {
+        return this.extraDiceModifiers(extraCount).reduce((sum, mod) => sum + (Number(mod.value) || 0), 0);
+      },
       extraDiceCost(style, extraIndex = 1) {
-        const base = Number((g.cfg.inspiration || {}).extraDiceCost) || 3;
+        const base = Number((g.cfg.inspiration || {}).extraDiceCost) || 5;
         let discount = 0;
         if (style === 'ci' && extraIndex === 1) discount += Number((this.styleSystem.ci || {}).firstExtraDiscount) || 0;
+        if (extraIndex === 1) for (const t of this.passiveTalents) {
+          const ef = t.effect || {};
+          if (ef.type === 'extra_dice_pct') discount += Math.max(0, Number(ef.firstCostDiscount) || 0);
+        }
         const a = g.ensureAbilityState();
         if (extraIndex === 1 && a.manuscript.polish > 0) discount += Number(g.abilityConfig().manuscript?.polishDiscount) || 0;
         return Math.max(1, base - discount);
@@ -1658,6 +1800,7 @@ export class Game {
 
     // 多枚灵感骰支持：dice 可为点数数组（每枚一枚），也可仍是单数字向后兼容。
     // 总点数 = 各枚求和，与「灵感骰 = 点数 × diceMult」公式自洽；lucky_six 取「任一枚为 6」。
+    // 追加骰的收益另按每枚配置百分比进入作品乘区，避免只靠随机骰面。
     const dicePips = Array.isArray(dice) ? dice.slice() : [Number(dice) || 1];
     const totalPips = dicePips.reduce((a, b) => a + (Number(b) || 0), 0) || 1;
     const hasSix = dicePips.includes(6);
@@ -1669,6 +1812,11 @@ export class Game {
     const schoolMech = this.schoolMechanics();
     const schoolDicePlus = schoolMech.type === 'cizong_bi'
       ? Math.min(Number(schoolMech.creativeDicePlus) || 0, Number(schoolMech.freeDiceCap) || 5) : 0;
+    const extraDiceMods = extraDice > 0
+      ? (typeof session.extraDiceModifiers === 'function'
+        ? session.extraDiceModifiers(extraDice)
+        : [{ source: 'extraDice', label: `追加骰·${extraDice}枚`, value: extraDice * (Number((this.cfg.inspiration || {}).extraDicePct) || 0) }])
+      : [];
 
     // 相性 2.0：四层叠加（基矩阵 / 门派文风 / 当朝风潮 / 气势连捷）
     const base = R.affinityValue(af.matrix, manner, session.theme);
@@ -1847,6 +1995,10 @@ export class Game {
       });
     }
 
+    if (diceFixed == null) for (const mod of extraDiceMods) {
+      if (Number(mod.value) > 0) pct.push(mod);
+    }
+
     if (diceFixed == null) dicePlus += schoolDicePlus;
     const selfDiceProfile = diceFixed == null
       ? R.styleDiceScore(style, dicePips, styleSystem, diceMult, dicePlus)
@@ -1964,7 +2116,7 @@ export class Game {
     const levels = Math.floor(a.familiarity[style] / need);
     if (levels > 0) {
       a.familiarity[style] -= levels * need;
-      this.addAttrs({ [style]: levels });
+      this.addAttrs({ [style]: levels }, { reason: '实战熟练' });
       this.push(`实战熟练：${R.ATTR_NAMES[style]} +${levels}`);
     }
 
@@ -1975,15 +2127,8 @@ export class Game {
     a.technique.level[style] = thresholds.filter(t => a.technique.xp[style] >= Number(t)).length;
 
     // 学力研修：锁定的研修位每场推进，达到阈值自动兑现。
-    const studyNeed = Math.max(1, Number((ac.study || {}).progressNeed) || 3);
     for (const attr of a.study.focus.slice(0, this.studySlots())) {
-      a.study.progress[attr] = (Number(a.study.progress[attr]) || 0) + 1;
-      const gain = Math.floor(a.study.progress[attr] / studyNeed);
-      if (gain > 0) {
-        a.study.progress[attr] -= gain * studyNeed;
-        this.addAttrs({ [attr]: gain });
-        this.push(`学力·研修：${R.ATTR_NAMES[attr]} +${gain}`);
-      }
+      this.gainStudyProgress(attr, 1, '学力·研修');
     }
 
     // 笔力稿本：只沉淀已发生的结果。
@@ -2075,7 +2220,7 @@ export class Game {
           R.expectedScore(session.npc.attrs, out.npcStyle, (this.cfg.attrs || {}).battleFormula),
           this.cfg.attrs.winScale || null);
         gain = Math.max(1, Math.round(gain * scale));
-        this.addAttrs({ [out.style]: gain });
+        this.addAttrs({ [out.style]: gain }, { reason: '论战获胜' });
       }
       if (session.isPalace) { s.palaceWins++; }
       this.push(abilityOn
@@ -2166,13 +2311,13 @@ export class Game {
       const basic = R.BASIC_KEYS || ['bi', 'xue', 'si'];
       const key = basic.slice().sort((a, b) => (s.attrs[a] || 0) - (s.attrs[b] || 0))[0];
       const gain = Number(schoolMech.basicMinGain) || 1;
-      this.addAttrs({ [key]: gain });
+      this.addAttrs({ [key]: gain }, { reason: '辞宗·一战一得' });
       schoolState.basicProgress = schoolState.basicProgress || { bi: 0, xue: 0, si: 0 };
       schoolState.basicProgress[key] = (schoolState.basicProgress[key] || 0) + gain;
       const threshold = Number(schoolMech.basicMinThreshold) || 4;
       if (schoolState.basicProgress[key] >= threshold) {
         schoolState.basicProgress[key] -= threshold;
-        this.addAttrs({ [key]: Number(schoolMech.basicMinAccelerate) || 1 });
+        this.addAttrs({ [key]: Number(schoolMech.basicMinAccelerate) || 1 }, { reason: '辞宗·基础加速' });
       }
       this.push(`辞宗·一战一得：${R.ATTR_NAMES[key]} +${gain}`);
     }
@@ -2257,7 +2402,7 @@ export class Game {
       if (ef.type === 'study_bonus') extra += Number(ef.value) || 0;
     }
     if (extra) for (const k of Object.keys(delta)) delta[k] += extra;
-    const got = this.addAttrs(delta);
+    const got = this.addAttrs(delta, { reason: label });
     if (Object.keys(got).length) this.ui.toast(label);
   }
 
@@ -2279,7 +2424,82 @@ export class Game {
     const session = this.createSession(opts);
     const out = await this.ui.runBattle(session);
     await this.settleBattle(session, out);
-    return out.result;
+    return opts && opts.returnOutcome ? out : out.result;
+  }
+
+  hiddenFinalConfig() {
+    return (this.cfg.board && this.cfg.board.hiddenFinalRing) || null;
+  }
+
+  /**
+   * 隐藏终圈资格只读取已经公开、已经发生的状态：跨局名篇收集、本局开局锁定的
+   * 流派造诣，以及刚刚结算完成的殿试双方作品分。默认“一倍优势”按 2 倍分数解释。
+   */
+  hiddenFinalEligibility(palaceOut) {
+    const cfg = this.hiddenFinalConfig();
+    const req = (cfg && cfg.requirements) || {};
+    const cards = this.cfg.album || [];
+    const store = Album.loadStore();
+    const unlocked = new Set(store.unlocked || []);
+    const albumCount = cards.filter(c => c && unlocked.has(c.id)).length;
+    const allAlbums = cards.length > 0 && albumCount === cards.length;
+    const masteryNeed = Math.max(1, Number(req.masteryLevel) || Album.MASTERY_LEVELS);
+    const masteryLevel = Math.max(1, Number(this.s.masteryLevel) || 1);
+    const playerScore = Math.max(0, Number(palaceOut && palaceOut.selfCalc && palaceOut.selfCalc.total) || 0);
+    const opponentScore = Math.max(0, Number(palaceOut && palaceOut.oppCalc && palaceOut.oppCalc.total) || 0);
+    const scoreRatioNeed = Math.max(1, Number(req.palaceScoreRatio) || 2);
+    const doubleScoreWin = palaceOut && palaceOut.result === 'win'
+      && opponentScore > 0 && playerScore >= opponentScore * scoreRatioNeed;
+    return {
+      eligible: !!cfg && (!req.allAlbums || allAlbums) && masteryLevel >= masteryNeed && !!doubleScoreWin,
+      allAlbums, albumCount, albumTotal: cards.length,
+      masteryLevel, masteryNeed,
+      playerScore, opponentScore, scoreRatioNeed,
+      doubleScoreWin: !!doubleScoreWin
+    };
+  }
+
+  hiddenFinalFoe() {
+    const tier = (this.cfg.npcs || []).find(n => n && n.isHiddenFinal);
+    const pick = tier && Array.isArray(tier.npcs) ? tier.npcs[0] : null;
+    return tier && pick ? this._npcFromPick(tier, pick) : null;
+  }
+
+  async runHiddenFinal(meta = {}) {
+    const s = this.s;
+    const cfg = this.hiddenFinalConfig();
+    const npc = this.hiddenFinalFoe();
+    if (!cfg || !npc) return this.endGame('jinbang');
+
+    const cells = Array.isArray(cfg.cells) ? cfg.cells : [];
+    s.phase = 'secret';
+    s.ringId = cfg.id || 'secret';
+    s.secretFinal = {
+      eligible: true, invited: true, entered: true, completed: false, result: '',
+      cellId: Number(cfg.startCellId) || Number(cells[0] && cells[0].id) || 0,
+      qualification: { ...meta }
+    };
+    this.refillStrategy('secret');
+    this.ui.onState(s);
+    if (typeof this.ui.showHiddenFinalRing === 'function') await this.ui.showHiddenFinalRing(s, cfg);
+    s.secretFinal.cellId = Number(cfg.battleCellId) || Number(cells[cells.length - 1] && cells[cells.length - 1].id) || s.secretFinal.cellId;
+
+    const themes = Array.isArray(npc.themes) && npc.themes.length ? npc.themes : ['huaigu'];
+    const out = await this.doBattle({
+      npc, theme: themes[0], isHiddenFinal: true, returnOutcome: true,
+      label: `${cfg.name || '桃源终圈'}·终点论战`
+    });
+    s.secretFinal.completed = true;
+    s.secretFinal.result = out.result;
+    s.secretFinal.playerScore = Number(out.selfCalc && out.selfCalc.total) || 0;
+    s.secretFinal.opponentScore = Number(out.oppCalc && out.oppCalc.total) || 0;
+    if (out.result === 'win') {
+      if (typeof this.ui.showHiddenFinalVictory === 'function') await this.ui.showHiddenFinalVictory(out, npc);
+      await this.endGame('taoyuan');
+    } else {
+      if (typeof this.ui.showHiddenFinalDefeat === 'function') await this.ui.showHiddenFinalDefeat(out, npc);
+      await this.endGame('secret_loss');
+    }
   }
 
   /* ------------------------------------------------------ 殿试 */
@@ -2298,7 +2518,7 @@ export class Game {
     const themes = (zk.themes && zk.themes.length ? zk.themes : ['yongwu', 'songbie', 'huaigu']).slice();
     const themeNames = (this.cfg.affinity || {}).themeNames || {};
     const names = themes.map(t => themeNames[t] || t);
-    await this.ui.showPalaceIntro(themes, names);
+    await this.ui.showPalaceIntro(themes, names, this.choiceInkSummary());
 
     const n = this.cfg.board.layout === 'concentric_spiral' ? 1 : themes.length;
     // 殿试对手：三圈正式配置为单场；旧配置仍按 themes.length 兼容。「按出战权重加权、不重复抽取 n 个」（幂等去重，防止撞同名考官）。
@@ -2338,6 +2558,7 @@ export class Game {
       }
     }
 
+    let palaceOut = null;
     for (let i = 0; i < n; i++) {
       if (s.inspiration <= 0) {
         this.ui.toast('灵感枯竭，余下场次弃权记负');
@@ -2349,14 +2570,24 @@ export class Game {
         const ef = t.effect || {};
         if (ef.type === 'palace_insp') this.addInspiration(Number(ef.value) || 0, `文心·${t.name}`);
       }
-      await this.doBattle({
+      palaceOut = await this.doBattle({
         npc: palaceFoes[i], theme: themes[i], isPalace: true,
+        returnOutcome: true,
         label: `殿试第 ${i + 1} 场·${names[i]}`
       });
     }
     if (s.palaceWins >= n) this.ui.toast('殿试全胜——金榜题名！');
     // 照我传灯·跨局传承：殿试结算时尝试点亮下一局传承火种
     this._maybePendReincarnate();
+    if (s.palaceWins >= n) {
+      const eligibility = this.hiddenFinalEligibility(palaceOut);
+      s.secretFinal = Object.assign({}, s.secretFinal || {}, eligibility);
+      if (eligibility.eligible && typeof this.ui.askHiddenFinal === 'function') {
+        s.secretFinal.invited = true;
+        const enter = await this.ui.askHiddenFinal(eligibility);
+        if (enter) return this.runHiddenFinal(eligibility);
+      }
+    }
     await this.endGame(s.palaceWins >= n ? 'jinbang' : 'palace');
   }
 
@@ -2401,8 +2632,11 @@ export class Game {
       fengbi: '灵感耗尽，就此封笔——江郎才尽·悔',
       turnlimit: '岁月不居，六十回合已尽',
       palace: '殿试已毕，静候放榜',
-      jinbang: this.cfg.board.layout === 'concentric_spiral' ? '殿试一决夺魁，金榜题名！' : '殿试三连捷，金榜题名！'
+      jinbang: this.cfg.board.layout === 'concentric_spiral' ? '殿试一决夺魁，金榜题名！' : '殿试三连捷，金榜题名！',
+      taoyuan: '终圈胜桃花仙人，万卷归心，走出桃源。',
+      secret_loss: '金榜已定，桃源终问留待来局。'
     }[reason] || '对局结束';
+    summary.inkEpilogue = this.choiceInkEpilogue();
     summary.state = s;
     Object.assign(summary, this.commitAlbum(summary));
     // 流派熟练度：结算后按本局结果累加（完成即加、通关/文宗额外）
@@ -2422,7 +2656,7 @@ export class Game {
       }
     } catch (e) { /* 熟练度累计失败不阻断结算 */ }
     // 通关（金榜题名）→ 提交分数到云端排行榜（解耦：由 app.js 注入 onVictory）
-    if (summary.reason === 'jinbang' && typeof this.onVictory === 'function') {
+    if (['jinbang', 'taoyuan', 'secret_loss'].includes(summary.reason) && typeof this.onVictory === 'function') {
       try { this.onVictory((s.playerName || '无名氏'), summary.total); } catch (_) { /* 提交失败不阻断结算 */ }
     }
     await this.ui.showResult(summary);
