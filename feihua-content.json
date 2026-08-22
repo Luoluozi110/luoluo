@@ -4466,10 +4466,10 @@
       "id": "T023",
       "name": "退笔成冢",
       "kind": "passive",
-      "text": "智永居永欣寺三十年，临书不退，笔头委积，埋之为冢——积学既深，虽江郎才尽亦有余勇。每场结算后灵感补足至 10，不致骤然封笔。",
+      "text": "智永居永欣寺三十年，临书不退，笔头委积，埋之为冢——积学既深，虽江郎才尽亦有余勇。每场结算后灵感补足至 14，不致骤然封笔。",
       "effect": {
         "type": "insp_floor",
-        "value": 10
+        "value": 14
       },
       "upgrade": {
         "quality": "epic",
@@ -4484,25 +4484,25 @@
           {
             "effect": {
               "type": "insp_floor",
-              "value": 6
+              "value": 14
             }
           },
           {
             "effect": {
               "type": "insp_floor",
-              "value": 7
+              "value": 16
             }
           },
           {
             "effect": {
               "type": "insp_floor",
-              "value": 8
+              "value": 18
             }
           },
           {
             "effect": {
               "type": "insp_floor",
-              "value": 9
+              "value": 20
             }
           }
         ],
@@ -7959,7 +7959,7 @@
         {
           "effect": {
             "type": "insp_floor",
-            "value": 10
+            "value": 14
           },
           "style": {
             "fontFamily": "",
@@ -7974,7 +7974,7 @@
         {
           "effect": {
             "type": "insp_floor",
-            "value": 6
+            "value": 14
           },
           "style": {
             "fontFamily": "",
@@ -7989,7 +7989,7 @@
         {
           "effect": {
             "type": "insp_floor",
-            "value": 7
+            "value": 16
           },
           "style": {
             "fontFamily": "",
@@ -8004,7 +8004,7 @@
         {
           "effect": {
             "type": "insp_floor",
-            "value": 8
+            "value": 18
           },
           "style": {
             "fontFamily": "",
@@ -8019,7 +8019,7 @@
         {
           "effect": {
             "type": "insp_floor",
-            "value": 9
+            "value": 20
           },
           "style": {
             "fontFamily": "",
