@@ -31,7 +31,7 @@
     inner: { name: "定稿", label: "内圈", tone: "inner" }
   };
 
-  const state = { board: null, editIndex: -1, form: null, _ready: false };
+  const state = { board: null, editIndex: -1, form: null, hiddenForm: null, _ready: false };
 
   function emptyBoard() {
     return { version: 2, layout: "single_ring", laps: 2, sides: [], mainRing: [] };
@@ -81,6 +81,40 @@
     const eff = cleanEffect(c.effect);
     if (Object.keys(eff).length) out.effect = eff;
     return out;
+  }
+
+  /* ---------------- 隐藏终圈（独立短路径） ---------------- */
+  function clone(value) { return JSON.parse(JSON.stringify(value)); }
+  function hiddenGridFor(count) { return Math.max(3, Math.ceil(Math.max(2, Number(count) || 2) / 4) + 1); }
+  function normalizeHiddenRing(raw) {
+    const seed = (window.GAME_BOARD || {}).hiddenFinalRing || {};
+    const src = raw && typeof raw === "object" ? raw : seed;
+    const sourceCells = Array.isArray(src.cells) && src.cells.length ? src.cells : (seed.cells || []);
+    const cells = sourceCells.slice(0, 16).map((cell, i) => ({
+      id: Number(cell && cell.id) || 1000 + i,
+      ringIndex: i,
+      type: i === sourceCells.slice(0, 16).length - 1 ? "battle" : "secret_path",
+      name: String((cell && cell.name) || (i === sourceCells.slice(0, 16).length - 1 ? "桃源终卷" : `桃径·${i + 1}`)).trim()
+    }));
+    while (cells.length < 4) {
+      const i = cells.length;
+      cells.push({ id: 1000 + i, ringIndex: i, type: "secret_path", name: `桃径·${i + 1}` });
+    }
+    cells.forEach((cell, i) => { cell.ringIndex = i; cell.type = i === cells.length - 1 ? "battle" : "secret_path"; });
+    return {
+      id: String(src.id || "secret"),
+      name: String(src.name || "桃源终圈").trim(),
+      grid: hiddenGridFor(cells.length),
+      startCellId: cells[0].id,
+      battleCellId: cells[cells.length - 1].id,
+      requirements: { allAlbums: true, masteryLevel: 5, palaceScoreRatio: 2 },
+      cells
+    };
+  }
+  function hiddenRing() {
+    const ring = normalizeHiddenRing(state.board && state.board.hiddenFinalRing);
+    state.board.hiddenFinalRing = ring;
+    return ring;
   }
 
   /* ---------------- 效果对象 ---------------- */
@@ -213,6 +247,7 @@
     const byType = {};
     const rings = ringSummary();
     state.board.mainRing.forEach(c => { byType[c.type] = (byType[c.type] || 0) + 1; });
+    const hidden = hiddenRing();
     document.getElementById("boardStatStrip").innerHTML = `
       <div class="stat"><b>${total}</b><span>主环格数</span></div>
       ${rings.map(ring => `<div class="stat board-ring-stat ring-${ring.tone}"><b>${ring.count}</b><span>${ring.label} · ${C.esc(ring.name)}</span></div>`).join("")}
@@ -222,7 +257,8 @@
       <div class="stat"><b>${byType.battle || 0}</b><span>论战</span></div>
       <div class="stat"><b>${byType.event || 0}</b><span>奇遇</span></div>
       <div class="stat"><b>${byType.sky || 0}</b><span>天象</span></div>
-      <div class="stat"><b>${byType.mingjing || 0}</b><span>名胜</span></div>`;
+      <div class="stat"><b>${byType.mingjing || 0}</b><span>名胜</span></div>
+      <div class="stat"><b>${hidden.cells.length}</b><span>隐藏终圈</span></div>`;
   }
   function renderRingTabs() {
     const box = document.getElementById("boardRingTabs");
@@ -276,17 +312,65 @@
     renderRingTabs();
     const list = document.getElementById("boardlist");
     const items = filtered();
+    const hidden = hiddenRing();
+    const hiddenCard = `<section class="board-ring-group ring-inner" style="border-style:dashed">
+      <div class="board-ring-group-head"><div><span class="board-ring-badge ring-inner">终圈</span><b>${C.esc(hidden.name)}</b></div><span>${hidden.cells.length} 格 · 唯一终点论战</span></div>
+      <div style="padding:0 14px 12px;color:var(--ink2);font-size:13px;line-height:1.75">可编辑路径名称、顺序与长度（4–16 格）；资格门槛、唯一终点论战及陈之微对手契约由系统锁定。</div>
+      <div class="q-actions" style="padding:0 14px 14px"><button class="btn sm" type="button" data-edit-hidden>编辑隐藏终圈</button></div>
+    </section>`;
     if (!items.length) {
       list.innerHTML = `<div class="empty"><b>${state.board.mainRing.length ? "没有符合筛选条件的格子" : "主环为空"}</b>
-        ${state.board.mainRing.length ? "试着调整筛选条件。" : "请导入 board.json 或重置默认地图。"}</div>`;
+        ${state.board.mainRing.length ? "试着调整筛选条件。" : "请导入 board.json 或重置默认地图。"}</div>` + hiddenCard;
       return;
     }
     const f = getFilters();
-    if (f.ring !== "all" || !isThreeRingBoard()) { list.innerHTML = items.map(cellCard).join(""); return; }
+    if (f.ring !== "all" || !isThreeRingBoard()) { list.innerHTML = hiddenCard + items.map(cellCard).join(""); return; }
     const groups = ringSummary().map(ring => ringGroup(ring, items.filter(cell => ringId(cell) === ring.id)));
     const unassigned = items.filter(cell => !ringId(cell));
     if (unassigned.length) groups.push(ringGroup(ringMeta(""), unassigned));
-    list.innerHTML = groups.join("");
+    list.innerHTML = hiddenCard + groups.join("");
+  }
+
+  function renderHiddenCells() {
+    const box = document.getElementById("boardHiddenCells");
+    if (!box || !state.hiddenForm) return;
+    const cells = state.hiddenForm.cells;
+    box.innerHTML = cells.map((cell, i) => {
+      const isEnd = i === cells.length - 1;
+      return `<div class="opt-row" data-hidden-index="${i}" style="align-items:center">
+        <span class="ord">${i + 1}</span>
+        <span class="badge ${isEnd ? "src" : "r-common"}">${isEnd ? "终点·论战" : "桃径"}</span>
+        <input class="hidden-cell-name" type="text" value="${C.esc(cell.name)}" aria-label="第 ${i + 1} 格名称" />
+        <button class="btn sm" type="button" data-hidden-up="${i}" ${i ? "" : "disabled"}>↑</button>
+        <button class="btn sm" type="button" data-hidden-down="${i}" ${i < cells.length - 1 ? "" : "disabled"}>↓</button>
+        <button class="btn sm danger" type="button" data-hidden-remove="${i}" ${isEnd || cells.length <= 4 ? "disabled" : ""}>删</button>
+      </div>`;
+    }).join("");
+    const grid = hiddenGridFor(cells.length);
+    const gridEl = document.getElementById("board-hidden-grid");
+    if (gridEl) gridEl.textContent = `${grid} × ${grid} · ${cells.length} 格`;
+  }
+
+  function openHiddenEditor() {
+    state.hiddenForm = clone(hiddenRing());
+    document.getElementById("board-hidden-name").value = state.hiddenForm.name;
+    const msg = document.getElementById("boardHiddenMsg"); msg.className = "msg"; msg.textContent = "";
+    renderHiddenCells();
+    C.openOverlay("boardHiddenOverlay");
+  }
+  function closeHiddenEditor() { C.closeOverlay("boardHiddenOverlay"); state.hiddenForm = null; }
+  function saveHiddenEditor() {
+    const form = state.hiddenForm;
+    if (!form) return;
+    form.name = String(document.getElementById("board-hidden-name").value || "").trim();
+    const msg = document.getElementById("boardHiddenMsg");
+    if (!form.name || form.cells.length < 4 || form.cells.length > 16 || form.cells.some(c => !String(c.name || "").trim())) {
+      msg.className = "msg err";
+      msg.textContent = "终圈名称和每个路径格名称不能为空，路径长度须在 4～16 格之间。";
+      return;
+    }
+    state.board.hiddenFinalRing = normalizeHiddenRing(form);
+    save(); closeHiddenEditor(); renderList(); C.toast("已保存隐藏终圈（唯一终点论战保持不变）");
   }
 
   /* ---------------- 效果编辑器（单格效果） ---------------- */
@@ -580,6 +664,7 @@
     });
     document.getElementById("boardBtnStats").addEventListener("click", showStats);
     document.getElementById("boardBtnProps").addEventListener("click", openMapProps);
+    document.getElementById("boardBtnHidden").addEventListener("click", openHiddenEditor);
     document.getElementById("boardBtnReset").addEventListener("click", () => {
       if (!confirm("确定重置为游戏默认地图？当前本地修改将丢失。")) return;
       state.board = normalizeBoard(window.GAME_BOARD || emptyBoard());
@@ -592,6 +677,17 @@
     document.getElementById("boardStClose").addEventListener("click", () => C.closeOverlay("boardStOverlay"));
     document.getElementById("boardPropsCancel").addEventListener("click", closeMapProps);
     document.getElementById("boardPropsSave").addEventListener("click", saveMapProps);
+    document.getElementById("boardHiddenCancel").addEventListener("click", closeHiddenEditor);
+    document.getElementById("boardHiddenSave").addEventListener("click", saveHiddenEditor);
+    document.getElementById("boardHiddenAdd").addEventListener("click", () => {
+      if (!state.hiddenForm || state.hiddenForm.cells.length >= 16) return;
+      const cells = state.hiddenForm.cells;
+      const end = cells.pop();
+      const id = Math.max(999, ...cells.map(c => Number(c.id) || 0), Number(end && end.id) || 0) + 1;
+      cells.push({ id, ringIndex: cells.length, type: "secret_path", name: `桃径·${cells.length + 1}` });
+      cells.push(end || { id: id + 1, ringIndex: cells.length + 1, type: "battle", name: "桃源终卷" });
+      renderHiddenCells();
+    });
 
     const ov = document.getElementById("boardOverlay");
     ["input", "change"].forEach(ev => ov.addEventListener(ev, handleField));
@@ -611,8 +707,29 @@
 
     document.getElementById("boardlist").addEventListener("click", e => {
       const t = e.target;
+      if (t.closest && t.closest("[data-edit-hidden]")) return openHiddenEditor();
       if (t.dataset.edit != null) return openEditor(Number(t.dataset.edit));
       if (t.dataset.preview != null) return previewCell(state.board.mainRing[Number(t.dataset.preview)]);
+    });
+    const hiddenOv = document.getElementById("boardHiddenOverlay");
+    hiddenOv.addEventListener("input", e => {
+      const row = e.target.closest && e.target.closest("[data-hidden-index]");
+      if (row && e.target.classList.contains("hidden-cell-name") && state.hiddenForm) {
+        state.hiddenForm.cells[Number(row.dataset.hiddenIndex)].name = e.target.value;
+      }
+    });
+    hiddenOv.addEventListener("click", e => {
+      if (!state.hiddenForm) return;
+      const t = e.target;
+      const swap = (a, b) => { const cells = state.hiddenForm.cells; [cells[a], cells[b]] = [cells[b], cells[a]]; renderHiddenCells(); };
+      if (t.dataset.hiddenUp != null) return swap(Number(t.dataset.hiddenUp), Number(t.dataset.hiddenUp) - 1);
+      if (t.dataset.hiddenDown != null) return swap(Number(t.dataset.hiddenDown), Number(t.dataset.hiddenDown) + 1);
+      if (t.dataset.hiddenRemove != null) {
+        const i = Number(t.dataset.hiddenRemove);
+        if (state.hiddenForm.cells.length > 4 && i < state.hiddenForm.cells.length - 1) {
+          state.hiddenForm.cells.splice(i, 1); renderHiddenCells();
+        }
+      }
     });
     document.getElementById("boardRingTabs").addEventListener("click", e => {
       const tab = e.target.closest("[data-ring-filter]");

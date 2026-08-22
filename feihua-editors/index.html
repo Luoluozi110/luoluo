@@ -179,12 +179,13 @@
 <!-- ============================ 地图编辑器 ============================ -->
 <section class="section wrap" id="board-section">
   <div class="toolbar">
-    <span class="lead">地图管理（主环格子 / 三圈路线 / 阶段门 / 区段）</span>
+    <span class="lead">地图管理（主环格子 / 三圈路线 / 阶段门 / 终圈）</span>
     <div class="spacer"></div>
     <button class="btn" id="boardBtnImport">导入 board.json</button>
     <button class="btn" id="boardBtnExport">导出 board.json</button>
     <button class="btn" id="boardBtnStats">统计</button>
     <button class="btn" id="boardBtnProps">地图属性</button>
+    <button class="btn" id="boardBtnHidden">隐藏终圈</button>
     <button class="btn" id="boardBtnReset">重置默认</button>
     <button class="btn primary" id="boardBtnAdd">＋ 新增格子</button>
     <input type="file" id="boardFileInput" accept=".json,application/json" style="display:none" />
@@ -819,6 +820,31 @@
     <div class="modal-actions">
       <button class="btn ghost" id="boardCancel">取消</button>
       <button class="btn primary" id="boardSave">保存格子</button>
+    </div>
+  </div>
+</div>
+
+<!-- =================== 地图：隐藏终圈编辑弹窗 =================== -->
+<div class="overlay" id="boardHiddenOverlay">
+  <div class="modal" role="dialog" aria-modal="true" style="width:min(760px,100%);max-height:calc(100dvh - 32px);overflow:auto">
+    <h3>隐藏终圈</h3>
+    <div class="msg" id="boardHiddenMsg"></div>
+    <div class="row2">
+      <div class="field"><label>终圈名称</label><input type="text" id="board-hidden-name" placeholder="如：桃源终圈" /></div>
+      <div class="field"><label>布局网格（随路径长度自动调整）</label><div class="board-ring-readout" id="board-hidden-grid">3 × 3</div></div>
+    </div>
+    <div class="field" style="margin-bottom:8px">
+      <label>通关门槛（系统锁定）</label>
+      <div class="board-ring-readout">集齐传世名篇 · 本局流派 Lv5 · 殿试得分 ≥ 主考官 2 倍</div>
+    </div>
+    <div class="field">
+      <label>路径格（顺序即棋子行进顺序；最后一格固定为唯一论战终点）</label>
+      <div id="boardHiddenCells"></div>
+      <button class="btn sm" type="button" id="boardHiddenAdd">＋ 添加路径格</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="boardHiddenCancel">取消</button>
+      <button class="btn primary" id="boardHiddenSave">保存终圈</button>
     </div>
   </div>
 </div>

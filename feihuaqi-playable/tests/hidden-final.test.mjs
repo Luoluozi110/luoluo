@@ -11,7 +11,7 @@ for (const name of names) cfg[name] = JSON.parse(readFileSync(new URL(`../config
 normalizeConfig(cfg);
 
 const ring = cfg.board.hiddenFinalRing;
-assert.equal(ring.cells.length, 8, '隐藏终圈应为 8 格短路径');
+assert.equal(ring.cells.length, 12, '隐藏终圈应为 12 格仪式路径');
 assert.equal(ring.cells.filter(c => c.type === 'battle').length, 1, '隐藏终圈只有终点是论战格');
 assert.equal(ring.cells.find(c => c.id === ring.battleCellId).type, 'battle');
 
@@ -74,4 +74,4 @@ assert.equal(restored.state.secretFinal.completed, true);
 assert.equal(restored.state.secretFinal.result, 'win');
 
 Album.resetStore();
-console.log('hidden-final.test.mjs: 资格门槛、短终圈、陈之微 300 点、胜利结算与存档往返全部通过');
+console.log('hidden-final.test.mjs: 资格门槛、终圈仪式路径、陈之微 300 点、胜利结算与存档往返全部通过');

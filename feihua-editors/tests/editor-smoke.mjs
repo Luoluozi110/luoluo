@@ -64,7 +64,7 @@ console.log('[1.1] 旧编辑器缓存自动补齐隐藏终圈系统内容');
   const hiddenBoard = window.BOARD.get().hiddenFinalRing;
   const hiddenTier = window.NPC.get().find(t => t.isHiddenFinal);
   const hiddenCopy = window.COPY.get().narrative.hiddenFinal;
-  ok(hiddenBoard && hiddenBoard.cells.length === 8, '旧地图缓存补齐 hiddenFinalRing');
+  ok(hiddenBoard && hiddenBoard.cells.length === 12, '旧地图缓存补齐 12 格 hiddenFinalRing');
   ok(hiddenTier && hiddenTier.npcs[0].name === '陈之微', '旧 NPC 缓存补齐陈之微隐藏档');
   ok((document.querySelector('#npclist')?.textContent || '').includes('陈之微'), 'NPC 编辑器列表显示隐藏 NPC 陈之微');
   ok(hiddenCopy && hiddenCopy.invite.text && hiddenCopy.victory.text && hiddenCopy.defeat.text, '旧文案缓存补齐邀请/胜利/失败文案');
@@ -163,6 +163,27 @@ console.log('[5] 地图：编辑格子名 → 保存 → state + localStorage');
   ok(cell0.name === '冒烟测试格', '格子名写入 state', cell0.name);
   const saved = JSON.parse(localStorage.getItem('feihua_editors_v1_board'));
   ok(saved.mainRing.find(c => c.id === 0).name === '冒烟测试格', '格子名持久化 localStorage');
+}
+
+console.log('[5.1] 地图：隐藏终圈路径编辑 → 结构锁定 → 工程配置可发布');
+{
+  click(document.getElementById('boardBtnHidden'));
+  ok(document.getElementById('boardHiddenOverlay').classList.contains('show'), '隐藏终圈编辑弹窗打开');
+  ok(document.querySelectorAll('#boardHiddenCells [data-hidden-index]').length === 12, '隐藏终圈默认显示 12 格路径');
+  const nameInput = document.getElementById('board-hidden-name');
+  nameInput.value = '冒烟测试·桃源终圈';
+  fire(nameInput, 'input');
+  click(document.getElementById('boardHiddenAdd'));
+  ok(document.querySelectorAll('#boardHiddenCells [data-hidden-index]').length === 13, '可在终点前新增一格路径');
+  click(document.getElementById('boardHiddenSave'));
+  const hidden = window.BOARD.get().hiddenFinalRing;
+  ok(hidden.name === '冒烟测试·桃源终圈' && hidden.cells.length === 13, '隐藏终圈名称与路径长度写入 state');
+  ok(hidden.startCellId === hidden.cells[0].id && hidden.battleCellId === hidden.cells.at(-1).id, '入口与终点标识随路径自动保持正确');
+  ok(hidden.cells.slice(0, -1).every(c => c.type === 'secret_path') && hidden.cells.at(-1).type === 'battle', '仅终点保持论战格，其余为仪式路径');
+  let project = null;
+  try { project = window.Common.buildProject(); } catch (_) { /* 由断言给出明确失败 */ }
+  ok(project && project.board.hiddenFinalRing.cells.length === 13, '编辑后的隐藏终圈仍可通过工程配置契约');
+  window.BOARD.importData(window.GAME_BOARD, true);
 }
 
 console.log('[6] NPC：机制对手编辑 → id/mech 保留 → 保存 → state + localStorage');
