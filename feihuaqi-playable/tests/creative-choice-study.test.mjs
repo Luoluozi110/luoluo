@@ -36,7 +36,11 @@ console.log('== 创作抉择题内容契约 ==');
   assert.ok(choices.every(o => ['shi','ci','lian','bi','xue','si'].includes(o.studyTarget)), '每项都有有效修习方向');
   assert.ok(choices.every(o => Array.isArray(o.inkTags) && o.inkTags.length >= 1 && o.inkTags.length <= 2), '每项都有 1–2 个墨痕');
   assert.ok(choices.every(o => typeof o.resultText === 'string' && o.resultText.trim()), '每项都有即时回声');
-  console.log('  ✓ 54 个选项均具备方向、墨痕与回声');
+  assert.equal(new Set(choices.map(o => o.resultText)).size, choices.length, '每个选项都有不重复的专属即时回声');
+  assert.ok(choices.every(o => o.resultText.length >= 20 && o.resultText.length <= 60), '即时回声长度适合结算弹层阅读');
+  const choiceQuestions = config().questions.filter(q => q.type === 'choice');
+  assert.ok(choiceQuestions.every(q => !/安全通过|高阶玩法|传统套路|邮路|诗的社交|没想通/.test(q.analysis || '')), '解析不含破坏时代氛围的措辞');
+  console.log('  ✓ 54 个选项均具备方向、墨痕与专属回声');
 }
 
 console.log('== 当前研修方向：推进进度，不直接灌属性 ==');
