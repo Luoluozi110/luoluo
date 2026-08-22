@@ -10324,6 +10324,36 @@
       "themes": [
         "huaigu"
       ]
+    },
+    {
+      "id": "taohuaxian",
+      "tier": "桃源终卷",
+      "range": [
+        0,
+        1
+      ],
+      "desc": "仅在隐藏终圈登场，不进入常规对手池。六维均衡，总和严格为 300。",
+      "npcs": [
+        {
+          "id": "chen_zhiwei",
+          "name": "陈之微",
+          "title": "桃花仙人",
+          "style": "",
+          "weight": 0,
+          "attrs": {
+            "shi": 50,
+            "ci": 50,
+            "lian": 50,
+            "bi": 50,
+            "xue": 50,
+            "si": 50
+          }
+        }
+      ],
+      "isHiddenFinal": true,
+      "themes": [
+        "huaigu"
+      ]
     }
   ],
   "affinity": {
@@ -14847,7 +14877,69 @@
     },
     "branches": {},
     "branchCells": [],
-    "branchGates": {}
+    "branchGates": {},
+    "hiddenFinalRing": {
+      "id": "secret",
+      "name": "桃源终圈",
+      "grid": 3,
+      "startCellId": 1000,
+      "battleCellId": 1007,
+      "requirements": {
+        "allAlbums": true,
+        "masteryLevel": 5,
+        "palaceScoreRatio": 2
+      },
+      "cells": [
+        {
+          "id": 1000,
+          "ringIndex": 0,
+          "type": "secret_path",
+          "name": "桃门"
+        },
+        {
+          "id": 1001,
+          "ringIndex": 1,
+          "type": "secret_path",
+          "name": "花影"
+        },
+        {
+          "id": 1002,
+          "ringIndex": 2,
+          "type": "secret_path",
+          "name": "忘机"
+        },
+        {
+          "id": 1003,
+          "ringIndex": 3,
+          "type": "secret_path",
+          "name": "涤心"
+        },
+        {
+          "id": 1004,
+          "ringIndex": 4,
+          "type": "secret_path",
+          "name": "照水"
+        },
+        {
+          "id": 1005,
+          "ringIndex": 5,
+          "type": "secret_path",
+          "name": "无字"
+        },
+        {
+          "id": 1006,
+          "ringIndex": 6,
+          "type": "secret_path",
+          "name": "问真"
+        },
+        {
+          "id": 1007,
+          "ringIndex": 7,
+          "type": "battle",
+          "name": "桃源终卷"
+        }
+      ]
+    }
   },
   "sky": [
     {
@@ -15159,13 +15251,16 @@
         "min": 1
       },
       "reward": {
-        "type": "inspiration",
-        "value": 2
+        "type": "inspirationMax",
+        "value": 4
       },
-      "rewardDesc": "开局灵感 +2",
+      "rewardDesc": "开局灵感上限 +4",
       "growth": {
         "baseXp": 1,
-        "loseXp": 1
+        "loseXp": 1,
+        "winXp": 0,
+        "drawXp": 0,
+        "styleXp": 0
       },
       "branches": [
         {
@@ -15179,7 +15274,8 @@
               "type": "inspirationMax",
               "value": 2,
               "name": "惜墨",
-              "desc": "灵感上限 +2"
+              "desc": "灵感上限 +2",
+              "minLevel": 1
             },
             {
               "trigger": "battle",
@@ -15220,7 +15316,8 @@
               "type": "manuscript",
               "value": 1,
               "name": "五色旧笔",
-              "desc": "开局稿页 +1"
+              "desc": "开局稿页 +1",
+              "minLevel": 1
             },
             {
               "trigger": "battle",
@@ -16648,6 +16745,27 @@
       "title": "会试圈 · 再入科场",
       "text": "童生圈的试炼渐远，你已不再只是初入科场的稚子。\n\n棋盘上的路重新展开，题目更深，对手也将换作秀才与举人之间的较量。前方的每一步，都在检验十年寒窗积下的根基。\n\n收束心神，继续向前；待绕过会试圈，金殿之门便会在尽头开启。",
       "button": "进入会试圈"
+    },
+    "hiddenFinal": {
+      "invite": {
+        "kind": "桃 源 终 卷",
+        "title": "金榜之外，尚有一问",
+        "text": "主考官搁下朱笔，殿门外忽有桃花逆风而开。花影深处，一条从未见过的小径浮出水面。旧日那句“待到种种妄念破灭，自可殿试见我”又在心头响起。若循花而去，金榜仍归于你；只是终圈尽头，还有桃花仙人陈之微等你交最后一卷。",
+        "enterButton": "循花入终圈",
+        "declineButton": "止步金榜"
+      },
+      "victory": {
+        "kind": "桃 花 仙 人",
+        "title": "此心已过万重山",
+        "text": "陈之微看罢你的终卷，将笔轻轻搁在桃枝旁。漫天花影像旧梦一样碎开，又在你身后重合。\n\n“功名不过一纸。能收万卷于胸中，又不为万卷所役，方算真正走出桃源。”\n\n他折下一枝桃花递来。你回首望去，童生铺、三重科场与金殿都已缩成水面上的一点灯火；而脚下的路，第一次不再由棋盘替你标明。",
+        "button": "携一枝桃花归去"
+      },
+      "defeat": {
+        "kind": "桃 源 留 问",
+        "title": "终卷未竟",
+        "text": "陈之微拂去卷角的一点落花，并未收走你的金榜。\n\n“你已能胜人，却还未尽胜旧日之己。此问不必今日作答。”\n\n桃径在身后缓缓隐去，最后一瓣花落入袖中。终圈仍在那里，等下一次更从容的来路。",
+        "button": "记下此问"
+      }
     }
   }
 }
