@@ -226,10 +226,12 @@
 
   function refreshWorkspaceUI() { updateWorkspaceSummary(); }
 
-  /* ---------------- 效果文本（仿游戏 effectBrief，但不剧透属性） ---------------- */
+  /* ---------------- 效果文本（与游戏事件卡一致，完整展示已配置收益） ---------------- */
   function effectBrief(ef) {
     if (!ef || !Object.keys(ef).length) return "";
     const p = [];
+    const attrs = ef.attrs || {};
+    for (const k of ATTR_KEYS) if (attrs[k]) p.push(`${ATTR[k]} ${attrs[k] > 0 ? "+" : ""}${attrs[k]}`);
     if (ef.inspiration) p.push(`灵感 ${ef.inspiration > 0 ? "+" : ""}${ef.inspiration}`);
     if (ef.inspirationMax) p.push(`灵感上限 +${ef.inspirationMax}`);
     if (ef.talent) p.push("获得文心");
