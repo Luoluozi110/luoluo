@@ -58,7 +58,7 @@
     eff = eff || {};
     const attrs = [];
     const a = eff.attrs || {};
-    for (const k of ATTR_KEYS) if (a[k]) attrs.push({ k, v: Number(a[k]) });
+    for (const k of ATTR_KEYS) if (Number(a[k])) attrs.push({ k, v: Number(a[k]) });
     return { attrs, inspiration: Number(eff.inspiration) || 0, inspirationMax: Number(eff.inspirationMax) || 0, talent: eff.talent || "", item: eff.item || "" };
   }
   // 任意来源（规范对象 attrs / 表单数组 attrs）-> 规范对象
@@ -254,6 +254,7 @@
         <button class="opt-del eff-attr-del" title="删除属性">×</button>
       </div>`).join("");
     return `<div class="eff-box" data-target="${target}">
+      <div style="font-size:12px;color:var(--ink2);margin-bottom:5px">属性变化（可添加多项；正数增加，负数减少）</div>
       <div class="eff-attrs">${attrRows || '<div style="font-size:12px;color:var(--ink2)">暂无属性加成</div>'}</div>
       <button class="btn sm opt-add eff-attr-add">＋ 添加属性</button>
       <div class="row2" style="margin-top:8px">

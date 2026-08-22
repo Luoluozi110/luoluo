@@ -769,16 +769,19 @@ export function effectText(ef) {
   const p = [];
   for (const [k, v] of Object.entries(ef.attrs || {})) p.push(`${ATTR_NAMES[k] || k} ${v > 0 ? '+' : ''}${v}`);
   if (ef.inspiration) p.push(`灵感 ${ef.inspiration > 0 ? '+' : ''}${ef.inspiration}`);
+  if (ef.inspirationMax) p.push(`灵感上限 +${ef.inspirationMax}`);
   if (ef.talent) p.push('获得文心');
   if (ef.item) p.push(`道具「${ef.item}」`);
   return p.length ? p.join('　') : '（无额外收益）';
 }
 
-/** 事件卡用：只展示非属性收益（灵感 / 文心 / 道具），不剧透属性变化 */
-function effectBrief(ef) {
+/** 事件卡用：在选择前完整展示已配置的收益，避免属性奖励成为不可见信息。 */
+export function effectBrief(ef) {
   if (!ef || !Object.keys(ef).length) return '';
   const p = [];
+  for (const [k, v] of Object.entries(ef.attrs || {})) p.push(`${ATTR_NAMES[k] || k} ${v > 0 ? '+' : ''}${v}`);
   if (ef.inspiration) p.push(`灵感 ${ef.inspiration > 0 ? '+' : ''}${ef.inspiration}`);
+  if (ef.inspirationMax) p.push(`灵感上限 +${ef.inspirationMax}`);
   if (ef.talent) p.push('获得文心');
   if (ef.item) p.push(`道具「${ef.item}」`);
   return p.join('　');

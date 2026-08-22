@@ -133,6 +133,37 @@ console.log('[1.6] 创作抉择：墨痕字段迁移 → 编辑 → 保存往返
   window.QB.importData(window.GAME_QUESTIONS, true);
 }
 
+console.log('[1.7] 奇遇：属性收益可见 → 可编辑 → 预览与保存往返');
+{
+  const eventIndex = window.ADV.get().findIndex(e => e.kind === 'direct' && e.effect && e.effect.attrs && Object.keys(e.effect.attrs).length);
+  const source = window.ADV.get()[eventIndex];
+  ok(eventIndex >= 0, '存在带属性奖励的直接奇遇');
+  if (source) {
+    const [attrKey, initialValue] = Object.entries(source.effect.attrs)[0];
+    const attrNames = { shi: '诗力', ci: '词力', lian: '联力', bi: '笔力', xue: '学力', si: '思力' };
+    const nextValue = Number(initialValue) >= 5 ? Number(initialValue) - 1 : Number(initialValue) + 1;
+    ok(window.Common.effectBrief(source.effect).includes(`${attrNames[attrKey]} +${initialValue}`), '奇遇列表摘要显示属性收益');
+    click(document.querySelector(`#evlist [data-edit="${eventIndex}"]`));
+    ok(document.getElementById('evOverlay').classList.contains('show'), '属性奇遇编辑弹窗打开');
+    const rows = document.querySelectorAll('#evEffectBox .eff-attr');
+    ok(rows.length === Object.keys(source.effect.attrs).length, '已配置属性完整回填为可编辑行', rows.length);
+    const row = Array.from(rows).find(x => x.querySelector('.eff-attr-k').value === attrKey);
+    const valueInput = row && row.querySelector('.eff-attr-v');
+    ok(!!valueInput && Number(valueInput.value) === Number(initialValue), '属性增量正确预填到数值输入框');
+    if (valueInput) {
+      valueInput.value = String(nextValue); fire(valueInput, 'input');
+      click(document.getElementById('evPreviewBtn'));
+      ok(document.getElementById('evPreviewBody').textContent.includes(`${attrNames[attrKey]} +${nextValue}`), '奇遇预览显示编辑后的属性收益');
+      click(document.getElementById('evPreviewClose'));
+      click(document.getElementById('evSave'));
+      ok(window.ADV.get()[eventIndex].effect.attrs[attrKey] === nextValue, '编辑后的属性增量写入奇遇 state');
+      const savedEvents = JSON.parse(localStorage.getItem('feihua_editors_v1_events') || '[]');
+      ok(savedEvents[eventIndex].effect.attrs[attrKey] === nextValue, '编辑后的属性增量持久化 localStorage');
+    }
+  }
+  window.ADV.importData(window.GAME_EVENTS, true);
+}
+
 console.log('[2] 旧本地数据的官方文心补齐 + 编辑器列表渲染');
 const t034 = window.TALENT.get().find(t => t.id === 'T034');
 ok(!!t034 && t034.name === '照我传灯', '旧 localStorage 自动补齐 T034「照我传灯」');
