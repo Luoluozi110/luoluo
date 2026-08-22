@@ -1602,14 +1602,34 @@ export class Game {
       previewDiceScore(style, pips) {
         return R.styleDiceScore(style, pips, this.styleSystem, R.BATTLE_COEF.diceMult, 0);
       },
-      extraDicePct(extraCount = 0) {
+      /**
+       * 追加骰的独立作品乘区：基础规则与文心分别列项，既供 UI 预览，也让结算明细能说明增益来源。
+       * `extra_dice_pct` 的 value 为「每追加一枚」增加的乘区，避免把旧的骰面加点误当作新机制收益。
+       */
+      extraDiceModifiers(extraCount = 0) {
+        const count = Math.max(0, Number(extraCount) || 0);
+        if (!count) return [];
         const per = Number((g.cfg.inspiration || {}).extraDicePct) || 0;
-        return Math.max(0, Number(extraCount) || 0) * per;
+        const mods = per ? [{ source: 'extraDice', label: `追加骰·${count}枚`, value: count * per }] : [];
+        for (const t of [...this.passiveTalents, ...this.usedActive]) {
+          const ef = t.effect || {};
+          if (ef.type !== 'extra_dice_pct') continue;
+          const value = Number(ef.value) || 0;
+          if (value) mods.push({ source: 'talent', label: `文心·${t.name}·追加骰`, value: count * value });
+        }
+        return mods;
+      },
+      extraDicePct(extraCount = 0) {
+        return this.extraDiceModifiers(extraCount).reduce((sum, mod) => sum + (Number(mod.value) || 0), 0);
       },
       extraDiceCost(style, extraIndex = 1) {
         const base = Number((g.cfg.inspiration || {}).extraDiceCost) || 5;
         let discount = 0;
         if (style === 'ci' && extraIndex === 1) discount += Number((this.styleSystem.ci || {}).firstExtraDiscount) || 0;
+        if (extraIndex === 1) for (const t of this.passiveTalents) {
+          const ef = t.effect || {};
+          if (ef.type === 'extra_dice_pct') discount += Math.max(0, Number(ef.firstCostDiscount) || 0);
+        }
         const a = g.ensureAbilityState();
         if (extraIndex === 1 && a.manuscript.polish > 0) discount += Number(g.abilityConfig().manuscript?.polishDiscount) || 0;
         return Math.max(1, base - discount);
@@ -1689,9 +1709,11 @@ export class Game {
     const schoolMech = this.schoolMechanics();
     const schoolDicePlus = schoolMech.type === 'cizong_bi'
       ? Math.min(Number(schoolMech.creativeDicePlus) || 0, Number(schoolMech.freeDiceCap) || 5) : 0;
-    const extraDicePct = extraDice > 0
-      ? (typeof session.extraDicePct === 'function' ? session.extraDicePct(extraDice) : extraDice * (Number((this.cfg.inspiration || {}).extraDicePct) || 0))
-      : 0;
+    const extraDiceMods = extraDice > 0
+      ? (typeof session.extraDiceModifiers === 'function'
+        ? session.extraDiceModifiers(extraDice)
+        : [{ source: 'extraDice', label: `追加骰·${extraDice}枚`, value: extraDice * (Number((this.cfg.inspiration || {}).extraDicePct) || 0) }])
+      : [];
 
     // 相性 2.0：四层叠加（基矩阵 / 门派文风 / 当朝风潮 / 气势连捷）
     const base = R.affinityValue(af.matrix, manner, session.theme);
@@ -1870,12 +1892,8 @@ export class Game {
       });
     }
 
-    if (extraDicePct > 0 && diceFixed == null) {
-      pct.push({
-        source: 'extraDice',
-        label: `追加骰·${extraDice}枚`,
-        value: extraDicePct
-      });
+    if (diceFixed == null) for (const mod of extraDiceMods) {
+      if (Number(mod.value) > 0) pct.push(mod);
     }
 
     if (diceFixed == null) dicePlus += schoolDicePlus;

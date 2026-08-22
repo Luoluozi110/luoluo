@@ -101,4 +101,36 @@ console.log('== 引擎：追加骰同时保留骰面收益并接入结算明细 
   assert.equal(fixed.selfCalc.breakdown.pctSum, one.selfCalc.breakdown.pctSum, '固定骰不叠加追加骰百分比');
 }
 
+console.log('== 文心：旧骰面加点已迁移为追加骰专属乘区 ==');
+{
+  const talents = load('talents');
+  const upgrades = load('talent-upgrade');
+  const byId = new Map(talents.map(t => [t.id, t]));
+  const qishi = byId.get('T005');
+  const tianma = byId.get('T010');
+  const yiqi = byId.get('TA05');
+
+  assert.equal(qishi.effect.type, 'extra_dice_pct', '急智不再直接改骰面');
+  assert.equal(tianma.effect.type, 'extra_dice_pct', '天马行空不再直接改骰面');
+  assert.equal(yiqi.effect.type, 'extra_dice_pct', '一气呵成改为追加骰专属主动');
+  assert.equal(upgrades.T005.levels.at(-1).effect.value, 0.05, '急智满级每枚 +5%');
+  assert.equal(upgrades.T010.levels.at(-1).effect.firstCostDiscount, 3, '天马行空满级首枚减费 3');
+  assert.equal(upgrades.TA05.levels.at(-1).effect.value, 0.14, '一气呵成满级每枚 +14%');
+
+  const game = newGame();
+  game.s.passive = [qishi, tianma];
+  const session = game.createSession({ npc: npc(), label: '文心迁移' });
+  assert.equal(session.extraDiceCost('shi', 1), 3, '天马行空让首枚追加骰少耗 2 灵感');
+  assert.equal(session.extraDicePct(1), 0.11, '基础 + 急智 + 天马行空：首枚共 +11%');
+  assert.equal(session.extraDicePct(2), 0.22, '被动增益按追加枚数线性叠加');
+  const passiveOut = game.resolveBattle(session, 'shi', 'zheli', [3, 4]);
+  assert.ok(passiveOut.selfCalc.items[4].detail.includes('文心·急智·追加骰 +3%'), '明细显示急智来源');
+  assert.ok(passiveOut.selfCalc.items[4].detail.includes('文心·天马行空·追加骰 +2%'), '明细显示天马行空来源');
+
+  session.usedActive = [yiqi];
+  assert.equal(session.extraDicePct(1), 0.19, '发动一气呵成后，首枚追加骰共 +19%');
+  const activeOut = game.resolveBattle(session, 'shi', 'zheli', [3, 4]);
+  assert.ok(activeOut.selfCalc.items[4].detail.includes('文心·一气呵成·追加骰 +8%'), '明细显示主动文心追加乘区');
+}
+
 console.log('追加灵感骰百分比收益测试：全部通过 ✓');

@@ -52,10 +52,10 @@
     "id": "T005",
     "name": "急智",
     "kind": "passive",
-    "text": "临场生风，机锋不落。每场论战的灵感骰点数 +1。",
+    "text": "临场生风，机锋不落。每追加 1 枚灵感骰，作品乘区额外 +3%。",
     "effect": {
-      "type": "dice_plus",
-      "value": 1
+      "type": "extra_dice_pct",
+      "value": 0.03
     },
     "school": "qishi"
   },
@@ -110,10 +110,11 @@
     "id": "T010",
     "name": "天马行空",
     "kind": "passive",
-    "text": "笔势腾踔，不拘辙迹。灵感骰点数 +1。",
+    "text": "笔势腾踔，不拘辙迹。首枚追加灵感骰少耗 2 灵感；每追加 1 枚，作品乘区额外 +2%。",
     "effect": {
-      "type": "dice_plus",
-      "value": 1
+      "type": "extra_dice_pct",
+      "value": 0.02,
+      "firstCostDiscount": 2
     }
   },
   {
@@ -238,10 +239,10 @@
     "id": "TA05",
     "name": "一气呵成",
     "kind": "active",
-    "text": "行文如一线贯珠，中无断续。本场灵感骰点数 +3。",
+    "text": "行文如一线贯珠，中无断续。本场每追加 1 枚灵感骰，作品乘区额外 +8%。",
     "effect": {
-      "type": "dice_plus",
-      "value": 3
+      "type": "extra_dice_pct",
+      "value": 0.08
     },
     "cost": 2
   },

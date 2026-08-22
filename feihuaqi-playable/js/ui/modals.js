@@ -786,6 +786,11 @@ export function talentEffectText(t) {
     case 'planned_dice': return `回合掷移动骰前可指定 1—${e.maxValue || 6} 格；本局每次使用消耗递增（首用 ${e.baseCost || 5}，每次 +${e.costStep || 2}）`;
     case 'dice_mult': return `本场灵感骰倍率 ×${e.value}（高风险高回报）`;
     case 'dice_plus': return `灵感骰点数 +${e.value}`;
+    case 'extra_dice_pct': {
+      const pct = `每追加 1 枚灵感骰，作品乘区额外 +${Math.round((e.value || 0) * 100)}%`;
+      const discount = Number(e.firstCostDiscount) || 0;
+      return discount ? `首枚追加少耗 ${discount} 灵感；${pct}` : pct;
+    }
     case 'copy_affinity': return '复制对手本场风格的相性加成';
     case 'crit': return `${Math.round((e.chance || 0) * 100)}% 概率神来之笔，得分 ×${e.mult}`;
     case 'attr_flat': return Object.entries(e.attrs || {}).map(([k, v]) => `${ATTR_NAMES[k]} +${v}`).join('　');
