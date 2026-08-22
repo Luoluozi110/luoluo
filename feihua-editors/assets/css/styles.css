@@ -204,6 +204,22 @@ header.bar .title small{font-weight:500;color:var(--ink2);font-size:12px;margin-
 .msg.ok{display:block;background:#eef8f0;color:var(--ok);border:1px solid #bfe0c6}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
 
+/* ============ 内容图标库（天象 / 棋盘 / 扩展素材共用） ============ */
+.icon-picker{margin-top:8px;padding:9px 10px;border:1px dashed var(--line);border-radius:10px;background:rgba(255,255,255,.58)}
+.icon-picker-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;color:var(--ink2);font-size:12px;font-weight:700}
+.icon-picker-clear{border:1px solid var(--line);border-radius:6px;background:var(--paper2);color:var(--ink2);padding:2px 7px;font:inherit;cursor:pointer}
+.icon-picker-clear:hover{border-color:var(--zhu);color:var(--zhu);background:#fff8f2}
+.icon-picker-group + .icon-picker-group{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line)}
+.icon-picker-group-head{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;margin-bottom:5px}
+.icon-picker-group-head b{font-size:12px;color:var(--zhu)}
+.icon-picker-group-head span{font-size:11px;color:var(--ink2)}
+.icon-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:5px}
+.icon-picker-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;padding:4px 3px;border:1px solid transparent;border-radius:8px;background:rgba(255,255,255,.72);color:var(--ink);font:inherit;cursor:pointer;transition:.12s}
+.icon-picker-btn:hover,.icon-picker-btn.selected{border-color:var(--zhu);background:#fff3ec;box-shadow:0 2px 7px rgba(176,58,46,.12)}
+.icon-picker-glyph{font-size:24px;line-height:1.1}
+.icon-picker-label{font-size:10.5px;color:var(--ink2);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:560px){.icon-picker-grid{grid-template-columns:repeat(auto-fill,minmax(55px,1fr))}.icon-picker-btn{min-height:50px}.icon-picker-glyph{font-size:22px}}
+
 /* ============ 题库：游戏内柔性文案预览 ============ */
 .runtime-copy-panel{margin:16px 0 14px;border:1px solid #ddc79c;border-radius:12px;padding:12px 14px;background:linear-gradient(145deg,#fffaf0,#f3e7cf);box-shadow:0 2px 8px rgba(80,50,10,.07)}
 .runtime-copy-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}

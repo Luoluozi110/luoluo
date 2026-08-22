@@ -253,6 +253,7 @@
     document.getElementById("sky-duration").value = state.form.duration;
     document.getElementById("sky-scope").value = state.form.scope;
     document.getElementById("skyEffectBox").innerHTML = effectEditorInner(state.form.effect);
+    if (global.IconLibrary) global.IconLibrary.mountFor("sky-icon", ["sky", "content"]);
     const msg = document.getElementById("skyMsg"); msg.className = "msg"; msg.textContent = "";
     C.openOverlay("skyOverlay");
   }

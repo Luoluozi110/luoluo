@@ -381,10 +381,16 @@ console.log('[11] 天象：编辑名称 + 图标 → 保存 → state + localSto
 {
   click(document.querySelector('#skylist [data-edit="0"]'));
   ok(document.getElementById('skyOverlay').classList.contains('show'), '天象编辑弹窗打开');
+  ok(window.IconLibrary && window.IconLibrary.groups.some(g => g.id === 'sky'), '内容图标库已加载并包含天象分组');
+  ok(window.IconLibrary.groups.find(g => g.id === 'sky').items.length >= 18, '天象图标库至少提供 18 个可选图标');
+  ok(document.querySelectorAll('#sky-iconPicker .icon-picker-btn').length >= 25, '天象编辑器渲染天象与内容扩展图标');
   const nameInput = document.getElementById('sky-name');
   nameInput.value = '冒烟测试天象';
   fire(nameInput, 'input');
   const iconInput = document.getElementById('sky-icon');
+  const sunIcon = [...document.querySelectorAll('#sky-iconPicker .icon-picker-btn')].find(button => button.dataset.iconValue === '☀️');
+  ok(!!sunIcon, '天象图标库包含晴日图标');
+  if (sunIcon) { click(sunIcon); ok(iconInput.value === '☀️', '点击图标库会回填天象 icon'); }
   iconInput.value = '🌟';
   fire(iconInput, 'input');
   click(document.getElementById('skySave'));

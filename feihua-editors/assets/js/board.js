@@ -457,6 +457,7 @@
     document.getElementById("board-cell-icon").value = state.form.icon;
     document.getElementById("board-cell-desc").value = state.form.desc;
     document.getElementById("boardEffectBox").innerHTML = effectInner(state.form.effect);
+    if (global.IconLibrary) global.IconLibrary.mountFor("board-cell-icon", ["sky", "board", "content"]);
     updateTalentInfo();
     const msg = document.getElementById("boardMsg"); msg.className = "msg"; msg.textContent = "";
     C.openOverlay("boardOverlay");
