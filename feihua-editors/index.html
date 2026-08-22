@@ -8,22 +8,28 @@
 </head>
 <body>
 <header class="bar">
-  <div class="title">飞花棋 · 内容编辑器<small>题库 &amp; 奇遇 &amp; 文心 &amp; NPC &amp; 相性 &amp; 羁绊 &amp; 地图 &amp; 天象 &amp; 传世名篇 &amp; 叙事文案 统一管理</small></div>
-  <div class="spacer"></div>
-  <nav class="nav">
-    <button data-tab="qbank" class="active">题库编辑器</button>
-    <button data-tab="adv">奇遇编辑器</button>
-    <button data-tab="tal">文心编辑器</button>
-    <button data-tab="npc">NPC 编辑器</button>
-    <button data-tab="aff">相性编辑器</button>
-    <button data-tab="syn">羁绊编辑器</button>
-    <button data-tab="board">地图编辑器</button>
-    <button data-tab="sky">天象编辑器</button>
-  <button data-tab="album">传世名篇编辑器</button>
-  <button data-tab="copy">叙事文案编辑器</button>
+  <div class="brand-lockup">
+    <span class="brand-kicker">FEIHUAQI · CONTENT STUDIO</span>
+    <div class="title">飞花棋 · 内容编辑器<small>题库、关卡、叙事与成长系统统一管理</small></div>
+  </div>
+  <button class="workspace-summary" id="workspaceSummary" type="button" title="打开数据管理与全局校验" aria-live="polite">正在载入工作区…</button>
+  <div class="header-actions">
+    <button class="btn" id="btnCommand" type="button" title="快捷操作（Ctrl / ⌘ + K）">⌘ 操作</button>
+    <button class="btn" id="btnMgmt" type="button">数据管理</button>
+    <span id="saveStatus" aria-live="polite"></span>
+  </div>
+  <nav class="nav" aria-label="内容模块">
+    <button data-tab="qbank" class="active" aria-current="page" aria-controls="qbank-section">题库</button>
+    <button data-tab="adv" aria-controls="adv-section">奇遇</button>
+    <button data-tab="tal" aria-controls="tal-section">文心</button>
+    <button data-tab="npc" aria-controls="npc-section">NPC</button>
+    <button data-tab="aff" aria-controls="aff-section">相性</button>
+    <button data-tab="syn" aria-controls="syn-section">羁绊</button>
+    <button data-tab="board" aria-controls="board-section">地图</button>
+    <button data-tab="sky" aria-controls="sky-section">天象</button>
+    <button data-tab="album" aria-controls="album-section">传世名篇</button>
+    <button data-tab="copy" aria-controls="copy-section">叙事文案</button>
   </nav>
-  <button class="btn" id="btnMgmt">数据管理</button>
-  <span id="saveStatus"></span>
 </header>
 
 <div class="sync-banner">
@@ -901,14 +907,28 @@
 
 <!-- =================== 统一管理弹窗 =================== -->
 <div class="overlay" id="mgmtOverlay">
-  <div class="modal">
-    <h3>数据管理 · 总览与统一操作</h3>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mgmtTitle">
+    <h3 id="mgmtTitle">数据管理 · 总览与统一操作</h3>
     <div id="mgmtBody"></div>
     <div class="modal-actions"><button class="btn primary" id="mgmtClose">关闭</button></div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- =================== 快捷操作面板 =================== -->
+<div class="overlay command-overlay" id="commandOverlay">
+  <div class="modal command-modal" role="dialog" aria-modal="true" aria-labelledby="commandTitle">
+    <div class="command-head">
+      <div><span class="brand-kicker">QUICK ACTIONS</span><h3 id="commandTitle">快速操作</h3></div>
+      <button class="btn sm ghost" id="commandClose" type="button">Esc</button>
+    </div>
+    <label class="sr-only" for="commandSearch">搜索操作</label>
+    <input id="commandSearch" class="command-search" type="search" autocomplete="off" placeholder="搜索模块或操作，例如“新增题目”“导出”“校验”" />
+    <div class="command-list" id="commandList" role="listbox" aria-label="快捷操作列表"></div>
+    <p class="command-hint"><kbd>↑</kbd><kbd>↓</kbd> 选择　<kbd>Enter</kbd> 执行　<kbd>Esc</kbd> 关闭</p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <footer>数据自动保存在本浏览器（localStorage）。题库导出即 questions.json；奇遇导出即 events.json；文心导出即 talents.json；传世名篇导出即 album.json；NPC 导出即 npcs.json；相性导出即 affinity.json；羁绊导出即 synergies.json；地图导出即 board.json；天象导出即 sky.json；叙事文案导出即 schools.json / grades.json（仅含「玩家可见文案」，不改数值与公式）。亦可「数据管理」合并备份为工程文件。<b>线上游戏不会自动读取这里的改动</b>——请用游戏菜单「载入自定义配置（高级）」粘贴导出的工程文件，或重新部署游戏。</footer>
 
@@ -961,6 +981,7 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("[编辑器] " + name + " 初始化失败：", err);
     }
   });
+  if (window.Common && typeof window.Common.refreshWorkspaceUI === "function") window.Common.refreshWorkspaceUI();
 });
 </script>
 </body>

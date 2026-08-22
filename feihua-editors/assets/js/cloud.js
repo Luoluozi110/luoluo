@@ -3,7 +3,7 @@
  * 把「内容编辑器」当前数据打包成 feihua-content.json，推送到：
  *   · GitHub 仓库文件：Contents API（自动取 SHA，首次创建/后续更新）
  *   · GitHub Gist：POST 新建 / PATCH 更新（单文件，raw 始终最新）
- * Token 仅存本机浏览器，绝不上传。
+ * Token 仅用于当前发布请求，不写入浏览器存储。
  * 游戏端读取返回的 raw 地址（config/cloud.json 或菜单填写）即在启动时自动同步。
  * ========================================================================= */
 (function (global) {

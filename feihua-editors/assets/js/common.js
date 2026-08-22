@@ -8,6 +8,31 @@
   "use strict";
 
   const PREFIX = "feihua_editors_v1_";
+  const MODULES = [
+    { tab: "qbank", label: "题库", api: "QB" },
+    { tab: "adv", label: "奇遇", api: "ADV" },
+    { tab: "tal", label: "文心", api: "TALENT" },
+    { tab: "npc", label: "NPC", api: "NPC" },
+    { tab: "aff", label: "相性", api: "AFFINITY" },
+    { tab: "syn", label: "羁绊", api: "SYNERGY" },
+    { tab: "board", label: "地图", api: "BOARD" },
+    { tab: "sky", label: "天象", api: "SKY" },
+    { tab: "album", label: "传世名篇", api: "ALBUM" },
+    { tab: "copy", label: "叙事文案", api: "COPY" }
+  ];
+  const TAB_TOOLS = {
+    qbank: { add: "btnAdd", search: "fSearch", noun: "题目" },
+    adv: { add: "evBtnAdd", search: "evFSearch", noun: "奇遇" },
+    tal: { add: "talBtnAdd", search: "talFSearch", noun: "文心" },
+    npc: { add: "npcBtnAddTier", search: "npcFSearch", noun: "对手档" },
+    aff: { search: "affBtnPreview", noun: "相性矩阵" },
+    syn: { add: "synBtnAdd", search: "synFSearch", noun: "羁绊" },
+    board: { add: "boardBtnAdd", search: "boardFSearch", noun: "格子" },
+    sky: { add: "skyBtnAdd", search: "skyFSearch", noun: "天象" },
+    album: { add: "albumBtnAdd", search: "albumFSearch", noun: "名篇" },
+    copy: { search: "copyFSearch", noun: "叙事文案" }
+  };
+  const commandState = { items: [], index: 0 };
 
   /* ---------------- 存储 ---------------- */
   function store(key, val) {
@@ -43,8 +68,34 @@
     toastTimer = setTimeout(() => t.classList.remove("show"), 1800);
   }
 
-  function openOverlay(id) { const el = document.getElementById(id); if (el) el.classList.add("show"); }
-  function closeOverlay(id) { const el = document.getElementById(id); if (el) el.classList.remove("show"); }
+  function getFocusable(root) {
+    return [...root.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+      .filter(el => el.offsetParent !== null);
+  }
+  function getTopOverlay() {
+    const shown = [...document.querySelectorAll(".overlay.show")];
+    return shown.length ? shown[shown.length - 1] : null;
+  }
+  function openOverlay(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el._returnFocus = document.activeElement;
+    el.classList.add("show");
+    document.body.classList.add("modal-open");
+    setTimeout(() => {
+      const auto = el.querySelector("[autofocus]");
+      const target = auto || getFocusable(el)[0];
+      if (target && typeof target.focus === "function") target.focus();
+    }, 0);
+  }
+  function closeOverlay(id) {
+    const el = document.getElementById(id);
+    if (!el || !el.classList.contains("show")) return;
+    el.classList.remove("show");
+    if (!document.querySelector(".overlay.show")) document.body.classList.remove("modal-open");
+    const returnFocus = el._returnFocus;
+    if (returnFocus && returnFocus.isConnected && typeof returnFocus.focus === "function") returnFocus.focus();
+  }
 
   /* ---------------- 枚举（与游戏 rules.js / config 对齐） ---------------- */
   const ATTR = { shi: "诗力", ci: "词力", lian: "联力", bi: "笔力", xue: "学力", si: "思力" };
@@ -81,6 +132,8 @@
     if (sec) sec.classList.add("active");
     document.querySelectorAll(".nav button").forEach(b => {
       b.classList.toggle("active", b.dataset.tab === tab);
+      if (b.dataset.tab === tab) b.setAttribute("aria-current", "page");
+      else b.removeAttribute("aria-current");
     });
     const sb = document.getElementById("saveStatus");
     if (sb) {
@@ -98,6 +151,7 @@
     if (tab === "sky" && global.SKY && global.SKY._ready) global.SKY.renderList();
     if (tab === "album" && global.ALBUM && global.ALBUM._ready) global.ALBUM.renderList();
     if (tab === "copy" && global.COPY && global.COPY._ready) global.COPY.renderList();
+    updateWorkspaceSummary();
   }
 
   /* 记录某编辑器最近保存时间，写进共享状态条 */
@@ -108,7 +162,69 @@
       const sb = document.getElementById("saveStatus");
       if (sb) sb.textContent = text;
     }
+    updateWorkspaceSummary();
   }
+
+  function activeTab() {
+    const active = document.querySelector(".nav button.active");
+    return active ? active.dataset.tab : "qbank";
+  }
+
+  function moduleCount(module) {
+    const api = global[module.api];
+    if (!api || !api._ready || typeof api.get !== "function") return 0;
+    try {
+      const data = api.get();
+      if (module.tab === "npc") return Array.isArray(data) ? data.reduce((sum, tier) => sum + ((tier.npcs || []).length), 0) : 0;
+      if (module.tab === "aff") return data && Array.isArray(data.manners) && Array.isArray(data.themes) ? data.manners.length * data.themes.length : 0;
+      if (module.tab === "board") return data && Array.isArray(data.mainRing) ? data.mainRing.length : 0;
+      if (module.tab === "copy") {
+        const grades = data && data.grades ? data.grades : {};
+        const narrative = data && data.narrative ? data.narrative : {};
+        return ((data && data.schools) || []).length + (grades.grades || []).length + Object.keys(grades.comments || {}).length + Object.keys(narrative).length;
+      }
+      return Array.isArray(data) ? data.length : 0;
+    } catch (error) { return 0; }
+  }
+
+  function getWorkspaceHealth() {
+    const modules = MODULES.map(module => {
+      const api = global[module.api];
+      let issues = [];
+      if (api && api._ready && typeof api.validateAll === "function") {
+        try { issues = api.validateAll() || []; } catch (error) { issues = [error]; }
+      }
+      return { ...module, ready: !!(api && api._ready), count: moduleCount(module), issues: issues.length };
+    });
+    return {
+      modules,
+      ready: modules.filter(module => module.ready).length,
+      total: modules.reduce((sum, module) => sum + module.count, 0),
+      issues: modules.reduce((sum, module) => sum + module.issues, 0)
+    };
+  }
+
+  function reviewWorkspace() {
+    const health = getWorkspaceHealth();
+    let contractError = "";
+    try { buildProject(); } catch (error) { contractError = error && error.message ? error.message : String(error); }
+    return { ...health, contractError, valid: health.issues === 0 && !contractError };
+  }
+
+  function updateWorkspaceSummary() {
+    const el = document.getElementById("workspaceSummary");
+    if (!el) return;
+    const health = getWorkspaceHealth();
+    if (health.ready < MODULES.length) {
+      el.textContent = `正在载入 ${health.ready}/${MODULES.length} 个模块…`;
+      return;
+    }
+    const issueText = health.issues ? `${health.issues} 项待处理` : "全部规则通过";
+    el.classList.toggle("has-issues", health.issues > 0);
+    el.innerHTML = `<strong>${health.total}</strong><span>条内容 · ${issueText}</span>`;
+  }
+
+  function refreshWorkspaceUI() { updateWorkspaceSummary(); }
 
   /* ---------------- 效果文本（仿游戏 effectBrief，但不剧透属性） ---------------- */
   function effectBrief(ef) {
@@ -135,6 +251,7 @@
 
   /* ---------------- 数据管理（统一面板） ---------------- */
   function showManagement() {
+    const workspaceReview = reviewWorkspace();
     const Q = global.QB ? global.QB.get() : [];
     const E = global.ADV ? global.ADV.get() : [];
     const T = global.TALENT ? global.TALENT.get() : [];
@@ -173,6 +290,14 @@
 
     const body = document.getElementById("mgmtBody");
     body.innerHTML = `
+      <div class="workspace-health ${workspaceReview.valid ? "is-valid" : "has-issues"}">
+        <div>
+          <span class="brand-kicker">WORKSPACE HEALTH</span>
+          <h4>${workspaceReview.valid ? "工程配置可交付" : "工程配置需要检查"}</h4>
+          <p id="mgmtHealthResult">已载入 ${workspaceReview.ready}/${MODULES.length} 个模块，覆盖 ${workspaceReview.total} 条内容${workspaceReview.issues ? `；发现 ${workspaceReview.issues} 项模块校验问题` : "；模块校验通过"}${workspaceReview.contractError ? `；工程契约：${esc(workspaceReview.contractError)}` : ""}。</p>
+        </div>
+        <button class="btn ${workspaceReview.valid ? "" : "danger"}" id="mgmtValidate" type="button">运行全局校验</button>
+      </div>
       <div class="mgmt-section">
         <h4>题库（知识题 / 创作抉择题）</h4>
         <table class="stat-table">
@@ -285,7 +410,7 @@
         <h4>云端同步（所有玩家自动同步）</h4>
         <p style="font-size:12.5px;color:var(--mo-3);line-height:1.7;margin:4px 0 10px">
           填好下方并点「发布到云端」，配置会被推送到你的 GitHub 仓库 / Gist；<br/>
-          游戏端读取该地址后，<b>所有玩家启动时自动同步，无需手动载入</b>。Token 仅存本机浏览器，绝不上传。
+          游戏端读取该地址后，<b>所有玩家启动时自动同步，无需手动载入</b>。访问令牌只用于本次发布，不会保存到浏览器。
         </p>
         <div class="cloud-form">
           <label>方式
@@ -304,7 +429,7 @@
             <label>Gist ID <span class="hint">留空则新建</span>
               <input id="cloudGist" placeholder="（可选）已有 Gist 的 ID" /></label>
           </div>
-          <label>GitHub Token <span class="hint">需 repo 权限；仅存本机</span>
+          <label>GitHub Token <span class="hint">需 repo 权限；仅用于本次发布</span>
             <input id="cloudToken" type="password" placeholder="GitHub 访问令牌" autocomplete="off" /></label>
           <div class="modal-actions" style="justify-content:flex-start;margin-top:8px">
             <button class="btn primary" id="cloudPublish">发布到云端</button>
@@ -326,6 +451,20 @@
       if (e.target.files[0]) importProject(e.target.files[0]);
       e.target.value = "";
     });
+    document.getElementById("mgmtValidate").addEventListener("click", () => {
+      const review = reviewWorkspace();
+      const result = document.getElementById("mgmtHealthResult");
+      const card = document.querySelector(".workspace-health");
+      if (result) result.textContent = review.valid
+        ? `全局校验通过：${review.total} 条内容与工程配置均符合当前规则。`
+        : `校验发现 ${review.issues} 项模块问题${review.contractError ? `；工程契约：${review.contractError}` : ""}。请查看下方各模块的“校验问题”列。`;
+      if (card) {
+        card.classList.toggle("is-valid", review.valid);
+        card.classList.toggle("has-issues", !review.valid);
+      }
+      updateWorkspaceSummary();
+      toast(review.valid ? "全局校验通过" : "发现需要处理的配置问题");
+    });
     wireCloudSync();
 
     openOverlay("mgmtOverlay");
@@ -345,6 +484,11 @@
   function wireCloudSync() {
     const $ = id => document.getElementById(id);
     const saved = global.CloudSync ? global.CloudSync.loadSettings("cloud", {}) : {};
+    // 旧版会将 Token 写入 localStorage；升级后立即移除，仅保留非敏感发布目标。
+    if (Object.prototype.hasOwnProperty.call(saved, "token")) {
+      delete saved.token;
+      if (global.CloudSync) global.CloudSync.saveSettings("cloud", saved);
+    }
     const mode = $("cloudMode");
     const repoFields = $("cloudRepoFields");
     const gistFields = $("cloudGistFields");
@@ -361,7 +505,6 @@
     if ($("cloudBranch")) $("cloudBranch").value = saved.branch || "main";
     if ($("cloudPath")) $("cloudPath").value = saved.path || "feihua-content.json";
     if ($("cloudGist")) $("cloudGist").value = saved.gistId || "";
-    if ($("cloudToken")) $("cloudToken").value = saved.token || "";
 
     const setMsg = (t, bad) => { const m = $("cloudMsg"); if (m) { m.textContent = t; m.style.color = bad ? "var(--bad)" : "var(--mo-2)"; } };
 
@@ -380,8 +523,12 @@
       };
       if (!s.token) { setMsg("请填写 GitHub Token。", true); return; }
       if (s.mode === "repo" && (!s.owner || !s.repo)) { setMsg("请填写 仓库（owner/repo）。", true); return; }
-      // 持久化设置（token 一并保存，便于下次免填；仅本机）
-      if (global.CloudSync) global.CloudSync.saveSettings("cloud", s);
+      // 只记住发布目标，绝不在浏览器存储访问令牌。
+      if (global.CloudSync) {
+        const safeSettings = { ...s };
+        delete safeSettings.token;
+        global.CloudSync.saveSettings("cloud", safeSettings);
+      }
       setMsg("发布中…");
       try {
         const url = await global.CloudSync.publish(s);
@@ -582,6 +729,86 @@
     reader.readAsText(file, "utf-8");
   }
 
+  /* ---------------- 快捷操作面板 ---------------- */
+  function commandItems() {
+    const tab = activeTab();
+    const tool = TAB_TOOLS[tab] || TAB_TOOLS.qbank;
+    const current = MODULES.find(module => module.tab === tab) || MODULES[0];
+    const items = [
+      { id: "current-add", kind: "current-add", label: `新增${tool.noun}`, detail: `当前模块 · ${current.label}` },
+      { id: "current-search", kind: "current-search", label: `搜索${tool.noun}`, detail: "聚焦当前模块搜索框 · /" },
+      { id: "workspace-health", kind: "workspace-health", label: "运行全局校验", detail: "检查全部模块与工程配置" },
+      { id: "workspace-export", kind: "workspace-export", label: "合并导出工程文件", detail: "下载 feihua-content.json" },
+      { id: "workspace-manage", kind: "workspace-manage", label: "打开数据管理", detail: "总览、导入、云端同步" }
+    ];
+    MODULES.forEach(module => {
+      const count = moduleCount(module);
+      items.push({ id: `tab:${module.tab}`, kind: "tab", tab: module.tab, label: `前往${module.label}`, detail: `${count} 条内容` });
+    });
+    return items;
+  }
+
+  function renderCommandList(query, resetSelection) {
+    const box = document.getElementById("commandList");
+    if (!box) return;
+    const q = String(query || "").trim().toLocaleLowerCase();
+    commandState.items = commandItems().filter(item => !q || `${item.label} ${item.detail}`.toLocaleLowerCase().includes(q));
+    if (resetSelection || commandState.index >= commandState.items.length) commandState.index = 0;
+    if (!commandState.items.length) {
+      box.innerHTML = '<div class="command-empty">没有匹配的操作。试试“新增”“导出”或模块名称。</div>';
+      return;
+    }
+    box.innerHTML = commandState.items.map((item, index) => `
+      <button class="command-item ${index === commandState.index ? "selected" : ""}" type="button" role="option" aria-selected="${index === commandState.index}" data-command="${item.id}">
+        <span class="command-item-main">${esc(item.label)}</span>
+        <span class="command-item-detail">${esc(item.detail)}</span>
+      </button>`).join("");
+  }
+
+  function openCommandPalette() {
+    const search = document.getElementById("commandSearch");
+    if (search) search.value = "";
+    commandState.index = 0;
+    renderCommandList("", true);
+    openOverlay("commandOverlay");
+    setTimeout(() => { if (search) search.focus(); }, 0);
+  }
+
+  function runCommand(id) {
+    const item = commandState.items.find(command => command.id === id);
+    if (!item) return;
+    closeOverlay("commandOverlay");
+    if (item.kind === "tab") { switchTab(item.tab); return; }
+    if (item.kind === "workspace-health" || item.kind === "workspace-manage") { showManagement(); return; }
+    if (item.kind === "workspace-export") { exportProject(); return; }
+    const tab = activeTab();
+    const tool = TAB_TOOLS[tab] || TAB_TOOLS.qbank;
+    if (item.kind === "current-add") {
+      if (!tool.add) { toast(`“${tool.noun}”通过当前页面直接编辑，无需新增记录`); return; }
+      setTimeout(() => document.getElementById(tool.add)?.click(), 0);
+      return;
+    }
+    if (item.kind === "current-search") {
+      setTimeout(() => {
+        const target = document.getElementById(tool.search);
+        if (target && typeof target.focus === "function") target.focus();
+      }, 0);
+    }
+  }
+
+  function isTextInput(target) {
+    if (!target) return false;
+    return /^(INPUT|TEXTAREA|SELECT)$/i.test(target.tagName) || target.isContentEditable;
+  }
+
+  function trapFocus(event, overlay) {
+    const items = getFocusable(overlay);
+    if (!items.length) return;
+    const first = items[0], last = items[items.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
+
   /* ---------------- 初始化（导航 + 数据管理按钮 + 全局快捷键） ---------------- */
   function init() {
     migrateQbankIfNeeded();
@@ -590,22 +817,63 @@
       b.addEventListener("click", () => switchTab(b.dataset.tab)));
     const mgmtBtn = document.getElementById("btnMgmt");
     if (mgmtBtn) mgmtBtn.addEventListener("click", showManagement);
+    const summary = document.getElementById("workspaceSummary");
+    if (summary) summary.addEventListener("click", showManagement);
+    const commandBtn = document.getElementById("btnCommand");
+    if (commandBtn) commandBtn.addEventListener("click", openCommandPalette);
+    const commandClose = document.getElementById("commandClose");
+    if (commandClose) commandClose.addEventListener("click", () => closeOverlay("commandOverlay"));
+    const commandSearch = document.getElementById("commandSearch");
+    if (commandSearch) {
+      commandSearch.addEventListener("input", () => renderCommandList(commandSearch.value, true));
+      commandSearch.addEventListener("keydown", event => {
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          if (!commandState.items.length) return;
+          event.preventDefault();
+          const direction = event.key === "ArrowDown" ? 1 : -1;
+          commandState.index = (commandState.index + direction + commandState.items.length) % commandState.items.length;
+          renderCommandList(commandSearch.value, false);
+        } else if (event.key === "Enter") {
+          const item = commandState.items[commandState.index];
+          if (item) { event.preventDefault(); runCommand(item.id); }
+        }
+      });
+    }
+    const commandList = document.getElementById("commandList");
+    if (commandList) commandList.addEventListener("click", event => {
+      const button = event.target.closest("[data-command]");
+      if (button) runCommand(button.dataset.command);
+    });
     document.getElementById("mgmtClose").addEventListener("click", () => closeOverlay("mgmtOverlay"));
     // 点击遮罩关闭（所有 overlay）
     document.querySelectorAll(".overlay").forEach(ov =>
-      ov.addEventListener("click", e => { if (e.target === ov) ov.classList.remove("show"); }));
-    // 全局快捷键：Esc 关闭弹窗
+      ov.addEventListener("click", e => { if (e.target === ov) closeOverlay(ov.id); }));
+    // 全局快捷键：Esc 关闭弹窗，Ctrl / ⌘ + K 打开快捷操作，/ 聚焦当前搜索。
     document.addEventListener("keydown", e => {
-      if (e.key === "Escape") document.querySelectorAll(".overlay.show").forEach(o => o.classList.remove("show"));
+      const overlay = getTopOverlay();
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        if (!overlay || overlay.id !== "commandOverlay") openCommandPalette();
+        return;
+      }
+      if (e.key === "Escape" && overlay) { e.preventDefault(); closeOverlay(overlay.id); return; }
+      if (e.key === "Tab" && overlay) { trapFocus(e, overlay); return; }
+      if (e.key === "/" && !overlay && !isTextInput(e.target)) {
+        const tool = TAB_TOOLS[activeTab()] || TAB_TOOLS.qbank;
+        const target = document.getElementById(tool.search);
+        if (target && typeof target.focus === "function") { e.preventDefault(); target.focus(); }
+      }
     });
     // 默认 Tab（优先上次选择）
     const tab = load("tab", "qbank");
     switchTab(tab);
+    updateWorkspaceSummary();
   }
 
   global.Common = {
     store, load, esc, toast, openOverlay, closeOverlay,
     init, switchTab, setStatus, showManagement, buildProject, classify, talentIds, talentById, nextSeqId,
+    getWorkspaceHealth, reviewWorkspace, refreshWorkspaceUI, openCommandPalette,
     ATTR, ATTR_KEYS, CATEGORY, RARITY, QUALITY, QUALITY_MAX, QUALITY_UPCOST, KIND, TALENTS, TALENT_IDS,
     effectBrief, effectDetail
   };
