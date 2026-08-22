@@ -347,6 +347,24 @@ footer{text-align:center;color:var(--ink2);font-size:12px;margin-top:30px}
 .board-preview-card h3{margin:10px 0 6px;font-size:22px;letter-spacing:.08em}
 .board-preview-card p{margin:4px 0;font-size:13.5px;color:var(--ink2)}
 #boardSidesBody input{width:100%;font-size:13px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.board-ring-tabs{display:flex;gap:8px;align-items:stretch;margin:0 0 14px;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,253,248,.58)}
+.board-ring-tabs-head{display:flex;flex:1;min-width:150px;flex-direction:column;justify-content:center;padding:2px 5px;color:var(--ink2);font-size:12px;line-height:1.4}
+.board-ring-tab{flex:1;min-width:132px;display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:baseline;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:#fffdf8;color:var(--ink);text-align:left;transition:.16s}
+.board-ring-tab:hover,.board-ring-tab.active{transform:translateY(-1px);box-shadow:0 4px 12px rgba(55,40,14,.12)}
+.board-ring-tab-label{font-size:11px;font-weight:800;letter-spacing:.05em}.board-ring-tab strong{font-size:13px}.board-ring-tab > span:last-child{font-size:11px;color:var(--ink2);white-space:nowrap}
+.board-ring-tab.ring-outer,.board-ring-badge.ring-outer,.board-ring-stat.ring-outer{--ring:#5d8f53;--ring-soft:#eaf3e5}.board-ring-tab.ring-middle,.board-ring-badge.ring-middle,.board-ring-stat.ring-middle{--ring:#496f9f;--ring-soft:#e8eff8}.board-ring-tab.ring-inner,.board-ring-badge.ring-inner,.board-ring-stat.ring-inner{--ring:#9a6437;--ring-soft:#f9eddd}.board-ring-badge.ring-unassigned{--ring:#7a7466;--ring-soft:#eeeae2}
+.board-ring-tab.ring-outer,.board-ring-tab.ring-middle,.board-ring-tab.ring-inner{border-color:color-mix(in srgb,var(--ring) 48%,var(--line));background:linear-gradient(135deg,#fffdf8,var(--ring-soft))}
+.board-ring-tab.active{outline:2px solid var(--ring);outline-offset:1px}
+.board-ring-badge{display:inline-block;width:max-content;padding:2px 7px;border:1px solid var(--ring);border-radius:999px;background:var(--ring-soft);color:var(--ring);font-size:11px;font-weight:800;line-height:1.35}
+.board-ring-stat{border-color:color-mix(in srgb,var(--ring) 42%,var(--line));background:linear-gradient(145deg,#fffdf7,var(--ring-soft))}.board-ring-stat b{color:var(--ring)}
+.board-ring-group{padding:10px 11px 11px;border:1px solid color-mix(in srgb,var(--ring) 42%,var(--line));border-left:4px solid var(--ring);border-radius:12px;background:linear-gradient(135deg,var(--ring-soft),rgba(255,255,255,.7));margin-bottom:13px}
+.board-ring-group.ring-outer{--ring:#5d8f53;--ring-soft:#f2f8ef}.board-ring-group.ring-middle{--ring:#496f9f;--ring-soft:#f0f5fb}.board-ring-group.ring-inner{--ring:#9a6437;--ring-soft:#fff6ed}.board-ring-group.ring-unassigned{--ring:#7a7466;--ring-soft:#f5f2ed}
+.board-ring-group-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 9px;color:var(--ink2);font-size:12px}.board-ring-group-head > div{display:flex;align-items:center;gap:8px}.board-ring-group-head b{font-size:14px;color:var(--ink)}
+.board-ring-list{display:flex;flex-direction:column;gap:8px}.board-card.ring-outer{border-left:4px solid #5d8f53}.board-card.ring-middle{border-left:4px solid #496f9f}.board-card.ring-inner{border-left:4px solid #9a6437}.board-card.ring-unassigned{border-left:4px solid #7a7466}
+.board-ring-readout{min-height:38px;display:flex;align-items:center;padding:7px 9px;border:1px solid var(--ring);border-radius:8px;background:var(--ring-soft);color:var(--ring);font-size:12.5px;font-weight:700}.board-ring-readout.ring-outer{--ring:#5d8f53;--ring-soft:#eaf3e5}.board-ring-readout.ring-middle{--ring:#496f9f;--ring-soft:#e8eff8}.board-ring-readout.ring-inner{--ring:#9a6437;--ring-soft:#f9eddd}.board-ring-readout.ring-unassigned{--ring:#7a7466;--ring-soft:#eeeae2}
+.board-preview-card.ring-outer{border-color:#5d8f53}.board-preview-card.ring-middle{border-color:#496f9f}.board-preview-card.ring-inner{border-color:#9a6437}
+@media(max-width:760px){.board-ring-tabs{display:grid;grid-template-columns:1fr 1fr}.board-ring-tabs-head{grid-column:1/-1}.board-ring-tab{min-width:0}.board-ring-tab.ring-inner{grid-column:1/-1}}
+@media(max-width:460px){.board-ring-tabs{grid-template-columns:1fr}.board-ring-tab.ring-inner{grid-column:auto}}
 
 /* ===================== 传世名篇：主线 / 分支可视化编辑 ===================== */
 .album-branch-card{border:1px solid var(--line);border-left:4px solid var(--zhu);border-radius:10px;padding:10px 12px;margin:8px 0;background:#fffdf7}

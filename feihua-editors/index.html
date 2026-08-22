@@ -191,8 +191,16 @@
 
   <div class="stat-strip" id="boardStatStrip"></div>
 
+  <div class="board-ring-tabs" id="boardRingTabs" aria-label="地图圈层视图"></div>
+
   <div class="filters">
     <input type="search" id="boardFSearch" placeholder="搜索 ID / 名称 / 图标 / 效果…" />
+    <select id="boardFRing" aria-label="筛选地图圈层">
+      <option value="all">全部圈层</option>
+      <option value="outer">外圈 · 起势</option>
+      <option value="middle">中圈 · 验收</option>
+      <option value="inner">内圈 · 定稿</option>
+    </select>
     <select id="boardFType"><option value="all">全部类型</option>
       <option value="start">起点</option><option value="ping">平韵格</option><option value="ze">仄韵格</option>
       <option value="quiz">考题格</option><option value="event">奇遇格</option><option value="battle">论战格</option><option value="gate">阶段门</option>
@@ -752,6 +760,10 @@
       <div class="field" style="max-width:120px">
         <label>格子 ID</label>
         <input type="number" id="board-cell-id" readonly />
+      </div>
+      <div class="field" style="max-width:150px">
+        <label>所属圈层</label>
+        <div class="board-ring-readout" id="board-cell-ring">未归属</div>
       </div>
       <div class="field" style="max-width:180px">
         <label>类型</label>

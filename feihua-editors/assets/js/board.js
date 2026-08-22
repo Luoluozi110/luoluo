@@ -24,6 +24,12 @@
   ];
   const CELL_TYPE_IDS = CELL_TYPES.map(t => t.id);
   const GLYPH_KEYS = ["start", "ping", "ze", "quiz", "event", "battle", "gate", "sky", "mingjing", "landmark", "branch_gate"];
+  const RING_ORDER = ["outer", "middle", "inner"];
+  const RING_DEFAULTS = {
+    outer: { name: "起势", label: "外圈", tone: "outer" },
+    middle: { name: "验收", label: "中圈", tone: "middle" },
+    inner: { name: "定稿", label: "内圈", tone: "inner" }
+  };
 
   const state = { board: null, editIndex: -1, form: null, _ready: false };
 
@@ -156,15 +162,38 @@
     return s ? s.name : "";
   }
   function typeName(type) { return (CELL_TYPES.find(t => t.id === type) || {}).name || type; }
+  function ringId(cell) { return RING_ORDER.includes(cell && cell.ring) ? cell.ring : ""; }
+  function ringMeta(id) {
+    const fallback = RING_DEFAULTS[id] || { name: "未归属", label: "未归属", tone: "unassigned" };
+    const configured = ((state.board && state.board.rings) || []).find(r => r && r.id === id);
+    return { id: id || "unassigned", name: (configured && configured.name) || fallback.name, label: fallback.label, tone: fallback.tone };
+  }
+  function ringSummary() {
+    return RING_ORDER.map(id => {
+      const meta = ringMeta(id);
+      return { ...meta, count: state.board.mainRing.filter(cell => ringId(cell) === id).length };
+    });
+  }
+  function isThreeRingBoard() { return ringSummary().some(ring => ring.count > 0); }
+  function selectedRing() {
+    const select = document.getElementById("boardFRing");
+    return select && RING_ORDER.includes(select.value) ? select.value : "";
+  }
+  function nextRingIndex(ring) {
+    return state.board.mainRing.filter(cell => ringId(cell) === ring)
+      .reduce((max, cell) => Math.max(max, Number.isFinite(Number(cell.ringIndex)) ? Number(cell.ringIndex) : -1), -1) + 1;
+  }
   function getFilters() {
     return {
       q: document.getElementById("boardFSearch").value.trim().toLowerCase(),
+      ring: document.getElementById("boardFRing").value,
       type: document.getElementById("boardFType").value
     };
   }
   function filtered() {
     const f = getFilters();
     return state.board.mainRing.filter(c => {
+      if (f.ring !== "all" && ringId(c) !== f.ring) return false;
       if (f.type !== "all" && c.type !== f.type) return false;
       if (f.q) {
         const hay = [String(c.id), c.name, c.icon || "", c.desc || "", C.effectDetail(c.effect)].join(" ").toLowerCase();
@@ -176,10 +205,11 @@
   function renderStats() {
     const total = state.board.mainRing.length;
     const byType = {};
+    const rings = ringSummary();
     state.board.mainRing.forEach(c => { byType[c.type] = (byType[c.type] || 0) + 1; });
     document.getElementById("boardStatStrip").innerHTML = `
       <div class="stat"><b>${total}</b><span>主环格数</span></div>
-      <div class="stat"><b>${state.board.laps}</b><span>圈数</span></div>
+      ${rings.map(ring => `<div class="stat board-ring-stat ring-${ring.tone}"><b>${ring.count}</b><span>${ring.label} · ${C.esc(ring.name)}</span></div>`).join("")}
       <div class="stat"><b>${byType.ping || 0}</b><span>平韵</span></div>
       <div class="stat"><b>${byType.ze || 0}</b><span>仄韵</span></div>
       <div class="stat"><b>${byType.quiz || 0}</b><span>考题</span></div>
@@ -188,8 +218,56 @@
       <div class="stat"><b>${byType.sky || 0}</b><span>天象</span></div>
       <div class="stat"><b>${byType.mingjing || 0}</b><span>名胜</span></div>`;
   }
+  function renderRingTabs() {
+    const box = document.getElementById("boardRingTabs");
+    if (!box) return;
+    const active = (document.getElementById("boardFRing") || {}).value || "all";
+    const rings = ringSummary();
+    box.innerHTML = `<div class="board-ring-tabs-head"><span class="brand-kicker">RING LAYERS</span><span>按圈层检视路线与格子</span></div>` + rings.map(ring => `
+      <button class="board-ring-tab ring-${ring.tone} ${active === ring.id ? "active" : ""}" type="button" data-ring-filter="${ring.id}" aria-pressed="${active === ring.id}">
+        <span class="board-ring-tab-label">${ring.label}</span>
+        <strong>${C.esc(ring.name)}</strong>
+        <span>${ring.count} 格</span>
+      </button>`).join("");
+  }
+  function cellCard(c) {
+    const idx = state.board.mainRing.indexOf(c);
+    const side = sideOf(c.id);
+    const ring = ringMeta(ringId(c));
+    const eff = C.effectDetail(c.effect);
+    const ringPosition = Number.isFinite(Number(c.ringIndex)) ? `第 ${Number(c.ringIndex) + 1} 格` : "未设圈内序号";
+    return `<div class="q-card board-card ring-${ring.tone}" data-idx="${idx}">
+      <div class="meta" style="min-width:92px">
+        <span class="q-id">${c.id}</span>
+        <span class="badge board-ring-badge ring-${ring.tone}">${C.esc(ring.label)} · ${C.esc(ring.name)}</span>
+        <span class="badge board-type t-${c.type}">${C.esc(typeName(c.type))}</span>
+        ${side ? `<span class="badge r-common">${C.esc(side)}</span>` : ""}
+      </div>
+      <div class="q-main">
+        <p class="q-name">${C.esc(c.name)}${c.icon && c.icon !== c.type ? ` <span class="dim">(图标:${C.esc(c.icon)})</span>` : ""}</p>
+        <div class="q-tags">
+          <span class="t">${C.esc(ring.label)} · ${ringPosition}</span>
+          <span class="t">ID ${c.id}</span>
+          ${c.icon ? `<span class="t">图标 ${C.esc(c.icon)}</span>` : ""}
+          ${c.effect ? `<span class="t">效果 ${C.esc(eff)}</span>` : ""}
+        </div>
+      </div>
+      <div class="q-actions">
+        <button class="btn sm" data-edit="${idx}">编辑</button>
+        <button class="btn sm" data-preview="${idx}">预览</button>
+      </div>
+    </div>`;
+  }
+  function ringGroup(ring, cells) {
+    if (!cells.length) return "";
+    return `<section class="board-ring-group ring-${ring.tone}">
+      <div class="board-ring-group-head"><div><span class="board-ring-badge ring-${ring.tone}">${C.esc(ring.label)}</span><b>${C.esc(ring.name)}</b></div><span>${cells.length} 格</span></div>
+      <div class="board-ring-list">${cells.map(cellCard).join("")}</div>
+    </section>`;
+  }
   function renderList() {
     renderStats();
+    renderRingTabs();
     const list = document.getElementById("boardlist");
     const items = filtered();
     if (!items.length) {
@@ -197,30 +275,12 @@
         ${state.board.mainRing.length ? "试着调整筛选条件。" : "请导入 board.json 或重置默认地图。"}</div>`;
       return;
     }
-    list.innerHTML = items.map(c => {
-      const idx = state.board.mainRing.indexOf(c);
-      const side = sideOf(c.id);
-      const eff = C.effectDetail(c.effect);
-      return `<div class="q-card board-card" data-idx="${idx}">
-        <div class="meta" style="min-width:92px">
-          <span class="q-id">${c.id}</span>
-          <span class="badge board-type t-${c.type}">${C.esc(typeName(c.type))}</span>
-          ${side ? `<span class="badge r-common">${C.esc(side)}</span>` : ""}
-        </div>
-        <div class="q-main">
-          <p class="q-name">${C.esc(c.name)}${c.icon && c.icon !== c.type ? ` <span class="dim">(图标:${C.esc(c.icon)})</span>` : ""}</p>
-          <div class="q-tags">
-            <span class="t">ID ${c.id}</span>
-            ${c.icon ? `<span class="t">图标 ${C.esc(c.icon)}</span>` : ""}
-            ${c.effect ? `<span class="t">效果 ${C.esc(eff)}</span>` : ""}
-          </div>
-        </div>
-        <div class="q-actions">
-          <button class="btn sm" data-edit="${idx}">编辑</button>
-          <button class="btn sm" data-preview="${idx}">预览</button>
-        </div>
-      </div>`;
-    }).join("");
+    const f = getFilters();
+    if (f.ring !== "all" || !isThreeRingBoard()) { list.innerHTML = items.map(cellCard).join(""); return; }
+    const groups = ringSummary().map(ring => ringGroup(ring, items.filter(cell => ringId(cell) === ring.id)));
+    const unassigned = items.filter(cell => !ringId(cell));
+    if (unassigned.length) groups.push(ringGroup(ringMeta(""), unassigned));
+    list.innerHTML = groups.join("");
   }
 
   /* ---------------- 效果编辑器（单格效果） ---------------- */
@@ -286,10 +346,22 @@
       };
     } else {
       const nextId = (state.board.mainRing.length ? Math.max(...state.board.mainRing.map(c => c.id)) + 1 : 0);
-      state.form = { id: nextId, type: "ping", name: "", icon: "", desc: "", effect: emptyEffect() };
+      const ring = selectedRing() || (isThreeRingBoard() ? "outer" : "");
+      state.form = {
+        id: nextId, type: "ping", name: "", icon: "", desc: "", effect: emptyEffect(),
+        ...(ring ? { ring, ringIndex: nextRingIndex(ring), routeIndex: nextId } : {})
+      };
     }
     document.getElementById("boardTitle").textContent = src ? "编辑格子 · " + src.id : "新增格子";
     document.getElementById("board-cell-id").value = state.form.id;
+    const ring = ringMeta(ringId(state.form));
+    const ringReadout = document.getElementById("board-cell-ring");
+    if (ringReadout) {
+      ringReadout.className = "board-ring-readout ring-" + ring.tone;
+      ringReadout.textContent = ringId(state.form)
+        ? `${ring.label} · ${ring.name}${Number.isFinite(Number(state.form.ringIndex)) ? ` · 第 ${Number(state.form.ringIndex) + 1} 格` : ""}`
+        : "未归属（旧单环数据）";
+    }
     document.getElementById("board-cell-type").value = state.form.type;
     document.getElementById("board-cell-name").value = state.form.name;
     document.getElementById("board-cell-icon").value = state.form.icon;
@@ -371,10 +443,13 @@
   /* ---------------- 预览 ---------------- */
   function previewCell(cell) {
     const side = sideOf(cell.id);
+    const ring = ringMeta(ringId(cell));
     document.getElementById("boardPreviewBody").innerHTML = `
-      <div class="board-preview-card">
+      <div class="board-preview-card ring-${ring.tone}">
+        <span class="board-ring-badge ring-${ring.tone}">${C.esc(ring.label)} · ${C.esc(ring.name)}</span>
         <span class="badge board-type t-${cell.type}">${C.esc(typeName(cell.type))}</span>
         <h3>${C.esc(cell.name)} <span class="dim">#${cell.id}</span></h3>
+        ${ringId(cell) ? `<p>圈内位置：第 ${Number(cell.ringIndex || 0) + 1} 格</p>` : ""}
         ${side ? `<p>所属区段：${C.esc(side)}</p>` : ""}
         ${cell.icon ? `<p>图标覆盖：<code>${C.esc(cell.icon)}</code>${cell.icon === cell.type ? " <span class='dim'>（与类型相同）</span>" : ""}</p>` : ""}
         ${cell.effect ? `<div class="ev-detail"><b>落地效果</b><br>${C.effectDetail(cell.effect)}</div>` : ""}
@@ -452,10 +527,14 @@
   /* ---------------- 统计弹窗 ---------------- */
   function showStats() {
     const byType = {};
+    const rings = ringSummary();
     state.board.mainRing.forEach(c => { byType[c.type] = (byType[c.type] || 0) + 1; });
     const rows = CELL_TYPES.map(t => `<tr><td>${C.esc(t.name)}</td><td class="num">${byType[t.id] || 0}</td></tr>`).join("");
     document.getElementById("boardStBody").innerHTML = `
       <p><b>主环格数：</b>${state.board.mainRing.length}　<b>圈数：</b>${state.board.laps}</p>
+      <h4 style="margin:14px 0 6px">三圈路线</h4>
+      <table class="stat-table"><tr><th>圈层</th><th>路线名称</th><th>格数</th></tr>
+        ${rings.map(ring => `<tr><td><span class="board-ring-badge ring-${ring.tone}">${C.esc(ring.label)}</span></td><td>${C.esc(ring.name)}</td><td class="num">${ring.count}</td></tr>`).join("")}</table>
       <h4 style="margin:14px 0 6px">按类型</h4>
       <table class="stat-table"><tr><th>类型</th><th>数量</th></tr>${rows}</table>
       <h4 style="margin:14px 0 6px">区段</h4>
@@ -529,7 +608,14 @@
       if (t.dataset.edit != null) return openEditor(Number(t.dataset.edit));
       if (t.dataset.preview != null) return previewCell(state.board.mainRing[Number(t.dataset.preview)]);
     });
-    ["boardFSearch", "boardFType"].forEach(id => {
+    document.getElementById("boardRingTabs").addEventListener("click", e => {
+      const tab = e.target.closest("[data-ring-filter]");
+      if (!tab) return;
+      const select = document.getElementById("boardFRing");
+      select.value = select.value === tab.dataset.ringFilter ? "all" : tab.dataset.ringFilter;
+      renderList();
+    });
+    ["boardFSearch", "boardFRing", "boardFType"].forEach(id => {
       document.getElementById(id).addEventListener("input", renderList);
       document.getElementById(id).addEventListener("change", renderList);
     });
