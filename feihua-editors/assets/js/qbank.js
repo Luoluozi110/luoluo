@@ -2,7 +2,7 @@
  * qbank.js — 题库编辑器模块
  * 数据结构与游戏 config/questions.json 完全兼容：
  *   knowledge: {id,type,stem,options:[str...],answer,scenario?,optionActs?,difficulty,category,analysis,enabled}
- *   choice:    {id,type,stem,options:[{text,attr}...],difficulty,category,analysis,enabled}
+ *   choice:    {id,type,stem,options:[{text,studyTarget,inkTags,resultText}...],difficulty,category,analysis,enabled}
  * 本模块依赖 common.js（Common.*），自身不重复定义存储/提示/转义。
  * ========================================================================= */
 (function (global) {
@@ -10,6 +10,21 @@
   const C = global.Common;
 
   const ATTR = C.ATTR, CATEGORY = C.CATEGORY, TYPE_NAME = { knowledge: "知识题", choice: "创作抉择题" };
+  const INK_TAGS = ["逐名", "求真", "守法", "出新", "与人", "独行", "惜身", "燃笔"];
+  const defaultInkTags = target => ({ shi: ["守法", "独行"], ci: ["出新", "独行"], lian: ["与人", "守法"], bi: ["求真", "惜身"], xue: ["守法", "与人"], si: ["求真", "出新"] }[target] || ["求真"]);
+  const normalizeChoiceOption = raw => {
+    const source = (raw && typeof raw === "object") ? raw : { text: raw };
+    const studyTarget = ATTR[source.studyTarget] ? source.studyTarget : (ATTR[source.attr] ? source.attr : "bi");
+    const text = String(source.text || "").trim();
+    const inkTags = (Array.isArray(source.inkTags) ? source.inkTags : defaultInkTags(studyTarget))
+      .map(x => String(x || "").trim()).filter(x => INK_TAGS.includes(x)).slice(0, 2);
+    return {
+      text,
+      studyTarget,
+      inkTags: inkTags.length ? inkTags : defaultInkTags(studyTarget),
+      resultText: String(source.resultText || `你把「${text || "这一笔"}」记入行卷，留待日后再看。`).trim()
+    };
+  };
 
   const state = { questions: [], editIndex: -1, form: null, _ready: false };
 
@@ -83,15 +98,7 @@
         out.optionActs = acts;
       }
     } else {
-      const opts = Array.isArray(q.options)
-        ? q.options.map(o => {
-            if (typeof o === "string") return { text: o.trim(), attr: null };
-            return {
-              text: String(o.text || "").trim(),
-              attr: ATTR[o.attr] ? o.attr : null
-            };
-          })
-        : [];
+      const opts = Array.isArray(q.options) ? q.options.map(normalizeChoiceOption) : [];
       out.options = opts;
     }
     return out;
@@ -187,7 +194,13 @@
         });
       }
     } else {
-      q.options.forEach((o, i) => { if (!o.text) errors.push("选项 " + (i + 1) + " 内容为空"); });
+      q.options.forEach((o, i) => {
+        if (!o.text) errors.push("选项 " + (i + 1) + " 内容为空");
+        if (!ATTR[o.studyTarget]) errors.push("选项 " + (i + 1) + " 必须选择修习方向");
+        if (!String(o.resultText || "").trim()) errors.push("选项 " + (i + 1) + " 必须填写即时回声");
+        if (!Array.isArray(o.inkTags) || !o.inkTags.length || o.inkTags.length > 2 || o.inkTags.some(x => !INK_TAGS.includes(x)))
+          errors.push("选项 " + (i + 1) + " 须填写 1–2 个有效墨痕（用顿号分隔）");
+      });
     }
     if (![1, 2, 3].includes(q.difficulty)) errors.push("难度必须是 1–3");
     return { ok: errors.length === 0, errors };
@@ -309,7 +322,7 @@
       ? JSON.parse(JSON.stringify(src))
       : { id: "", type: "knowledge", stem: "", scenario: "", options: ["", ""], optionActs: ["", ""], answer: 0, difficulty: 2, category: "shi", analysis: "", enabled: true };
     if (!src && state.form.type === "choice")
-      state.form.options = [{ text: "", attr: null }, { text: "", attr: null }];
+      state.form.options = [normalizeChoiceOption({ text: "" }), normalizeChoiceOption({ text: "" })];
     if (!src) {
       const pfx = state.form.type === "choice" ? "Q1" : "Q0";
       state.form.id = C.nextSeqId(pfx, state.questions.map(q => q.id), 3);
@@ -343,10 +356,10 @@
     }
     const isK = type === "knowledge";
     document.getElementById("knowledgeSituationalField").style.display = isK ? "" : "none";
-    document.getElementById("optLabel").textContent = isK ? "选项（勾选圆圈标记正确答案）" : "选项（每项可设置属性）";
+    document.getElementById("optLabel").textContent = isK ? "选项（勾选圆圈标记正确答案）" : "选项（每项设置修习方向与墨痕回声）";
     document.getElementById("optHint").textContent = isK
       ? "单选知识题：勾选正确答案，游戏答错会扣灵感。"
-      : "创作抉择题：无标准答案，勾选的属性会在玩家抉择后计入。";
+      : "创作抉择题：无标准答案；当前研修方向推进进度，旁通方向沉淀为心得。";
     if (isK) {
       if (!state.form.options.length || typeof state.form.options[0] !== "string") state.form.options = ["", ""];
       if (!Array.isArray(state.form.optionActs)) state.form.optionActs = [];
@@ -354,9 +367,8 @@
       if (state.form.optionActs.length > state.form.options.length) state.form.optionActs.length = state.form.options.length;
       if (state.form.answer >= state.form.options.length) state.form.answer = 0;
     } else {
-      if (!state.form.options.length || typeof state.form.options[0] === "string")
-        state.form.options = state.form.options.map(o => ({ text: o, attr: null }));
-      if (!state.form.options.length) state.form.options = [{ text: "", attr: null }, { text: "", attr: null }];
+      state.form.options = state.form.options.map(normalizeChoiceOption);
+      if (!state.form.options.length) state.form.options = [normalizeChoiceOption({ text: "" }), normalizeChoiceOption({ text: "" })];
     }
   }
 
@@ -375,12 +387,14 @@
           <button class="opt-del" data-delopt="${i}" title="删除此选项">×</button>
         </div>`;
       } else {
-        const attrOpts = `<option value="">无属性</option>` + Object.entries(ATTR)
-          .map(([k, v]) => `<option value="${k}" ${o.attr === k ? "selected" : ""}>${v}</option>`).join("");
-        return `<div class="opt-row" data-i="${i}">
+        const targetOpts = Object.entries(ATTR)
+          .map(([k, v]) => `<option value="${k}" ${o.studyTarget === k ? "selected" : ""}>${v}</option>`).join("");
+        return `<div class="opt-row choice-opt-row" data-i="${i}">
           <span class="ord">${i + 1}</span>
           <input type="text" class="opt-text" value="${C.esc(o.text)}" placeholder="选项内容"/>
-          <select class="opt-attr">${attrOpts}</select>
+          <select class="opt-study-target" title="修习方向">${targetOpts}</select>
+          <input type="text" class="opt-ink-tags" value="${C.esc((o.inkTags || []).join("、"))}" placeholder="墨痕（求真、出新）"/>
+          <input type="text" class="opt-result" value="${C.esc(o.resultText || "")}" placeholder="选择后的即时回声"/>
           <button class="opt-del" data-delopt="${i}" title="删除此选项">×</button>
         </div>`;
       }
@@ -410,7 +424,9 @@
       const analysis = String(state.form.analysis || "").trim() || "（本题暂无解析）";
       resultEl.innerHTML = `答错 / 超时时显示：<b>${lead}：${answerMark}${C.esc(answerText)}</b><br/>解析：${C.esc(analysis)}`;
     } else {
-      resultEl.innerHTML = `选中后显示抉择结果；解析：${C.esc(String(state.form.analysis || "").trim() || "（本题暂无说明）")}`;
+      const picked = state.form.options[0] || {};
+      const target = ATTR[picked.studyTarget] || "笔力";
+      resultEl.innerHTML = `选中后显示：<b>${C.esc(picked.resultText || "（请填写即时回声）")}</b><br/>修习所得：${C.esc(target)}研修进度 +1（当前在修时）／心得 +1（旁通时）。`;
     }
   }
 
@@ -420,8 +436,10 @@
     const options = rows.map(r => {
       const text = r.querySelector(".opt-text").value.trim();
       if (type === "choice") {
-        const attr = r.querySelector(".opt-attr").value || null;
-        return { text, attr };
+        const studyTarget = r.querySelector(".opt-study-target").value || "bi";
+        const inkTags = r.querySelector(".opt-ink-tags").value.split(/[、,，]/).map(x => x.trim()).filter(Boolean).slice(0, 2);
+        const resultText = r.querySelector(".opt-result").value.trim();
+        return { text, studyTarget, inkTags, resultText };
       }
       return text;
     });
@@ -585,7 +603,7 @@
     document.querySelectorAll('input[name=ed-type]').forEach(r => r.addEventListener("change", () => { syncTypeUI(); renderOptions(); }));
     document.getElementById("ed-addopt").addEventListener("click", () => {
       if (state.form.type === "knowledge") { state.form.options.push(""); state.form.optionActs.push(""); }
-      else state.form.options.push({ text: "", attr: null });
+      else state.form.options.push(normalizeChoiceOption({ text: "" }));
       renderOptions();
     });
     document.getElementById("ed-options").addEventListener("click", e => {
@@ -604,8 +622,8 @@
       const row = e.target.closest(".opt-row");
       if (row && state.form.type === "choice") {
         const i = Number(row.dataset.i);
-        const attr = row.querySelector(".opt-attr").value || null;
-        if (state.form.options[i]) { state.form.options[i].attr = attr; }
+        const studyTarget = row.querySelector(".opt-study-target").value || "bi";
+        if (state.form.options[i]) { state.form.options[i].studyTarget = studyTarget; }
       }
       updateRuntimePreview();
     });
@@ -618,6 +636,8 @@
         state.form.optionActs[i] = row.querySelector(".opt-act").value;
       } else if (state.form.options[i]) {
         state.form.options[i].text = row.querySelector(".opt-text").value;
+        state.form.options[i].inkTags = row.querySelector(".opt-ink-tags").value.split(/[、,，]/).map(x => x.trim()).filter(Boolean).slice(0, 2);
+        state.form.options[i].resultText = row.querySelector(".opt-result").value;
       }
       updateRuntimePreview();
     });

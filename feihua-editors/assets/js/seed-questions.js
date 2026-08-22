@@ -1115,15 +1115,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "举杯邀明月，对影成三人",
-        "attr": "shi"
+        "studyTarget": "shi",
+        "inkTags": [
+          "守法",
+          "独行"
+        ],
+        "resultText": "你借古人成篇，也把这一笔练得更稳。"
       },
       {
         "text": "江畔何人初见月，江月何年初照人",
-        "attr": "si"
+        "studyTarget": "si",
+        "inkTags": [
+          "求真",
+          "出新"
+        ],
+        "resultText": "你没有急着成篇，先把这一问留在心中。"
       },
       {
-        "text": "默默记下此景，继续前行",
-        "attr": null
+        "text": "不借旧句，只记下江面碎光，归后自写一行",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1138,15 +1153,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "劝君更尽一杯酒，西出阳关无故人",
-        "attr": "shi"
+        "studyTarget": "shi",
+        "inkTags": [
+          "守法",
+          "独行"
+        ],
+        "resultText": "你借古人成篇，也把这一笔练得更稳。"
       },
       {
         "text": "黄沙百战穿金甲，不破楼兰终不还",
-        "attr": "shi"
+        "studyTarget": "shi",
+        "inkTags": [
+          "守法",
+          "独行"
+        ],
+        "resultText": "你借古人成篇，也把这一笔练得更稳。"
       },
       {
-        "text": "赠他一壶家乡水",
-        "attr": null
+        "text": "不引旧句，替他写一句只有你们懂得的道别",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1161,15 +1191,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "疏影横斜水清浅，暗香浮动月黄昏",
-        "attr": "shi"
+        "studyTarget": "shi",
+        "inkTags": [
+          "守法",
+          "独行"
+        ],
+        "resultText": "你借古人成篇，也把这一笔练得更稳。"
       },
       {
         "text": "已是悬崖百丈冰，犹有花枝俏",
-        "attr": "si"
+        "studyTarget": "si",
+        "inkTags": [
+          "求真",
+          "出新"
+        ],
+        "resultText": "你没有急着成篇，先把这一问留在心中。"
       },
       {
-        "text": "拍下来发给同窗看",
-        "attr": null
+        "text": "先记下梅影与冷香，回去写成自己的小诗",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1184,15 +1229,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "会当凌绝顶，一览众山小",
-        "attr": "shi"
+        "studyTarget": "shi",
+        "inkTags": [
+          "守法",
+          "独行"
+        ],
+        "resultText": "你借古人成篇，也把这一笔练得更稳。"
       },
       {
         "text": "遥知兄弟登高处，遍插茱萸少一人",
-        "attr": "ci"
+        "studyTarget": "ci",
+        "inkTags": [
+          "出新",
+          "独行"
+        ],
+        "resultText": "你让情思舒展，句子在心里慢慢铺开。"
       },
       {
-        "text": "只看风景，不写一字",
-        "attr": null
+        "text": "把长风与远山记在纸上，待想清所念再写",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1207,15 +1267,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "无可奈何花落去，似曾相识燕归来",
-        "attr": "ci"
+        "studyTarget": "ci",
+        "inkTags": [
+          "出新",
+          "独行"
+        ],
+        "resultText": "你让情思舒展，句子在心里慢慢铺开。"
       },
       {
         "text": "落红不是无情物，化作春泥更护花",
-        "attr": "si"
+        "studyTarget": "si",
+        "inkTags": [
+          "求真",
+          "出新"
+        ],
+        "resultText": "你没有急着成篇，先把这一问留在心中。"
       },
       {
-        "text": "拾起一瓣夹进书里",
-        "attr": null
+        "text": "拾起一瓣细看纹路，留待回去写它如何落下",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1230,15 +1305,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "写「爆竹一声除旧岁，桃符万户换新春」，稳妥喜庆",
-        "attr": "lian"
+        "studyTarget": "lian",
+        "inkTags": [
+          "与人",
+          "守法"
+        ],
+        "resultText": "你把话留给人间往来，准备让上下句彼此照应。"
       },
       {
         "text": "为每家量身撰一副，嵌上各家姓氏行当",
-        "attr": "si"
+        "studyTarget": "si",
+        "inkTags": [
+          "求真",
+          "出新"
+        ],
+        "resultText": "你没有急着成篇，先把这一问留在心中。"
       },
       {
-        "text": "照着现成的春联抄一遍",
-        "attr": null
+        "text": "先问清主人家的行当与心愿，再拟一副新联",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1253,15 +1343,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "立在船头，任雨打衣衫，吟啸徐行",
-        "attr": "si"
+        "studyTarget": "si",
+        "inkTags": [
+          "求真",
+          "出新"
+        ],
+        "resultText": "你没有急着成篇，先把这一问留在心中。"
       },
       {
         "text": "入舱推窗，听雨打篷声，填一阕小令",
-        "attr": "ci"
+        "studyTarget": "ci",
+        "inkTags": [
+          "出新",
+          "独行"
+        ],
+        "resultText": "你让情思舒展，句子在心里慢慢铺开。"
       },
       {
-        "text": "抱紧行囊，护住书稿要紧",
-        "attr": null
+        "text": "护好书稿，待雨歇后把篷声与湿意一并记下",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1276,15 +1381,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "写「羌笛何须怨杨柳，春风不度玉门关」式的苍凉",
-        "attr": "shi"
+        "studyTarget": "shi",
+        "inkTags": [
+          "守法",
+          "独行"
+        ],
+        "resultText": "你借古人成篇，也把这一笔练得更稳。"
       },
       {
         "text": "写「不知何处吹芦管，一夜征人尽望乡」式的思归",
-        "attr": "ci"
+        "studyTarget": "ci",
+        "inkTags": [
+          "出新",
+          "独行"
+        ],
+        "resultText": "你让情思舒展，句子在心里慢慢铺开。"
       },
       {
-        "text": "掩耳而卧，明日还要赶路",
-        "attr": null
+        "text": "不急作诗，先记下笛声停歇处的夜色",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1299,15 +1419,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "当场致谢，回去逐条改定",
-        "attr": "xue"
+        "studyTarget": "xue",
+        "inkTags": [
+          "守法",
+          "与人"
+        ],
+        "resultText": "你愿意回到来处校勘，让这一笔有据可循。"
       },
       {
         "text": "引经据典，与他辩到日落",
-        "attr": "si"
+        "studyTarget": "si",
+        "inkTags": [
+          "求真",
+          "出新"
+        ],
+        "resultText": "你没有急着成篇，先把这一问留在心中。"
       },
       {
-        "text": "笑而不答，各持己见",
-        "attr": null
+        "text": "请他稍候，重写一段来回应这处疏漏",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1322,15 +1457,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "「雁过也，最伤心，却是旧时相识」",
-        "attr": "ci"
+        "studyTarget": "ci",
+        "inkTags": [
+          "出新",
+          "独行"
+        ],
+        "resultText": "你让情思舒展，句子在心里慢慢铺开。"
       },
       {
         "text": "「乡书何处达？归雁洛阳边」",
-        "attr": "shi"
+        "studyTarget": "shi",
+        "inkTags": [
+          "守法",
+          "独行"
+        ],
+        "resultText": "你借古人成篇，也把这一笔练得更稳。"
       },
       {
-        "text": "推窗看了一眼，掩窗读书",
-        "attr": null
+        "text": "只记雁声远近，待它在心里沉成一句",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1345,15 +1495,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "写英雄成败：「江山如画，一时多少豪杰」",
-        "attr": "shi"
+        "studyTarget": "shi",
+        "inkTags": [
+          "守法",
+          "独行"
+        ],
+        "resultText": "你借古人成篇，也把这一笔练得更稳。"
       },
       {
         "text": "写兴亡之理：「兴，百姓苦；亡，百姓苦」",
-        "attr": "si"
+        "studyTarget": "si",
+        "inkTags": [
+          "求真",
+          "出新"
+        ],
+        "resultText": "你没有急着成篇，先把这一问留在心中。"
       },
       {
-        "text": "拾一枚箭镞收进行囊",
-        "attr": null
+        "text": "查问断戟与荒城的来处，再决定写给谁看",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1368,15 +1533,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "「海内存知己，天涯若比邻」",
-        "attr": "shi"
+        "studyTarget": "shi",
+        "inkTags": [
+          "守法",
+          "独行"
+        ],
+        "resultText": "你借古人成篇，也把这一笔练得更稳。"
       },
       {
         "text": "「孤帆远影碧空尽，唯见长江天际流」",
-        "attr": "ci"
+        "studyTarget": "ci",
+        "inkTags": [
+          "出新",
+          "独行"
+        ],
+        "resultText": "你让情思舒展，句子在心里慢慢铺开。"
       },
       {
-        "text": "挥手不语，转身先走",
-        "attr": null
+        "text": "把临别时未说的话写在信末，托舟人带去",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1391,15 +1571,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "「但愿人长久，千里共婵娟」，写祝愿",
-        "attr": "ci"
+        "studyTarget": "ci",
+        "inkTags": [
+          "出新",
+          "独行"
+        ],
+        "resultText": "你让情思舒展，句子在心里慢慢铺开。"
       },
       {
         "text": "「举头望明月，低头思故乡」，写思念",
-        "attr": "shi"
+        "studyTarget": "shi",
+        "inkTags": [
+          "守法",
+          "独行"
+        ],
+        "resultText": "你借古人成篇，也把这一笔练得更稳。"
       },
       {
-        "text": "吃完月饼，早些歇息",
-        "attr": null
+        "text": "把月色和客舍灯影记下，明晨再细细改写",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1414,15 +1609,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "「霜皮溜雨四十围」，以形写其苍劲",
-        "attr": "lian"
+        "studyTarget": "lian",
+        "inkTags": [
+          "与人",
+          "守法"
+        ],
+        "resultText": "你把话留给人间往来，准备让上下句彼此照应。"
       },
       {
         "text": "「岂不罹凝寒，松柏有本性」，以志写其贞坚",
-        "attr": "si"
+        "studyTarget": "si",
+        "inkTags": [
+          "求真",
+          "出新"
+        ],
+        "resultText": "你没有急着成篇，先把这一问留在心中。"
       },
       {
-        "text": "婉言辞谢，说自己联力尚浅",
-        "attr": null
+        "text": "先听主人说完平生所守，再拟一联相赠",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1437,15 +1647,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "就着这一夜愁绪写下一首，如张继之得《枫桥夜泊》",
-        "attr": "shi"
+        "studyTarget": "shi",
+        "inkTags": [
+          "守法",
+          "独行"
+        ],
+        "resultText": "你借古人成篇，也把这一笔练得更稳。"
       },
       {
         "text": "把落第的卷子重抄一遍，逐句找病",
-        "attr": "xue"
+        "studyTarget": "xue",
+        "inkTags": [
+          "守法",
+          "与人"
+        ],
+        "resultText": "你愿意回到来处校勘，让这一笔有据可循。"
       },
       {
-        "text": "收拾行囊，明早还乡",
-        "attr": null
+        "text": "收起榜单，把今晚的失意写完再动身",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1460,15 +1685,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "题一首自己的近作",
-        "attr": "shi"
+        "studyTarget": "shi",
+        "inkTags": [
+          "守法",
+          "独行"
+        ],
+        "resultText": "你借古人成篇，也把这一笔练得更稳。"
       },
       {
         "text": "先读遍满墙旧题，再和其中一首",
-        "attr": "xue"
+        "studyTarget": "xue",
+        "inkTags": [
+          "守法",
+          "与人"
+        ],
+        "resultText": "你愿意回到来处校勘，让这一笔有据可循。"
       },
       {
-        "text": "谢过寺僧，不题",
-        "attr": null
+        "text": "先抄下墙上旧题，回去再写一首不相同的诗",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1483,15 +1723,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "用「桃李满门」「杏坛春暖」一路的现成典故，稳当得体",
-        "attr": "lian"
+        "studyTarget": "lian",
+        "inkTags": [
+          "与人",
+          "守法"
+        ],
+        "resultText": "你把话留给人间往来，准备让上下句彼此照应。"
       },
       {
         "text": "把先生生平事迹嵌入联中，专为他一人而作",
-        "attr": "si"
+        "studyTarget": "si",
+        "inkTags": [
+          "求真",
+          "出新"
+        ],
+        "resultText": "你没有急着成篇，先把这一问留在心中。"
       },
       {
-        "text": "只写「福如东海，寿比南山」八字",
-        "attr": null
+        "text": "先记下先生平日的口头禅，再写一副只属于他的寿联",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },
@@ -1506,15 +1761,30 @@ window.GAME_QUESTIONS = [
     "options": [
       {
         "text": "把苦寒写成惊喜：「千树万树梨花开」",
-        "attr": "shi"
+        "studyTarget": "shi",
+        "inkTags": [
+          "守法",
+          "独行"
+        ],
+        "resultText": "你借古人成篇，也把这一笔练得更稳。"
       },
       {
         "text": "把苦寒写成实录：「瀚海阑干百丈冰，愁云惨淡万里凝」",
-        "attr": "bi"
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       },
       {
-        "text": "缩回帐中烤火，明日再说",
-        "attr": null
+        "text": "记下帐外风雪与同伴的抱怨，待暖了手再落笔",
+        "studyTarget": "bi",
+        "inkTags": [
+          "求真",
+          "惜身"
+        ],
+        "resultText": "你先收住眼前细节，准备把它写成自己的句子。"
       }
     ]
   },

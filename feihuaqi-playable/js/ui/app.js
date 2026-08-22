@@ -397,8 +397,8 @@ function makeUi() {
     showLap2Intro: () => modals.showLap2Intro(),
     // 引擎明确要求同步圈层；不再让阶段弹窗承担唯一的状态切换职责。
     syncStageRing: s => board.revealRouteState(s),
-    showStageChange: async gate => {
-      if (modals.showStageChange) await modals.showStageChange(gate);
+    showStageChange: async (gate, state) => {
+      if (modals.showStageChange) await modals.showStageChange(gate, state);
     },
     showZeitgeist: z => modals.showZeitgeist(z),
     askScenic: (cell, cost, curInsp) => modals.askScenic(cell, cost, curInsp),
@@ -411,7 +411,7 @@ function makeUi() {
       setStage(stageFromProgress(game.progress())); // 战后阶段可能已进阶，重新移调
       return out;
     },
-    showPalaceIntro: () => modals.showPalaceIntro(),
+    showPalaceIntro: (themes, names, inkSummary) => modals.showPalaceIntro(themes, names, inkSummary),
     askHiddenFinal: meta => modals.askHiddenFinal(meta),
     showHiddenFinalRing: async () => {
       setScene('board');
@@ -927,6 +927,12 @@ async function showResult(sum) {
     ? `<div class="result-unlocks paper"><div style="font-size:14px;letter-spacing:.16em;color:var(--zhu);margin-bottom:6px">本局新解锁</div>
        <div class="unlock-row">${unlocks}</div></div>`
     : '';
+  const inkBlock = sum.inkEpilogue
+    ? `<div class="result-mastery paper" style="margin-top:10px;padding:10px 14px;font-size:13px;line-height:1.8">
+      <div style="font-size:14px;letter-spacing:.16em;color:var(--mo-2);margin-bottom:4px">行卷留痕</div>
+      <div>${esc(sum.inkEpilogue)}</div>
+    </div>`
+    : '';
 
   resultEl.innerHTML = `
     <div class="result-wrap">
@@ -950,6 +956,7 @@ async function showResult(sum) {
           <div class="dim-grid">${dims}</div>
           ${unlockBlock}
           ${masteryBlock}
+          ${inkBlock}
         </div>
       </div>
       <div class="result-actions">

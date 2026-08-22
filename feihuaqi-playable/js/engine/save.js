@@ -28,7 +28,7 @@ const STATE_KEYS = [
   'school', 'playerName', 'attrs', 'inspiration', 'inspirationMax',
   'passive', 'active', 'track', 'pos', 'branchId', 'branchIndex',
   'lap', 'routeIndex', 'ringId', 'phaseGateSeen', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
-  'quiz', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
+  'quiz', 'choiceHistory', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
   'zeitgeist', 'prologueSeen', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
   'talentLevels', 'schoolState', 'abilityState', 'albumState', 'secretFinal', 'over', 'reachedEnd', 'endReason', 'log'
 ];
@@ -351,6 +351,19 @@ export function deserializeRun(rawObj, cfg) {
   out.turn = Math.max(0, Number(out.turn) || 0);
   out.seenEvents = out.seenEvents instanceof Set ? out.seenEvents : new Set();
   out.usedQuestions = out.usedQuestions instanceof Set ? out.usedQuestions : new Set();
+  out.choiceHistory = (Array.isArray(out.choiceHistory) ? out.choiceHistory : []).map(item => {
+    const src = item && typeof item === 'object' ? item : {};
+    return {
+      questionId: typeof src.questionId === 'string' ? src.questionId.slice(0, 40) : '',
+      optionIndex: Math.max(0, Number(src.optionIndex) || 0),
+      target: ['shi','ci','lian','bi','xue','si'].includes(src.target) ? src.target : 'bi',
+      inkTags: Array.isArray(src.inkTags) ? src.inkTags.map(x => String(x || '').slice(0, 12)).filter(Boolean).slice(0, 2) : [],
+      resultText: typeof src.resultText === 'string' ? src.resultText.slice(0, 180) : '',
+      optionText: typeof src.optionText === 'string' ? src.optionText.slice(0, 120) : '',
+      phase: typeof src.phase === 'string' ? src.phase.slice(0, 24) : '',
+      turn: Math.max(0, Number(src.turn) || 0)
+    };
+  }).slice(-24);
   out.log = Array.isArray(out.log) ? out.log.slice(-LOG_KEEP) : [];
   out.titles = Array.isArray(out.titles) ? out.titles : [];
   out.synergies = Array.isArray(out.synergies) ? out.synergies : [];

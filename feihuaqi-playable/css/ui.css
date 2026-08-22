@@ -445,6 +445,13 @@
   font-size: 15px; line-height: 1.75;
 }
 .analysis b { color: var(--qing-text); letter-spacing: .1em; }
+.quiz-choice-feedback {
+  margin: 12px 0 10px; padding: 10px 12px; border-radius: 8px;
+  background: rgba(178,58,46,.08); border-left: 3px solid var(--zhu);
+  line-height: 1.75;
+}
+.quiz-choice-feedback b { color: var(--zhu); letter-spacing: .02em; }
+.quiz-choice-feedback span { color: var(--mo-2); font-size: 13px; }
 
 /* ==================================================== 奇遇卡 */
 .event-card-wrap { perspective: 1200px; }

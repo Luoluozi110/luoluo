@@ -106,6 +106,30 @@ console.log('[1.5] 题库：柔性知识题读取 → 编辑 → 动态增删选
   window.QB.importData(window.GAME_QUESTIONS, true);
 }
 
+console.log('[1.6] 创作抉择：墨痕字段迁移 → 编辑 → 保存往返');
+{
+  const choiceIndex = window.QB.get().findIndex(q => q.type === 'choice');
+  const choice = window.QB.get()[choiceIndex];
+  ok(choiceIndex >= 0, '题库中存在创作抉择题');
+  ok(choice && choice.options.every(o => o.studyTarget && o.resultText && Array.isArray(o.inkTags) && o.inkTags.length >= 1), '旧 attr 题目自动补齐修习方向、即时反馈与墨痕');
+  click(document.querySelector(`#qlist [data-edit="${choiceIndex}"]`));
+  ok(document.querySelectorAll('#ed-options .opt-study-target').length === choice.options.length, '创作抉择编辑器显示修习方向下拉');
+  ok(document.querySelectorAll('#ed-options .opt-ink-tags').length === choice.options.length, '创作抉择编辑器显示墨痕输入');
+  ok(document.querySelectorAll('#ed-options .opt-result').length === choice.options.length, '创作抉择编辑器显示即时反馈输入');
+  const target = document.querySelector('#ed-options .opt-study-target');
+  const tags = document.querySelector('#ed-options .opt-ink-tags');
+  const result = document.querySelector('#ed-options .opt-result');
+  target.value = 'si'; fire(target, 'change');
+  tags.value = '求真, 出新'; fire(tags, 'input');
+  result.value = '你先追问缘由，再把所得写成一段新的起笔。'; fire(result, 'input');
+  click(document.getElementById('edSave'));
+  const savedChoice = window.QB.get()[choiceIndex].options[0];
+  ok(savedChoice.studyTarget === 'si' && savedChoice.inkTags.join(',') === '求真,出新' && savedChoice.resultText.includes('追问缘由'), '创作抉择的修习与墨痕字段写入 state');
+  const savedChoices = JSON.parse(localStorage.getItem('feihua_editors_v1_qbank') || '[]');
+  ok(savedChoices[choiceIndex].options[0].resultText.includes('追问缘由'), '创作抉择字段持久化 localStorage');
+  window.QB.importData(window.GAME_QUESTIONS, true);
+}
+
 console.log('[2] 旧本地数据的官方文心补齐 + 编辑器列表渲染');
 const t034 = window.TALENT.get().find(t => t.id === 'T034');
 ok(!!t034 && t034.name === '照我传灯', '旧 localStorage 自动补齐 T034「照我传灯」');

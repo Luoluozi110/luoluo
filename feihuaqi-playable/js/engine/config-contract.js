@@ -155,6 +155,17 @@
           if (Object.prototype.hasOwnProperty.call(q, 'optionActs')) add(`${qp}.optionActs`, '抉择题不能包含知识题行动文案');
           if (Array.isArray(q.options)) q.options.forEach((option, j) => {
             if (!isObj(option) || !text(option.text)) add(`${qp}.options[${j}]`, '抉择题选项必须是包含 text 的对象');
+            if (option && Object.prototype.hasOwnProperty.call(option, 'studyTarget') && !ATTR_KEYS.includes(option.studyTarget)) {
+              add(`${qp}.options[${j}].studyTarget`, '修习方向必须是诗/词/联/笔/学/思之一');
+            }
+            if (option && Object.prototype.hasOwnProperty.call(option, 'resultText') && !text(option.resultText)) {
+              add(`${qp}.options[${j}].resultText`, '选择回声不能为空');
+            }
+            if (option && Object.prototype.hasOwnProperty.call(option, 'inkTags')) {
+              if (!Array.isArray(option.inkTags) || option.inkTags.length < 1 || option.inkTags.length > 2 || option.inkTags.some(tag => !text(tag))) {
+                add(`${qp}.options[${j}].inkTags`, '墨痕须为 1–2 个非空标签');
+              }
+            }
           });
         }
       });
