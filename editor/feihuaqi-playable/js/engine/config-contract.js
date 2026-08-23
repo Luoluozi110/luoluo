@@ -177,9 +177,23 @@
         if (!isObj(e)) return;
         if (!['direct', 'choice', 'challenge'].includes(e.kind)) add(`events[${i}].kind`, '必须是 direct、choice 或 challenge');
         if (!text(e.name)) add(`events[${i}].name`, '名称不能为空');
-        if (e.kind === 'direct' && !isObj(e.effect)) add(`events[${i}].effect`, '直接事件必须包含 effect');
-        if (e.kind === 'choice' && (!Array.isArray(e.choices) || e.choices.length < 2)) add(`events[${i}].choices`, '选择事件至少需要两个选项');
-        if (e.kind === 'challenge' && !isObj(e.challenge)) add(`events[${i}].challenge`, '挑战事件必须包含 challenge');
+        if (e.kind === 'direct') {
+          if (!isObj(e.effect)) add(`events[${i}].effect`, '直接事件必须包含 effect');
+          if (!text(e.resultText)) add(`events[${i}].resultText`, '直接事件必须包含结算回声');
+        }
+        if (e.kind === 'choice') {
+          if (!Array.isArray(e.choices) || e.choices.length < 2) add(`events[${i}].choices`, '选择事件至少需要两个选项');
+          else e.choices.forEach((choice, j) => {
+            if (!isObj(choice) || !text(choice.resultText)) add(`events[${i}].choices[${j}].resultText`, '选择事件的每个选项都必须包含回声');
+          });
+        }
+        if (e.kind === 'challenge') {
+          if (!isObj(e.challenge)) add(`events[${i}].challenge`, '挑战事件必须包含 challenge');
+          else {
+            if (!text(e.challenge.winText)) add(`events[${i}].challenge.winText`, '挑战事件必须包含全胜回声');
+            if (!text(e.challenge.failText)) add(`events[${i}].challenge.failText`, '挑战事件必须包含未胜回声');
+          }
+        }
       });
     }
 

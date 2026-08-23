@@ -504,6 +504,8 @@
     <div class="field" id="evDirectPanel">
       <label>效果</label>
       <div id="evEffectBox"></div>
+      <div class="field" style="margin:10px 0 0"><label>结算回声（效果生效时展示）</label>
+        <textarea id="ev-result" placeholder="描写这次奇遇如何落定，以及玩家感受到的变化…"></textarea></div>
     </div>
 
     <!-- 挑战：连战 + 全胜奖励 -->
@@ -514,6 +516,12 @@
           <input type="number" id="evBattles" value="1" min="1" step="1" /></div>
         <div class="field" style="margin:0"><label>全胜奖励效果</label>
           <div id="evWinBox"></div></div>
+      </div>
+      <div class="row2" style="margin-top:10px">
+        <div class="field" style="margin:0"><label>全胜回声</label>
+          <textarea id="evWinText" placeholder="挑战全部获胜后的叙事反馈…"></textarea></div>
+        <div class="field" style="margin:0"><label>未胜回声</label>
+          <textarea id="evFailText" placeholder="挑战未能全胜后的叙事反馈…"></textarea></div>
       </div>
       <div class="hint">玩家需连胜全部场次才能获得「全胜奖励」；中途灵感枯竭会中止挑战。</div>
     </div>
@@ -1007,7 +1015,7 @@
 
 <!-- 游戏原始数据（作为编辑器默认种子；首次打开或仍为示例时自动载入） -->
 <script src="assets/js/seed-questions.js"></script>
-<script src="assets/js/seed-events.js"></script>
+<script src="assets/js/seed-events.js?v=20260823eventecho1"></script>
 <script src="assets/js/seed-talents.js"></script>
 <script src="assets/js/seed-talent-upgrade.js"></script>
 <script src="assets/js/seed-npcs.js"></script>
@@ -1018,10 +1026,10 @@
 <script src="assets/js/seed-album.js"></script>
 <script src="assets/js/seed-copy.js"></script>
 <script src="assets/js/icon-library.js"></script>
-<script src="../feihuaqi-playable/js/engine/config-contract.js"></script>
+<script src="../feihuaqi-playable/js/engine/config-contract.js?v=20260823eventecho1"></script>
 <script src="assets/js/common.js"></script>
 <script src="assets/js/qbank.js"></script>
-<script src="assets/js/adventure.js"></script>
+<script src="assets/js/adventure.js?v=20260823eventecho1"></script>
 <script src="assets/js/talent.js"></script>
 <script src="assets/js/npc.js"></script>
 <script src="assets/js/affinity.js"></script>

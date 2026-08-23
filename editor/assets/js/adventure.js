@@ -19,21 +19,22 @@
     {
       id: "E001", name: "梦笔生花", rarity: "legend", kind: "direct",
       text: "夜宿江畔驿馆，梦中所执之笔头上忽然生出花来。醒后握管，字字如有神助。",
-      effect: { attrs: { bi: 5 }, inspiration: 0, talent: "T007" }
+      effect: { attrs: { bi: 5 }, inspiration: 0, talent: "T007" },
+      resultText: "晨光透进驿窗时，梦中花影已经散去，笔尖却仍像含着一瓣春色。你试写数行，字句竟自行舒展开来。"
     },
     {
       id: "E006", name: "江郎才尽", rarity: "rare", kind: "choice",
       text: "夜梦一人自称郭璞，向你索还那支寄放多年的五色笔。笔在你手，还是不还？",
       choices: [
-        { text: "还他五色笔，从此老实读书", effect: { attrs: { si: 3 }, inspiration: -2 } },
-        { text: "强留彩笔，搜尽枯肠再赋一篇", effect: { attrs: { bi: 4 }, inspiration: -4 } }
+        { text: "还他五色笔，从此老实读书", effect: { attrs: { si: 3 }, inspiration: -2 }, resultText: "五色光从指间一点点退去。你重新铺纸，第一笔落得很慢，却终于不再借谁的声名。" },
+        { text: "强留彩笔，搜尽枯肠再赋一篇", effect: { attrs: { bi: 4 }, inspiration: -4 }, resultText: "你攥住彩笔，连夜搜尽枯肠。天亮时文章成了，墨色却像从骨头里榨出来的。" }
       ]
     }
   ];
 
   /* ---------------- 效果对象 <-> 表单形态 ---------------- */
   function emptyEffect() { return { attrs: [], inspiration: 0, inspirationMax: 0, talent: "", item: "" }; }
-  function emptyChoice() { return { text: "", effect: emptyEffect() }; }
+  function emptyChoice() { return { text: "", resultText: "", effect: emptyEffect() }; }
 
   // 规范效果（属性对象 -> 仅保留非零项；空则不写 attrs）
   function cleanEffect(eff) {
@@ -91,8 +92,8 @@
       C.store("events", state.events);
     } else {
       state.events = raw.map(normalizeEvent);
-      // 旧版 localStorage 非破坏式补齐新发布的官方奇遇，避免种子更新被永久遮蔽。
-      // 仅补入缺失的官方条目：不覆盖同 ID 的本地修改，不触碰用户自建奇遇。
+      // 旧版 localStorage 非破坏式补齐新发布的官方奇遇与缺失回声，避免种子更新被永久遮蔽。
+      // 只填空字段：不覆盖同 ID 的本地文案修改，不触碰用户自建奇遇。
       if (backfillOfficialEvents()) C.store("events", state.events);
     }
   }
@@ -101,14 +102,40 @@
   const BACKFILL_EVENT_IDS = ["E042"];
   function backfillOfficialEvents() {
     const seed = (window.GAME_EVENTS || []);
-    const byId = new Set(state.events.map(e => e.id));
-    let added = 0;
+    const byId = new Map(state.events.map(e => [e.id, e]));
+    let changed = 0;
     for (const id of BACKFILL_EVENT_IDS) {
       if (byId.has(id)) continue;
       const src = seed.find(e => e && e.id === id);
-      if (src) { state.events.push(normalizeEvent(src)); added++; }
+      if (src) {
+        const normalized = normalizeEvent(src);
+        state.events.push(normalized);
+        byId.set(id, normalized);
+        changed++;
+      }
     }
-    return added;
+    for (const official of seed) {
+      const current = byId.get(official && official.id);
+      if (!current || current.kind !== official.kind) continue;
+      if (current.kind === "direct" && !current.resultText && official.resultText) {
+        current.resultText = String(official.resultText).trim(); changed++;
+      } else if (current.kind === "choice") {
+        (current.choices || []).forEach((choice, i) => {
+          const sourceChoice = (official.choices || [])[i];
+          if (!choice.resultText && sourceChoice && sourceChoice.resultText) {
+            choice.resultText = String(sourceChoice.resultText).trim(); changed++;
+          }
+        });
+      } else if (current.kind === "challenge") {
+        if (!current.challenge.winText && official.challenge && official.challenge.winText) {
+          current.challenge.winText = String(official.challenge.winText).trim(); changed++;
+        }
+        if (!current.challenge.failText && official.challenge && official.challenge.failText) {
+          current.challenge.failText = String(official.challenge.failText).trim(); changed++;
+        }
+      }
+    }
+    return changed;
   }
 
   /* ---------------- 规范化 ---------------- */
@@ -122,10 +149,22 @@
       text: String(ev.text || "").trim()
     };
     if (ev.draft) out.draft = true;
-    if (out.kind === "direct") out.effect = formEffectToCanonical(ev.effect);
-    else if (out.kind === "challenge")
-      out.challenge = { battles: Math.max(1, Number((ev.challenge || {}).battles) || 1), winAll: formEffectToCanonical((ev.challenge || {}).winAll) };
-    else out.choices = (ev.choices || []).map(c => ({ text: String(c.text || "").trim(), effect: formEffectToCanonical(c.effect) }));
+    if (out.kind === "direct") {
+      out.effect = formEffectToCanonical(ev.effect);
+      out.resultText = String(ev.resultText || "").trim();
+    } else if (out.kind === "challenge") {
+      const challenge = ev.challenge || {};
+      out.challenge = {
+        battles: Math.max(1, Number(challenge.battles) || 1),
+        winAll: formEffectToCanonical(challenge.winAll),
+        winText: String(challenge.winText || "").trim(),
+        failText: String(challenge.failText || "").trim()
+      };
+    } else out.choices = (ev.choices || []).map(c => ({
+      text: String(c.text || "").trim(),
+      resultText: String(c.resultText || "").trim(),
+      effect: formEffectToCanonical(c.effect)
+    }));
     return out;
   }
 
@@ -153,6 +192,7 @@
     if (!EVENT_KINDS.includes(e.kind)) errors.push("类型非法：" + e.kind);
     if (!e.text) errors.push("奇遇文本不能为空");
     if (e.kind === "direct") {
+      if (!e.resultText) errors.push("直接生效奇遇必须填写结算回声");
       if (!e.effect || (!Object.keys(e.effect.attrs || {}).length && !e.effect.inspiration && !e.effect.inspirationMax && !e.effect.talent && !e.effect.item))
         errors.push("直接生效奇遇需设置至少一项效果");
       else validateEffect(e.effect, w + "·效果 ", errors);
@@ -160,11 +200,16 @@
       if (!e.choices || e.choices.length < 2) errors.push("抉择奇遇至少需要 2 个选项");
       else e.choices.forEach((c, i) => {
         if (!c.text) errors.push("选项 " + (i + 1) + " 文案不能为空");
+        if (!c.resultText) errors.push("选项 " + (i + 1) + " 必须填写结算回声");
         validateEffect(c.effect, w + "·选项" + (i + 1) + " ", errors);
       });
     } else if (e.kind === "challenge") {
       if (!e.challenge || Number(e.challenge.battles) < 1) errors.push("挑战奇遇需设置 battle 场数（≥1）");
-      else validateEffect(e.challenge.winAll, w + "·全胜奖励 ", errors);
+      else {
+        if (!e.challenge.winText) errors.push("挑战奇遇必须填写全胜回声");
+        if (!e.challenge.failText) errors.push("挑战奇遇必须填写未胜回声");
+        validateEffect(e.challenge.winAll, w + "·全胜奖励 ", errors);
+      }
     }
     return { ok: errors.length === 0, errors };
   }
@@ -186,8 +231,9 @@
       if (f.kind !== "all" && e.kind !== f.kind) return false;
       if (f.rarity !== "all" && e.rarity !== f.rarity) return false;
       if (f.q) {
-        const hay = [e.id, e.name, e.text,
-          ...(e.choices || []).map(c => c.text + " " + C.effectDetail(c.effect))].join(" ").toLowerCase();
+        const hay = [e.id, e.name, e.text, e.resultText,
+          e.challenge && e.challenge.winText, e.challenge && e.challenge.failText,
+          ...(e.choices || []).map(c => c.text + " " + c.resultText + " " + C.effectDetail(c.effect))].join(" ").toLowerCase();
         if (!hay.includes(f.q)) return false;
       }
       return true;
@@ -309,13 +355,18 @@
     if (src) {
       state.form = {
         id: src.id, name: src.name, rarity: src.rarity, kind: src.kind, text: src.text, draft: !!src.draft,
-        effect: effToForm(src.effect),
-        challenge: src.challenge ? { battles: Number(src.challenge.battles) || 1, winAll: effToForm(src.challenge.winAll) } : { battles: 1, winAll: emptyEffect() },
-        choices: (src.choices || []).map(c => ({ text: c.text, effect: effToForm(c.effect) }))
+        effect: effToForm(src.effect), resultText: src.resultText || "",
+        challenge: src.challenge ? {
+          battles: Number(src.challenge.battles) || 1,
+          winAll: effToForm(src.challenge.winAll),
+          winText: src.challenge.winText || "",
+          failText: src.challenge.failText || ""
+        } : { battles: 1, winAll: emptyEffect(), winText: "", failText: "" },
+        choices: (src.choices || []).map(c => ({ text: c.text, resultText: c.resultText || "", effect: effToForm(c.effect) }))
       };
     } else {
       state.form = { id: "", name: "", rarity: "common", kind: "direct", text: "", draft: false,
-        effect: emptyEffect(), challenge: { battles: 1, winAll: emptyEffect() }, choices: [emptyChoice(), emptyChoice()] };
+        effect: emptyEffect(), resultText: "", challenge: { battles: 1, winAll: emptyEffect(), winText: "", failText: "" }, choices: [emptyChoice(), emptyChoice()] };
       state.form.id = C.nextSeqId("E", state.events.map(e => e.id), 3);
     }
     document.getElementById("evTitle").textContent = src ? "编辑奇遇 · " + src.id : "新增奇遇";
@@ -337,9 +388,15 @@
     document.getElementById("evDirectPanel").style.display = kind === "direct" ? "" : "none";
     document.getElementById("evChallengePanel").style.display = kind === "challenge" ? "" : "none";
     document.getElementById("evChoicesPanel").style.display = kind === "choice" ? "" : "none";
-    if (kind === "direct") { document.getElementById("evEffectBox").innerHTML = effectInner(state.form.effect, "direct"); updateTalentInfo("direct"); }
+    if (kind === "direct") {
+      document.getElementById("evEffectBox").innerHTML = effectInner(state.form.effect, "direct");
+      document.getElementById("ev-result").value = state.form.resultText || "";
+      updateTalentInfo("direct");
+    }
     else if (kind === "challenge") {
       document.getElementById("evBattles").value = state.form.challenge.battles;
+      document.getElementById("evWinText").value = state.form.challenge.winText || "";
+      document.getElementById("evFailText").value = state.form.challenge.failText || "";
       document.getElementById("evWinBox").innerHTML = effectInner(state.form.challenge.winAll, "win");
       updateTalentInfo("win");
     } else renderChoices();
@@ -351,6 +408,8 @@
           <button class="opt-del ev-choice-del" data-ci="${i}">× 删除选项</button></div>
         <div class="field" style="margin:4px 0"><label>选项文案</label>
           <textarea class="ev-choice-text" data-ci="${i}" placeholder="玩家的选择描述…">${C.esc(c.text)}</textarea></div>
+        <div class="field" style="margin:4px 0"><label>结算回声</label>
+          <textarea class="ev-choice-result" data-ci="${i}" placeholder="选择后发生了什么…">${C.esc(c.resultText || "")}</textarea></div>
         <div class="field" style="margin:4px 0"><label>此选项的效果</label>
           ${effectInner(c.effect, "c" + i)}</div>
       </div>`).join("");
@@ -360,9 +419,18 @@
   function toEvent(form) {
     const out = { id: form.id.trim(), name: form.name.trim(), rarity: form.rarity, kind: form.kind, text: form.text.trim() };
     if (form.draft) out.draft = true;
-    if (form.kind === "direct") out.effect = formEffectToCanonical(form.effect);
-    else if (form.kind === "challenge") out.challenge = { battles: Math.max(1, Number(form.challenge.battles) || 1), winAll: formEffectToCanonical(form.challenge.winAll) };
-    else out.choices = form.choices.map(c => ({ text: c.text.trim(), effect: formEffectToCanonical(c.effect) }));
+    if (form.kind === "direct") {
+      out.effect = formEffectToCanonical(form.effect);
+      out.resultText = String(form.resultText || "").trim();
+    } else if (form.kind === "challenge") out.challenge = {
+      battles: Math.max(1, Number(form.challenge.battles) || 1),
+      winAll: formEffectToCanonical(form.challenge.winAll),
+      winText: String(form.challenge.winText || "").trim(),
+      failText: String(form.challenge.failText || "").trim()
+    };
+    else out.choices = form.choices.map(c => ({
+      text: c.text.trim(), resultText: String(c.resultText || "").trim(), effect: formEffectToCanonical(c.effect)
+    }));
     return out;
   }
 
@@ -409,16 +477,19 @@
         const sub = C.effectBrief(c.effect);
         return `<div class="ev-choice-btn"><span>${i + 1}. ${C.esc(c.text)}</span>${sub ? `<div class="sub">${sub}</div>` : ""}</div>`;
       }).join("") + `</div>`;
-      detail = `<div class="ev-detail"><b>效果明细</b><br>` +
-        (ev.choices || []).map((c, i) => `${i + 1}. ${C.esc(c.text)} → ${C.effectDetail(c.effect)}`).join("<br>") + `</div>`;
+      detail = `<div class="ev-detail"><b>回声与效果明细</b><br>` +
+        (ev.choices || []).map((c, i) => `${i + 1}. ${C.esc(c.text)}<br>　回声：${C.esc(c.resultText || "（缺失）")}<br>　效果：${C.effectDetail(c.effect)}`).join("<br>") + `</div>`;
     } else if (ev.kind === "challenge") {
       const winBrief = C.effectBrief(ev.challenge.winAll);
       body = `<div class="ev-accept">接下挑战（连战 ${ev.challenge.battles} 场）</div>` +
         (winBrief ? `<div class="etext" style="margin-top:10px;color:#b23a2e">全胜可得：${winBrief}</div>` : "");
-      detail = `<div class="ev-detail"><b>效果明细</b><br>挑战全胜 → ${C.effectDetail(ev.challenge.winAll)}（胜利后生效）</div>`;
+      detail = `<div class="ev-detail"><b>回声与效果明细</b><br>` +
+        `全胜回声：${C.esc(ev.challenge.winText || "（缺失）")}<br>` +
+        `未胜回声：${C.esc(ev.challenge.failText || "（缺失）")}<br>` +
+        `全胜效果：${C.effectDetail(ev.challenge.winAll)}（胜利后生效）</div>`;
     } else {
       body = `<div class="ev-accept">欣然领受</div>` + (brief ? `<div class="etext" style="margin-top:10px;color:#8a5a12">${brief}</div>` : "");
-      detail = `<div class="ev-detail"><b>效果明细</b><br>${C.effectDetail(ev.effect)}</div>`;
+      detail = `<div class="ev-detail"><b>结算回声</b><br>${C.esc(ev.resultText || "（缺失）")}<br><br><b>效果明细</b><br>${C.effectDetail(ev.effect)}</div>`;
     }
     document.getElementById("evPreviewBody").innerHTML = `
       <div class="ev-preview-card r-${ev.rarity}">
@@ -582,10 +653,14 @@
     if (t.id === "ev-id") state.form.id = t.value;
     else if (t.id === "ev-name") state.form.name = t.value;
     else if (t.id === "ev-text") state.form.text = t.value;
+    else if (t.id === "ev-result") state.form.resultText = t.value;
     else if (t.id === "ev-rarity") state.form.rarity = t.value;
     else if (t.id === "ev-draft") state.form.draft = t.checked;
     else if (t.id === "evBattles") state.form.challenge.battles = Math.max(1, Number(t.value) || 1);
+    else if (t.id === "evWinText") state.form.challenge.winText = t.value;
+    else if (t.id === "evFailText") state.form.challenge.failText = t.value;
     else if (t.classList.contains("ev-choice-text")) state.form.choices[Number(t.dataset.ci)].text = t.value;
+    else if (t.classList.contains("ev-choice-result")) state.form.choices[Number(t.dataset.ci)].resultText = t.value;
   }
 
   /* ---------------- 事件绑定 ---------------- */
