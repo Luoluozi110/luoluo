@@ -14,7 +14,7 @@ let html = readFileSync(join(root, 'index.html'), 'utf8');
 
 // 把 <script src> 替换为内联脚本（jsdom 不主动加载本地资源），保持原有加载顺序
 html = html.replace(/<script src="([^"]+)"><\/script>/g, (m, src) => {
-  const code = readFileSync(join(root, src), 'utf8');
+  const code = readFileSync(join(root, src.split('?')[0]), 'utf8');
   return `<script>\n${code}\n</script>`;
 });
 
@@ -145,6 +145,7 @@ console.log('[1.7] 奇遇：属性收益可见 → 可编辑 → 预览与保存
     ok(window.Common.effectBrief(source.effect).includes(`${attrNames[attrKey]} +${initialValue}`), '奇遇列表摘要显示属性收益');
     click(document.querySelector(`#evlist [data-edit="${eventIndex}"]`));
     ok(document.getElementById('evOverlay').classList.contains('show'), '属性奇遇编辑弹窗打开');
+    ok(document.getElementById('ev-result').value === source.resultText, '直接奇遇结算回声正确回填');
     const rows = document.querySelectorAll('#evEffectBox .eff-attr');
     ok(rows.length === Object.keys(source.effect.attrs).length, '已配置属性完整回填为可编辑行', rows.length);
     const row = Array.from(rows).find(x => x.querySelector('.eff-attr-k').value === attrKey);
@@ -152,16 +153,43 @@ console.log('[1.7] 奇遇：属性收益可见 → 可编辑 → 预览与保存
     ok(!!valueInput && Number(valueInput.value) === Number(initialValue), '属性增量正确预填到数值输入框');
     if (valueInput) {
       valueInput.value = String(nextValue); fire(valueInput, 'input');
+      const resultInput = document.getElementById('ev-result');
+      resultInput.value = '冒烟测试：纸上新墨渐干，这次奇遇已有回声。'; fire(resultInput, 'input');
       click(document.getElementById('evPreviewBtn'));
       ok(document.getElementById('evPreviewBody').textContent.includes(`${attrNames[attrKey]} +${nextValue}`), '奇遇预览显示编辑后的属性收益');
+      ok(document.getElementById('evPreviewBody').textContent.includes('这次奇遇已有回声'), '奇遇预览显示编辑后的结算回声');
       click(document.getElementById('evPreviewClose'));
       click(document.getElementById('evSave'));
       ok(window.ADV.get()[eventIndex].effect.attrs[attrKey] === nextValue, '编辑后的属性增量写入奇遇 state');
+      ok(window.ADV.get()[eventIndex].resultText.includes('这次奇遇已有回声'), '直接奇遇回声写入 state');
       const savedEvents = JSON.parse(localStorage.getItem('feihua_editors_v1_events') || '[]');
       ok(savedEvents[eventIndex].effect.attrs[attrKey] === nextValue, '编辑后的属性增量持久化 localStorage');
+      ok(savedEvents[eventIndex].resultText.includes('这次奇遇已有回声'), '直接奇遇回声持久化 localStorage');
     }
   }
   window.ADV.importData(window.GAME_EVENTS, true);
+}
+
+console.log('[1.8] 奇遇：选择与挑战回声在编辑器中完整往返');
+{
+  const choiceIndex = window.ADV.get().findIndex(e => e.kind === 'choice');
+  const choice = window.ADV.get()[choiceIndex];
+  window.ADV.openEditor(choiceIndex);
+  const choiceResults = document.querySelectorAll('#evChoices .ev-choice-result');
+  ok(choiceResults.length === choice.choices.length, '每个奇遇选项都有回声编辑框');
+  ok(choiceResults[0].value === choice.choices[0].resultText, '选择回声未被规范化过程丢弃');
+  click(document.getElementById('evCancel'));
+
+  const challengeIndex = window.ADV.get().findIndex(e => e.kind === 'challenge');
+  const challenge = window.ADV.get()[challengeIndex];
+  window.ADV.openEditor(challengeIndex);
+  ok(document.getElementById('evWinText').value === challenge.challenge.winText, '挑战全胜回声正确回填');
+  ok(document.getElementById('evFailText').value === challenge.challenge.failText, '挑战未胜回声正确回填');
+  click(document.getElementById('evPreviewBtn'));
+  ok(document.getElementById('evPreviewBody').textContent.includes(challenge.challenge.winText), '挑战预览显示全胜回声');
+  ok(document.getElementById('evPreviewBody').textContent.includes(challenge.challenge.failText), '挑战预览显示未胜回声');
+  click(document.getElementById('evPreviewClose'));
+  click(document.getElementById('evCancel'));
 }
 
 console.log('[2] 旧本地数据的官方文心补齐 + 编辑器列表渲染');

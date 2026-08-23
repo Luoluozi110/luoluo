@@ -4,9 +4,9 @@
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
 import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260822secretfinal1';
-import { Game } from '../engine/game.js?v=20260822secretfinal1';
+import { Game } from '../engine/game.js?v=20260823eventecho1';
 import { BoardView } from './board.js?v=20260822secretfinal1';
-import { Hud, radarSVG } from './hud.js?v=20260822secretfinal1';
+import { Hud, radarSVG } from './hud.js?v=20260823eventecho1';
 // 奇遇属性收益在 20260823eventattrs1 起于选择前完整展示；独立版本键避免旧模块缓存继续省略属性。
 import { Modals } from './modals.js?v=20260823eventattrs1';
 import { BattleStage } from './battle.js?v=20260822secretfinal1';
@@ -386,6 +386,11 @@ function makeUi() {
     toast: t => hud.toast(t),
     showChoiceEcho: echo => hud.choiceEcho({
       choiceText: personalize(echo.choiceText, modals.playerName),
+      resultText: personalize(echo.resultText, modals.playerName)
+    }),
+    showEventEcho: echo => hud.choiceEcho({
+      leadText: personalize(echo.leadText || '奇遇回声', modals.playerName),
+      choiceText: personalize(echo.eventName, modals.playerName),
       resultText: personalize(echo.resultText, modals.playerName)
     }),
     highlightCell: c => board.highlight(c),

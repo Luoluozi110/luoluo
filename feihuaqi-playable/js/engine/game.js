@@ -1390,6 +1390,25 @@ export class Game {
     return echo;
   }
 
+  emitEventEcho(ev, resultText, leadText = '奇遇回声') {
+    const echo = {
+      eventId: String((ev && ev.id) || ''),
+      eventName: String((ev && ev.name) || '奇遇'),
+      leadText,
+      resultText: String(resultText || '').trim() || '此事既了，一笔因缘已落入你的行卷。'
+    };
+    if (this.ui.showEventEcho) this.ui.showEventEcho(echo);
+    else this.ui.toast(`${leadText}：${echo.eventName}\n${echo.resultText}`);
+    this.push(`${leadText}「${echo.eventName}」：${echo.resultText}`);
+    return echo;
+  }
+
+  async applyDirectEvent(ev) {
+    const echo = this.emitEventEcho(ev, ev && ev.resultText, '奇遇所得');
+    await this.applyEffect((ev && ev.effect) || {});
+    return echo;
+  }
+
   async runCizongLightEvent() {
     const mech = this.schoolMechanics();
     if (mech.type !== 'cizong_bi') return false;
@@ -1411,7 +1430,7 @@ export class Game {
     const idx = await this.ui.showEvent(ev);
     if (ev.kind === 'choice') {
       await this.applyEventChoice(ev, idx);
-    } else await this.applyEffect(ev.effect || {});
+    } else await this.applyDirectEvent(ev);
     this.applyAlbumOutcomeEffects('event', { phase: this.s.phase, eventKey: ev.id });
     return true;
   }
@@ -1438,7 +1457,7 @@ export class Game {
     } else if (ev.kind === 'challenge') {
       await this.runChallenge(ev);
     } else {
-      await this.applyEffect(ev.effect || {});
+      await this.applyDirectEvent(ev);
     }
     this.applyAlbumOutcomeEffects('event', { phase: s.phase, eventKey: ev.id });
     this.ui.onState(s);
@@ -1463,7 +1482,8 @@ export class Game {
   }
 
   async runChallenge(ev) {
-    const n = Number((ev.challenge || {}).battles) || 1;
+    const challenge = ev.challenge || {};
+    const n = Number(challenge.battles) || 1;
     let wins = 0;
     for (let i = 0; i < n; i++) {
       if (this.s.inspiration <= 0) { this.ui.toast('灵感枯竭，挑战中止'); break; }
@@ -1474,11 +1494,12 @@ export class Game {
       if (res === 'win') wins++;
     }
     if (wins >= n) {
-      this.ui.toast(`${ev.name}：全胜！`);
-      await this.applyEffect((ev.challenge || {}).winAll || {});
+      this.emitEventEcho(ev, challenge.winText, '挑战全胜');
+      await this.applyEffect(challenge.winAll || {});
     } else {
-      this.ui.toast(`${ev.name}：${wins}/${n} 胜，未竟全功`);
+      this.emitEventEcho(ev, challenge.failText, `挑战未竟 · ${wins}/${n} 胜`);
     }
+    return { wins, total: n, complete: wins >= n };
   }
 
   /* ------------------------------------------------------ 天象格 */

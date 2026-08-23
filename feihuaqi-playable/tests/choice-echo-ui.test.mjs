@@ -24,5 +24,14 @@ assert.equal(document.querySelector('.choice-echo-result').textContent, '五色�
 assert.equal(echo.querySelectorAll('.choice-echo-picked').length, 1);
 assert.equal(echo.querySelectorAll('.choice-echo-result').length, 1);
 
-console.log('选择回声 UI：已选择与结果分层呈现，DOM 验证通过');
+hud.choiceEcho({
+  leadText: '奇遇所得',
+  choiceText: '山寺听钟',
+  resultText: '钟声越过水面，胸中焦躁也终于散去。'
+});
+const eventEcho = document.querySelectorAll('.toast.choice-echo')[1];
+assert.equal(eventEcho.querySelector('.choice-echo-picked').textContent, '奇遇所得：山寺听钟');
+assert.match(eventEcho.querySelector('.choice-echo-result').textContent, /钟声越过水面/);
+
+console.log('奇遇回声 UI：选择、直接与挑战共用非阻塞分层反馈，DOM 验证通过');
 dom.window.close();

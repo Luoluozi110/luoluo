@@ -6,7 +6,7 @@ const require = createRequire(import.meta.url);
 const { JSDOM } = require('C:/Users/77522/.workbuddy/binaries/node/workspace/node_modules/jsdom');
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 let html = readFileSync(join(root, 'index.html'), 'utf8');
-html = html.replace(/<script src="([^"]+)"><\/script>/g, (m, src) => `<script>${readFileSync(join(root, src), 'utf8')}</script>`);
+html = html.replace(/<script src="([^"]+)"><\/script>/g, (m, src) => `<script>${readFileSync(join(root, src.split('?')[0]), 'utf8')}</script>`);
 const dom = new JSDOM(html, { url: 'https://editor.local/', runScripts: 'dangerously', pretendToBeVisual: true });
 const { window } = dom; const { document, localStorage } = window;
 await new Promise(resolve => document.readyState !== 'loading' ? resolve() : document.addEventListener('DOMContentLoaded', resolve, { once: true }));
