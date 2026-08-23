@@ -3,7 +3,6 @@ import { ATTR_NAMES, STYLE_NAMES, ATTR_KEYS, BATTLE_COEF } from '../engine/rules
 import { talentEffectText, goldBurst, signed, DEFAULT_SECONDS } from './modals.js';
 import { createCountdown } from './timer.js';
 import { play } from './audio.js';
-import { sting } from './music.js';
 import { intentHint, weaknessHint, settleLines } from './mechHints.js';
 import { SCHOLAR_PORTRAIT } from './svg.js';
 
@@ -222,8 +221,7 @@ export class BattleStage {
           ? Math.max(1, Math.min(6, Number(session.plannedDice) || 6))
           : 1 + Math.floor(Math.random() * 6);
         pips.push(n);
-        play('dice');
-        sting('dice');
+        play('dice', { value: n });
         const planned = session.plannedDice != null;
         session.plannedDice = null;
         panel.innerHTML = `<div class="ph">⑤ 掷灵感骰${auto ? '　<span style="font-size:12px;color:var(--mo-3)">时限已到，代掷</span>' : ''}</div>
@@ -252,7 +250,7 @@ export class BattleStage {
           <div class="dice-pips">${pipHtml}</div>
           <div class="pick-row">
             ${canExtra
-              ? `<button class="pick" id="btExtra"><div class="pn">➕ 多掷一枚</div><div class="pv">灵感 −${extraCost} · 作品乘区再 +${Math.round((typeof session.extraDicePct === 'function' ? session.extraDicePct(1) : (Number(this.cfg?.inspiration?.extraDicePct) || 0)) * 100)}%</div></button>`
+              ? `<button class="pick" id="btExtra" data-sfx="none"><div class="pn">➕ 多掷一枚</div><div class="pv">灵感 −${extraCost} · 作品乘区再 +${Math.round((typeof session.extraDicePct === 'function' ? session.extraDicePct(1) : (Number(this.cfg?.inspiration?.extraDicePct) || 0)) * 100)}%</div></button>`
               : `<button class="pick" disabled><div class="pn">${hasFixed() ? '固定骰·不可叠' : '灵感不足'}</div></button>`}
             <button class="pick" id="btConfirm"><div class="pn">确定得分</div><div class="pv">以 ${pips.length} 枚结算</div></button>
           </div>`;
@@ -267,7 +265,8 @@ export class BattleStage {
         else session.spendInspiration(extraCost, '追加灵感骰');
         const n = 1 + Math.floor(Math.random() * 6);
         pips.push(n);
-        play('dice'); sting('dice');
+        play('spend', { amount: extraCost });
+        play('dice', { value: n, delay: 0.09 });
         renderExtra();
         armTimer(() => finish());
       };
@@ -277,7 +276,7 @@ export class BattleStage {
         ? session.extraDicePct(1)
         : (Number(this.cfg?.inspiration?.extraDicePct) || 0);
       panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">本体结构公开结算；首次追加耗 ${firstCost} 灵感，作品乘区 +${Math.round(extraPctPerDie * 100)}%，最多可追加 ${extraCap} 枚　·　限时 ${this.seconds} 秒</span></div>
-        <div class="pick-row"><button class="pick battle-roll" id="btRoll"><div class="pn">掷 骰</div>
+        <div class="pick-row"><button class="pick battle-roll" id="btRoll" data-sfx="none"><div class="pn">掷 骰</div>
         <div class="pv">听天由命，也听人事</div></button></div>`;
       panel.querySelector('#btRoll').addEventListener('click', () => doRoll(false));
       armTimer(() => doRoll(true));
@@ -305,6 +304,7 @@ export class BattleStage {
       const selector = repeatable ? panel.querySelector(`[data-planned-for="${b.dataset.t}"]`) : null;
       const plannedValue = selector ? Number(selector.value) : 6;
       if (session.useActive(b.dataset.t, plannedValue)) {
+        play('talent');
         b.classList.add('used'); b.disabled = true;
         if (selector) selector.disabled = true;
         this.flash(`文心「${t.name}」已发动${repeatable ? `，下次掷骰定为 ${plannedValue} 点` : ''}`);
@@ -346,6 +346,7 @@ export class BattleStage {
       oppBox.appendChild(lineEl(oi));
       selfT.innerHTML = `<span>累计</span><b>${sAcc}</b>`;
       oppT.innerHTML = `<span>累计</span><b>${oAcc}</b>`;
+      play('score', { index: i, lead: Math.sign(sAcc - oAcc) });
       await sleep(620);
     }
     if (out.selfCalc.breakdown.critMult !== 1) {
@@ -419,7 +420,7 @@ export class BattleStage {
       this.el.appendChild(p);
     }
 
-    play(out.result === 'win' ? 'win' : out.result === 'lose' ? 'lose' : 'move');
+    play(out.result === 'win' ? 'win' : out.result === 'lose' ? 'lose' : 'choice');
     if (out.result === 'win') goldBurst(this.el, 34);
 
     const btn = document.createElement('button');

@@ -4,7 +4,6 @@ import { PASSIVE_MAX, ACTIVE_MAX } from '../engine/game.js';
 import { LANDMARK_ART, EVENT_VIGNETTE, QUIZ_MARK } from './svg.js';
 import { createCountdown } from './timer.js';
 import { play } from './audio.js';
-import { sting } from './music.js';
 import { personalize, normalizeName } from './namefmt.js';
 
 const RARITY_CN = { common: '普通', rare: '稀有', legend: '传说' };
@@ -222,8 +221,9 @@ export class Modals {
       : ok
         ? `<b>答对了</b>`
         : `<b>${ans.timedOut ? '超时' : '答错了'}</b>　${q.scenario ? '当如是' : '正确答案'}：${'ABCD'[q.answer]}．${esc(personalize(correctAct, this.playerName))}　${wrongTxt}`;
-    play(isChoice || ok ? 'right' : 'wrong');
-    sting('reveal');         // 答题揭晓配乐：编钟 + 宫音
+    // 选择按钮先给轻拨弦，结果页再落一枚“印章”；两层紧邻时合成一次完整落笔反馈。
+    if (isChoice) play(ans.timedOut ? 'wrong' : 'confirm', { timedOut: !!ans.timedOut });
+    else play(ok ? 'right' : 'wrong', { timedOut: !!ans.timedOut });
     const choiceDetail = isChoice && !ans.timedOut && choiceFeedback
       ? `<div class="quiz-choice-feedback"><b>${esc(choiceFeedback.resultText || '')}</b><br/><span>${esc(choiceFeedback.rewardText || '')}</span></div>`
       : '';
@@ -377,6 +377,7 @@ export class Modals {
         <div class="dianggu">${esc(personalize(t.text || '', this.playerName))}</div>
         <div style="text-align:center;margin-top:16px"><button class="btn btn-primary" data-ok>收入囊中</button></div>
       </div>`);
+    play('talent');
     await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', r));
     this.close(ov);
   }
@@ -572,7 +573,6 @@ export class Modals {
         <div style="text-align:center;margin-top:16px"><button class="btn btn-ink" data-ok>观星毕</button></div>
       </div>`);
     play('sky');
-    sting('sky');            // 天象切换配乐：羽音清钟
     await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', r));
     this.close(ov);
   }
@@ -594,6 +594,7 @@ export class Modals {
         <div class="stage-story" style="font-size:16px;line-height:2.05;letter-spacing:.04em;text-align:left;white-space:pre-line;overflow:auto;padding:0 8px">${esc(text)}</div>
         <div class="btn-row"><button class="btn btn-primary" data-ok>${esc(button)}</button></div>
       </div>`, 'stage-intro');
+    play('stage');
     await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', r));
     this.close(ov);
   }

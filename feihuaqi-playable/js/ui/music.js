@@ -16,7 +16,7 @@
  * 为音高骨架，古琴拨弦、编钟叩击、笛管均以振荡器 + 噪声 + 包络合成。
  *
  * 振幅规划（最终到扬声器 ≈ 音符峰值 × 层增益 × MUSIC_GAIN × MASTER_GAIN）：
- *   配乐床峰值约 0.05–0.10，可闻但低于强 SFX（≈0.1–0.13），互不掩盖；强 SFX 触发时再 duck 到 35%。
+ *   配乐床保持在近景音效之后；关键反馈按语义 duck 到 22%–34%，再平滑恢复。
  *
  * 自适应维度：
  *   scene  —— 界面/场景（idle 待机标题 / menu 装配 / board 对局 / battle 论战 / result 结算）
@@ -61,11 +61,11 @@ const STAGE_SEMI = [0, 2, 4, 7, 9];
  * arp / pulse / drone 还会被 tension 在运行时再缩放；mel 仅待机/菜单/结算点缀。
  */
 const SCENE = {
-  idle:   { bpm: 56, pad: 0.42, arp: 0.00, pulse: 0.00, bell: 0.18, drone: 0.00, mel: 0.50 }, // 待机标题（古风主题）
-  menu:   { bpm: 60, pad: 0.40, arp: 0.16, pulse: 0.00, bell: 0.22, drone: 0.00, mel: 0.16 }, // 装配名篇
-  board:  { bpm: 66, pad: 0.38, arp: 0.26, pulse: 0.20, bell: 0.00, drone: 0.00, mel: 0.00 }, // 对局行进
-  battle: { bpm: 92, pad: 0.34, arp: 0.34, pulse: 0.32, bell: 0.00, drone: 0.28, mel: 0.00 }, // 挥毫论战
-  result: { bpm: 60, pad: 0.40, arp: 0.00, pulse: 0.00, bell: 0.26, drone: 0.00, mel: 0.22 }  // 科场结算
+  idle:   { bpm: 54, pad: 0.28, arp: 0.00, pulse: 0.00, bell: 0.11, drone: 0.00, mel: 0.34 }, // 待机：留出空气感
+  menu:   { bpm: 58, pad: 0.26, arp: 0.08, pulse: 0.00, bell: 0.12, drone: 0.00, mel: 0.10 }, // 装配：轻，不催促选择
+  board:  { bpm: 64, pad: 0.22, arp: 0.16, pulse: 0.10, bell: 0.00, drone: 0.00, mel: 0.00 }, // 行进：给逐格落子留位置
+  battle: { bpm: 84, pad: 0.20, arp: 0.22, pulse: 0.18, bell: 0.00, drone: 0.22, mel: 0.00 }, // 论战：张力来自密度而非音量
+  result: { bpm: 56, pad: 0.26, arp: 0.00, pulse: 0.00, bell: 0.16, drone: 0.00, mel: 0.15 }  // 结算：庄重收束
 };
 
 /** 四小节和声进行（宫 → 徵 → 商 → 羽），每小节一个根音 */
@@ -158,7 +158,11 @@ export function setScene(name) {
 }
 
 /** 设置论战紧张度 0..1（影响琶音密度 / 低音 drone / 速度） */
-export function setTension(v) { tension = Math.max(0, Math.min(1, v)); }
+export function setTension(v) {
+  tension = Math.max(0, Math.min(1, v));
+  // 主流程常在切入场景后设置张力；立即重算，确保 drone 与节拍层真正跟随。
+  if (started) applyScene(false);
+}
 
 /**
  * 设置科考阶段 0..4（童生→秀才→举人→进士→主考官）。
@@ -352,46 +356,18 @@ function fluteNote(freq, time, dur, peak, dest) {
   o.stop(time + dur + 0.05); o2.stop(time + dur + 0.05); vib.stop(time + dur + 0.05);
 }
 
-/* ------------------------------------------ 动画短旋律（sting） */
-
-/**
- * 为关键动画节拍点缀的短旋律，直连 Music 总线（不受场景淡变影响，即时响应）。
- * @param {'dice'|'reveal'|'win'|'lose'|'unlock'|'sky'} name
- */
-export function sting(name) {
-  const ctx = getAudioContext();
-  if (!ctx || !bus) return;
-  if (isMuted()) return;
-  const t = ctx.currentTime + 0.01;
-  const B = bus;
-  if (name === 'dice') {
-    [P.gong, P.shang, P.zhi].map(tf).forEach((f, i) => pluckNote(f, t + i * 0.06, 0.4, B));
-  } else if (name === 'reveal') {
-    bellNote(tf(P.zhi), t, 0.4, B);
-    pluckNote(tf(P.gong), t + 0.08, 0.35, B);
-  } else if (name === 'win') {
-    [P.gong, P.shang, P.jue, P.zhi, P.yu].map(tf).forEach((f, i) => pluckNote(f, t + i * 0.07, 0.4, B));
-    bellNote(tf(P.gongHi), t + 0.4, 0.4, B);
-  } else if (name === 'lose') {
-    [P.zhi, P.jue, P.shang, P.gongLo].map(tf).forEach((f, i) => pluckNote(f, t + i * 0.09, 0.38, B));
-  } else if (name === 'unlock') {
-    bellNote(tf(P.zhi), t, 0.45, B);
-    pluckNote(tf(P.gongHi), t + 0.12, 0.4, B);
-  } else if (name === 'sky') {
-    bellNote(tf(P.yu), t, 0.4, B);
-    pluckNote(tf(P.shang), t + 0.06, 0.32, B);
-  }
-}
-
 /* ------------------------------------------------- 闪避（ducking） */
 
-/** 强 SFX 播放时把 Music 总线短暂压到 35%，0.4s 内恢复，避免掩盖音效 */
-function duck() {
+/** 按反馈等级闪避配乐：大结果更深更久，骰子/答题保留节奏连续性。 */
+function duck(cue = '') {
   const ctx = getAudioContext();
   if (!ctx || !bus) return;
   const t = ctx.currentTime;
+  const major = cue === 'win' || cue === 'lose' || cue === 'stage' || cue === 'talent' || cue === 'unlock';
+  const depth = major ? 0.22 : cue === 'dice' ? 0.34 : 0.28;
+  const recover = major ? 0.72 : cue === 'dice' ? 0.48 : 0.56;
   bus.gain.cancelScheduledValues(t);
   bus.gain.setValueAtTime(Math.max(0.0001, bus.gain.value), t);
-  bus.gain.linearRampToValueAtTime(MUSIC_GAIN * 0.35, t + 0.02);
-  bus.gain.linearRampToValueAtTime(MUSIC_GAIN, t + 0.4);
+  bus.gain.linearRampToValueAtTime(MUSIC_GAIN * depth, t + 0.025);
+  bus.gain.linearRampToValueAtTime(MUSIC_GAIN, t + recover);
 }

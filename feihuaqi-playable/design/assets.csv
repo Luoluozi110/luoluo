@@ -1,0 +1,19 @@
+id,role,type,description,size/ratio,style line ref,source
+audio_ui_tap,普通按钮即时确认,procedural_sfx,纸面轻触与极短木叩,0.05s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_ui_confirm,提交与确定操作,procedural_sfx,落印般的木石双层确认,0.14s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_ui_deny,禁用拒绝与失败操作,procedural_sfx,低频闷纸与短促下坠音,0.16s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_dice_roll,掷骰动作起手,procedural_sfx,木骰连续翻滚并逐渐收紧,0.42s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_dice_settle,骰面结果确认,procedural_sfx,落桌重音叠加随点数抬升的短拨弦,0.24s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_piece_step,棋子逐格移动,procedural_sfx,交替木石落子并按步数形成五声轮廓,0.12s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_choice,抉择与文体风格选择,procedural_sfx,毛笔落纸后轻挑的中性确认,0.18s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_correct,知识答对反馈,procedural_sfx,角徵宫上行并带一枚清磬,0.72s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_wrong,答错与超时反馈,procedural_sfx,纸张顿挫叠加克制下行叹息,0.48s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_gain,属性与灵感获得,procedural_sfx,墨滴扩散般的轻盈上行双音,0.24s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_spend,灵感与资源消耗,procedural_sfx,低音拨弦与向内收束的纸擦声,0.20s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_score_tick,论战逐项计分,procedural_sfx,左右声像略分的算盘木珠与五声音级,0.10s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_talent,文心发动与图鉴解锁,procedural_sfx,开卷纸声与金石清鸣,0.95s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_stage,圈层与科场阶段跃迁,procedural_sfx,远近两重磬音形成庄重开门感,1.35s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_sky,天象出现与环境改变,procedural_sfx,低风吟扫过后留下羽音长尾,1.50s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_win,论战与整局胜利,procedural_sfx,五声上行与双磬终止式,1.40s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_lose,论战与整局失败,procedural_sfx,低音呼吸与四音缓降但不惊吓,0.95s,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate
+audio_adaptive_score,待机棋盘论战与结算氛围,procedural_music,五声音阶古琴笛箫编钟分层并随场景与张力淡变,adaptive loop,AUDIO-FORMULA-v2: 宋代书房近场木纸石金材质 / C宫五声 / 克制短尾 / 关键结果才用钟磬长尾 / 无现代电子感,generate

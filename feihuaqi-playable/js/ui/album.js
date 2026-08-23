@@ -4,7 +4,6 @@
  */
 import * as Album from '../engine/album.js';
 import { play } from './audio.js';
-import { sting } from './music.js';
 import { precisionScale } from './quality.js';
 
 const esc = s => String(s ?? '')
@@ -360,7 +359,6 @@ export class AlbumUI {
         </div>`;
       this.topEl.appendChild(ov);
       play('unlock');
-      sting('unlock');        // 图鉴解锁配乐：金石开卷
       ov.querySelector('[data-ok]').addEventListener('click', () => {
         ov.style.transition = 'opacity .22s';
         ov.style.opacity = '0';
