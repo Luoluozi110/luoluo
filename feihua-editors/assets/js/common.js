@@ -533,12 +533,22 @@
       }
       setMsg("发布中…");
       try {
+        // 发布前固定一份工程快照；发布后回读同一地址，确认 CDN 返回的名篇确实是本次内容。
+        const expectedProject = global.CloudSync.buildProject();
         const url = await global.CloudSync.publish(s);
+        const verifyUrl = url + (url.includes("?") ? "&" : "?") + "_wb=" + Date.now();
+        const verifyRes = await fetch(verifyUrl, { cache: "no-store" });
+        if (!verifyRes.ok) throw new Error("发布成功但回读失败 HTTP " + verifyRes.status);
+        const remoteProject = await verifyRes.json();
+        if (!remoteProject || remoteProject._type !== "feihua-content") throw new Error("发布成功但回读内容不是有效工程文件");
+        if (JSON.stringify(remoteProject.album || []) !== JSON.stringify(expectedProject.album || [])) {
+          throw new Error("发布成功但回读的传世名篇与编辑器内容不一致，请稍后重试");
+        }
         const box = $("cloudUrlBox"), u = $("cloudUrl"), copy = $("cloudCopy");
         if (box) box.style.display = "";
         if (u) u.textContent = url;
         if (copy) { copy.style.display = ""; copy.onclick = () => { navigator.clipboard && navigator.clipboard.writeText(url); toast("已复制云端地址"); }; }
-        setMsg("发布成功！游戏端已可在启动时自动同步。", false);
+        setMsg("发布成功并已回读校验！游戏端已可在启动时自动同步。", false);
         toast("已发布到云端");
       } catch (err) {
         setMsg("发布失败：" + err.message, true);
