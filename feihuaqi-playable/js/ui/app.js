@@ -4,11 +4,11 @@
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
 import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260822secretfinal1';
-import { Game } from '../engine/game.js?v=20260823eventecho1';
+import { Game } from '../engine/game.js?v=20260823threepower1';
 import { BoardView } from './board.js?v=20260822secretfinal1';
-import { Hud, radarSVG } from './hud.js?v=20260823eventecho1';
+import { Hud, radarSVG } from './hud.js?v=20260823threepower1';
 // 奇遇属性收益在 20260823eventattrs1 起于选择前完整展示；独立版本键避免旧模块缓存继续省略属性。
-import { Modals } from './modals.js?v=20260823eventattrs1';
+import { Modals } from './modals.js?v=20260823threepower1';
 import { BattleStage } from './battle.js?v=20260822secretfinal1';
 import { AlbumUI } from './album.js?v=20260822secretfinal1';
 import { CodexUI } from './codex.js?v=20260822secretfinal1';
@@ -348,7 +348,7 @@ async function startGame(schoolId, loadout, playerName) {
     s.prologueSeen = true;
   }
   if (cards.length) hud.toast(`行囊生效：${cards.map(c => `「${c.name}」`).join('')}`);
-  hud.render(s);
+  hud.render(s, game);
   showMenuButton(true);
   setScene('board');          // 进入对局：行进配乐
   setTension(0);
@@ -378,7 +378,7 @@ function makeUi() {
     recordLog: entry => hud.recordLog(entry),
     showTalentGain: t => modals.showTalentGain(t),
     askReplaceTalent: (t, list) => modals.askReplaceTalent(t, list),
-    onState(s) { hud.render(s); },
+    onState(s) { hud.render(s, game); },
     skyExpired(card) { hud.toast(`${card.name} 之效已散`); },
     showDice: d => board.showDice(d),
     showPlannedMovePrompt: gameRef => modals.showPlannedMovePrompt(gameRef),
@@ -866,7 +866,7 @@ async function loadGame() {
   board.clearHint();
   board.cellEls.forEach(e => e.classList.remove('active'));
   game.rehydrate();            // 重算羁绊等派生态（内部会 hud.render）
-  hud.render(st);
+  hud.render(st, game);
   showMenuButton(true);
   enableRoll();
   hud.toast('已读取存档，继续科场之路');

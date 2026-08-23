@@ -119,6 +119,12 @@ export class Game {
     return Math.max(1, (Number(c.baseInsightCap) || 6) + Math.floor((Number(attrs && attrs.xue) || 0) / (Number(c.insightCapPerXue) || 4)));
   }
 
+  studyProgressRate(attrs = this.s && this.s.attrs) {
+    const c = this.abilityConfig().study || {};
+    const rate = 1 + (Number(attrs && attrs.xue) || 0) * (Number(c.progressPerXue) || 0.04);
+    return Math.round(Math.min(2, Math.max(1, rate)) * 100) / 100;
+  }
+
   strategyPlans() {
     const plans = this.abilityConfig().strategy?.plans;
     return plans && typeof plans === 'object' ? plans : {};
@@ -134,23 +140,61 @@ export class Game {
     const c = this.abilityConfig().strategy || {};
     const mech = this.schoolMechanics(school);
     const albumPlus = Number(this.s && this.s.albumState && this.s.albumState.flags && this.s.albumState.flags.strategyCapPlus) || 0;
-    return Math.max(1, (Number(c.maxCharges) || 3) + (Number(mech.strategyMaxPlus) || 0) + albumPlus);
+    const raw = (Number(c.maxCharges) || 3)
+      + Math.floor((Number(attrs && attrs.si) || 0) / (Number(c.capPerSi) || 10))
+      + (Number(mech.strategyMaxPlus) || 0) + albumPlus;
+    return Math.max(1, Math.min(Number(c.maxCap) || 6, raw));
   }
 
   strategyIncome(attrs = this.s && this.s.attrs, school = this.s && this.s.school) {
     const c = this.abilityConfig().strategy || {};
     const mech = this.schoolMechanics(school);
     const charges = (Number(c.baseCharges) || 1)
-      + Math.floor((Number(attrs && attrs.si) || 0) / (Number(c.chargePerSi) || 12))
+      + (Number(attrs && attrs.si) || 0) / (Number(c.chargePerSi) || 10)
       + (Number(mech.strategyChargePlus) || 0);
-    return Math.max(1, Math.min(this.strategyCap(attrs, school), charges));
+    return Math.round(Math.max(1, charges) * 100) / 100;
   }
 
   manuscriptCap(attrs = this.s && this.s.attrs, school = this.s && this.s.school) {
     const c = this.abilityConfig().manuscript || {};
     const mech = this.schoolMechanics(school);
     return Math.max(1, Math.min(Number(c.maxCap) || 6,
-      (Number(c.baseCap) || 2) + Math.floor((Number(attrs && attrs.bi) || 0) / (Number(c.capPerBi) || 8)) + (Number(mech.manuscriptCapPlus) || 0)));
+      (Number(c.baseCap) || 2) + Math.floor((Number(attrs && attrs.bi) || 0) / (Number(c.capPerBi) || 6)) + (Number(mech.manuscriptCapPlus) || 0)));
+  }
+
+  manuscriptFragmentRate(attrs = this.s && this.s.attrs) {
+    const c = this.abilityConfig().manuscript || {};
+    const rate = (Number(attrs && attrs.bi) || 0) * (Number(c.fragmentPerBi) || 0.05);
+    return Math.round(Math.min(1.5, Math.max(0, rate)) * 100) / 100;
+  }
+
+  abilityFeedback() {
+    const attrs = this.s && this.s.attrs || {};
+    const study = this.abilityConfig().study || {};
+    const strategy = this.abilityConfig().strategy || {};
+    const manuscript = this.abilityConfig().manuscript || {};
+    const xue = Number(attrs.xue) || 0;
+    const si = Number(attrs.si) || 0;
+    const bi = Number(attrs.bi) || 0;
+    const slotMilestones = Array.isArray(study.slotMilestones) ? study.slotMilestones.map(Number).filter(Number.isFinite) : [10, 20];
+    const nextSlot = slotMilestones.find(v => xue < v);
+    const nextCap = Math.floor(xue / (Number(study.insightCapPerXue) || 3) + 1) * (Number(study.insightCapPerXue) || 3);
+    const a = this.ensureAbilityState();
+    return {
+      studyRate: this.studyProgressRate(),
+      studySlots: this.studySlots(),
+      insightCap: this.insightCap(),
+      nextStudySlotIn: nextSlot == null ? 0 : Math.max(0, nextSlot - xue),
+      nextInsightCapIn: Math.max(0, nextCap - xue),
+      strategyIncome: this.strategyIncome(),
+      strategyCap: this.strategyCap(),
+      strategyRemainder: Number(a && a.strategy && a.strategy.chargeRemainder) || 0,
+      manuscriptFragmentRate: this.manuscriptFragmentRate(),
+      manuscriptCap: this.manuscriptCap(),
+      nextManuscriptCapIn: Math.max(0, (Math.floor(bi / (Number(manuscript.capPerBi) || 6)) + 1) * (Number(manuscript.capPerBi) || 6) - bi),
+      attrs: { xue, si, bi },
+      config: { study, strategy, manuscript }
+    };
   }
 
   createAbilityState(attrs, school) {
@@ -161,7 +205,7 @@ export class Game {
       insight: 0,
       familiarity: { shi: 0, ci: 0, lian: 0 },
       study: { focus: [first], nextFocus: [first], progress: {} },
-      strategy: { charges: 0, refillPhase: '', plan: this.strategyDefaultPlan(), nextPlan: this.strategyDefaultPlan(), freeUsed: false },
+      strategy: { charges: 0, chargeRemainder: 0, refillPhase: '', plan: this.strategyDefaultPlan(), nextPlan: this.strategyDefaultPlan(), freeUsed: false },
       manuscript: { pages: 0, fragments: 0, volumes: 0, polish: 0, bonusPagePhases: {}, schoolPagePhases: {}, firstPolishPhases: {} },
       lastStyle: null,
       phaseStyles: {},
@@ -197,6 +241,7 @@ export class Game {
     a.strategy.plan = planIds.includes(a.strategy.plan) ? a.strategy.plan : base.strategy.plan;
     a.strategy.nextPlan = planIds.includes(a.strategy.nextPlan) ? a.strategy.nextPlan : a.strategy.plan;
     a.strategy.charges = Math.max(0, Math.min(this.strategyCap(), Number(a.strategy.charges) || 0));
+    a.strategy.chargeRemainder = Math.max(0, Math.min(0.999, Number(a.strategy.chargeRemainder) || 0));
     a.strategy.freeUsed = !!a.strategy.freeUsed;
     a.manuscript = Object.assign({}, base.manuscript, a.manuscript || {});
     a.manuscript.pages = Math.max(0, Math.min(this.manuscriptCap(), Number(a.manuscript.pages) || 0));
@@ -254,11 +299,11 @@ export class Game {
     if (!R.ATTR_KEYS.includes(attr)) return { attr, added: 0, progress: 0, need: 1, gained: 0 };
     const a = this.ensureAbilityState();
     const need = Math.max(1, Number((this.abilityConfig().study || {}).progressNeed) || 3);
-    const added = Math.max(0, Math.floor(Number(amount) || 0));
+    const added = Math.max(0, Number(amount) || 0);
     a.study.progress[attr] = Math.max(0, Number(a.study.progress[attr]) || 0) + added;
     const gained = Math.floor(a.study.progress[attr] / need);
     if (gained > 0) {
-      a.study.progress[attr] -= gained * need;
+      a.study.progress[attr] = Math.round((a.study.progress[attr] - gained * need) * 1000) / 1000;
       this.addAttrs({ [attr]: gained }, { reason: reason || '学力·研修' });
       this.push(`${reason || '学力·研修'}：${R.ATTR_NAMES[attr]} +${gained}`);
     }
@@ -276,13 +321,13 @@ export class Game {
     let study = null;
     if (focused) {
       mode = 'study';
-      study = this.gainStudyProgress(target, 1, `创作抉择·${q.id}`);
+      study = this.gainStudyProgress(target, this.studyProgressRate(), `创作抉择·${q.id}`);
     } else {
       insight = this.gainInsight(1, `创作抉择·${q.id}`);
       // 心得已满时不吞掉收益：转为同方向的一格临场研修。
       if (!insight) {
         mode = 'overflow-study';
-        study = this.gainStudyProgress(target, 1, `创作抉择·${q.id}·心得已满`);
+        study = this.gainStudyProgress(target, this.studyProgressRate(), `创作抉择·${q.id}·心得已满`);
       }
     }
     const mark = {
@@ -297,8 +342,8 @@ export class Game {
     let rewardText;
     if (mode === 'insight') rewardText = `修习所得：旁通${targetName}，心得 +${insight}`;
     else if (study && study.gained) rewardText = `修习所得：${targetName}研修完成，${targetName} +${study.gained}`;
-    else if (mode === 'overflow-study') rewardText = `心得已满，转入${targetName}研修，进度 ${study.progress}/${study.need}`;
-    else rewardText = `修习所得：${targetName}研修进度 +1（${study.progress}/${study.need}）`;
+    else if (mode === 'overflow-study') rewardText = `心得已满，转入${targetName}研修，进度 +${study.added}（${study.progress}/${study.need}）`;
+    else rewardText = `修习所得：${targetName}研修进度 +${study.added}（${study.progress}/${study.need}）`;
     this.push(`墨痕·${q.id}：${targetName}${mark.inkTags.length ? `（${mark.inkTags.join('、')}）` : ''}；${rewardText}`);
     return { ...mark, mode, insight, study, rewardText, targetName };
   }
@@ -386,7 +431,10 @@ export class Game {
     a.strategy.plan = a.strategy.nextPlan;
     const albumStartBonus = Math.max(0, Number(this.s.albumState && this.s.albumState.flags && this.s.albumState.flags.strategyStartPlus) || 0);
     if (this.s.albumState && this.s.albumState.flags) this.s.albumState.flags.strategyStartPlus = 0;
-    a.strategy.charges = Math.min(this.strategyCap(), this.strategyIncome() + albumStartBonus);
+    const totalIncome = this.strategyIncome() + (Number(a.strategy.chargeRemainder) || 0) + albumStartBonus;
+    const wholeIncome = Math.floor(totalIncome);
+    a.strategy.chargeRemainder = Math.round((totalIncome - wholeIncome) * 1000) / 1000;
+    a.strategy.charges = Math.min(this.strategyCap(), wholeIncome);
     a.strategy.freeUsed = false;
     a.study.focus = a.study.nextFocus.slice(0, this.studySlots());
     if (!a.study.focus.length) a.study.focus = this.createAbilityState(this.s.attrs, this.s.school).study.focus;
@@ -841,6 +889,10 @@ export class Game {
    */
   addAttrs(delta, opts = {}) {
     const out = {};
+    const touchesBasic = Object.keys(delta || {}).some(k => ['bi', 'xue', 'si'].includes(k));
+    const milestoneBefore = touchesBasic && this.s && this.s.abilityState ? {
+      studySlots: this.studySlots(), insightCap: this.insightCap(), strategyCap: this.strategyCap(), manuscriptCap: this.manuscriptCap()
+    } : null;
     const basicPlus = (!opts.raw && this.skyActive('basic_gain_plus')) ? 1 : 0;
     const dim = opts.raw ? null : ((this.cfg.attrs || {}).diminish || null);
     for (const [k, v0] of Object.entries(delta || {})) {
@@ -852,7 +904,21 @@ export class Game {
       this.s.attrs[k] = Math.max(0, (this.s.attrs[k] || 0) + v);  // 属性永不为负
       out[k] = v;
     }
-    if (Object.keys(out).length) this.ui.floatAttrs(out, opts.anchor, opts.reason || '属性变化');
+    if (Object.keys(out).length) {
+      this.ui.floatAttrs(out, opts.anchor, opts.reason || '属性变化');
+      if (milestoneBefore) {
+        const milestoneAfter = { studySlots: this.studySlots(), insightCap: this.insightCap(), strategyCap: this.strategyCap(), manuscriptCap: this.manuscriptCap() };
+        const labels = { studySlots: '研修位', insightCap: '心得上限', strategyCap: '构思上限', manuscriptCap: '稿匣上限' };
+        const breakthroughs = Object.keys(labels)
+          .filter(k => milestoneAfter[k] > milestoneBefore[k])
+          .map(k => `${labels[k]} +${milestoneAfter[k] - milestoneBefore[k]}`);
+        if (breakthroughs.length) {
+          const text = `三功突破：${breakthroughs.join('、')}`;
+          this.push(text);
+          this.ui.toast?.(text);
+        }
+      }
+    }
     return out;
   }
 
@@ -2153,19 +2219,22 @@ export class Game {
     const thresholds = Array.isArray(tc.thresholds) ? tc.thresholds : [];
     a.technique.level[style] = thresholds.filter(t => a.technique.xp[style] >= Number(t)).length;
 
-    // 学力研修：锁定的研修位每场推进，达到阈值自动兑现。
+    // 学力研修：锁定的研修位每场推进，学力越高推进越快；小数进度会结转。
+    const studyGain = this.studyProgressRate();
     for (const attr of a.study.focus.slice(0, this.studySlots())) {
-      this.gainStudyProgress(attr, 1, '学力·研修');
+      this.gainStudyProgress(attr, studyGain, '学力·研修');
     }
 
-    // 笔力稿本：只沉淀已发生的结果。
+    // 笔力稿本：胜负先给结果稿页；笔力再把本场沉淀转为可结转的残页。
     const mc = ac.manuscript || {};
     let pages = out.result === 'win' ? ((out.dicePips || []).length === 1 ? 2 : 1) : out.result === 'draw' ? 1 : 0;
-    if (out.result === 'lose') {
-      a.manuscript.fragments += 1;
-      const fragmentNeed = (Number(this.s.attrs.bi) || 0) >= (Number(mc.fragmentFastBi) || 16) ? 1 : (Number(mc.fragmentNeed) || 2);
-      const made = Math.floor(a.manuscript.fragments / Math.max(1, fragmentNeed));
-      if (made > 0) { pages += made; a.manuscript.fragments -= made * fragmentNeed; }
+    a.manuscript.fragments += this.manuscriptFragmentRate();
+    if (out.result === 'lose') a.manuscript.fragments += 1;
+    const fragmentNeed = (Number(this.s.attrs.bi) || 0) >= (Number(mc.fragmentFastBi) || 16) ? 1 : (Number(mc.fragmentNeed) || 2);
+    const made = Math.floor(a.manuscript.fragments / Math.max(1, fragmentNeed));
+    if (made > 0) {
+      pages += made;
+      a.manuscript.fragments = Math.round((a.manuscript.fragments - made * fragmentNeed) * 1000) / 1000;
     }
     const firstFinished = pages > 0 && !a.manuscript.bonusPagePhases[phase];
     if (firstFinished && (Number(this.s.attrs.bi) || 0) >= (Number(mc.bonusPageBi) || 24)) pages += 1;
@@ -2185,7 +2254,8 @@ export class Game {
     }
     if (session.usedPolish && a.manuscript.polish > 0) a.manuscript.polish -= 1;
     a.lastStyle = style;
-    this.push(`战后所得：心得 +${insightGot}，稿页 +${pageGot}，${R.STYLE_NAMES[style]}熟练 +${practice}`);
+    const fmt = n => Number.isInteger(Number(n)) ? String(Number(n)) : Number(n).toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+    this.push(`战后所得：心得 +${insightGot}，稿页 +${pageGot}，${R.STYLE_NAMES[style]}熟练 +${practice}，研修 +${fmt(studyGain)}/位，残页 +${fmt(this.manuscriptFragmentRate())}`);
   }
 
   /** 应用战斗奖惩（UI 播完算分动画后调用） */
