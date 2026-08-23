@@ -524,6 +524,42 @@ export class Modals {
     });
   }
 
+  /** 名胜格三选一：候选仅供查看，返回下标；取消返回 -1。 */
+  chooseScenicTalent(candidates, meta = {}) {
+    const list = Array.isArray(candidates) ? candidates.filter(Boolean) : [];
+    return new Promise(resolve => {
+      if (!list.length) { resolve(-1); return; }
+      const count = list.length;
+      const cards = list.map((t, i) => `
+        <button class="scenic-pick-card talent-card paper ${t.kind === 'active' ? 'act' : ''}" data-i="${i}" type="button">
+          <span class="scenic-pick-no">${i + 1}</span>
+          <span class="kind">${t.kind === 'active' ? `主动文心　消耗灵感 ${t.cost || 1}` : '被动文心　常驻生效'}</span>
+          <h3>${esc(t.name)}</h3>
+          <span class="efx">${talentEffectText(t)}</span>
+          <span class="dianggu">${esc(personalize(t.text || '', this.playerName))}</span>
+          <span class="scenic-pick-keep">选择此枚</span>
+        </button>`).join('');
+      const ov = this.open(`
+        <div class="modal scroll-frame paper scenic-pick-modal">
+          <div class="mtitle" style="justify-content:center"><h2>访 胜 · 三签择一</h2></div>
+          <hr class="hr-ink"/>
+          <div class="scenic-pick-intro">${count === 3 ? '三张文心已现，请择一收入囊中；其余两张将自动弃置。' : `当前文心池仅余 ${count} 张，择一收入囊中；未选文心将自动弃置。`}</div>
+          <div class="scenic-pick-cost">确认选择后消耗灵感 ${Number(meta.cost) || 0} 点</div>
+          <div class="scenic-pick-list">${cards}</div>
+          <div class="btn-row"><button class="btn btn-ink" data-cancel type="button">暂不取签</button></div>
+        </div>`, 'scenic-pick');
+      let done = false;
+      const finish = value => {
+        if (done) return;
+        done = true;
+        this.close(ov);
+        resolve(value);
+      };
+      ov.querySelectorAll('[data-i]').forEach(b => b.addEventListener('click', () => finish(Number(b.dataset.i))));
+      ov.querySelector('[data-cancel]')?.addEventListener('click', () => finish(-1));
+    });
+  }
+
   /* ---------------------------------------------------- 天象 */
   async showSky(card) {
     const ov = this.open(`
