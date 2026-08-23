@@ -31,16 +31,20 @@
     },
     "study": {
       "baseInsightCap": 6,
-      "insightCapPerXue": 4,
+      "insightCapPerXue": 3,
       "baseSlots": 1,
-      "slotPerXue": 12,
+      "slotPerXue": 10,
       "maxSlots": 3,
-      "progressNeed": 3
+      "progressNeed": 3,
+      "progressPerXue": 0.04,
+      "slotMilestones": [10, 20]
     },
     "strategy": {
       "baseCharges": 1,
-      "chargePerSi": 12,
       "maxCharges": 3,
+      "chargePerSi": 10,
+      "capPerSi": 10,
+      "maxCap": 6,
       "defaultPlan": "guard",
       "plans": {
         "steady": {
@@ -63,8 +67,9 @@
     },
     "manuscript": {
       "baseCap": 2,
-      "capPerBi": 8,
-      "maxCap": 6,
+      "capPerBi": 6,
+      "maxCap": 8,
+      "fragmentPerBi": 0.05,
       "fragmentNeed": 2,
       "fragmentFastBi": 16,
       "bonusPageBi": 24,

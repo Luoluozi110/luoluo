@@ -83,6 +83,7 @@ console.log('== 学力：扩充心得容量与研修位 ==');
   const learned = newGame('bowen');
   assert.ok(learned.insightCap() > ordinary.insightCap(), '学力主修拥有更高心得容量');
   assert.ok(learned.studySlots() > ordinary.studySlots(), '博闻额外研修位已落地');
+  assert.equal(learned.studyProgressRate(), 1.32, '博闻开局学力让每场研修推进提高到 1.32');
   learned.s.abilityState.insight = learned.insightCap();
   assert.equal(learned.toggleStudyFocus('bi'), true, '第二研修位可为下阶段分配给基本功');
   assert.ok(learned.s.abilityState.study.nextFocus.includes('bi'));
@@ -95,17 +96,17 @@ console.log('== 思力：阶段预案自动触发，不产生回合弹窗 ==');
 {
   const game = newGame('qishi');
   game.s.attrs.si = 20;
-  assert.equal(game.strategyIncome(), 3, '20 思力每阶段取得 3 构思');
-  assert.equal(game.strategyCap(), 4, '奇士 20 思力达到 4 点构思上限');
+  assert.equal(game.strategyIncome(), 4, '20 思力在奇士加成下每阶段取得 4 构思');
+  assert.equal(game.strategyCap(), 6, '奇士 20 思力达到 6 点构思上限');
   assert.equal(game.setNextStrategyPlan('switch'), true);
-  assert.equal(game.refillStrategy('outer'), 3);
+  assert.equal(game.refillStrategy('outer'), 4);
   assert.equal(game.s.abilityState.strategy.plan, 'switch', '下阶段预案已经锁定');
   const firstSwitch = { lastStyle: 'shi', strategyPlanTriggered: null };
   assert.equal(game.strategyBattlePct(firstSwitch, 'ci'), 0.06, '换体自动获得转锋加成');
-  assert.equal(game.s.abilityState.strategy.charges, 3, '奇士本阶段第一次发动免费');
+  assert.equal(game.s.abilityState.strategy.charges, 4, '奇士本阶段第一次发动免费');
   const secondSwitch = { lastStyle: 'ci', strategyPlanTriggered: null };
   assert.equal(game.strategyBattlePct(secondSwitch, 'lian'), 0.06);
-  assert.equal(game.s.abilityState.strategy.charges, 2, '后续发动才消耗筹策');
+  assert.equal(game.s.abilityState.strategy.charges, 3, '后续发动才消耗构思');
   assert.equal(game.strategyBattlePct({ lastStyle: 'lian', strategyPlanTriggered: null }, 'lian'), 0, '不换体不触发');
 
   game.setNextStrategyPlan('steady');
@@ -113,7 +114,7 @@ console.log('== 思力：阶段预案自动触发，不产生回合弹窗 ==');
   game.s.abilityState.manuscript.fragments = 0;
   assert.equal(game.applyStrategyMovement(2), 2, '徐行拾句不改变原始 2 点骰');
   assert.equal(game.s.abilityState.manuscript.fragments, 1, '原始骰 1～3 点时额外获得 1 份残页');
-  assert.equal(game.s.abilityState.strategy.charges, 3, '新阶段首次发动再次免费');
+  assert.equal(game.s.abilityState.strategy.charges, 4, '新阶段取得新的阶段构思');
   assert.equal(game.applyStrategyMovement(3), 3, '徐行拾句不改变原始 3 点骰');
   assert.equal(game.s.abilityState.manuscript.fragments, 2, '原始 3 点骰同样获得残页');
   assert.equal(game.applyStrategyMovement(4), 4, '4 点骰不触发徐行拾句');
@@ -124,7 +125,28 @@ console.log('== 思力：阶段预案自动触发，不产生回合弹窗 ==');
   game.setNextStrategyPlan('guard');
   game.refillStrategy('inner');
   assert.equal(game.strategyLossAmount(-3, 'shi'), -1, '守成策自动减少 2 点败北损失');
-  assert.equal(game.s.abilityState.strategy.charges, 3, '守成策首次发动同样免费');
+  assert.equal(game.s.abilityState.strategy.charges, 4, '守成策首次发动同样免费');
+}
+
+console.log('== 三力：小数收益结转并在里程碑处提升容量 ==');
+{
+  const game = newGame('bowen');
+  game.s.attrs.si = 15;
+  assert.equal(game.strategyIncome(), 2.5, '15 思力每阶段产生 2.5 构思');
+  game.refillStrategy('outer');
+  assert.equal(game.s.abilityState.strategy.charges, 2, '半点构思先转为整数资源');
+  assert.equal(game.s.abilityState.strategy.chargeRemainder, 0.5, '半点构思结转至下阶段');
+  game.refillStrategy('middle');
+  assert.equal(game.s.abilityState.strategy.charges, 3, '结转后下一阶段兑现完整构思');
+  assert.equal(game.s.abilityState.strategy.chargeRemainder, 0, '结转小数已兑现');
+
+  game.s.attrs.bi = 8;
+  assert.equal(game.manuscriptFragmentRate(), 0.4, '8 笔力每场沉淀 0.4 残页');
+  const before = game.s.abilityState.manuscript.fragments;
+  await game.settleBattle(game.createSession({ npc: npc('残页沉淀'), label: '残页沉淀' }), {
+    result: 'draw', style: 'shi', manner: 'zheli', npcStyle: 'ci', npcDice: 2, dicePips: [4], upset: false
+  });
+  assert.equal(game.s.abilityState.manuscript.fragments, before + 0.4, '非失败场次也会沉淀笔力残页');
 }
 
 console.log('== 笔力：稿页可润色、刊行，并形成跨局末评分资产 ==');
