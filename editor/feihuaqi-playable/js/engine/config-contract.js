@@ -76,8 +76,9 @@
               }
               if (!isObj(strategy.plans)) add('attrs.abilitySystem.strategy.plans', '必须是对象');
               else for (const id of ['steady', 'guard', 'switch']) {
-                if (!isObj(strategy.plans[id])) add(`attrs.abilitySystem.strategy.plans.${id}`, '缺少必需预案');
-                else if (!text(strategy.plans[id].name) || !text(strategy.plans[id].desc)) add(`attrs.abilitySystem.strategy.plans.${id}`, '必须包含名称和说明');
+                if (!isObj(strategy.plans[id])) add(`attrs.abilitySystem.strategy.plans.${id}`, '缺少必需章法');
+                else if (!text(strategy.plans[id].name) || !text(strategy.plans[id].desc)) add(`attrs.abilitySystem.strategy.plans.${id}`, '必须包含章法名称和说明');
+                else if (id === 'steady' && (!finite(strategy.plans[id].lowMax) || Number(strategy.plans[id].lowMax) < 1 || !finite(strategy.plans[id].fragmentGain) || Number(strategy.plans[id].fragmentGain) <= 0)) add(`attrs.abilitySystem.strategy.plans.${id}`, '徐行拾句必须配置有效的低骰范围和残页收益');
               }
               if (!text(strategy.defaultPlan) || !isObj(strategy.plans) || !strategy.plans[strategy.defaultPlan]) add('attrs.abilitySystem.strategy.defaultPlan', '必须引用已有预案');
             }
