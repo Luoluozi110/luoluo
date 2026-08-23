@@ -1,0 +1,161 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "date": "2026-08-24",
+    "sourceGame": "文心棋",
+    "purpose": "美式桌游前期内容资源与原型索引",
+    "status": "建议稿，所有桌游数值待试玩",
+    "defaultAssumptions": {
+      "players": "2-4",
+      "durationMinutes": "60-120",
+      "experience": ["叙事冲突", "骰子戏剧性", "角色能力差异", "事件抉择", "首领战"]
+    }
+  },
+  "sourceInventory": {
+    "archetypes": 3,
+    "attributes": 6,
+    "events": { "total": 42, "direct": 22, "challenge": 6, "choice": 14 },
+    "talents": 43,
+    "npcs": 29,
+    "worldEvents": 6,
+    "legacyRelics": 12,
+    "themes": 6,
+    "manners": 6
+  },
+  "campaignStages": [
+    { "id": "mengxue", "name": "蒙学初试", "function": "教学与首次成长" },
+    { "id": "xiangwei", "name": "乡闱争锋", "function": "路线分化与选择回声" },
+    { "id": "huishi", "name": "公车会试", "function": "敌人读取玩家习惯" },
+    { "id": "dianshi", "name": "殿前衡文", "function": "资源连续消耗与首领战" },
+    { "id": "taoyuan", "name": "桃源终卷", "function": "条件解锁的隐藏终局" }
+  ],
+  "archetypes": [
+    {
+      "id": "bowen",
+      "name": "博闻",
+      "sourceAttribute": "学力",
+      "motto": "博观约取，厚积薄发",
+      "tabletopHook": "检索牌库、辨识弱点、储存典故并稳定改骰",
+      "decision": "把知识现在使用，还是留给更难的检定"
+    },
+    {
+      "id": "qishi",
+      "name": "奇士",
+      "sourceAttribute": "思力",
+      "motto": "灵台澄澈，万象皆明",
+      "tabletopHook": "设置伏笔、延迟触发、改变行动顺序或从失败取得旁路收益",
+      "decision": "现在揭开伏笔，还是继续等待"
+    },
+    {
+      "id": "cizong",
+      "name": "辞宗",
+      "sourceAttribute": "笔力",
+      "motto": "笔落惊风雨，文成绣山川",
+      "tabletopHook": "收集残页、拼成篇章、润色并发表",
+      "decision": "立即发表，还是继续润色"
+    }
+  ],
+  "styles": [
+    { "id": "shi", "name": "诗体·一气", "tabletopHook": "少量高风险骰，成功符号可连锁，失败积累余韵" },
+    { "id": "ci", "name": "词体·铺陈", "tabletopHook": "锁定骰面并逐步完成组合后结算" },
+    { "id": "lian", "name": "联体·对举", "tabletopHook": "成对出牌、响应他人行动并在落后时反击" }
+  ],
+  "resources": [
+    { "id": "inspiration", "name": "灵感", "role": "体力、风险预算与能力费用", "component": "双层转盘或标记" },
+    { "id": "insight", "name": "洞见", "role": "升级、识破弱点与重掷", "component": "稀有标记" },
+    { "id": "fragment", "name": "残页", "role": "制作名篇的带标签材料", "component": "小卡或纸板标记" },
+    { "id": "foreshadow", "name": "伏笔", "role": "延迟触发与临场技巧", "component": "双面标记" },
+    { "id": "talent", "name": "天赋", "role": "角色构筑", "component": "能力牌" },
+    { "id": "masterpiece", "name": "名篇", "role": "双路线遗物、章节成就与隐藏结局钥匙", "component": "双面大卡" }
+  ],
+  "npcCandidates": [
+    { "id": "zhou_xiaoman", "name": "周小满", "title": "蒙学童子", "role": "教学敌人", "hook": "公开下一行动，换用不同文体可打断" },
+    { "id": "qian_xiao_yi", "name": "钱小乙", "title": "初学蒙生", "role": "反重复敌人", "hook": "玩家重复行动时获得护盾，换策后清除" },
+    { "id": "wang_han_sheng", "name": "王翰生", "title": "邑庠秀才", "role": "资源响应敌人", "hook": "玩家追加骰越多，反击越强" },
+    { "id": "fan_jieyuan", "name": "范解元", "title": "乡试解元", "role": "抢先精英", "hook": "投入资源会诱发强攻，也会暴露其防御" },
+    { "id": "su_mingzhe", "name": "苏明哲", "title": "公车举人", "role": "模仿精英", "hook": "复制玩家上一轮行动类型，改变风格可破解" },
+    { "id": "han_shi_chang", "name": "韩世昌", "title": "乙榜举人", "role": "防御精英", "hook": "削减零散伤害，单次高成功度可破城" },
+    { "id": "si_ma_wen", "name": "司马文", "title": "同进士出身", "role": "隐藏行动精英", "hook": "背面排程行动，玩家可花洞见揭示" },
+    { "id": "yuwen_yuan", "name": "宇文渊", "title": "甲科进士", "role": "主题精英", "hook": "匹配特定主题时强化，可用相反风格拆解" },
+    { "id": "wang_shilang", "name": "王侍郎", "title": "礼部侍郎", "role": "多阶段首领", "hook": "记录玩家常用手段并生成抗性" },
+    { "id": "kang_eryu", "name": "康尔玉", "title": "联圣有继", "role": "专精首领", "hook": "联体正面对抗极强，迫使队伍准备其他解法" },
+    { "id": "chen_zhiwei", "name": "陈之微", "title": "桃花仙人", "role": "隐藏最终首领", "hook": "依据玩家收集的名篇切换阶段规则" }
+  ],
+  "eventCandidates": [
+    { "id": "E003", "name": "兰亭修禊", "rarity": "传说", "kind": "challenge", "hook": "可随时退出的连续挑战链" },
+    { "id": "E005", "name": "斗酒百篇", "rarity": "稀有", "kind": "challenge", "hook": "醉意骰提供爆发，失败后变为疲惫" },
+    { "id": "E006", "name": "江郎才尽", "rarity": "稀有", "kind": "choice", "hook": "归还神物得稳定成长，留下则获得强卡并混入负面牌" },
+    { "id": "E007", "name": "一字之师", "rarity": "稀有", "kind": "choice", "hook": "接受修改升级基础牌，拒绝则强化原创标签" },
+    { "id": "E012", "name": "焚膏继晷", "rarity": "稀有", "kind": "choice", "hook": "即时检索与疲惫，或恢复并延迟抽牌" },
+    { "id": "E013", "name": "知音", "rarity": "稀有", "kind": "choice", "hook": "获得盟友，或赠稿并加入后续回信" },
+    { "id": "E014", "name": "推敲之苦", "rarity": "普通", "kind": "choice", "hook": "放置延迟升级的伏笔，受挫时转成残页" },
+    { "id": "E015", "name": "卖字换酒", "rarity": "普通", "kind": "choice", "hook": "即时资源与长期声望二选一" },
+    { "id": "E019", "name": "驿路逢雨", "rarity": "普通", "kind": "choice", "hook": "保持移动并受损，或停留获得灵感与山水标签" },
+    { "id": "E024", "name": "舟中夜话", "rarity": "普通", "kind": "choice", "hook": "交换手牌，或操控事件牌堆" },
+    { "id": "E025", "name": "落第榜下", "rarity": "普通", "kind": "choice", "hook": "爆发创作并留下执念，或稳定成长取得复试机会" },
+    { "id": "E027", "name": "松间对弈", "rarity": "普通", "kind": "direct", "hook": "重排行动顺序并获得伏笔" },
+    { "id": "E029", "name": "市井联语", "rarity": "普通", "kind": "challenge", "hook": "协作完成配对检定但共享奖励" },
+    { "id": "E035", "name": "雪夜访戴", "rarity": "普通", "kind": "choice", "hook": "强化本心，或建立盟友关系" },
+    { "id": "E042", "name": "留人古寺", "rarity": "传说", "kind": "choice", "hook": "接受强力传承与戒律，或封存后回归为稀有天赋" }
+  ],
+  "talentCandidates": [
+    { "name": "博览", "type": "passive", "hook": "首次遇到新主题时获得洞见或查看弱点" },
+    { "name": "急智", "type": "passive", "hook": "追加风险骰后改变其中一枚骰的符号" },
+    { "name": "梦笔生花", "type": "passive", "hook": "成功符号爆发并产生残页" },
+    { "name": "推敲", "type": "passive", "hook": "保留行动以设置下一轮伏笔" },
+    { "name": "知人论世", "type": "active", "hook": "一章一次复制对手标签" },
+    { "name": "不平则鸣", "type": "passive", "hook": "队伍落后时诗体成功符号连锁" },
+    { "name": "文思泉涌", "type": "active", "hook": "换用高波动灵感骰并承受疲惫" },
+    { "name": "七步成诗", "type": "active", "hook": "行动计数耗尽前补足最低成功数" },
+    { "name": "夺胎换骨", "type": "active", "hook": "暂时复制一个能力关键词" },
+    { "name": "语不惊人", "type": "active", "hook": "高风险大成功，失败加入执念牌" },
+    { "name": "笔落惊风雨", "type": "active", "hook": "把普通成功升级为暴击成功" },
+    { "name": "一气呵成", "type": "active", "hook": "连续同文体递增，中断后重置" },
+    { "name": "倚马可待", "type": "active", "hook": "不掷骰取得固定成功但不能爆发" },
+    { "name": "点铁成金", "type": "active", "hook": "把残页或负面牌临时转为通配符" },
+    { "name": "布局谋篇", "type": "active", "hook": "预选骰面，重复使用时灵感费用增加" },
+    { "name": "一鼓作气", "type": "passive", "hook": "连续成功取得额外行动，失败后中止" },
+    { "name": "破釜沉舟", "type": "passive", "hook": "低灵感时强化但本轮不能恢复" },
+    { "name": "照我传灯", "type": "legacy", "hook": "失败结局后把已升级天赋带入下一局传承套牌" }
+  ],
+  "worldEvents": [
+    { "id": "SK01", "name": "月圆之夜", "hook": "伏笔延长，但敌人隐藏行动增加" },
+    { "id": "SK02", "name": "寒窗雪", "hook": "修习额外产出，移动费用提高" },
+    { "id": "SK03", "name": "科场风起", "hook": "精英奖励与失败惩罚同时提高" },
+    { "id": "SK04", "name": "文曲星动", "hook": "首次完成主题组合时获得洞见" },
+    { "id": "SK05", "name": "梅雨愁绪", "hook": "停止自然恢复，依赖事件与盟友" },
+    { "id": "SK06", "name": "金榜题名时", "hook": "获得一项本章未用即失效的临时壮举" }
+  ],
+  "legacyRelics": [
+    { "id": "A001", "name": "仰天大笑", "routes": ["豪情入篇", "快意成章"] },
+    { "id": "A002", "name": "一字之师", "routes": ["校勘入骨", "转益多师"] },
+    { "id": "A003", "name": "江郎才尽·悔", "routes": ["惜墨守心", "五色复笔"] },
+    { "id": "A004", "name": "连中三元", "routes": ["金榜定名", "连捷成势"] },
+    { "id": "A005", "name": "桃李满园", "routes": ["薪火相传", "满园成章"] },
+    { "id": "A006", "name": "倚马千言", "routes": ["快构成篇", "腹有奇谋"] },
+    { "id": "A007", "name": "行万里路", "routes": ["采风入笔", "游观得间"] },
+    { "id": "A008", "name": "铁杵成针", "routes": ["百炼不折", "守拙专一"] },
+    { "id": "A009", "name": "两句三年得", "routes": ["推敲入微", "回环有余"] },
+    { "id": "A010", "name": "属对如流", "routes": ["对举成锋", "唱和回响"] },
+    { "id": "A011", "name": "洛阳纸贵", "routes": ["传抄成势", "刊行自立"] },
+    { "id": "A012", "name": "韦编三绝", "routes": ["深读一经", "博涉群书"] }
+  ],
+  "prototypeSlice": {
+    "characterBoards": 3,
+    "regularEnemies": 9,
+    "bosses": 1,
+    "encounters": 12,
+    "talents": 18,
+    "worldEvents": 6,
+    "legacyRelics": 6,
+    "chapterAreas": 5,
+    "resources": ["灵感", "洞见", "残页", "伏笔"],
+    "coreLoop": "选择行动→承担骰子风险→获得残页或洞见→构筑能力→对抗会改变行为的首领"
+  },
+  "openDecisions": [
+    "全合作、竞争或半合作",
+    "共同失败、个人落第或可携残篇进入下一局",
+    "骰池成功数、卡牌驱动或混合判定",
+    "历史科场写实与志怪桃源的题材比例"
+  ]
+}
