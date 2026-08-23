@@ -2,7 +2,6 @@
 import { glyph, cellGlyphKey, FAR_HILLS, ensureDefs } from './svg.js?v=20260820mapart1';
 import { getBudget } from './quality.js';
 import { play } from './audio.js';
-import { sting } from './music.js';
 import {
   applyBoardViewMode,
   applyEffectiveBoardViewMode,
@@ -597,7 +596,7 @@ export class BoardView {
 
   async movePiece(state) {
     const id = this.cellIdOf(state);
-    play('move');
+    play('move', { index: Number(state.routeIndex ?? state.pos) || 0 });
     this.setPiecePos(id);
     this.piece.classList.remove('hop');
     void this.piece.offsetWidth;
@@ -614,8 +613,8 @@ export class BoardView {
     this.setVisibleRing(hidden.id || 'secret');
     this.setPiecePos(Number(hidden.startCellId) || Number(cells[0].id));
     await sleep(360);
-    for (const cell of cells.slice(1)) {
-      play('move');
+    for (const [index, cell] of cells.slice(1).entries()) {
+      play('move', { index, final: index === cells.length - 2 });
       this.setPiecePos(cell.id);
       this.piece.classList.remove('hop');
       void this.piece.offsetWidth;
@@ -653,8 +652,7 @@ export class BoardView {
 
   async showDice(n) {
     const layer = this.root.querySelector('#diceLayer');
-    play('dice');
-    sting('dice');           // 掷骰动画配乐：上行三音点缀
+    play('dice', { value: n });
     const pips = DICE_PIPS[n] || [];
     layer.innerHTML = `<div class="die">${Array.from({ length: 9 }, (_, i) =>
       pips.includes(i) ? '<i></i>' : '<span></span>').join('')}</div>`;

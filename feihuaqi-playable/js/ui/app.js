@@ -5,20 +5,21 @@
  */
 import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260822secretfinal1';
 import { Game } from '../engine/game.js?v=20260823scenicpick1';
-import { BoardView } from './board.js?v=20260822secretfinal1';
+import { BoardView } from './board.js?v=20260824audio1';
 import { Hud, radarSVG } from './hud.js?v=20260823threepower1';
 // 奇遇属性收益在 20260823eventattrs1 起于选择前完整展示；独立版本键避免旧模块缓存继续省略属性。
-import { Modals } from './modals.js?v=20260823scenicpick1';
-import { BattleStage } from './battle.js?v=20260822secretfinal1';
-import { AlbumUI } from './album.js?v=20260824brand1';
+import { Modals } from './modals.js?v=20260824audio1';
+import { BattleStage } from './battle.js?v=20260824audio1';
+import { AlbumUI } from './album.js?v=20260824audio1';
 import { CodexUI } from './codex.js?v=20260822secretfinal1';
 import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260822secretfinal1';
 import { initQuality, getTier, setTier } from './quality.js?v=20260822secretfinal1';
 import { ATTR_NAMES } from '../engine/rules.js?v=20260822secretfinal1';
 import * as Album from '../engine/album.js?v=20260824brand1';
 import * as Codex from '../engine/codex.js?v=20260822secretfinal1';
-import { initAudio } from './audio.js?v=20260822secretfinal1';
-import { setScene, setTension, setStage } from './music.js?v=20260822secretfinal1';
+// 音频模块统一使用同一 URL，确保静音、SFX 与配乐共享一个 AudioContext / Master 总线。
+import { initAudio, play } from './audio.js';
+import { setScene, setTension, setStage } from './music.js?v=20260824audio1';
 import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260822secretfinal1';
 import { Leaderboard } from './leaderboard.js?v=20260822secretfinal1';
 import { personalize } from './namefmt.js?v=20260822secretfinal1';
@@ -366,14 +367,18 @@ function makeUi() {
       const txt = Object.entries(out)
         .map(([k, v]) => `${ATTR_NAMES[k]} ${v > 0 ? '+' : ''}${v}`).join('　');
       if (txt) board.float(txt, 'ink-up');
+      const total = Object.values(out).reduce((sum, value) => sum + (Number(value) || 0), 0);
+      if (total) play(total > 0 ? 'gain' : 'spend', { amount: Math.abs(total) });
       hud.recordChange({ kind: 'attr', values: out, reason });
     },
     floatInspiration(real, reason) {
       board.float(`灵感 ${real > 0 ? '+' : ''}${real}`, real >= 0 ? 'ink-up' : 'ink-down');
+      if (real) play(real > 0 ? 'gain' : 'spend', { amount: Math.abs(real) });
       hud.recordChange({ kind: 'inspiration', value: real, reason });
     },
     floatInspirationMax(real, reason) {
       board.float(`灵感上限 +${real}`, 'ink-up');
+      if (real > 0) play('gain', { amount: real });
       hud.recordChange({ kind: 'inspiration-max', value: real, reason });
     },
     recordLog: entry => hud.recordLog(entry),
