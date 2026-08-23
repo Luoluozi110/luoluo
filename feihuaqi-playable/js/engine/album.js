@@ -166,7 +166,7 @@ const MASTERY_MECH = {
     apex: { 5: { knowledgeInsightBonus: 1 } }
   },
   qishi: {
-    // 新版奇士的主轴是筹策；灵感放大只保留轻量成长。
+    // 新版奇士的主轴是构思；灵感放大只保留轻量成长。
     perLv: {
       2: { inspirationBonusRate: 0.22 },
       3: { inspirationBonusRate: 0.24 },
