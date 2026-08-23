@@ -16363,7 +16363,7 @@
     },
     {
       "id": "A007",
-      "name": "行万里路",
+      "name": "躬行绝知",
       "unlock": {
         "type": "events",
         "min": 40
@@ -16376,7 +16376,10 @@
       "rewardDesc": "开局笔力 +2；成长为“采风”或“游观”",
       "growth": {
         "baseXp": 1,
-        "winXp": 1
+        "winXp": 1,
+        "drawXp": 0,
+        "loseXp": 0,
+        "styleXp": 0
       },
       "branches": [
         {
@@ -16390,7 +16393,8 @@
               "type": "manuscript",
               "value": 1,
               "name": "行箧旧稿",
-              "desc": "开局稿页 +1"
+              "desc": "开局稿页 +1",
+              "minLevel": 1
             },
             {
               "trigger": "event",
@@ -16430,7 +16434,8 @@
               "type": "inspirationMax",
               "value": 2,
               "name": "胸藏万景",
-              "desc": "灵感上限 +2"
+              "desc": "灵感上限 +2",
+              "minLevel": 1
             },
             {
               "trigger": "event",
@@ -16460,7 +16465,7 @@
           ]
         }
       ],
-      "text": "“读万卷书，行万里路。”——董其昌《画禅室随笔》。四十番奇遇入怀，山川草木皆成笔底烟云。"
+      "text": "“纸上得来终觉浅，绝知此事要躬行。”——陆游《冬夜读书示子聿》，意在强调书本知识终究浅薄，唯有亲身实践才能获得真正深刻的理解。"
     },
     {
       "id": "A008",
