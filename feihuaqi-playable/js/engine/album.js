@@ -466,7 +466,7 @@ function parseLegacyCode(raw) {
   let obj;
   try { obj = JSON.parse(fromB64(raw)); }
   catch (e) { throw new Error('存档码无法解析，请确认完整复制'); }
-  if (!obj || typeof obj !== 'object' || !obj.stats) throw new Error('存档码内容不是有效的飞花棋存档');
+  if (!obj || typeof obj !== 'object' || !obj.stats) throw new Error('存档码内容不是有效的文心棋存档');
   return { legacy: true, album: normalizeStore(obj) };
 }
 

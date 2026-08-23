@@ -389,7 +389,7 @@ export class AlbumUI {
     this.topEl.appendChild(ov);
     ov.querySelector('[data-save]').addEventListener('click', () => {
       const a = document.createElement('a');
-      a.download = `飞花棋成绩_${summary.grade.name}_${summary.total}.png`;
+      a.download = `文心棋成绩_${summary.grade.name}_${summary.total}.png`;
       a.href = canvas.toDataURL('image/png');
       document.body.appendChild(a);
       a.click();

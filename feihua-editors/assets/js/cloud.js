@@ -74,7 +74,7 @@
     const res = await fetch("https://api.github.com/gists", {
       method: "POST", headers,
       body: JSON.stringify({
-        description: "飞花棋自定义配置（云端自动同步）", public: true,
+        description: "文心棋自定义配置（云端自动同步）", public: true,
         files: { "feihua-content.json": { content } }
       })
     });
