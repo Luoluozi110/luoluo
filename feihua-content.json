@@ -10788,7 +10788,7 @@
               "value": 1,
               "minLevel": 4,
               "name": "后手未尽",
-              "desc": "论战结算后筹策 +1"
+              "desc": "论战结算后构思 +1"
             }
           ]
         },
@@ -10903,14 +10903,14 @@
           "id": "streak",
           "name": "连捷成势",
           "minLevel": 1,
-          "desc": "筹策与连胜加成，殿试一路高歌，捷报传世。",
+          "desc": "构思与连胜加成，殿试一路高歌，捷报传世。",
           "effects": [
             {
               "trigger": "start",
               "type": "strategy",
               "value": 1,
-              "name": "连捷筹策",
-              "desc": "开局筹策 +1"
+              "name": "连捷构思",
+              "desc": "开局构思 +1"
             },
             {
               "trigger": "battle",
@@ -11069,14 +11069,14 @@
           "id": "draft",
           "name": "快构成篇",
           "minLevel": 1,
-          "desc": "筹策开道，下笔成章，诗体技法与灵感速盈。",
+          "desc": "构思开道，下笔成章，诗体技法与灵感速盈。",
           "effects": [
             {
               "trigger": "start",
               "type": "strategy",
               "value": 1,
-              "name": "倚马筹策",
-              "desc": "开局筹策 +1"
+              "name": "倚马构思",
+              "desc": "开局构思 +1"
             },
             {
               "trigger": "battle",
@@ -11127,7 +11127,7 @@
               "value": 1,
               "minLevel": 2,
               "name": "以平养势",
-              "desc": "平局筹策 +1"
+              "desc": "平局构思 +1"
             },
             {
               "trigger": "battle",
@@ -11488,14 +11488,14 @@
           "id": "parallel",
           "name": "对举成锋",
           "minLevel": 1,
-          "desc": "开局筹策，工对加成，联体平局与传承皆强。",
+          "desc": "开局构思，工对加成，联体平局与传承皆强。",
           "effects": [
             {
               "trigger": "start",
               "type": "strategy",
               "value": 1,
               "name": "联锋",
-              "desc": "开局筹策 +1"
+              "desc": "开局构思 +1"
             },
             {
               "trigger": "score",

@@ -95,8 +95,8 @@ console.log('== 思力：阶段预案自动触发，不产生回合弹窗 ==');
 {
   const game = newGame('qishi');
   game.s.attrs.si = 20;
-  assert.equal(game.strategyIncome(), 3, '20 思力每阶段取得 3 筹策');
-  assert.equal(game.strategyCap(), 4, '奇士 20 思力达到 4 点筹策上限');
+  assert.equal(game.strategyIncome(), 3, '20 思力每阶段取得 3 构思');
+  assert.equal(game.strategyCap(), 4, '奇士 20 思力达到 4 点构思上限');
   assert.equal(game.setNextStrategyPlan('switch'), true);
   assert.equal(game.refillStrategy('outer'), 3);
   assert.equal(game.s.abilityState.strategy.plan, 'switch', '下阶段预案已经锁定');
@@ -110,9 +110,16 @@ console.log('== 思力：阶段预案自动触发，不产生回合弹窗 ==');
 
   game.setNextStrategyPlan('steady');
   game.refillStrategy('middle');
-  assert.equal(game.applyStrategyMovement(2), 3, '缓急策自动修正低骰');
+  game.s.abilityState.manuscript.fragments = 0;
+  assert.equal(game.applyStrategyMovement(2), 2, '徐行拾句不改变原始 2 点骰');
+  assert.equal(game.s.abilityState.manuscript.fragments, 1, '原始骰 1～3 点时额外获得 1 份残页');
   assert.equal(game.s.abilityState.strategy.charges, 3, '新阶段首次发动再次免费');
-  assert.equal(game.applyStrategyMovement(2, true), 2, '预先指定的移动骰不被二次修正');
+  assert.equal(game.applyStrategyMovement(3), 3, '徐行拾句不改变原始 3 点骰');
+  assert.equal(game.s.abilityState.manuscript.fragments, 2, '原始 3 点骰同样获得残页');
+  assert.equal(game.applyStrategyMovement(4), 4, '4 点骰不触发徐行拾句');
+  assert.equal(game.s.abilityState.manuscript.fragments, 2, '4 点骰不获得额外残页');
+  assert.equal(game.applyStrategyMovement(2, true), 2, '预先指定的移动骰不触发徐行拾句');
+  assert.equal(game.s.abilityState.manuscript.fragments, 2, '预先指定的移动骰不获得额外残页');
 
   game.setNextStrategyPlan('guard');
   game.refillStrategy('inner');

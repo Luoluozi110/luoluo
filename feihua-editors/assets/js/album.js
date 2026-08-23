@@ -15,7 +15,7 @@
   ];
   const REWARD_TYPES = [["attr", "属性"], ["inspiration", "灵感"], ["inspirationMax", "灵感上限"], ["talent", "文心"], ["title", "称号"]];
   const TRIGGERS = [["start", "开局"], ["battle", "论战"], ["quiz", "答题"], ["event", "奇遇"], ["phase", "阶段"], ["score", "评分"]];
-  const EFFECT_TYPES = [["attr", "属性"], ["inspiration", "灵感"], ["inspirationMax", "灵感上限"], ["insight", "心得"], ["manuscript", "稿页"], ["strategy", "筹策"], ["studySlot", "研修位"], ["techniqueXp", "技法经验"], ["pct", "百分比"]];
+  const EFFECT_TYPES = [["attr", "属性"], ["inspiration", "灵感"], ["inspirationMax", "灵感上限"], ["insight", "心得"], ["manuscript", "稿页"], ["strategy", "构思"], ["studySlot", "研修位"], ["techniqueXp", "技法经验"], ["pct", "百分比"]];
   const RESULTS = [["", "不限"], ["win", "胜"], ["draw", "平"], ["lose", "负"]];
   const state = { cards: [], editIndex: -1, form: null, _ready: false, undo: [], redo: [], historyLimit: 30 };
 
