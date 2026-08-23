@@ -24,9 +24,18 @@ assert.match(app, /buildMenu\(\)/, 'boot 内立即构建主菜单');
 assert.match(app, /openSchoolScreen\(\{ resync: false \}\)/, 'boot 内立即打开选流派屏，且不做首次重复重同步');
 assert.ok(app.indexOf('readCloudCache(cloudConfigUrl)') > -1 && app.indexOf('applyCloudProject') > -1 && app.indexOf('fetchCloudConfig(cloudConfigUrl') > -1,
   'prepareCloudConfig 先采用本机缓存、再后台限时刷新');
+assert.ok(app.includes("const requestUrl = `${url}${sep}_wb=${Date.now()}`"),
+  '云端配置请求带时间戳，绕过 GitHub Raw/CDN 旧响应');
+assert.ok(app.includes("const res = await fetch(requestUrl, {\n      cache: 'no-store'"),
+  '云端配置请求使用 no-store，确保发布后的内容可见');
 
 // 3) 棋盘/HUD/Battle 延迟构建；确保进局前等待云端收尾。
 assert.match(app, /async function ensureGameUi\(\)\s*\{[^;]*await waitForCloudBeforeGame\(\)/, 'ensureGameUi 为异步且先等待云端同步收尾');
+const waitCloudIdx = app.indexOf('async function waitForCloudBeforeGame()');
+assert.ok(waitCloudIdx > -1, '存在首局云端同步等待函数');
+const waitCloudBody = app.slice(waitCloudIdx, waitCloudIdx + 700);
+assert.ok(waitCloudBody.includes('await cloudSyncPromise'), '首局必须等待云端同步 Promise 完成');
+assert.ok(!waitCloudBody.includes('Promise.race'), '首局不再以 600ms 竞速提前放行旧配置');
 assert.match(app, /if \(!board\) board = new BoardView\(cfg/, '首次进局时构建棋盘');
 assert.match(app, /else if \(board\.cfg !== cfg\) board\.rebuild\(cfg, null\)/, '配置改变后在新局/读档边界原子重建棋盘，避免 Game 与 BoardView 拆分');
 // startGame 签名须为 async，且函数体先于他用调用 await ensureGameUi()。
