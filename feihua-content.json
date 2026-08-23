@@ -3996,13 +3996,13 @@
     {
       "id": "TA01",
       "name": "七步成诗",
-      "kind": "active",
+      "kind": "passive",
       "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」跳过审题与选风格，本场灵感波动锁定为固定 +15。",
       "effect": {
-        "type": "fixed_dice",
-        "value": 15
+        "type": "insp_on_quiz",
+        "value": 3,
+        "maxTriggers": 6
       },
-      "cost": 3,
       "upgrade": {
         "quality": "rare",
         "maxLevel": 4,
@@ -4014,22 +4014,25 @@
         "levels": [
           {
             "effect": {
-              "type": "fixed_dice",
-              "value": 14
+              "type": "insp_on_quiz",
+              "value": 3,
+              "maxTriggers": 7
             },
             "cost": 3
           },
           {
             "effect": {
-              "type": "fixed_dice",
-              "value": 15
+              "type": "insp_on_quiz",
+              "value": 4,
+              "maxTriggers": 7
             },
             "cost": 3
           },
           {
             "effect": {
-              "type": "fixed_dice",
-              "value": 17
+              "type": "insp_on_quiz",
+              "value": 4,
+              "maxTriggers": 8
             },
             "cost": 3
           }
@@ -4154,13 +4157,12 @@
     {
       "id": "TA03",
       "name": "语不惊人",
-      "kind": "active",
+      "kind": "passive",
       "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。本场灵感波动改为 1d6×8，高风险高回报。",
       "effect": {
-        "type": "dice_mult",
-        "value": 8
+        "type": "lucky_six",
+        "mult": 1.5
       },
-      "cost": 4,
       "upgrade": {
         "quality": "epic",
         "maxLevel": 5,
@@ -4173,29 +4175,29 @@
         "levels": [
           {
             "effect": {
-              "type": "dice_mult",
-              "value": 6.925
+              "type": "lucky_six",
+              "mult": 1.55
             },
             "cost": 4
           },
           {
             "effect": {
-              "type": "dice_mult",
-              "value": 7.35
+              "type": "lucky_six",
+              "mult": 1.58
             },
             "cost": 4
           },
           {
             "effect": {
-              "type": "dice_mult",
-              "value": 7.775
+              "type": "lucky_six",
+              "mult": 1.6
             },
             "cost": 4
           },
           {
             "effect": {
-              "type": "dice_mult",
-              "value": 8.2
+              "type": "lucky_six",
+              "mult": 1.65
             },
             "cost": 4
           }
@@ -7572,8 +7574,9 @@
       "levels": [
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 15
+            "type": "insp_on_quiz",
+            "value": 3,
+            "maxTriggers": 6
           },
           "style": {
             "fontFamily": "",
@@ -7583,13 +7586,13 @@
             "textAlign": "",
             "textIndent": 0,
             "marginBottom": 0
-          },
-          "cost": 3
+          }
         },
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 14
+            "type": "insp_on_quiz",
+            "value": 3,
+            "maxTriggers": 7
           },
           "style": {
             "fontFamily": "",
@@ -7599,13 +7602,13 @@
             "textAlign": "",
             "textIndent": 0,
             "marginBottom": 0
-          },
-          "cost": 3
+          }
         },
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 15
+            "type": "insp_on_quiz",
+            "value": 4,
+            "maxTriggers": 7
           },
           "style": {
             "fontFamily": "",
@@ -7615,13 +7618,13 @@
             "textAlign": "",
             "textIndent": 0,
             "marginBottom": 0
-          },
-          "cost": 3
+          }
         },
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 17
+            "type": "insp_on_quiz",
+            "value": 4,
+            "maxTriggers": 8
           },
           "style": {
             "fontFamily": "",
@@ -7631,8 +7634,7 @@
             "textAlign": "",
             "textIndent": 0,
             "marginBottom": 0
-          },
-          "cost": 3
+          }
         }
       ]
     },
@@ -7719,8 +7721,8 @@
       "levels": [
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 8
+            "type": "lucky_six",
+            "mult": 1.5
           },
           "style": {
             "fontFamily": "",
@@ -7730,13 +7732,12 @@
             "textAlign": "",
             "textIndent": 0,
             "marginBottom": 0
-          },
-          "cost": 4
+          }
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 6.925
+            "type": "lucky_six",
+            "mult": 1.55
           },
           "style": {
             "fontFamily": "",
@@ -7746,13 +7747,12 @@
             "textAlign": "",
             "textIndent": 0,
             "marginBottom": 0
-          },
-          "cost": 4
+          }
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 7.35
+            "type": "lucky_six",
+            "mult": 1.58
           },
           "style": {
             "fontFamily": "",
@@ -7762,13 +7762,12 @@
             "textAlign": "",
             "textIndent": 0,
             "marginBottom": 0
-          },
-          "cost": 4
+          }
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 7.775
+            "type": "lucky_six",
+            "mult": 1.6
           },
           "style": {
             "fontFamily": "",
@@ -7778,13 +7777,12 @@
             "textAlign": "",
             "textIndent": 0,
             "marginBottom": 0
-          },
-          "cost": 4
+          }
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 8.2
+            "type": "lucky_six",
+            "mult": 1.65
           },
           "style": {
             "fontFamily": "",
@@ -7794,8 +7792,7 @@
             "textAlign": "",
             "textIndent": 0,
             "marginBottom": 0
-          },
-          "cost": 4
+          }
         }
       ]
     },
