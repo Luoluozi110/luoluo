@@ -44,19 +44,19 @@
       "defaultPlan": "guard",
       "plans": {
         "steady": {
-          "name": "缓急策",
-          "desc": "自然移动骰为 1～2 时，自动前进 1 格",
-          "lowMax": 2,
-          "movePlus": 1
+          "name": "徐行拾句",
+          "desc": "自然移动骰为 1～3 时，消耗 1 构思，额外获得 1 份残页（不改变原始骰）",
+          "lowMax": 3,
+          "fragmentGain": 1
         },
         "guard": {
-          "name": "守成策",
-          "desc": "论战失败时，自动减少 2 点败北灵感损失",
+          "name": "留白养气",
+          "desc": "论战失败时，消耗 1 构思，减少 2 点败北灵感损失",
           "lossReduce": 2
         },
         "switch": {
-          "name": "转锋策",
-          "desc": "文体不同于上一场时，自动获得 6% 作品加成",
+          "name": "换韵生新",
+          "desc": "文体不同于上一场时，消耗 1 构思，获得 6% 作品加成",
           "scorePct": 0.06
         }
       }

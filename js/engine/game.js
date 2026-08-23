@@ -391,7 +391,7 @@ export class Game {
     a.study.focus = a.study.nextFocus.slice(0, this.studySlots());
     if (!a.study.focus.length) a.study.focus = this.createAbilityState(this.s.attrs, this.s.school).study.focus;
     a.study.nextFocus = a.study.focus.slice();
-    if (previousPlan !== a.strategy.plan) this.push(`阶段预案改为「${this.strategyPlans()[a.strategy.plan]?.name || a.strategy.plan}」`);
+    if (previousPlan !== a.strategy.plan) this.push(`阶段章法改为「${this.strategyPlans()[a.strategy.plan]?.name || a.strategy.plan}」`);
     return a.strategy.charges;
   }
 
@@ -403,16 +403,16 @@ export class Game {
     return free || a.strategy.charges > 0;
   }
 
-  consumeStrategyPlan(plan) {
+  consumeStrategyPlan(plan, detail = '') {
     if (!this.strategyCanTrigger(plan)) return false;
     const a = this.ensureAbilityState();
     const mech = this.schoolMechanics();
     const free = mech.type === 'qishi' && Number(mech.firstPlanFreePerPhase) > 0 && !a.strategy.freeUsed;
     if (free) a.strategy.freeUsed = true;
     else a.strategy.charges -= 1;
-    const name = this.strategyPlans()[plan]?.name || '预案';
-    this.push(`${name}自动发动${free ? '（奇士本阶段首次免费）' : '：筹策 -1'}`);
-    this.ui.toast?.(`${name}发动${free ? ' · 首次免费' : ` · 筹策余 ${a.strategy.charges}`}`);
+    const name = this.strategyPlans()[plan]?.name || '章法';
+    this.push(`${name}自动发动${free ? '（奇士本阶段首次免费）' : '：构思 -1'}${detail}`);
+    this.ui.toast?.(`${name}发动${free ? ' · 首次免费' : ` · 构思余 ${a.strategy.charges}`}${detail}`);
     this.ui.onState(this.s);
     this.onForceSave?.();
     return true;
@@ -421,8 +421,14 @@ export class Game {
   applyStrategyMovement(dice, planned = false) {
     const value = Math.max(1, Number(dice) || 1);
     const p = this.strategyPlans().steady || {};
-    if (planned || value > (Number(p.lowMax) || 2) || !this.consumeStrategyPlan('steady')) return value;
-    return value + (Number(p.movePlus) || 1);
+    const lowMax = Number(p.lowMax) || 3;
+    const fragmentGain = Math.max(0, Number(p.fragmentGain) || 1);
+    if (planned || value > lowMax || !this.consumeStrategyPlan('steady', fragmentGain ? ` · 残页 +${fragmentGain}` : '')) return value;
+    const a = this.ensureAbilityState();
+    a.manuscript.fragments += fragmentGain;
+    this.ui.onState(this.s);
+    this.onForceSave?.();
+    return value;
   }
 
   strategyBattlePct(session, style) {
@@ -1925,14 +1931,14 @@ export class Game {
       }
     }
 
-      // 成长型名篇的 score 修正与阶段预案一样属于公开、非交互的作品修正。
+      // 成长型名篇的 score 修正与阶段章法一样属于公开、非交互的作品修正。
     const albumPct = this.albumScorePct(style, session.isPalace ? 'palace' : s.phase);
     if (albumPct) pct.push({ source: 'album', label: '名篇·成长效果', value: albumPct });
     this.applyAlbumOutcomeEffects('score', { style, phase: session.isPalace ? 'palace' : s.phase, eventKey: session.battleId || `${s.turn}:${style}` });
 
-    // 阶段预案只读取已选文体与上一场历史；满足条件即自动发动，不插入战斗交互。
+    // 阶段章法只读取已选文体与上一场历史；满足条件即自动发动，不插入战斗交互。
     const planPct = this.strategyBattlePct(session, style);
-    if (planPct) pct.push({ source: 'strategy', label: '思力·转锋策', value: planPct });
+    if (planPct) pct.push({ source: 'strategy', label: '思力·换韵生新', value: planPct });
     if (style === 'lian' && session.lastStyle && session.lastStyle !== style) {
       pct.push({ source: 'style', label: '联·对举换体', value: Number((styleSystem.lian || {}).switchPct) || 0.08 });
     }

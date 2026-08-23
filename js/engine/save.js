@@ -218,7 +218,7 @@ function migrateRun(obj) {
         unlocked: { shi: [], ci: [], lian: [] }, equipped: { shi: [], ci: [], lian: [] } }
     };
   }
-  // v7：反应式筹策迁移为阶段预案。旧剩余点数作为当前阶段充能保留，旧章法标记废弃。
+  // v7：反应式构思迁移为阶段章法。旧剩余点数作为当前阶段充能保留，旧章法标记废弃。
   state.albumState = normalizeAlbumState(state.albumState);
   const ab = state.abilityState;
   ab.version = Math.max(2, Number(ab.version) || 1);
