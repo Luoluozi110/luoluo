@@ -11,7 +11,7 @@ const { JSDOM } = require('C:/Users/77522/.workbuddy/binaries/node/workspace/nod
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 let html = readFileSync(join(root, 'index.html'), 'utf8');
 html = html.replace(/<script src="([^"]+)"><\/script>/g, (m, src) => {
-  const code = readFileSync(join(root, src), 'utf8');
+  const code = readFileSync(join(root, src.split('?')[0]), 'utf8');
   return `<script>\n${code}\n</script>`;
 });
 
@@ -28,7 +28,13 @@ const { document, localStorage } = window;
 const seedEvSrc = readFileSync(join(root, 'assets/js/seed-events.js'), 'utf8');
 const mEv = seedEvSrc.match(/window\.GAME_EVENTS\s*=\s*(\[[\s\S]*\]);?\s*\n?$/);
 const SEED_EVENTS = eval('(' + mEv[1] + ')');
-const stale = SEED_EVENTS.filter(e => e.id !== 'E042');
+const stale = SEED_EVENTS.filter(e => e.id !== 'E042').map(e => {
+  const copy = JSON.parse(JSON.stringify(e));
+  if (copy.kind === 'direct') delete copy.resultText;
+  if (copy.kind === 'choice') (copy.choices || []).forEach(c => delete c.resultText);
+  if (copy.kind === 'challenge') { delete copy.challenge.winText; delete copy.challenge.failText; }
+  return copy;
+});
 localStorage.setItem('feihua_editors_v1_events', JSON.stringify(stale));
 
 await new Promise(resolve => {
@@ -46,6 +52,9 @@ console.log('E042 backfill 模拟旧 localStorage（' + stale.length + ' 条事�
 const events = window.ADV ? window.ADV.get() : [];
 ok(events.length === 42, 'loadData 后事件数为 42', events.length);
 ok(events.some(e => e.id === 'E042'), 'E042「留人古寺」已被回填');
+ok(events.filter(e => e.kind === 'direct').every(e => e.resultText), '旧缓存中的直接奇遇已补齐回声');
+ok(events.filter(e => e.kind === 'choice').flatMap(e => e.choices || []).every(c => c.resultText), '旧缓存中的选择奇遇已补齐回声');
+ok(events.filter(e => e.kind === 'challenge').every(e => e.challenge.winText && e.challenge.failText), '旧缓存中的挑战奇遇已补齐胜负回声');
 
 const e042 = events.find(e => e.id === 'E042');
 if (e042) {
@@ -57,6 +66,7 @@ if (e042) {
 }
 const persisted = JSON.parse(localStorage.getItem('feihua_editors_v1_events') || '[]');
 ok(persisted.some(e => e.id === 'E042'), '回填后的 E042 已持久化到 localStorage');
+ok(persisted.filter(e => e.kind === 'direct').every(e => e.resultText), '补齐后的回声已持久化到 localStorage');
 
 console.log(`\n结果：${pass} 通过 / ${fail} 失败`);
 if (fail) process.exit(1);

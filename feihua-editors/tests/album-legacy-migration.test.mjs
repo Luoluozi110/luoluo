@@ -21,7 +21,7 @@ const legacy = runtime.map(card => ({
 }));
 
 let html = readFileSync(join(editorRoot, 'index.html'), 'utf8');
-html = html.replace(/<script src="([^"]+)"><\/script>/g, (m, src) => `<script>${readFileSync(join(editorRoot, src), 'utf8')}</script>`);
+html = html.replace(/<script src="([^"]+)"><\/script>/g, (m, src) => `<script>${readFileSync(join(editorRoot, src.split('?')[0]), 'utf8')}</script>`);
 const dom = new JSDOM(html, {
   url: 'https://editor.local/',
   runScripts: 'dangerously',

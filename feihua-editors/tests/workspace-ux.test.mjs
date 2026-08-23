@@ -9,7 +9,7 @@ const { JSDOM } = require('C:/Users/77522/.workbuddy/binaries/node/workspace/nod
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 let html = readFileSync(join(root, 'index.html'), 'utf8');
 html = html.replace(/<script src="([^"]+)"><\/script>/g, (match, src) =>
-  `<script>${readFileSync(join(root, src), 'utf8')}</script>`);
+  `<script>${readFileSync(join(root, src.split('?')[0]), 'utf8')}</script>`);
 
 const dom = new JSDOM(html, { url: 'https://editor.local/', runScripts: 'dangerously', pretendToBeVisual: true });
 const { window } = dom;
