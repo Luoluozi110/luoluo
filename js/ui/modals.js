@@ -263,12 +263,15 @@ export class Modals {
       const nextFocus = new Set(a.study.nextFocus || a.study.focus || []);
       const plans = game.strategyPlans();
       const currentPlan = plans[a.strategy.plan] || {};
+      const fb = game.abilityFeedback();
+      const fmt = n => Number.isInteger(Number(n)) ? String(Number(n)) : Number(n).toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
       const attrs = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
       const attrNames = { shi: '诗力', ci: '词力', lian: '联力', bi: '笔力', xue: '学力', si: '思力' };
       const latestMarks = (Array.isArray(game.s.choiceHistory) ? game.s.choiceHistory : []).slice(-3).reverse();
       box.innerHTML = `<div class="mtitle"><h2>三功修习</h2><span class="mtag">成长 · 调度 · 沉淀</span></div>
         ${notice ? `<div class="analysis">${esc(notice)}</div>` : ''}
-        <div class="dianggu"><b>心得 ${a.insight}/${game.insightCap()}</b>　构思 ${a.strategy.charges}/${game.strategyCap()}　稿页 ${a.manuscript.pages}/${game.manuscriptCap()}　残页 ${a.manuscript.fragments}</div>
+        <div class="dianggu"><b>心得 ${a.insight}/${fb.insightCap}</b>　构思 ${a.strategy.charges}/${fb.strategyCap}　稿页 ${a.manuscript.pages}/${fb.manuscriptCap}　残页 ${fmt(a.manuscript.fragments)}</div>
+        <div class="dianggu" style="color:var(--mo-3)">学力：研修 +${fmt(fb.studyRate)}/场、${fb.studySlots} 个研修位　思力：构思 +${fmt(fb.strategyIncome)}/阶段、余思 ${fmt(fb.strategyRemainder)}　笔力：残页 +${fmt(fb.manuscriptFragmentRate)}/战</div>
         <hr class="hr-ink"/><h3>思力·行文章法</h3>
         <div class="dianggu">当前：<b>${esc(currentPlan.name || '未定章法')}</b>。章法满足条件时自动发动，不中断回合；此处选择将在下阶段生效。</div>
         <div class="opt-list">${Object.entries(plans).map(([id, p]) => `<button class="opt" data-strategy-plan="${id}"><b>${a.strategy.nextPlan === id ? '✓ ' : ''}${esc(p.name || id)}</b><span>${esc(p.desc || '')}${a.strategy.plan === id ? ' · 当前生效' : ''}</span></button>`).join('')}</div>

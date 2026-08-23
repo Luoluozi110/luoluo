@@ -50,10 +50,10 @@ console.log('== 当前研修方向：推进进度，不直接灌属性 ==');
   const insightBefore = game.s.abilityState.insight;
   await game.doQuiz({ type: 'quiz' });
   assert.equal(game.s.attrs.shi, before, '首笔只推进研修，未直接增加诗力');
-  assert.equal(game.s.abilityState.study.progress.shi, 1, '诗力研修进度 +1');
+  assert.equal(game.s.abilityState.study.progress.shi, 1.4, '诗力研修进度按学力 +1.4');
   assert.equal(game.s.abilityState.insight, insightBefore, '当前研修方向不额外获得心得');
   assert.equal(game.s.choiceHistory.length, 1, '选择记录已写入墨痕历史');
-  assert.match(view.feedback.rewardText, /诗力研修进度 \+1/);
+  assert.match(view.feedback.rewardText, /诗力研修进度 \+1\.4/);
   console.log('  ✓ 当前研修方向正确推进进度');
 }
 
@@ -76,7 +76,7 @@ console.log('== 心得已满：收益转为临场研修 ==');
   game.s.abilityState.insight = game.insightCap();
   await game.doQuiz({ type: 'quiz' });
   assert.equal(game.s.abilityState.insight, game.insightCap(), '心得不溢出');
-  assert.equal(game.s.abilityState.study.progress.si, 1, '满额心得自动转为思力研修 +1');
+  assert.equal(game.s.abilityState.study.progress.si, 1.4, '满额心得自动转为思力研修 +1.4');
   assert.match(view.feedback.rewardText, /心得已满/);
   console.log('  ✓ 满额时不会吞掉创作抉择收益');
 }

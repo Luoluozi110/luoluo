@@ -68,10 +68,20 @@
         if (cfg.attrs.abilitySystem != null) {
           if (!isObj(cfg.attrs.abilitySystem)) add('attrs.abilitySystem', '必须是对象');
           else {
+            const study = cfg.attrs.abilitySystem.study;
+            if (!isObj(study)) add('attrs.abilitySystem.study', '必须是对象');
+            else {
+              for (const k of ['baseInsightCap', 'insightCapPerXue', 'baseSlots', 'slotPerXue', 'maxSlots', 'progressNeed', 'progressPerXue']) {
+                if (!finite(study[k]) || Number(study[k]) <= 0) add(`attrs.abilitySystem.study.${k}`, '必须是正数');
+              }
+              if (study.slotMilestones != null && (!Array.isArray(study.slotMilestones) || study.slotMilestones.some((v, i, arr) => !finite(v) || Number(v) <= 0 || (i > 0 && Number(v) <= Number(arr[i - 1]))))) {
+                add('attrs.abilitySystem.study.slotMilestones', '必须是严格递增的正数数组');
+              }
+            }
             const strategy = cfg.attrs.abilitySystem.strategy;
             if (!isObj(strategy)) add('attrs.abilitySystem.strategy', '必须是对象');
             else {
-              for (const k of ['baseCharges', 'chargePerSi', 'maxCharges']) {
+              for (const k of ['baseCharges', 'chargePerSi', 'maxCharges', 'capPerSi', 'maxCap']) {
                 if (!finite(strategy[k]) || Number(strategy[k]) <= 0) add(`attrs.abilitySystem.strategy.${k}`, '必须是正数');
               }
               if (!isObj(strategy.plans)) add('attrs.abilitySystem.strategy.plans', '必须是对象');
@@ -81,6 +91,11 @@
                 else if (id === 'steady' && (!finite(strategy.plans[id].lowMax) || Number(strategy.plans[id].lowMax) < 1 || !finite(strategy.plans[id].fragmentGain) || Number(strategy.plans[id].fragmentGain) <= 0)) add(`attrs.abilitySystem.strategy.plans.${id}`, '徐行拾句必须配置有效的低骰范围和残页收益');
               }
               if (!text(strategy.defaultPlan) || !isObj(strategy.plans) || !strategy.plans[strategy.defaultPlan]) add('attrs.abilitySystem.strategy.defaultPlan', '必须引用已有预案');
+            }
+            const manuscript = cfg.attrs.abilitySystem.manuscript;
+            if (!isObj(manuscript)) add('attrs.abilitySystem.manuscript', '必须是对象');
+            else for (const k of ['baseCap', 'capPerBi', 'maxCap', 'fragmentPerBi', 'fragmentNeed']) {
+              if (!finite(manuscript[k]) || Number(manuscript[k]) <= 0) add(`attrs.abilitySystem.manuscript.${k}`, '必须是正数');
             }
           }
         }

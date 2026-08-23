@@ -211,7 +211,7 @@ function migrateRun(obj) {
       version: 2, insight: 0,
       familiarity: { shi: 0, ci: 0, lian: 0 },
       study: { focus: ['shi'], nextFocus: ['shi'], progress: {} },
-      strategy: { charges: 0, refillPhase: '', plan: 'guard', nextPlan: 'guard', freeUsed: false },
+      strategy: { charges: 0, chargeRemainder: 0, refillPhase: '', plan: 'guard', nextPlan: 'guard', freeUsed: false },
       manuscript: { pages: 0, fragments: 0, volumes: 0, polish: 0, bonusPagePhases: {}, schoolPagePhases: {}, firstPolishPhases: {} },
       lastStyle: null, phaseStyles: {},
       technique: { version: 1, xp: { shi: 0, ci: 0, lian: 0 }, level: { shi: 0, ci: 0, lian: 0 },
@@ -228,6 +228,7 @@ function migrateRun(obj) {
   const oldStrategy = (ab.strategy && typeof ab.strategy === 'object') ? ab.strategy : {};
   ab.strategy = {
     charges: Math.max(0, Number(oldStrategy.charges ?? oldStrategy.points) || 0),
+    chargeRemainder: Math.max(0, Math.min(0.999, Number(oldStrategy.chargeRemainder) || 0)),
     refillPhase: String(oldStrategy.refillPhase || ''),
     plan: ['steady','guard','switch'].includes(oldStrategy.plan) ? oldStrategy.plan : 'guard',
     nextPlan: ['steady','guard','switch'].includes(oldStrategy.nextPlan) ? oldStrategy.nextPlan : 'guard',
@@ -400,8 +401,9 @@ export function deserializeRun(rawObj, cfg) {
   const strategyCfg = (((cfg || {}).attrs || {}).abilitySystem || {}).strategy || {};
   const planIds = Object.keys(strategyCfg.plans || {});
   const defaultPlan = planIds.includes(strategyCfg.defaultPlan) ? strategyCfg.defaultPlan : (planIds[0] || 'guard');
-  ab.strategy = Object.assign({ charges: 0, refillPhase: '', plan: defaultPlan, nextPlan: defaultPlan, freeUsed: false }, ab.strategy || {});
+  ab.strategy = Object.assign({ charges: 0, chargeRemainder: 0, refillPhase: '', plan: defaultPlan, nextPlan: defaultPlan, freeUsed: false }, ab.strategy || {});
   ab.strategy.charges = Math.max(0, Number(ab.strategy.charges) || 0);
+  ab.strategy.chargeRemainder = Math.max(0, Math.min(0.999, Number(ab.strategy.chargeRemainder) || 0));
   ab.strategy.plan = planIds.includes(ab.strategy.plan) ? ab.strategy.plan : defaultPlan;
   ab.strategy.nextPlan = planIds.includes(ab.strategy.nextPlan) ? ab.strategy.nextPlan : ab.strategy.plan;
   ab.strategy.freeUsed = !!ab.strategy.freeUsed;
