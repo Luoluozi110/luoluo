@@ -10,12 +10,12 @@ import { Hud, radarSVG } from './hud.js?v=20260823threepower1';
 // 奇遇属性收益在 20260823eventattrs1 起于选择前完整展示；独立版本键避免旧模块缓存继续省略属性。
 import { Modals } from './modals.js?v=20260823scenicpick1';
 import { BattleStage } from './battle.js?v=20260822secretfinal1';
-import { AlbumUI } from './album.js?v=20260822secretfinal1';
+import { AlbumUI } from './album.js?v=20260824brand1';
 import { CodexUI } from './codex.js?v=20260822secretfinal1';
 import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260822secretfinal1';
 import { initQuality, getTier, setTier } from './quality.js?v=20260822secretfinal1';
 import { ATTR_NAMES } from '../engine/rules.js?v=20260822secretfinal1';
-import * as Album from '../engine/album.js?v=20260822secretfinal1';
+import * as Album from '../engine/album.js?v=20260824brand1';
 import * as Codex from '../engine/codex.js?v=20260822secretfinal1';
 import { initAudio } from './audio.js?v=20260822secretfinal1';
 import { setScene, setTension, setStage } from './music.js?v=20260822secretfinal1';
@@ -259,7 +259,8 @@ function buildSchoolScreen() {
 
   schoolEl.innerHTML = `
     <div class="school-inner scroll-frame paper" style="max-width:min(1080px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));border-radius:14px">
-      <div class="title-ink" style="font-size:40px;text-align:center">選 擇 流 派</div>
+      <div style="font-size:17px;text-align:center;letter-spacing:.48em;color:var(--zhu);margin-left:.48em">文 心 棋</div>
+      <div class="title-ink" style="font-size:40px;text-align:center;margin-top:2px">選 擇 流 派</div>
       <div class="subtitle" style="text-align:center;margin-top:6px">三派各有所长，落子无悔，且赴科场。</div>
       ${canContinue ? `<div style="text-align:center;margin:10px 0 4px"><button class="btn btn-primary" data-continue style="font-size:18px;padding:12px 30px;letter-spacing:.12em">▶ 继续上局</button>
         <div style="font-size:var(--text-meta);color:var(--mo-3);margin-top:6px;line-height:1.6">${contInfo}</div></div>` : ''}
