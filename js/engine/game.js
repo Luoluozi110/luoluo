@@ -1132,12 +1132,13 @@ export class Game {
    * 抽一枚玩家尚未持有的文心（图鉴专属与 reincarnate 传承文心不参与随机掉落，
    * 后者只能经由指定奇遇——如「留人古寺」——的抉择获得）。
    */
-  randomTalent(kind) {
+  randomTalent(kind, excludeIds = []) {
     const s = this.s;
     const have = new Set([...s.passive, ...s.active].map(t => t.id));
+    for (const id of Array.isArray(excludeIds) ? excludeIds : []) if (id) have.add(id);
     const ts = s.talentState || (s.talentState = { triggers: {}, flags: {} });
     ts.flags = ts.flags || {};
-    const ownedCount = have.size;
+    const ownedCount = new Set([...s.passive, ...s.active].map(t => t.id)).size;
     const eligible = t => {
       const a = t.acquire || null;
       if (!a) return true;                         // 旧文心完全沿用原随机池
@@ -1157,6 +1158,21 @@ export class Game {
       && eligible(t));
     if (!pool.length) return null;
     return pool[Math.floor(this.rand() * pool.length)];
+  }
+
+  /**
+   * 名胜格的候选池：一次触发内顺次排除已抽出的文心，保证候选不重复；
+   * 池不足时返回实际可抽数量，不修改持有状态，也不扣灵感。
+   */
+  scenicTalentCandidates(count = 3) {
+    const out = [];
+    const n = Math.max(0, Math.floor(Number(count) || 0));
+    while (out.length < n) {
+      const next = this.randomTalent(undefined, out.map(t => t.id));
+      if (!next) break;
+      out.push(next);
+    }
+    return out;
   }
 
   /** 受上限约束的文心触发；次数写入 talentState，替换/再获得不会刷新。 */
@@ -1596,20 +1612,53 @@ export class Game {
   }
 
   /* ------------------------------------------------------ 名胜格 */
-  // 停留时，可消耗灵感随机抽取一枚文心（玩家可选：抽 / 不抽）。
+  // 停留时，可消耗灵感抽取三枚候选文心，玩家只保留一枚；未选候选不进入持有状态。
   async doScenic(cell) {
     const cost = this.cfg.inspiration.scenicCost ?? 8;
     const go = await this.ui.askScenic(cell, cost, this.s.inspiration);
     if (!go) { this.ui.toast(`${cell.name}——览胜片刻，继续前行`); return; }
     if (this.s.inspiration < cost) { this.ui.toast('灵感不足，无缘访胜抽签'); return; }
-    this.addInspiration(-cost, '访胜抽签');
-    const t = this.randomTalent();
-    if (t) {
-      await this.grantTalent(t);
-      this.push(`于${cell.name}访胜，灵感 -${cost}，得文心「${t.name}」`);
-    } else {
+
+    const candidates = this.scenicTalentCandidates(3);
+    if (!candidates.length) {
       this.ui.toast('胸中已藏尽天下文心，再无可抽');
+      return;
     }
+    let pickResult;
+    try {
+      pickResult = typeof this.ui.chooseScenicTalent === 'function'
+        ? await this.ui.chooseScenicTalent(candidates, { cell, cost })
+        : -1;
+    } catch (err) {
+      this.ui.toast('文心选择未完成，访胜抽签取消，灵感未扣');
+      return;
+    }
+    const index = Number(pickResult);
+    if (!Number.isInteger(index) || index < 0 || index >= candidates.length) {
+      this.ui.toast('未作选择，访胜抽签取消，灵感未扣');
+      return;
+    }
+    const talent = candidates[index];
+    if (!talent || candidates.some((t, i) => i !== index && t && t.id === talent.id)) {
+      this.ui.toast('文心选择状态异常，访胜抽签取消，灵感未扣');
+      return;
+    }
+    // 选择已确认后才扣费；候选生成、取消和异常均不会产生半笔消耗。
+    this.addInspiration(-cost, '访胜抽签');
+    let granted = false;
+    try {
+      granted = await this.grantTalent(talent);
+    } catch (err) {
+      granted = false;
+    }
+    if (!granted) {
+      // 回退必须避开奇士的正向灵感放大，确保异常路径精确恢复原值。
+      this.addInspiration(cost, '文心·访胜抽签回退');
+      this.ui.toast('所选文心当前无法收入，访胜抽签已回退');
+      return;
+    }
+    this.push(`于${cell.name}访胜，灵感 -${cost}，得文心「${talent.name}」`);
+    this.ui.onState(this.s);
   }
 
   /* ====================================================== 战斗 */

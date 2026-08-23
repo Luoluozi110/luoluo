@@ -507,6 +507,34 @@
 .talent-card .dianggu { margin-top: 12px; padding: 11px 14px; border-radius: 8px; background: rgba(201,151,31,.13); border-left: 4px solid var(--jin); font-size: 14px; line-height: 1.8; color: var(--mo-2); }
 .talent-card .efx { margin-top: 10px; font-size: 14.5px; color: var(--jin-text); letter-spacing: .06em; }
 
+/* ==================================================== 名胜格·三选一 */
+.scenic-pick-modal {
+  width: min(1060px, calc(100vw - var(--safe-left) - var(--safe-right) - 24px));
+  text-align: center;
+}
+.scenic-pick-intro { margin: 2px 0 4px; font-size: 16px; line-height: 1.8; color: var(--mo-2); }
+.scenic-pick-cost { font-size: 13px; color: var(--zhu); margin-bottom: 12px; }
+.scenic-pick-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: stretch; }
+.scenic-pick-card {
+  position: relative; width: auto; min-width: 0; margin: 0; padding: 18px 16px 14px;
+  color: var(--mo); text-align: left; cursor: pointer; appearance: none;
+  transition: transform .16s ease, filter .16s ease, box-shadow .16s ease;
+}
+.scenic-pick-card:hover, .scenic-pick-card:focus-visible { transform: translateY(-4px); filter: brightness(1.04); outline: 2px solid var(--zhu); outline-offset: 2px; }
+.scenic-pick-card h3 { text-align: center; }
+.scenic-pick-card .kind, .scenic-pick-card .efx, .scenic-pick-card .dianggu { display: block; }
+.scenic-pick-card .dianggu { min-height: 70px; }
+.scenic-pick-no {
+  position: absolute; top: 8px; right: 10px; width: 25px; height: 25px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--zhu); color: #fff; font-size: 13px;
+}
+.scenic-pick-keep { display: block; margin-top: 13px; padding-top: 9px; border-top: 1px dashed rgba(139,94,60,.35); color: var(--zhu); text-align: center; font-size: 13px; letter-spacing: .12em; }
+@media (max-width: 760px) {
+  .scenic-pick-list { grid-template-columns: 1fr; }
+  .scenic-pick-card { padding: 15px 18px 13px; }
+  .scenic-pick-card .dianggu { min-height: 0; }
+}
+
 /* ==================================================== 文心羁绊 */
 .syn-list { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .syn-h { width: 100%; font-size: 11px; letter-spacing: .2em; color: var(--mo-3); }
