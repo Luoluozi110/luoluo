@@ -914,7 +914,6 @@ export class Game {
           .map(k => `${labels[k]} +${milestoneAfter[k] - milestoneBefore[k]}`);
         if (breakthroughs.length) {
           const text = `三功突破：${breakthroughs.join('、')}`;
-          this.push(text);
           this.ui.toast?.(text);
         }
       }
