@@ -1,4 +1,4 @@
-# 飞花棋工作区
+# 文心棋工作区
 
 当前主产品位于 `feihuaqi-playable/`，内容编辑器位于 `feihua-editors/`，多人模式位于
 `feihuaqi-multiplayer/`。根目录下的数值模拟和迁移脚本属于开发工具，不是线上运行入口。

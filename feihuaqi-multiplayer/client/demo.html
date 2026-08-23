@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>飞花棋 · 多人连接 Demo</title>
+  <title>文心棋 · 多人连接 Demo</title>
   <style>
     body { font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif; margin: 2rem; color: #222; }
     h2 { margin-top: 0; }
@@ -13,7 +13,7 @@
   </style>
 </head>
 <body>
-  <h2>飞花棋 · 多人连接 Demo</h2>
+  <h2>文心棋 · 多人连接 Demo</h2>
   <div>
     <input id="name" placeholder="昵称" value="玩家" />
     <button id="connect">连接</button>
@@ -47,7 +47,7 @@
 
     const nameEl = document.getElementById('name');
     document.getElementById('connect').onclick = () => { c.name = nameEl.value; c.connect(); };
-    document.getElementById('create').onclick = () => c.createRoom({ name: '飞花棋房', maxPlayers: 4 });
+    document.getElementById('create').onclick = () => c.createRoom({ name: '文心棋房', maxPlayers: 4 });
     document.getElementById('quick').onclick = () => c.quickMatch();
     document.getElementById('start').onclick = () => c.sendAction(ACTION.START);
     document.getElementById('roll').onclick = () => c.sendAction(ACTION.ROLL);
