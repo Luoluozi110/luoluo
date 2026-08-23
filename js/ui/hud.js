@@ -412,12 +412,12 @@ export class Hud {
     setTimeout(() => el.remove(), 2450);
   }
 
-  choiceEcho({ choiceText, resultText }) {
+  choiceEcho({ choiceText, resultText, leadText = '已选择' }) {
     const el = document.createElement('div');
     el.className = 'toast choice-echo';
     const picked = document.createElement('div');
     picked.className = 'choice-echo-picked';
-    picked.textContent = `已选择：${choiceText}`;
+    picked.textContent = `${leadText}：${choiceText}`;
     const result = document.createElement('div');
     result.className = 'choice-echo-result';
     result.textContent = resultText;
