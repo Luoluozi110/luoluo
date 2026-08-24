@@ -248,28 +248,26 @@ window.GAME_NPCS = [
           "si": 12
         },
         "mech": {
-          "version": 1,
-          "complexity": "basic",
+          "version": 2,
+          "complexity": "advanced",
           "signature": {
-            "name": "临题学样",
-            "template": "sig_copycat",
-            "style": "si",
-            "pct": 0.06,
-            "historyLen": 2,
-            "noHistory": "fallback_preferred"
+            "name": "借风早成",
+            "template": "sig_zeitgeist_surf",
+            "pct": 0.05
           },
           "weakness": {
-            "name": "不善变化",
-            "template": "wea_base_dice_only",
-            "flat": 6,
-            "playerBonus": 0
+            "name": "逆潮见真",
+            "template": "wea_go_against_zeitgeist",
+            "minAffinity": 0,
+            "retention": 0.3,
+            "playerBonus": 0.02
           },
           "intent": {
-            "template": "int_copycat",
+            "template": "int_zeitgeist",
             "style": "si",
-            "bias": 1.3,
-            "bottom": 0.85,
-            "description": "准备仿你近日常用路数"
+            "bias": 1.1,
+            "bottom": 0.82,
+            "description": "本场随先生所尚的文风试笔"
           }
         }
       },
@@ -558,34 +556,25 @@ window.GAME_NPCS = [
           "si": 18
         },
         "mech": {
-          "version": 1,
+          "version": 2,
           "complexity": "advanced",
           "signature": {
-            "name": "观风择势",
-            "template": "sig_dice_response",
-            "steps": [
-              14,
-              9,
-              4
-            ],
-            "cap": 22,
-            "altAction": {
-              "trigger": "playerExtraDice>=1",
-              "switchTo": "strong_attack"
-            }
+            "name": "扣心问锋",
+            "template": "sig_active_talent_tax",
+            "pct": 0.08
           },
           "weakness": {
-            "name": "心浮气躁",
-            "template": "wea_base_dice_only",
-            "flat": 12,
+            "name": "藏锋待机",
+            "template": "wea_hold_active_talent",
+            "retention": 0.3,
             "playerBonus": 0
           },
           "intent": {
-            "template": "int_dice_response",
+            "template": "int_active_watch",
             "style": "si",
-            "bias": 1.25,
+            "bias": 1.15,
             "bottom": 0.8,
-            "description": "正常应战；若你追加骰，则顺势强攻"
+            "description": "本场留心你的主动文心，待其发动再作应答"
           }
         }
       },
@@ -875,32 +864,28 @@ window.GAME_NPCS = [
           "si": 16
         },
         "mech": {
-          "version": 1,
+          "version": 2,
           "complexity": "advanced",
           "signature": {
-            "name": "博闻压题",
-            "template": "sig_repeat_read",
-            "pct": 0.09,
-            "firstBattle": "disabled"
+            "name": "据典审章",
+            "template": "sig_dice_pattern_hunt",
+            "pattern": "pair",
+            "pct": 0.1
           },
           "weakness": {
-            "name": "泥于所闻",
-            "template": "wea_switch_style",
-            "fullClose": [
-              "*"
-            ],
-            "infoBonus": {
-              "intentPrecision": 1
-            },
+            "name": "收卷定篇",
+            "template": "wea_limited_extra_dice",
+            "maxExtraDice": 1,
+            "retention": 0.22,
             "playerBonus": 0
           },
           "intent": {
-            "template": "int_preferred_style",
+            "template": "int_pattern_hunt",
+            "pattern": "pair",
             "style": "xue",
-            "bias": 1.3,
+            "bias": 1.28,
             "bottom": 0.78,
-            "historyAware": true,
-            "description": "本场沿用你上一场路数"
+            "description": "本场专审对偶章法，静候你骰组露出规整痕迹"
           }
         }
       },
@@ -1415,28 +1400,31 @@ window.GAME_NPCS = [
           "si": 30
         },
         "mech": {
-          "version": 1,
+          "version": 2,
           "complexity": "advanced",
           "signature": {
-            "name": "经义稳卷",
-            "template": "sig_steady_pressure",
-            "floor": 9,
-            "ceiling": 5,
-            "floorPct": 0.07
+            "name": "经义定策",
+            "template": "sig_declared_stance",
+            "pct": 0.1
           },
           "weakness": {
-            "name": "忌被压卷",
-            "template": "wea_crushing_win",
-            "threshold": 0.18,
-            "refund": 1,
-            "playerBonus": 0
+            "name": "因策破题",
+            "template": "wea_stance_counter",
+            "counter": {
+              "attack": "base_dice",
+              "steady": "one_extra",
+              "turn": "change_style"
+            },
+            "retention": 0.18,
+            "playerBonus": 0.05
           },
           "intent": {
-            "template": "int_steady",
+            "template": "int_declared_stance",
+            "stance": "steady",
             "style": "bi",
-            "bias": 1.2,
-            "bottom": 0.75,
-            "description": "本场求稳，严守经义法度"
+            "bias": 1.25,
+            "bottom": 0.76,
+            "description": "本场先明守势经义，邀你以追加骰破其成规"
           }
         }
       },

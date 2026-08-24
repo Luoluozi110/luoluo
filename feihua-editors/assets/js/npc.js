@@ -23,11 +23,11 @@
   function loadData() {
     const raw = C.load("npcs", null);
     if (raw && raw.length) {
-      state.tiers = ensureHiddenFinalTier(raw.map(normalizeTier));
+      state.tiers = ensureHiddenFinalTier(ensureOfficialNpcSeed(raw.map(normalizeTier)));
       C.store("npcs", state.tiers); // 旧档迁移后立即持久化
     }
     else {
-      state.tiers = ensureHiddenFinalTier((window.GAME_NPCS || []).map(normalizeTier));
+      state.tiers = ensureHiddenFinalTier(ensureOfficialNpcSeed((window.GAME_NPCS || []).map(normalizeTier)));
       C.store("npcs", state.tiers);
     }
   }
@@ -99,6 +99,41 @@
     const i = out.findIndex(t => t && (t.isHiddenFinal || t.id === seed.id));
     if (i < 0) out.push(normalizeTier(seed));
     else if (!out[i].isHiddenFinal) out[i] = normalizeTier(seed);
+    return out;
+  }
+
+  // 这些是 v2 三机制更新后新增或改造的官方对手。旧 localStorage 不会自动读取新种子，
+  // 因此按稳定 ID 回填缺失 NPC，并仅在旧版机制（version < 2）时升级指定对手的机制。
+  const OFFICIAL_NPC_BACKFILL_IDS = new Set([
+    "shen_sui_feng", "xie_lian_cheng", "gu_qing_shang", "cui_wu_jiu"
+  ]);
+  const OFFICIAL_NPC_MECH_V2_IDS = new Set([
+    "li_mo_tong", "wang_han_sheng", "tang_ji_qing", "zhao_da_ru"
+  ]);
+  function cloneData(v) { return JSON.parse(JSON.stringify(v)); }
+  function ensureOfficialNpcSeed(tiers) {
+    const out = Array.isArray(tiers) ? tiers : [];
+    const seeds = (window.GAME_NPCS || []).map(normalizeTier);
+    for (const seedTier of seeds) {
+      const seedTargets = seedTier.npcs.filter(n => OFFICIAL_NPC_BACKFILL_IDS.has(n.id) || OFFICIAL_NPC_MECH_V2_IDS.has(n.id) || n.id === "kang_er_yu");
+      if (!seedTargets.length) continue;
+      let tier = out.find(t => t && t.id === seedTier.id);
+      if (!tier) {
+        out.push(cloneData(seedTier));
+        continue;
+      }
+      for (const seedNpc of seedTargets) {
+        const existing = tier.npcs.find(n => n && n.id === seedNpc.id);
+        if (!existing) {
+          if (OFFICIAL_NPC_BACKFILL_IDS.has(seedNpc.id)) tier.npcs.push(cloneData(seedNpc));
+          continue;
+        }
+        if (seedNpc.palaceForcedWhen && !existing.palaceForcedWhen) existing.palaceForcedWhen = cloneData(seedNpc.palaceForcedWhen);
+        if (OFFICIAL_NPC_MECH_V2_IDS.has(seedNpc.id) && seedNpc.mech && Number(existing.mech && existing.mech.version) < 2) {
+          existing.mech = cloneData(seedNpc.mech);
+        }
+      }
+    }
     return out;
   }
 
@@ -694,14 +729,14 @@
   /* ---------------- 导入 / 导出 ---------------- */
   function importData(arr, mode) {
     const norm = arr.map(normalizeTier).filter(t => t.id || t.tier);
-    if (mode) { state.tiers = ensureHiddenFinalTier(norm); C.toast("已替换为 " + state.tiers.length + " 档"); }
+    if (mode) { state.tiers = ensureHiddenFinalTier(ensureOfficialNpcSeed(norm)); C.toast("已替换为 " + state.tiers.length + " 档"); }
     else {
       const map = new Map(state.tiers.map((t, i) => [t.id, i]));
       let added = 0, updated = 0;
       norm.forEach(t => { if (map.has(t.id)) { state.tiers[map.get(t.id)] = t; updated++; } else { state.tiers.push(t); added++; } });
       C.toast(`合并完成：新增 ${added}，更新 ${updated}`);
     }
-    state.tiers = ensureHiddenFinalTier(state.tiers);
+    state.tiers = ensureHiddenFinalTier(ensureOfficialNpcSeed(state.tiers));
     save(); renderList();
   }
   function importFile(file) {

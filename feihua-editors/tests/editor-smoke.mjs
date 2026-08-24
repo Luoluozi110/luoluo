@@ -76,6 +76,23 @@ console.log('[1.1] 旧编辑器缓存自动补齐隐藏终圈系统内容');
   ok(!!project, '旧缓存迁移后可通过工程配置契约并发布');
 }
 
+console.log('[1.2] 旧 NPC 缓存回填新增对手与 v2 三机制');
+{
+  const newIds = ['shen_sui_feng', 'xie_lian_cheng', 'gu_qing_shang', 'cui_wu_jiu'];
+  const legacy = window.NPC.exportRaw();
+  legacy.forEach(t => { t.npcs = t.npcs.filter(n => !newIds.includes(n.id)); });
+  const liMoTong = legacy.flatMap(t => t.npcs).find(n => n.id === 'li_mo_tong');
+  if (liMoTong && liMoTong.mech) liMoTong.mech.version = 1;
+  window.NPC.importData(legacy, true);
+  const migrated = window.NPC.exportRaw().flatMap(t => t.npcs);
+  ok(newIds.every(id => migrated.some(n => n.id === id)), '旧缓存缺失的 4 名新增 NPC 自动回填');
+  const migratedLi = migrated.find(n => n.id === 'li_mo_tong');
+  ok(migratedLi?.mech?.version === 2 && migratedLi.mech.signature.template === 'sig_zeitgeist_surf', '旧版李墨童机制自动升级为 v2');
+  const cached = JSON.parse(localStorage.getItem('feihua_editors_v1_npcs') || '[]').flatMap(t => t.npcs || []);
+  ok(newIds.every(id => cached.some(n => n.id === id)), '回填后的新增 NPC 持久化 localStorage');
+  window.NPC.importData(window.GAME_NPCS, true);
+}
+
 console.log('[1.5] 题库：柔性知识题读取 → 编辑 → 动态增删选项 → 保存往返');
 {
   const original = window.GAME_QUESTIONS[0];
