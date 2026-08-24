@@ -30,7 +30,8 @@ export const BATTLE_COEF = {
   biMult: 4,
   xueMult: 4,
   siMult: 4,
-  diceMult: 5,     // 灵感骰：1d6 ×5
+  diceMult: 5,     // 兼容旧 NPC / 旧调用：普通骰的传统固定分值系数
+  dicePct: 0.05,   // 玩家普通灵感骰：每点进入作品乘区 +5%
   drawRatio: 0.05  // 平局带
 };
 
@@ -70,27 +71,46 @@ export function styleBaseScore(attrs, style, coef) {
 }
 
 /**
- * 文体固定骰面结构。只读取已经掷出的骰点，不读取概率、未来随机数或对手信息。
- * 返回可直接传给 battleScore.diceScore 的分数及说明。
+ * 文体骰面结构。只读取已经掷出的骰点，不读取概率、未来随机数或对手信息。
+ * `score` 保留旧版固定分供 NPC/兼容调用，`pct` 是本场骰组最终应进入作品的乘区。
  */
-export function styleDiceScore(style, pips, styleCfg, diceMult = BATTLE_COEF.diceMult, dicePlus = 0) {
+export function styleDiceScore(style, pips, styleCfg, diceMult = BATTLE_COEF.diceMult, dicePlus = 0, dicePct = BATTLE_COEF.dicePct) {
   const list = (Array.isArray(pips) ? pips : [pips]).map(v => Math.max(1, Number(v) || 1));
   const cfg = (styleCfg && styleCfg[style]) || {};
   const dm = num(diceMult, BATTLE_COEF.diceMult);
+  const dp = Math.max(0, num(dicePct, BATTLE_COEF.dicePct));
   if (style === 'shi' && list.length === 1) {
     const pip = list[0] + num(dicePlus, 0);
     const high = pip >= num(cfg.highMin, 4);
     const mult = high ? num(cfg.highMult, 1.5) : num(cfg.lowMult, 0.7);
-    return { score: Math.round(pip * dm * mult), pips: pip, detail: `诗·一气 ${pip} 点 × ${dm} × ${mult}` };
+    return {
+      score: Math.round(pip * dm * mult),
+      pct: pip * dp * mult,
+      pips: pip,
+      detail: `诗·一气 ${pip} 点 × ${dm} × ${mult}`,
+      pctDetail: `诗·一气 ${pip} 点 × ${Math.round(dp * 100)}% × ${mult}`
+    };
   }
   if (style === 'ci') {
     const floor = num(cfg.pipFloor, 3), ceil = num(cfg.pipCeil, 5);
     const first = clamp(list[0] + num(dicePlus, 0), floor, ceil);
     const total = first + list.slice(1).reduce((s, v) => s + v, 0);
-    return { score: Math.round(total * dm), pips: total, detail: `词·铺陈 ${list[0]}→${first}，合计 ${total} 点 × ${dm}` };
+    return {
+      score: Math.round(total * dm),
+      pct: total * dp,
+      pips: total,
+      detail: `词·铺陈 ${list[0]}→${first}，合计 ${total} 点 × ${dm}`,
+      pctDetail: `词·铺陈 ${list[0]}→${first}，合计 ${total} 点 × ${Math.round(dp * 100)}%`
+    };
   }
   const total = list.reduce((s, v) => s + v, 0) + num(dicePlus, 0);
-  return { score: Math.round(total * dm), pips: total, detail: `${total} 点 × ${dm}${style === 'lian' ? '（联·对举）' : ''}` };
+  return {
+    score: Math.round(total * dm),
+    pct: total * dp,
+    pips: total,
+    detail: `${total} 点 × ${dm}${style === 'lian' ? '（联·对举）' : ''}`,
+    pctDetail: `${total} 点 × ${Math.round(dp * 100)}%${style === 'lian' ? '（联·对举）' : ''}`
+  };
 }
 
 /**
@@ -99,7 +119,8 @@ export function styleDiceScore(style, pips, styleCfg, diceMult = BATTLE_COEF.dic
  *  - attrs      六维 {shi,ci,lian,bi,xue,si}
  *  - style      出战文体 'shi'|'ci'|'lian'
  *  - dice       1d6 点数（1–6）
- *  - diceMult   灵感骰系数，默认 5（「语不惊人」改 8 → 传 8）
+ *  - diceMult   旧版固定骰系数，默认 5；仅在未传 dicePct 时使用
+ *  - dicePct    本场普通骰的有效乘区（由 styleDiceScore.pct 传入；如 0.30 = +30%），传入后不再产生固定骰分
  *  - dicePlus   骰点加值（「急智」+1），作用于点数而非分数
  *  - diceFixed  固定灵感骰分值（「七步成诗」= 15），设置后忽略 dice
  *  - pctMods    百分比修正 [{source,label,value}]，value 如 0.10
@@ -114,6 +135,8 @@ export function battleScore(input) {
   const styleAttr = g(input.style);
 
   const dMult = num(input.diceMult, BATTLE_COEF.diceMult);
+  const hasDicePct = input.dicePct !== undefined && input.dicePct !== null;
+  const dPct = Math.max(0, num(input.dicePct, BATTLE_COEF.dicePct));
   const dPlus = num(input.dicePlus, 0);
   const critMult = num(input.critMult, 1);
   const pctMods = input.pctMods || [];
@@ -127,9 +150,14 @@ export function battleScore(input) {
   const hasFixed = input.diceFixed !== undefined && input.diceFixed !== null;
   const dicePips = clamp(num(input.dice, 1) + dPlus, 1, 99);
   const hasOverride = input.diceScore !== undefined && input.diceScore !== null;
-  const diceScore = hasFixed ? Number(input.diceFixed) : hasOverride ? Number(input.diceScore) : dicePips * dMult;
+  const diceScore = hasFixed ? Number(input.diceFixed) : hasOverride ? Number(input.diceScore) : hasDicePct ? 0 : dicePips * dMult;
 
-  const base = gelv + yixiang + liyi + diceScore;
+  const coreBase = gelv + yixiang + liyi;
+  // 普通骰进入独立乘区：先作用于三项创作底盘，再叠加其他百分比修正。
+  // 这样属性成长后骰子不会退化为固定的几分，同时固定骰/旧调用仍保持兼容。
+  const diceContribution = hasFixed || hasOverride ? diceScore : hasDicePct ? Math.round(coreBase * dPct) : diceScore;
+  const effectiveDicePct = hasFixed || hasOverride ? 0 : hasDicePct ? dPct : 0;
+  const base = coreBase + diceContribution;
 
   // 先加后乘：所有百分比先求和，再一次性作用于 base
   const pctSum = pctMods.reduce((s, m) => s + (Number(m.value) || 0), 0);
@@ -145,18 +173,20 @@ export function battleScore(input) {
       detail: `笔力 ${g('bi')} × ${coef.basicMult} ＋ 学力 ${g('xue')} × ${coef.basicMult}` },
     { key: 'liyi', label: '立意分', value: liyi,
       detail: `思力 ${g('si')} × ${coef.basicMult}` },
-    { key: 'dice', label: '灵感骰', value: diceScore,
+    { key: 'dice', label: '灵感骰', value: diceContribution,
       detail: hasFixed ? `固定发挥 ${input.diceFixed}`
                        : hasOverride ? (input.diceDetail || `文体结构结算 ${diceScore}`)
+                       : hasDicePct ? `${input.dicePctDetail || `掷出 ${dicePips} 点`} → 乘区 +${Math.round(dPct * 100)}%，实际 +${diceContribution} 分`
                        : `掷出 ${dicePips} 点 × ${dMult}${dPlus ? `（含骰点 +${dPlus}）` : ''}` },
     { key: 'mods', label: '修正项', value: modScore,
       detail: describeMods(pctMods, flatMods, critMult) }
   ];
 
   return {
-    items, base, modScore, total, dicePips, diceScore,
+    items, base, modScore, total, dicePips, diceScore: diceContribution,
     breakdown: { gelv, styleMean: styleBase.mean, styleCommon: styleBase.common, styleSpecialty: styleBase.specialty,
-      yixiang, liyi, diceScore, modScore, critMult, pctSum, flatSum }
+      yixiang, liyi, diceScore: diceContribution, diceContribution, dicePct: effectiveDicePct,
+      coreBase, modScore, critMult, pctSum, flatSum }
   };
 }
 

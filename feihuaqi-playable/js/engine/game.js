@@ -1902,7 +1902,8 @@ export class Game {
         return `对举：${this.lastStyle && this.lastStyle !== 'lian' ? '与上一场换体，作品 +8%' : '换体时得势；失利更能止损'}`;
       },
       previewDiceScore(style, pips) {
-        return R.styleDiceScore(style, pips, this.styleSystem, R.BATTLE_COEF.diceMult, 0);
+        const dicePct = Number((g.cfg.inspiration || {}).dicePct) || R.BATTLE_COEF.dicePct;
+        return R.styleDiceScore(style, pips, this.styleSystem, R.BATTLE_COEF.diceMult, 0, dicePct);
       },
       /**
        * 追加骰的独立作品乘区：基础规则与文心分别列项，既供 UI 预览，也让结算明细能说明增益来源。
@@ -2045,6 +2046,7 @@ export class Game {
     /* ---- 玩家侧修正 ---- */
     const pct = [], flat = [], talentTriggers = [];
     let dicePlus = 0, diceMult = R.BATTLE_COEF.diceMult, diceFixed = null, critMult = 1;
+    const dicePct = Number((this.cfg.inspiration || {}).dicePct) || R.BATTLE_COEF.dicePct;
     const schoolMech = this.schoolMechanics();
     const schoolDicePlus = schoolMech.type === 'cizong_bi'
       ? Math.min(Number(schoolMech.creativeDicePlus) || 0, Number(schoolMech.freeDiceCap) || 5) : 0;
@@ -2278,12 +2280,18 @@ export class Game {
 
     if (diceFixed == null) dicePlus += schoolDicePlus;
     const selfDiceProfile = diceFixed == null
-      ? R.styleDiceScore(style, dicePips, styleSystem, diceMult, dicePlus)
+      ? R.styleDiceScore(style, dicePips, styleSystem, diceMult, dicePlus, dicePct)
       : null;
-    if (selfDiceProfile && diceTransformNotes.length) selfDiceProfile.detail += `；${diceTransformNotes.join('，')}`;
+    if (selfDiceProfile && diceTransformNotes.length) {
+      const transformNote = `；${diceTransformNotes.join('，')}`;
+      selfDiceProfile.detail += transformNote;
+      selfDiceProfile.pctDetail += transformNote;
+    }
     const selfCalc = R.battleScore({
       attrs: session.playerAttrs, style, dice: totalPips, dicePlus: selfDiceProfile ? 0 : dicePlus,
-      diceMult, diceFixed, diceScore: selfDiceProfile && selfDiceProfile.score,
+      diceMult, diceFixed,
+      dicePct: selfDiceProfile ? selfDiceProfile.pct : undefined,
+      dicePctDetail: selfDiceProfile && selfDiceProfile.pctDetail,
       diceDetail: selfDiceProfile && selfDiceProfile.detail, critMult, coef: battleCoef,
       pctMods: pct, flatMods: flat
     });
