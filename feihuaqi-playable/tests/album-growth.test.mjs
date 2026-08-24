@@ -53,5 +53,9 @@ assert.equal(migrated.ok, true);
 assert.equal(migrated.state.albumState.progress.A001.level, 3);
 assert.equal(migrated.state.albumState.branches.A001, 'bold');
 assert.equal(migrated.state.albumState.flags.studySlotPlus, 1);
-assert.equal(RUN_SAVE_VERSION, 7);
-console.log('album-growth.test.mjs: 成长、路线锁定、旧档迁移全部通过');
+assert.equal(RUN_SAVE_VERSION, 8);
+assert.deepEqual(migrated.state.tutorialState, {
+  schoolSeen: false, firstMoveSeen: false, hudSeen: false, firstBattleSeen: false,
+  scoreSeen: false, talentSeen: false, abilitySeen: false, rulesVisited: false
+});
+console.log('album-growth.test.mjs: 成长、路线锁定、旧档迁移与新手状态迁移全部通过');

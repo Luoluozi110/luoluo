@@ -17,11 +17,21 @@
 
 export const RUN_SAVE_KEY = 'feihua_run_save';               // 自动存档槽（每回合结束）
 export const RUN_SAVE_MANUAL_KEY = 'feihua_run_save_manual'; // 手动存档槽（菜单「保存当前进度」）
-export const RUN_SAVE_VERSION = 7;
+export const RUN_SAVE_VERSION = 8;
 export const SAVE_WARN_BYTES = 3 * 1024 * 1024;              // 体积预警阈值 3MB
 
 const LOG_MAX = 200;   // 超过则截断
 const LOG_KEEP = 150;  // 截断后保留最近条数
+
+export const TUTORIAL_STEPS = [
+  'schoolSeen', 'firstMoveSeen', 'hudSeen', 'firstBattleSeen',
+  'scoreSeen', 'talentSeen', 'abilitySeen', 'rulesVisited'
+];
+
+export function normalizeTutorialState(raw) {
+  const src = raw && typeof raw === 'object' ? raw : {};
+  return Object.fromEntries(TUTORIAL_STEPS.map(key => [key, !!src[key]]));
+}
 
 /** 参与序列化的运行时状态白名单 */
 const STATE_KEYS = [
@@ -29,7 +39,7 @@ const STATE_KEYS = [
   'passive', 'active', 'track', 'pos', 'branchId', 'branchIndex',
   'lap', 'routeIndex', 'ringId', 'phaseGateSeen', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
   'quiz', 'choiceHistory', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
-  'zeitgeist', 'prologueSeen', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
+  'zeitgeist', 'prologueSeen', 'tutorialState', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
   'talentLevels', 'schoolState', 'abilityState', 'albumState', 'secretFinal', 'over', 'reachedEnd', 'endReason', 'log'
 ];
 
@@ -220,6 +230,8 @@ function migrateRun(obj) {
   }
   // v7：反应式构思迁移为阶段章法。旧剩余点数作为当前阶段充能保留，旧章法标记废弃。
   state.albumState = normalizeAlbumState(state.albumState);
+  // v8：首局新手引导状态。旧档默认未完成，避免把未看过的教学误判为已读。
+  state.tutorialState = normalizeTutorialState(state.tutorialState);
   const ab = state.abilityState;
   ab.version = Math.max(2, Number(ab.version) || 1);
   ab.study = (ab.study && typeof ab.study === 'object') ? ab.study : { focus: ['shi'], progress: {} };
@@ -372,6 +384,7 @@ export function deserializeRun(rawObj, cfg) {
   out.talentState.triggers = (out.talentState.triggers && typeof out.talentState.triggers === 'object') ? out.talentState.triggers : {};
   out.talentState.flags = (out.talentState.flags && typeof out.talentState.flags === 'object') ? out.talentState.flags : {};
   out.talentState.activeUses = (out.talentState.activeUses && typeof out.talentState.activeUses === 'object') ? out.talentState.activeUses : {};
+  out.tutorialState = normalizeTutorialState(out.tutorialState);
   out.schoolState = (out.schoolState && typeof out.schoolState === 'object') ? out.schoolState : {};
   out.albumState = normalizeAlbumState(out.albumState);
   out.secretFinal = Object.assign({ eligible: false, invited: false, entered: false, completed: false, result: '' },

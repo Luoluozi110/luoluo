@@ -862,6 +862,7 @@
 .school-card .motto { font-family: var(--font-kai); font-size: 14px; color: var(--zhu); letter-spacing: .12em; margin-top: 2px; }
 .school-card .flavor { font-family: var(--font-kai); font-size: 13px; line-height: 1.85; color: var(--mo-2); text-align: justify; padding: 0 2px; }
 .school-card .meta { margin-top: auto; font-size: 11px; color: var(--mo-3); letter-spacing: .05em; line-height: 1.6; border-top: 1px dashed rgba(120,100,70,.35); padding-top: 8px; width: 100%; }
+.school-card .school-guide { width: 100%; padding: 7px 9px; border-left: 3px solid var(--zhu); background: rgba(201,151,31,.1); color: var(--mo-2); font-size: 11px; line-height: 1.65; text-align: left; }
 
 /* =========================================== 装配名篇 / 传世名篇 / 图鉴阁 */
 #loadout-screen, #album-screen, #codex-screen {

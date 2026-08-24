@@ -576,6 +576,16 @@ export class Game {
       seenEvents: new Set(), usedQuestions: new Set(),
       palaceWins: 0, palaceDone: 0,
       zeitgeist: this.seedZeitgeist(cfg.affinity),   // 当朝风潮（每局随机，制造变化性）
+      tutorialState: {
+        schoolSeen: true,
+        firstMoveSeen: false,
+        hudSeen: false,
+        firstBattleSeen: false,
+        scoreSeen: false,
+        talentSeen: false,
+        abilitySeen: false,
+        rulesVisited: false
+      },
       affStreak: { manner: null, n: 0 },             // 气势连捷：连续同风格胜场
       synergies: [],                                 // 当前已激活的文心羁绊（id/name/desc/members）
       talentLevels: {},                              // 文心等级：{ [talentId]: level }（Lv1 起，存档持久化）
@@ -1044,7 +1054,11 @@ export class Game {
     }
 
     Codex.recordTalent(talent.id);   // 图鉴：记录已获得的文心（跨局累计）
+    if (!opts.inherited && s.tutorialState && !s.tutorialState.talentSeen) {
+      s.tutorialState.talentSeen = true;
+    }
     this.ui.onState(s);
+    if (!opts.inherited && s.tutorialState && s.tutorialState.talentSeen) this.onForceSave?.();
     return true;
   }
 
@@ -2666,8 +2680,21 @@ export class Game {
     const insp0 = this.cfg.inspiration;
     this.addInspiration(this.lateVal(insp0.battleCost ?? -2, insp0.battleCostLate), '应战');
     const session = this.createSession(opts);
+    if (s.tutorialState && !s.tutorialState.firstBattleSeen) {
+      const tutorial = (this.cfg.narrative && this.cfg.narrative.tutorial && this.cfg.narrative.tutorial.battle) || {};
+      session.tutorialFirstBattle = !!this.ui.showBattleTutorial;
+      session.tutorialFirstBattleText = tutorial.text || '先看题，再选体；先算资源，再决定要不要追加。';
+    }
     const out = await this.ui.runBattle(session);
+    if (s.tutorialState && !s.tutorialState.firstBattleSeen) {
+      s.tutorialState.firstBattleSeen = true;
+      this.onForceSave?.();
+    }
     await this.settleBattle(session, out);
+    if (s.tutorialState && !s.tutorialState.scoreSeen) {
+      s.tutorialState.scoreSeen = true;
+      this.onForceSave?.();
+    }
     return opts && opts.returnOutcome ? out : out.result;
   }
 
