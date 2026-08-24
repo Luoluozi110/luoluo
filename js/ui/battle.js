@@ -223,7 +223,7 @@ export class BattleStage {
     return new Promise(resolve => {
       let done = false;
       let timerStop = null;
-      const dm = BATTLE_COEF.diceMult;
+      const dicePct = Number(this.cfg?.inspiration?.dicePct) || BATTLE_COEF.dicePct;
       const pips = [];                                  // 已掷出的灵感骰点数（可叠加）
       const hasFixed = () => session.usedActive.some(t => (t.effect || {}).type === 'fixed_dice');
       const stopTimer = () => { if (timerStop) { timerStop(); timerStop = null; } };
@@ -253,8 +253,11 @@ export class BattleStage {
       const renderExtra = () => {
         const total = pips.reduce((a, b) => a + b, 0);
         const extraCount = Math.max(0, pips.length - 1);
-        const preview = typeof session.previewDiceScore === 'function' ? session.previewDiceScore(style, pips) : { score: total * dm };
-        const score = preview.score;
+        const preview = typeof session.previewDiceScore === 'function' ? session.previewDiceScore(style, pips) : { score: 0, pct: total * dicePct };
+        const score = Number(preview.score) || 0;
+        const pctLabel = preview.pct != null
+          ? `临场乘区 +${Math.round(Number(preview.pct) * 100)}%`
+          : `临场发挥 ${score} 分`;
         const extraPct = typeof session.extraDicePct === 'function'
           ? session.extraDicePct(extraCount)
           : extraCount * (Number(this.cfg?.inspiration?.extraDicePct) || 0);
@@ -262,8 +265,8 @@ export class BattleStage {
         const canExtra = !hasFixed() && session.inspiration >= extraCost && extraCount < extraCap;
         const pipHtml = pips.map(n => `<span class="dice-pip">${'①②③④⑤⑥'[n - 1]}</span>`).join('');
         const extraHint = extraPct > 0 ? ` · 作品乘区 +${Math.round(extraPct * 100)}%` : '';
-        panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → 临场发挥 ${score} 分${extraHint}${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
-          <div style="font-size:12px;line-height:1.7;color:var(--mo-3);margin:4px 2px 7px">当前骰点已经计入临场发挥；继续追加会消耗灵感，收笔则以当前骰数结算。</div>
+        panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → ${pctLabel}${extraHint}${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
+          <div style="font-size:12px;line-height:1.7;color:var(--mo-3);margin:4px 2px 7px">当前骰点已经转为作品乘区；继续追加会消耗灵感，收笔则以当前骰数结算。</div>
           <div class="dice-pips">${pipHtml}</div>
           <div class="pick-row">
             ${canExtra
@@ -292,7 +295,7 @@ export class BattleStage {
       const extraPctPerDie = typeof session.extraDicePct === 'function'
         ? session.extraDicePct(1)
         : (Number(this.cfg?.inspiration?.extraDicePct) || 0);
-      panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">本体结构公开结算；首次追加耗 ${firstCost} 灵感，作品乘区 +${Math.round(extraPctPerDie * 100)}%，最多可追加 ${extraCap} 枚　·　限时 ${this.seconds} 秒</span></div>
+      panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">普通骰每点进入作品乘区 +${Math.round(dicePct * 100)}%；首次追加耗 ${firstCost} 灵感，额外作品乘区 +${Math.round(extraPctPerDie * 100)}%，最多可追加 ${extraCap} 枚　·　限时 ${this.seconds} 秒</span></div>
         <div class="pick-row"><button class="pick battle-roll" id="btRoll" data-sfx="none"><div class="pn">掷 骰</div>
         <div class="pv">听天由命，也听人事</div></button></div>`;
       panel.querySelector('#btRoll').addEventListener('click', () => doRoll(false));
