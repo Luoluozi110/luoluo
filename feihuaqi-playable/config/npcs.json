@@ -1440,11 +1440,19 @@
         }
       },
       {
-        "id": "",
+        "id": "kang_er_yu",
         "name": "康尔玉",
         "title": "联圣有继",
         "style": "lian",
         "weight": 10,
+        "palaceForcedWhen": {
+          "primary": "lian",
+          "minExclusive": 35,
+          "strictlyHigherThan": [
+            "shi",
+            "ci"
+          ]
+        },
         "attrs": {
           "shi": 23,
           "ci": 23,

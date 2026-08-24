@@ -887,6 +887,22 @@ export class Game {
   _strategyChangedSinceLast(npc, style, manner) { return NpcSelection.strategyChangedSinceLast(this.s, npc, style, manner); }
   _palaceStrategyChanged(style, manner) { return NpcSelection.palaceStrategyChanged(this.s, style, manner); }
 
+  /** 殿试席位：先保留满足构筑条件的必遇 NPC，再按权重填充其余席位。 */
+  selectPalaceFoes(tier, count) {
+    const pool = Array.isArray(tier && tier.npcs) ? tier.npcs : [];
+    const n = Math.max(0, Number(count) || 0);
+    if (!pool.length || !n) return { foes: [], forcedEntry: null };
+    const forcedEntry = NpcSelection.forcedPalaceNpc(pool, this.s && this.s.attrs);
+    const entries = forcedEntry ? [forcedEntry] : [];
+    const remaining = forcedEntry ? pool.filter(entry => entry !== forcedEntry) : pool.slice();
+    const weighted = R.pickNpcByWeightUnique(remaining, Math.max(0, n - entries.length), this.rand);
+    const fallbackPool = remaining.length ? remaining : pool;
+    for (let i = 0; entries.length < n; i++) {
+      entries.push(weighted[i] || fallbackPool[Math.floor(this.rand() * fallbackPool.length)]);
+    }
+    return { foes: entries.map(entry => this._npcFromPick(tier, entry)), forcedEntry };
+  }
+
   cellAt(track, pos, branchId, branchIndex) {
     if (track === 'branch') {
       const br = this.cfg.board.branches[branchId];
@@ -2808,15 +2824,14 @@ export class Game {
     // weight 省略=默认 100，weight=0=本阶段不出战；池不足 n 时按实际返回，余下场次退化为独立抽取，
     // 池为 0 时退化为档内随机。注意：场次仍以主考官档优先，若主考官档全被 weight=0 关停则退化为档内随机兜底。
     const zkPool = Array.isArray(zk.npcs) ? zk.npcs : null;
-    const palaceFoes = [];
-    if (zkPool && zkPool.length) {
-      const weighted = R.pickNpcByWeightUnique(zkPool, n, this.rand);
-      for (let i = 0; i < n; i++) {
-        const entry = weighted[i] || zkPool[Math.floor(this.rand() * zkPool.length)];
-        palaceFoes.push(this._npcFromPick(zk, entry));
-      }
-    } else {
-      for (let i = 0; i < n; i++) palaceFoes.push(this.pickNpc(true));
+    const palaceSelection = zkPool && zkPool.length
+      ? this.selectPalaceFoes(zk, n)
+      : { foes: Array.from({ length: n }, () => this.pickNpc(true)), forcedEntry: null };
+    const palaceFoes = palaceSelection.foes;
+    if (palaceSelection.forcedEntry) {
+      const name = palaceSelection.forcedEntry.name || '主考官';
+      this.push(`三力之中联力冠绝，殿试必遇「${name}」`);
+      this.ui.toast(`联力冠绝三体——「${name}」奉诏出题`);
     }
 
     // 殿试跨场适应参数：取自本局殿试池中携带 sig_palace_adapt 的主考官配置，

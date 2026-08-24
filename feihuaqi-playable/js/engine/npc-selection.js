@@ -22,6 +22,27 @@ export function npcFromPick(tier, pick) {
   };
 }
 
+/**
+ * 殿试必遇条件：由 NPC 配置声明，而非在流程里按姓名硬编码。
+ * 当前支持「某一三力严格超过门槛，且严格高于指定三力」：
+ * { primary:'lian', minExclusive:35, strictlyHigherThan:['shi','ci'] }。
+ * 同时满足多名时按主考官配置顺序取首名，保持结果确定、可审计。
+ */
+export function forcedPalaceNpc(pool, attrs) {
+  if (!Array.isArray(pool) || !pool.length) return null;
+  const values = attrs || {};
+  for (const npc of pool) {
+    const rule = npc && npc.palaceForcedWhen;
+    if (!rule || !rule.primary) continue;
+    const primary = Number(values[rule.primary]);
+    const min = Number(rule.minExclusive);
+    if (!Number.isFinite(primary) || !Number.isFinite(min) || !(primary > min)) continue;
+    const compare = Array.isArray(rule.strictlyHigherThan) ? rule.strictlyHigherThan : [];
+    if (compare.every(key => primary > Number(values[key]))) return npc;
+  }
+  return null;
+}
+
 export function pickNpc(game, forPalace) {
   const list = game.cfg.npcs || [];
   let tier;
@@ -75,4 +96,3 @@ export function palaceStrategyChanged(state, style, manner) {
     return !!(last && last.style) && (last.style !== style || last.manner !== manner);
   } catch (_) { return false; }
 }
-
