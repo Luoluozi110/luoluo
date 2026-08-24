@@ -434,7 +434,7 @@ console.log('[7.5] NPC：出战权重字段编辑往返 + 0 校验');
   }
 }
 
-console.log('[7.6] NPC：殿试必遇条件可视化编辑 + 保存往返');
+console.log('[7.6] NPC：本阶段必遇条件可视化编辑 + 保存往返');
 {
   const tiers = window.NPC.exportRaw();
   let kang = null;
@@ -457,6 +457,7 @@ console.log('[7.6] NPC：殿试必遇条件可视化编辑 + 保存往返');
       ok(document.querySelector('[data-palace-compare="shi"]')?.checked && document.querySelector('[data-palace-compare="ci"]')?.checked, '诗力/词力严格高于条件正确回填');
       click(document.getElementById('npcSave'));
       const savedKang = window.NPC.exportRaw()[kang.ti].npcs[kang.ni];
+      ok(savedKang.stageForcedWhen && savedKang.stageForcedWhen.primary === 'lian', '保存后通用本阶段条件保留');
       ok(savedKang.palaceForcedWhen && savedKang.palaceForcedWhen.primary === 'lian', '保存后主属性条件保留');
       ok(savedKang.palaceForcedWhen.minExclusive === 35, '保存后阈值条件保留');
       ok(JSON.stringify(savedKang.palaceForcedWhen.strictlyHigherThan) === JSON.stringify(['shi', 'ci']), '保存后严格高于条件保留');

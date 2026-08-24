@@ -247,6 +247,17 @@ window.GAME_NPCS = [
           "xue": 4,
           "si": 12
         },
+        "stageForcedWhen": {
+          "primary": "si",
+          "minExclusive": 10,
+          "strictlyHigherThan": [
+            "shi",
+            "ci",
+            "lian",
+            "bi",
+            "xue"
+          ]
+        },
         "mech": {
           "version": 2,
           "complexity": "advanced",
@@ -555,6 +566,17 @@ window.GAME_NPCS = [
           "xue": 8,
           "si": 18
         },
+        "stageForcedWhen": {
+          "primary": "si",
+          "minExclusive": 18,
+          "strictlyHigherThan": [
+            "shi",
+            "ci",
+            "lian",
+            "bi",
+            "xue"
+          ]
+        },
         "mech": {
           "version": 2,
           "complexity": "advanced",
@@ -862,6 +884,17 @@ window.GAME_NPCS = [
           "bi": 15,
           "xue": 30,
           "si": 16
+        },
+        "stageForcedWhen": {
+          "primary": "xue",
+          "minExclusive": 28,
+          "strictlyHigherThan": [
+            "shi",
+            "ci",
+            "lian",
+            "bi",
+            "si"
+          ]
         },
         "mech": {
           "version": 2,
@@ -1226,6 +1259,17 @@ window.GAME_NPCS = [
           "xue": 21,
           "si": 39
         },
+        "stageForcedWhen": {
+          "primary": "si",
+          "minExclusive": 38,
+          "strictlyHigherThan": [
+            "shi",
+            "ci",
+            "lian",
+            "bi",
+            "xue"
+          ]
+        },
         "mech": {
           "version": 1,
           "complexity": "advanced",
@@ -1442,6 +1486,14 @@ window.GAME_NPCS = [
             "ci"
           ]
         },
+        "stageForcedWhen": {
+          "primary": "lian",
+          "minExclusive": 35,
+          "strictlyHigherThan": [
+            "shi",
+            "ci"
+          ]
+        },
         "attrs": {
           "shi": 23,
           "ci": 23,
@@ -1505,6 +1557,17 @@ window.GAME_NPCS = [
           "bi": 50,
           "xue": 50,
           "si": 50
+        },
+        "stageForcedWhen": {
+          "primary": "bi",
+          "minExclusive": 58,
+          "strictlyHigherThan": [
+            "shi",
+            "ci",
+            "lian",
+            "xue",
+            "si"
+          ]
         }
       }
     ]

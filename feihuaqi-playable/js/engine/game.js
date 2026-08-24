@@ -593,6 +593,7 @@ export class Game {
       abilityState: this.createAbilityState(attrs, school),     // 方案 B 三功；内含方案 C 技法状态契约
       plannedMoveDice: null,                         // 布局谋篇待作用的下一枚地图移动骰（瞬时状态）
       npcMech: { history: {}, palace: {} },          // NPC 三机制跨场状态
+      stageForcedSeen: {},                            // 各档已触发的阶段必遇 NPC
       loadout: [], titles: [],
       secretFinal: { eligible: false, invited: false, entered: false, completed: false, result: '' },
       over: false, reachedEnd: false, endReason: '',
@@ -1720,11 +1721,20 @@ export class Game {
       // 二次同步是故障自愈：阶段弹窗曾是唯一切圈入口，任何旧 UI/缓存路径都会留下外圈+透明棋子。
       if (typeof this.ui.syncStageRing === 'function') this.ui.syncStageRing(this.s);
       const tier = (this.cfg.npcs || []).find(n => n.id === gate.exam);
-      const pick = tier ? this._npcFromPick(tier, R.pickNpcByWeight(tier.npcs || [], this.rand) || (tier.npcs || [])[0] || tier) : this.pickNpc(false);
+      const pick = tier ? NpcSelection.pickNpcFromTier(this, tier) : this.pickNpc(false);
+      if (pick.stageForced) {
+        this.push(`三力构筑应验，晋阶试必遇「${pick.name}」`);
+        this.ui.toast(`本阶段必遇：${pick.name}`);
+      }
       await this.doBattle({ npc: pick, label: `晋阶试·${gate.phase === 'xiucai' ? '秀才' : gate.phase === 'juren' ? '举人' : '进士'}` });
       return;
     }
-    await this.doBattle({ npc: this.pickNpc(false), label: cell.name });
+    const npc = this.pickNpc(false);
+    if (npc.stageForced) {
+      this.push(`三力构筑应验，本阶段必遇「${npc.name}」`);
+      this.ui.toast(`本阶段必遇：${npc.name}`);
+    }
+    await this.doBattle({ npc, label: cell.name });
   }
 
   /** 建立一场战斗会话，交给 UI 逐步驱动六步流程 */

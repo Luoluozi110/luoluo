@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { Game } from '../js/engine/game.js';
+import { pickNpcFromTier } from '../js/engine/npc-selection.js';
 
 const tiers = JSON.parse(fs.readFileSync(new URL('../config/npcs.json', import.meta.url), 'utf8'));
 const palace = tiers.find(tier => tier.id === 'zhukaoguan');
@@ -29,4 +30,24 @@ picked = makeGame({ shi: 20, ci: 22, lian: 40 }).selectPalaceFoes(palace, 3);
 assert.equal(picked.foes.filter(npc => npc.id === 'kang_er_yu').length, 1);
 assert.equal(picked.foes.length, 3);
 
-console.log('palace-kang-selection.test.mjs: 联力冠绝 → 康尔玉殿试必遇 ✓');
+// 每个档位都可声明同一套本阶段必遇规则；首次命中后记录，后续战斗恢复权重抽取。
+const stageCases = [
+  ['tongsheng', 'li_mo_tong', { shi: 4, ci: 5, lian: 5, bi: 5, xue: 4, si: 11 }],
+  ['xiucai', 'wang_han_sheng', { shi: 8, ci: 11, lian: 8, bi: 8, xue: 8, si: 19 }],
+  ['juren', 'tang_ji_qing', { shi: 17, ci: 16, lian: 16, bi: 15, xue: 29, si: 16 }],
+  ['jinshi', 'yuwen_yuan', { shi: 21, ci: 22, lian: 21, bi: 19, xue: 21, si: 39 }],
+  ['zhukaoguan', 'kang_er_yu', { shi: 20, ci: 22, lian: 40, bi: 18, xue: 21, si: 19 }],
+  ['taohuaxian', 'chen_zhiwei', { shi: 50, ci: 50, lian: 50, bi: 59, xue: 50, si: 50 }]
+];
+for (const [tierId, npcId, attrs] of stageCases) {
+  const tier = tiers.find(entry => entry.id === tierId);
+  assert.ok(tier, `${tierId} 档存在`);
+  const game = makeGame(attrs);
+  const first = pickNpcFromTier(game, tier);
+  assert.equal(first.id, npcId, `${tierId} 条件命中时必遇 ${npcId}`);
+  assert.equal(first.stageForced, true, `${tierId} 首次标记为阶段必遇`);
+  const second = pickNpcFromTier(game, tier);
+  assert.equal(second.stageForced, undefined, `${tierId} 后续战斗恢复权重抽取`);
+}
+
+console.log('palace-kang-selection.test.mjs: 殿试与六档阶段必遇 ✓');
