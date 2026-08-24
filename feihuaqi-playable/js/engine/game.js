@@ -887,6 +887,22 @@ export class Game {
   _strategyChangedSinceLast(npc, style, manner) { return NpcSelection.strategyChangedSinceLast(this.s, npc, style, manner); }
   _palaceStrategyChanged(style, manner) { return NpcSelection.palaceStrategyChanged(this.s, style, manner); }
 
+  /** 殿试席位：先保留满足构筑条件的必遇 NPC，再按权重填充其余席位。 */
+  selectPalaceFoes(tier, count) {
+    const pool = Array.isArray(tier && tier.npcs) ? tier.npcs : [];
+    const n = Math.max(0, Number(count) || 0);
+    if (!pool.length || !n) return { foes: [], forcedEntry: null };
+    const forcedEntry = NpcSelection.forcedPalaceNpc(pool, this.s && this.s.attrs);
+    const entries = forcedEntry ? [forcedEntry] : [];
+    const remaining = forcedEntry ? pool.filter(entry => entry !== forcedEntry) : pool.slice();
+    const weighted = R.pickNpcByWeightUnique(remaining, Math.max(0, n - entries.length), this.rand);
+    const fallbackPool = remaining.length ? remaining : pool;
+    for (let i = 0; entries.length < n; i++) {
+      entries.push(weighted[i] || fallbackPool[Math.floor(this.rand() * fallbackPool.length)]);
+    }
+    return { foes: entries.map(entry => this._npcFromPick(tier, entry)), forcedEntry };
+  }
+
   cellAt(track, pos, branchId, branchIndex) {
     if (track === 'branch') {
       const br = this.cfg.board.branches[branchId];
@@ -1755,6 +1771,7 @@ export class Game {
         npcAttrs: (npc && npc.attrs) || {},
         af,
         theme,
+        zeitgeist: s.zeitgeist,
         templates: tplLib
       });
       // 联力未解锁时，若意图锁定了联体，回退期望分最优（避免锁死不可用文体）
@@ -1763,7 +1780,12 @@ export class Game {
       }
     }
     const intentLocked = npcIntent
-      ? { style: npcIntent.style, manner: npcIntent.manner, styleDisclosed: npcIntent.styleDisclosed, mannerDisclosed: npcIntent.mannerDisclosed }
+      ? {
+          style: npcIntent.style, manner: npcIntent.manner,
+          styleDisclosed: npcIntent.styleDisclosed, mannerDisclosed: npcIntent.mannerDisclosed,
+          stance: npcIntent.stance, pattern: npcIntent.pattern, watchesActive: npcIntent.watchesActive,
+          template: npcIntent.template
+        }
       : null;
 
     // 为会话分配确定性的单场标识。结算可能因 UI 重试/读档恢复被再次调用，
@@ -2181,7 +2203,12 @@ export class Game {
       // 意图反制破绽：玩家出战是否与 NPC 本场锁定意图一致（供 wea_counter_intent 使用）
       const il = session.intentLocked;
       matchesIntent = !!(il && style === il.style && manner === il.manner);
-      pm = { style, manner, extraDice, matchesIntent };
+      pm = {
+        style, manner, extraDice, matchesIntent,
+        dicePips,
+        activeTalentUsed: Array.isArray(session.usedActive) && session.usedActive.length > 0,
+        playerAffinity: base
+      };
       const playerHistory = this._mechHistoryForNpc(stableFoeId(session.npc));
       // 跨场换策破绽：殿试按整段序列（考官席互通）判换策；普通战按逐考官历史判
       strategyChanged = session.isPalace
@@ -2205,12 +2232,13 @@ export class Game {
         templates: tplLib,
         result: null, relativeMargin: null,
         strategyChanged,
-        palaceAdapt
+        palaceAdapt, zeitgeist: s.zeitgeist, intentStance: session.intentLocked && session.intentLocked.stance
       });
       // 招牌（后）
       const tri = R.signatureTriggered({
         mech: npcMech, npcStyle, npcManner,
-        playerMove: pm, playerHistory, templates: tplLib
+        playerMove: pm, playerHistory, templates: tplLib,
+        zeitgeist: s.zeitgeist, intentStance: session.intentLocked && session.intentLocked.stance
       });
       mechOut = { tri, wea, mods: R.signatureScoreMods(tri, wea, npcMech.signature, { extraDice, npcSi: npcAttrs.si || 0, npcExpected }) };
       session._mechOut = mechOut;
@@ -2275,14 +2303,14 @@ export class Game {
     if (mechOut && hasCrushingWin) {
       const hi = Math.max(selfCalc.total, oppCalc.total);
       const relMarg = hi > 0 ? (selfCalc.total - oppCalc.total) / hi : 0;
-      const pm2 = { style, manner, extraDice, matchesIntent };
+      const pm2 = { ...pm };
       const wea2 = R.weaknessResolution({
         mech: npcMech, npcStyle,
         playerMove: pm2,
         playerHistory: this._mechHistoryForNpc(stableFoeId(session.npc)), npcManner,
         templates: this.cfg['npc-mechanics'] || {},
         result, relativeMargin: relMarg, strategyChanged,
-        palaceAdapt
+        palaceAdapt, zeitgeist: s.zeitgeist, intentStance: session.intentLocked && session.intentLocked.stance
       });
       const mods2 = R.signatureScoreMods(mechOut.tri, wea2, npcMech.signature, { extraDice, npcSi: npcAttrs.si || 0, npcExpected });
       if (mods2 !== mechOut.mods) {
@@ -2796,15 +2824,14 @@ export class Game {
     // weight 省略=默认 100，weight=0=本阶段不出战；池不足 n 时按实际返回，余下场次退化为独立抽取，
     // 池为 0 时退化为档内随机。注意：场次仍以主考官档优先，若主考官档全被 weight=0 关停则退化为档内随机兜底。
     const zkPool = Array.isArray(zk.npcs) ? zk.npcs : null;
-    const palaceFoes = [];
-    if (zkPool && zkPool.length) {
-      const weighted = R.pickNpcByWeightUnique(zkPool, n, this.rand);
-      for (let i = 0; i < n; i++) {
-        const entry = weighted[i] || zkPool[Math.floor(this.rand() * zkPool.length)];
-        palaceFoes.push(this._npcFromPick(zk, entry));
-      }
-    } else {
-      for (let i = 0; i < n; i++) palaceFoes.push(this.pickNpc(true));
+    const palaceSelection = zkPool && zkPool.length
+      ? this.selectPalaceFoes(zk, n)
+      : { foes: Array.from({ length: n }, () => this.pickNpc(true)), forcedEntry: null };
+    const palaceFoes = palaceSelection.foes;
+    if (palaceSelection.forcedEntry) {
+      const name = palaceSelection.forcedEntry.name || '主考官';
+      this.push(`三力之中联力冠绝，殿试必遇「${name}」`);
+      this.ui.toast(`联力冠绝三体——「${name}」奉诏出题`);
     }
 
     // 殿试跨场适应参数：取自本局殿试池中携带 sig_palace_adapt 的主考官配置，

@@ -1,5 +1,5 @@
 /**
- * C2 阶段验证：为全部 27 名具名 NPC（含 20 名新补机制）逐一跑 createSession→resolveBattle 闭环，
+ * C2 阶段验证：为全部机制 NPC逐一跑 createSession→resolveBattle 闭环，
  * 确认：
  *   1) 每名机制 NPC 意图被锁定（说明 mech 被引擎真正读取）；
  *   2) 招牌在对应条件触发、破绽在能规避的动作下命中，且不抛错；
@@ -83,7 +83,7 @@ function playerMovesFor(npc){
   return moves;
 }
 
-console.log('\n=== C2 阶段验证：27 名 NPC 机制闭环采样 ===\n');
+console.log('\n=== C2 阶段验证：机制 NPC 闭环采样 ===\n');
 for(const t of base.npcs){
   // 进士及以上档：玩家在该阶段联力必然已解锁，模拟真实后段状态
   const late = t.isFinal || t.id==='jinshi';
@@ -110,6 +110,12 @@ for(const t of base.npcs){
           // 骰子：显式数组可触发追加骰（extraDice=len-1）；默认给 [1..6, 1] 提供历史竞争
           let dice = mv.dice || [ 1+Math.floor(rand()*6) ];
           dice = Array.isArray(dice) ? dice.slice() : [ Number(dice)||1 ];
+          // 截脉问锋专门读取「是否发动主动文心」。通用采样中的 follow 路线
+          // 为其注入一个无数值副作用的已用主动文心，验证该公开风险确能被引擎识别。
+          const mainSig = n.mech && (n.mech.signature.main || n.mech.signature);
+          if (mv.label === 'follow' && mainSig && mainSig.template === 'sig_active_talent_tax') {
+            session.usedActive = [{ id: 'validation_active', name: '试锋', effect: {} }];
+          }
           const out=g.resolveBattle(session, st, mv.manner, dice);
           summary[key].battles++;
           if(out.result==='win') summary[key].wins++;

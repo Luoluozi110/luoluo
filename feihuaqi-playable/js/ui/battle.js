@@ -24,6 +24,8 @@ export class BattleStage {
   /** 驱动一场战斗；session 由 engine 提供。返回 resolve 结果 */
   async run(session) {
     const el = this.el;
+    const focusKey = session.npc && (session.npc.focusAttr || (!STYLE_NAMES[session.npc.style] && session.npc.style));
+    const opponentFocus = focusKey ? `重${ATTR_NAMES[focusKey] || focusKey}` : `偏${STYLE_NAMES[session.npc.style] || ''}`;
     el.classList.add('on');
     el.innerHTML = `
       <div class="bt-banner">
@@ -45,7 +47,7 @@ export class BattleStage {
         <div class="vs-badge">對</div>
         <div class="fighter opp">
           <div class="fighter-head"><div class="fighter-portrait" aria-hidden="true">${SCHOLAR_PORTRAIT.opponent}</div><div class="fighter-meta">
-            <div class="fname"><span class="seal">對手</span><span>${esc(session.npc.fullName || session.npc.name)}</span>${session.npc.style ? `<span class="opp-style">偏${STYLE_NAMES[session.npc.style] || ''}</span>` : ''}</div>
+            <div class="fname"><span class="seal">對手</span><span>${esc(session.npc.fullName || session.npc.name)}</span>${session.npc.style ? `<span class="opp-style">${esc(opponentFocus)}</span>` : ''}</div>
             <div class="fsub">${esc(session.npc.title || '')}</div>
             <div class="fattrs">${this.attrsRow(session.npc.attrs)}</div>
           </div></div>
@@ -71,7 +73,7 @@ export class BattleStage {
 
     /* ① 遭遇：介绍弹窗，等待玩家「开始对决」确认后再推进（不再自动快跳） */
     panel.innerHTML = `<div class="ph">① 遭遇</div>
-      <div style="font-size:17px;line-height:1.8">「${esc(session.npc.fullName || session.npc.name)}」${esc(session.npc.title || '')}拦路请教，愿以文会友。${session.npc.style ? `<span style="color:var(--zhu)">（此人偏${STYLE_NAMES[session.npc.style] || ''}）</span>` : ''}</div>`;
+       <div style="font-size:17px;line-height:1.8">「${esc(session.npc.fullName || session.npc.name)}」${esc(session.npc.title || '')}拦路请教，愿以文会友。${session.npc.style ? `<span style="color:var(--zhu)">（此人${esc(opponentFocus)}）</span>` : ''}</div>`;
 
     /* ①½ 研判卡：机制 NPC 的意图行藏 + 长短可读提示（阶段 B），一并展示后统一确认 */
     const mechCtx = { styleNames: STYLE_NAMES, mannerNames: session.mannerNames || {} };

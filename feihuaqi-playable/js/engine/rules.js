@@ -437,13 +437,16 @@ export function rollIntention(opt) {
   const manners = opt.manners || af.manners || ['wanyue', 'haofang', 'zheli'];
   const intent = (mech && mech.intent) || {};
   const tpl = intent.template ? ((opt.templates || {}).intentTemplates || {})[intent.template] : null;
+  const zeitgeist = opt.zeitgeist || null;
 
   // 文体（无签名偏置时退化为纯期望分最优）
   const style = pickIntentionStyle(opt.npcAttrs || {}, tpl, intent.bias);
 
-  // 文风：文风立意型取模板候选中最优相性者；否则题材相性最优
+  // 文风：立意型从候选中取最优；逐潮型优先跟随本局公开风潮；其余取题材相性最优。
   let manner;
-  if (tpl && tpl.type === 'manner') {
+  if (tpl && tpl.type === 'zeitgeist' && zeitgeist && manners.includes(zeitgeist.manner)) {
+    manner = zeitgeist.manner;
+  } else if (tpl && tpl.type === 'manner') {
     const cands = Array.isArray(intent.manners) ? intent.manners.filter(m => manners.includes(m)) : manners;
     if (cands.length) {
       let vm = -Infinity;
@@ -460,8 +463,26 @@ export function rollIntention(opt) {
     style, manner,
     styleDisclosed: disclosure === 'full' || disclosure === 'action',
     mannerDisclosed: disclosure === 'full' || tpl?.type === 'manner',
-    template: intent.template || 'int_preferred_style'
+    template: intent.template || 'int_preferred_style',
+    // 公开战策/审律目标是意图的一部分，须在玩家定策前锁定并展示。
+    stance: tpl?.type === 'stance' ? (intent.stance || tpl.stance || null) : null,
+    pattern: tpl?.type === 'pattern' ? (intent.pattern || tpl.pattern || null) : null,
+    watchesActive: tpl?.type === 'active_watch'
   };
+}
+
+/** 骰组是否命中 NPC 在战前公开的审律目标。仅读取已掷出的结果，不改变随机性。 */
+function matchesDicePattern(pips, pattern) {
+  const list = Array.isArray(pips) ? pips.map(v => Number(v) || 0) : [];
+  if (!list.length) return false;
+  if (pattern === 'pair') return new Set(list).size < list.length;
+  if (pattern === 'sequence') {
+    if (list.length < 2) return false;
+    const sorted = [...list].sort((a, b) => a - b);
+    return sorted.every((v, i) => i === 0 || v === sorted[i - 1] + 1);
+  }
+  if (pattern === 'high') return list.reduce((sum, v) => sum + v, 0) >= (Number(list.length) * 5);
+  return false;
 }
 
 /**
@@ -517,6 +538,18 @@ export function signatureTriggered(ctx) {
     }
     if (sig.template === 'sig_palace_adapt') {
       return true ? { level: 'main' } : null;                 // 跨场适应：每场常驻（防御性）
+    }
+    if (sig.template === 'sig_zeitgeist_surf') {
+      return ctx.zeitgeist && npcManner === ctx.zeitgeist.manner ? { level: 'main' } : null;
+    }
+    if (sig.template === 'sig_active_talent_tax') {
+      return pm.activeTalentUsed ? { level: 'main' } : null;
+    }
+    if (sig.template === 'sig_dice_pattern_hunt') {
+      return matchesDicePattern(pm.dicePips, sig.pattern) ? { level: 'main' } : null;
+    }
+    if (sig.template === 'sig_declared_stance') {
+      return ctx.intentStance ? { level: 'main' } : null;
     }
     return null;
   };
@@ -669,6 +702,44 @@ function resolveSingleWeakness(ctx, wea, tmplLib, pm, hist, npcStyle) {
       }
       return nullR;
     }
+    case 'wea_go_against_zeitgeist': {
+      const z = ctx.zeitgeist;
+      const minAffinity = Number(wea.minAffinity ?? 0);
+      if (z && pm.manner && pm.manner !== z.manner && Number(pm.playerAffinity) >= minAffinity) {
+        const ret = fullRet();
+        return out({ hit: true, retention: ret, shutdownLevel: ret <= 0.3 ? 'full' : 'partial', playerBonus: Number(wea.playerBonus) || 0, reason: '逆潮而作，仍合题意' });
+      }
+      return nullR;
+    }
+    case 'wea_hold_active_talent': {
+      if (!pm.activeTalentUsed) {
+        const ret = fullRet();
+        return out({ hit: true, retention: ret, shutdownLevel: ret <= 0.3 ? 'full' : 'partial', playerBonus: Number(wea.playerBonus) || 0, reason: '藏锋不用主动文心' });
+      }
+      return nullR;
+    }
+    case 'wea_limited_extra_dice': {
+      if ((pm.extraDice || 0) <= (Number(wea.maxExtraDice) || 0)) {
+        const ret = fullRet();
+        return out({ hit: true, retention: ret, shutdownLevel: ret <= 0.3 ? 'full' : 'partial', playerBonus: Number(wea.playerBonus) || 0, reason: '收束骰组，未落入审律' });
+      }
+      return nullR;
+    }
+    case 'wea_stance_counter': {
+      const stance = ctx.intentStance;
+      const counter = wea.counter || {};
+      const required = counter[stance];
+      const hit = required === 'base_dice' ? (pm.extraDice || 0) === 0
+        : required === 'one_extra' ? (pm.extraDice || 0) === 1
+          : required === 'change_style' ? !!(hist.lastStyle && pm.style && pm.style !== hist.lastStyle)
+            : required === 'change_manner' ? !!(hist.lastManner && pm.manner && pm.manner !== hist.lastManner)
+              : false;
+      if (hit) {
+        const ret = fullRet();
+        return out({ hit: true, retention: ret, shutdownLevel: ret <= 0.3 ? 'full' : 'partial', playerBonus: Number(wea.playerBonus) || 0, reason: '以相应章法反制其公开战策' });
+      }
+      return nullR;
+    }
     default:
       return nullR;
   }
@@ -751,7 +822,9 @@ export function signatureScoreMods(tri, wea, sig, ctx) {
     } else if (obj && obj.template === 'sig_steady_pressure') {
       const fv = Math.round(steadyFloor(obj) * ret);
       if (fv !== 0) flat.push({ source: 'npcSign', label: `招牌·${name}`, value: fv });
-    } else if (obj && (obj.template === 'sig_style_mastery' || obj.template === 'sig_repeat_read' || obj.template === 'sig_copycat')) {
+    } else if (obj && (obj.template === 'sig_style_mastery' || obj.template === 'sig_repeat_read' || obj.template === 'sig_copycat'
+      || obj.template === 'sig_zeitgeist_surf' || obj.template === 'sig_active_talent_tax'
+      || obj.template === 'sig_dice_pattern_hunt' || obj.template === 'sig_declared_stance')) {
       const v = Number(obj.pct) || 0;
       const eff = v * ret;
       if (eff !== 0) pct.push({ source: 'npcSign', label: `招牌·${name}`, value: eff });

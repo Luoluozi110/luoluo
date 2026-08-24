@@ -46,4 +46,5 @@ const hidden = tiers.find(t => t.isHiddenFinal);
 assert.ok(hidden && hidden.npcs.length === 1, '隐藏终圈对手独立于常规难度档');
 assert.equal(Object.values(hidden.npcs[0].attrs).reduce((sum, n) => sum + Number(n || 0), 0), 300, '桃花仙人六维总和为 300');
 
-console.log('Roguelike 难度 v2：灵感 48/68，28 名 NPC 全六维与思力分档增强 ✓');
+const npcCount = tiers.filter(t => !t.isHiddenFinal).reduce((sum, tier) => sum + (tier.npcs || []).length, 0);
+console.log(`Roguelike 难度 v2：灵感 48/68，${npcCount} 名 NPC 全六维与思力分档增强 ✓`);

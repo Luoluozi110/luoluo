@@ -51,8 +51,15 @@ const INTENT_TEMPLATE_DISPLAY = {
   int_steady: '稳守',
   int_dice_response: '伺机而动',
   int_copycat: '仿作',
-  int_palace_adapt: '跨场适应'
+  int_palace_adapt: '跨场适应',
+  int_zeitgeist: '逐潮',
+  int_active_watch: '封心',
+  int_pattern_hunt: '审律',
+  int_declared_stance: '公开战策'
 };
+
+const STANCE_NAMES = { attack: '强攻', steady: '稳守', turn: '转锋' };
+const PATTERN_NAMES = { pair: '重章（重复骰面）', sequence: '连章（连号骰面）', high: '高章（平均五点以上）' };
 
 export function intentTemplateName(template) {
   return INTENT_TEMPLATE_DISPLAY[template] || '打法';
@@ -93,6 +100,27 @@ export function intentHint(npc, intentLocked, ctx) {
         tag: '立意',
         title: `重${mannerNames[intentLocked.manner]}`,
         body: '不重体例之变，而在意境高下。'
+      });
+    }
+    if (intentLocked.stance) {
+      out.push({
+        tag: '战策',
+        title: `公开「${STANCE_NAMES[intentLocked.stance] || '定策'}」`,
+        body: '此策已在落笔前锁定；依其声势择相反章法，便能争得先机。'
+      });
+    }
+    if (intentLocked.pattern) {
+      out.push({
+        tag: '审律',
+        title: `专审${PATTERN_NAMES[intentLocked.pattern] || '骰组章法'}`,
+        body: '骰面将成何种章法，亦是本场可主动控制的取舍。'
+      });
+    }
+    if (intentLocked.watchesActive) {
+      out.push({
+        tag: '封心',
+        title: '紧盯主动文心',
+        body: '主动发动可换来作品收益，却会让对手乘势问锋。'
       });
     }
   }
@@ -166,6 +194,21 @@ function weaknessHintOne(w, ctx, styleNames, mannerNames, sigName, mech) {
       return `临题有人言：「${weaName}」——既知其意在${intentHint({ mech }, { styleDisclosed: true, mannerDisclosed: false }, ctx)[0]?.title || '某处'}，公开反制之，「${sigName}」自衰。`;
     case 'wea_cross_battle_shift':
       return `临题有人言：「${weaName}」——其计跨场而设，若本场改弦更张、与上场异辙，「${sigName}」之积威自减。`;
+    case 'wea_go_against_zeitgeist':
+      return `临题有人言：「${weaName}」——不必盲从当朝得势文风；只要所选文风仍与题材相得，便能削弱「${sigName}」。`;
+    case 'wea_hold_active_talent':
+      return `临题有人言：「${weaName}」——此人专候主动文心起势；若本场藏锋不用，便不让「${sigName}」借题发挥。`;
+    case 'wea_limited_extra_dice':
+      return `临题有人言：「${weaName}」——将追加骰控制在 ${Number(w.maxExtraDice) || 0} 枚以内，勿令骰组繁复，便可避其「${sigName}」审视。`;
+    case 'wea_stance_counter': {
+      const stance = mech && mech.intent && mech.intent.stance;
+      const need = w.counter && w.counter[stance];
+      const action = need === 'base_dice' ? '只用基础骰稳住篇章'
+        : need === 'one_extra' ? '恰追加一枚灵感骰冲破其守势'
+          : need === 'change_style' ? '换用与上场不同的文体'
+            : need === 'change_manner' ? '换用与上场不同的文风' : '依其公开战策变招';
+      return `临题有人言：「${weaName}」——对手已明示战策；可${action}，削弱「${sigName}」。`;
+    }
     default:
       return `临题有人言：「${weaName}」——观其招数，有可乘之隙。`;
   }
