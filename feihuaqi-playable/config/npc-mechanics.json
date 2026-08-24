@@ -1,6 +1,6 @@
 {
-  "_comment": "NPC 三机制模板库：招牌(signature)、破绽(weakness)、意图(intent)。首批 6 名机制 NPC + 王侍郎，按第五章强度预算配置。",
-  "version": 1,
+  "_comment": "NPC 三机制模板库：招牌(signature)、破绽(weakness)、意图(intent)。v2 新增逐潮、封心、审律骰组与公开战策四组可读互动。",
+  "version": 2,
   "budget": {
     "signatureMain": { "tongsheng": [0.05, 0.07], "xiucai": [0.06, 0.09], "juren": [0.08, 0.11], "jinshi": [0.09, 0.12], "zhukaoguan": [0.08, 0.12] },
     "signatureWeakRatio": { "juren": [0.30, 0.40], "jinshi": [0.30, 0.50], "zhukaoguan": [0.30, 0.50] },
@@ -74,6 +74,38 @@
       "trigger": { "palaceNext": true, "playerExploitedWeakness": true },
       "effect": { "type": "adapt_layer", "maxLayers": 2, "perLayer": 1, "weaknessDampen": 0.25, "minWeaknessRetention": 0.50 },
       "description": "殿试中{name}会根据上一场战况调整意图，重复破绽收益降低但保留至少一半。"
+    },
+    "sig_zeitgeist_surf": {
+      "name": "借风成势",
+      "category": "environment",
+      "trigger": { "npcMannerMatchesZeitgeist": true },
+      "effect": { "type": "pct", "value": "{pct}" },
+      "stack": "none",
+      "description": "{name}顺应当朝得势文风时，作品总分提高{pctP}。"
+    },
+    "sig_active_talent_tax": {
+      "name": "截脉问锋",
+      "category": "talent",
+      "trigger": { "playerActiveTalentUsed": true },
+      "effect": { "type": "pct", "value": "{pct}" },
+      "stack": "once",
+      "description": "玩家发动主动文心后，{name}乘势追问，作品总分提高{pctP}。"
+    },
+    "sig_dice_pattern_hunt": {
+      "name": "审律摘瑕",
+      "category": "dice_pattern",
+      "trigger": { "playerDicePattern": "{pattern}" },
+      "effect": { "type": "pct", "value": "{pct}" },
+      "stack": "once",
+      "description": "玩家骰组落入公开的{patternName}章法时，{name}作品总分提高{pctP}。"
+    },
+    "sig_declared_stance": {
+      "name": "先声定策",
+      "category": "strategy",
+      "trigger": { "publicStance": true },
+      "effect": { "type": "pct", "value": "{pct}" },
+      "stack": "none",
+      "description": "{name}已公开本场战策，若未被针对，作品总分提高{pctP}。"
     }
   },
   "weaknessTemplates": {
@@ -139,6 +171,38 @@
       "condition": { "palaceNext": true, "playerChangedStrategy": true },
       "primary": { "removeAdaptLayer": "{layerReduce}" },
       "description": "下一场改变文体/文风/资源打法时，移除一层跨场适应的{layerReduceP}收益。"
+    },
+    "wea_go_against_zeitgeist": {
+      "name": "逆潮立骨",
+      "category": "environment",
+      "condition": { "playerMannerNotZeitgeist": true, "baseAffinity": ">={minAffinity}" },
+      "primary": { "shutdownSignature": "{mainSig}", "retention": "{retention}" },
+      "playerBonus": { "type": "pct", "value": "{bonus}" },
+      "description": "不随当朝风潮、却仍以相得文风切题时，可削弱「{sigName}」并获得创见加成。"
+    },
+    "wea_hold_active_talent": {
+      "name": "藏锋守拙",
+      "category": "talent",
+      "condition": { "playerActiveTalentUsed": false },
+      "primary": { "shutdownSignature": "{mainSig}", "retention": "{retention}" },
+      "playerBonus": { "type": "pct", "value": "{bonus}" },
+      "description": "本场不用主动文心，令「{sigName}」无从借题发挥。"
+    },
+    "wea_limited_extra_dice": {
+      "name": "收束成篇",
+      "category": "resource",
+      "condition": { "playerExtraDice": "<={maxExtraDice}" },
+      "primary": { "shutdownSignature": "{mainSig}", "retention": "{retention}" },
+      "playerBonus": { "type": "pct", "value": "{bonus}" },
+      "description": "将追加骰控制在{maxExtraDice}枚以内，避开「{sigName}」审视的骰组花样。"
+    },
+    "wea_stance_counter": {
+      "name": "对策破锋",
+      "category": "information",
+      "condition": { "counterPublicStance": true },
+      "primary": { "shutdownSignature": "{mainSig}", "retention": "{retention}" },
+      "playerBonus": { "type": "pct", "value": "{bonus}" },
+      "description": "按其公开战策选择对应章法，可削弱「{sigName}」。"
     }
   },
   "intentTemplates": {
@@ -194,6 +258,30 @@
       "firstBattle": { "fallback": "int_preferred_style" },
       "disclosure": "category",
       "description": "{name}已根据上一场战况调整策略。"
+    },
+    "int_zeitgeist": {
+      "name": "逐潮意图",
+      "type": "zeitgeist",
+      "disclosure": "full",
+      "description": "{name}本场顺应当朝风潮，以得势文风行文。"
+    },
+    "int_active_watch": {
+      "name": "封心意图",
+      "type": "active_watch",
+      "disclosure": "action",
+      "description": "{name}本场紧盯主动文心的起落。"
+    },
+    "int_pattern_hunt": {
+      "name": "审律意图",
+      "type": "pattern",
+      "disclosure": "full",
+      "description": "{name}本场专审玩家公开的骰组章法。"
+    },
+    "int_declared_stance": {
+      "name": "定策意图",
+      "type": "stance",
+      "disclosure": "full",
+      "description": "{name}已公开本场战策，邀你正面拆解。"
     }
   }
 }

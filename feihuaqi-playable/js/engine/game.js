@@ -1755,6 +1755,7 @@ export class Game {
         npcAttrs: (npc && npc.attrs) || {},
         af,
         theme,
+        zeitgeist: s.zeitgeist,
         templates: tplLib
       });
       // 联力未解锁时，若意图锁定了联体，回退期望分最优（避免锁死不可用文体）
@@ -1763,7 +1764,12 @@ export class Game {
       }
     }
     const intentLocked = npcIntent
-      ? { style: npcIntent.style, manner: npcIntent.manner, styleDisclosed: npcIntent.styleDisclosed, mannerDisclosed: npcIntent.mannerDisclosed }
+      ? {
+          style: npcIntent.style, manner: npcIntent.manner,
+          styleDisclosed: npcIntent.styleDisclosed, mannerDisclosed: npcIntent.mannerDisclosed,
+          stance: npcIntent.stance, pattern: npcIntent.pattern, watchesActive: npcIntent.watchesActive,
+          template: npcIntent.template
+        }
       : null;
 
     // 为会话分配确定性的单场标识。结算可能因 UI 重试/读档恢复被再次调用，
@@ -2181,7 +2187,12 @@ export class Game {
       // 意图反制破绽：玩家出战是否与 NPC 本场锁定意图一致（供 wea_counter_intent 使用）
       const il = session.intentLocked;
       matchesIntent = !!(il && style === il.style && manner === il.manner);
-      pm = { style, manner, extraDice, matchesIntent };
+      pm = {
+        style, manner, extraDice, matchesIntent,
+        dicePips,
+        activeTalentUsed: Array.isArray(session.usedActive) && session.usedActive.length > 0,
+        playerAffinity: base
+      };
       const playerHistory = this._mechHistoryForNpc(stableFoeId(session.npc));
       // 跨场换策破绽：殿试按整段序列（考官席互通）判换策；普通战按逐考官历史判
       strategyChanged = session.isPalace
@@ -2205,12 +2216,13 @@ export class Game {
         templates: tplLib,
         result: null, relativeMargin: null,
         strategyChanged,
-        palaceAdapt
+        palaceAdapt, zeitgeist: s.zeitgeist, intentStance: session.intentLocked && session.intentLocked.stance
       });
       // 招牌（后）
       const tri = R.signatureTriggered({
         mech: npcMech, npcStyle, npcManner,
-        playerMove: pm, playerHistory, templates: tplLib
+        playerMove: pm, playerHistory, templates: tplLib,
+        zeitgeist: s.zeitgeist, intentStance: session.intentLocked && session.intentLocked.stance
       });
       mechOut = { tri, wea, mods: R.signatureScoreMods(tri, wea, npcMech.signature, { extraDice, npcSi: npcAttrs.si || 0, npcExpected }) };
       session._mechOut = mechOut;
@@ -2275,14 +2287,14 @@ export class Game {
     if (mechOut && hasCrushingWin) {
       const hi = Math.max(selfCalc.total, oppCalc.total);
       const relMarg = hi > 0 ? (selfCalc.total - oppCalc.total) / hi : 0;
-      const pm2 = { style, manner, extraDice, matchesIntent };
+      const pm2 = { ...pm };
       const wea2 = R.weaknessResolution({
         mech: npcMech, npcStyle,
         playerMove: pm2,
         playerHistory: this._mechHistoryForNpc(stableFoeId(session.npc)), npcManner,
         templates: this.cfg['npc-mechanics'] || {},
         result, relativeMargin: relMarg, strategyChanged,
-        palaceAdapt
+        palaceAdapt, zeitgeist: s.zeitgeist, intentStance: session.intentLocked && session.intentLocked.stance
       });
       const mods2 = R.signatureScoreMods(mechOut.tri, wea2, npcMech.signature, { extraDice, npcSi: npcAttrs.si || 0, npcExpected });
       if (mods2 !== mechOut.mods) {
