@@ -8,12 +8,19 @@ const root=dirname(fileURLToPath(import.meta.url)).replace(/\\/g, '/');
 const cfg=root+'/feihuaqi-playable/config/';
 const read=n=>JSON.parse(readFileSync(cfg+n+'.json','utf8'));
 const talentOnly=process.argv.includes('--talents');
+const contentOnly=process.argv.includes('--content-only');
 
 // ---- 1) feihua-content.json ----
 const contentPath=root+'/feihua-content.json';
 let prevVersion=1;
 let previous={};
 try { previous=JSON.parse(readFileSync(contentPath,'utf8')); prevVersion=Number(previous._version)||1; } catch {}
+if (contentOnly) {
+  const data={ ...previous, _type:'feihua-content', _version:prevVersion+1, npcs:read('npcs') };
+  writeFileSync(contentPath,JSON.stringify(data,null,2)+'\n','utf8');
+  console.log(JSON.stringify({ contentVersion:data._version, mode:'content-only', npcTiers:(data.npcs||[]).length },null,2));
+  process.exit(0);
+}
 const talentData={ talents:read('talents'), 'talent-upgrade':read('talent-upgrade'), synergies:read('synergies') };
 const data=talentOnly ? { ...previous, _type:'feihua-content', _version:prevVersion+1, ...talentData } : {
   _type:'feihua-content', _version:prevVersion+1,
