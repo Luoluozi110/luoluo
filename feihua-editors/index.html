@@ -748,6 +748,31 @@
     </div>
     <div class="field">
       <label>
+        殿试必遇条件
+        <span class="npc-mech-hint" title="满足条件时，殿试会优先锁定该 NPC；留空表示按普通权重抽取。">ⓘ 条件编辑</span>
+      </label>
+      <label class="check" style="display:flex;align-items:center;gap:8px;margin:8px 0">
+        <input type="checkbox" id="npc-palace-force-enabled" />
+        启用殿试必遇
+      </label>
+      <div id="npcPalaceForceBox" class="row2" hidden>
+        <div class="field" style="margin:0;max-width:180px">
+          <label>主属性</label>
+          <select id="npc-palace-primary"></select>
+        </div>
+        <div class="field" style="margin:0;max-width:180px">
+          <label>主属性必须大于</label>
+          <input type="number" id="npc-palace-min-exclusive" step="1" placeholder="35" />
+        </div>
+        <div class="field" style="margin:0;min-width:240px">
+          <label>并且严格高于</label>
+          <div id="npcPalaceCompareBox" class="row2"></div>
+        </div>
+      </div>
+      <div class="msg" id="npcPalaceForceMsg" style="margin-top:6px"></div>
+    </div>
+    <div class="field">
+      <label>
         三机制配置（招牌 / 破绽 / 意图，可留空表示普通对手）
         <span class="npc-mech-hint" title="优先使用下方选项编辑；高级 JSON 可直接修改复杂机制。">
           ⓘ 选项编辑

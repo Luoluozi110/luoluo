@@ -417,6 +417,41 @@ console.log('[7.5] NPC：出战权重字段编辑往返 + 0 校验');
   }
 }
 
+console.log('[7.6] NPC：殿试必遇条件可视化编辑 + 保存往返');
+{
+  const tiers = window.NPC.exportRaw();
+  let kang = null;
+  tiers.some((tier, ti) => tier.npcs.some((npc, ni) => {
+    if (npc.id === 'kang_er_yu') { kang = { ti, ni, npc }; return true; }
+    return false;
+  }));
+  ok(!!kang, '种子数据包含康尔玉');
+  if (kang) {
+    const btn = document.querySelector(`[data-edit-npc="${kang.ti}:${kang.ni}"]`);
+    ok(!!btn, '康尔玉编辑入口存在');
+    if (btn) {
+      click(btn);
+      const enabled = document.getElementById('npc-palace-force-enabled');
+      const primary = document.getElementById('npc-palace-primary');
+      const min = document.getElementById('npc-palace-min-exclusive');
+      ok(enabled && enabled.checked, '殿试必遇开关正确回填');
+      ok(primary && primary.value === 'lian', '主属性回填为联力');
+      ok(min && min.value === '35', '阈值回填为 35');
+      ok(document.querySelector('[data-palace-compare="shi"]')?.checked && document.querySelector('[data-palace-compare="ci"]')?.checked, '诗力/词力严格高于条件正确回填');
+      click(document.getElementById('npcSave'));
+      const savedKang = window.NPC.exportRaw()[kang.ti].npcs[kang.ni];
+      ok(savedKang.palaceForcedWhen && savedKang.palaceForcedWhen.primary === 'lian', '保存后主属性条件保留');
+      ok(savedKang.palaceForcedWhen.minExclusive === 35, '保存后阈值条件保留');
+      ok(JSON.stringify(savedKang.palaceForcedWhen.strictlyHigherThan) === JSON.stringify(['shi', 'ci']), '保存后严格高于条件保留');
+      const saved = JSON.parse(localStorage.getItem('feihua_editors_v1_npcs'));
+      ok(saved[kang.ti].npcs[kang.ni].palaceForcedWhen.minExclusive === 35, '殿试必遇条件持久化 localStorage');
+      const seedRes = readFileSync(join(root, 'assets/js/seed-npcs.js'), 'utf8')
+        .replace(/^[\s\S]*?window\.GAME_NPCS\s*=\s*/, '').replace(/;\s*$/, '');
+      window.NPC.importData(JSON.parse(seedRes), true);
+    }
+  }
+}
+
 console.log('[8] 文心 ↔ 奇遇双向关联：建立 / 重复 / 冲突 / 取消 / 持久化');
 {
   const tid = 'T034';
