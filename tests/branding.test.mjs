@@ -13,7 +13,7 @@ const multiplayerDemo = read('../feihuaqi-multiplayer/client/demo.html');
 
 assert.match(gameIndex, /<title>文心棋<\/title>/, '线上游戏网页标题统一为文心棋');
 assert.match(gameIndex, /application-name" content="文心棋"/, '线上游戏应用名称统一为文心棋');
-assert.match(gameIndex, /app\.js\?v=20260824brand1/, '游戏入口为品牌更新使用独立缓存版本');
+assert.match(gameIndex, /app\.js\?v=20260824wenxindice1/, '游戏入口使用新版文心独立缓存版本');
 assert.match(gameApp, /album\.js\?v=20260824brand1/, '名篇 UI 使用更新后的品牌模块');
 assert.match(gameApp, /engine\/album\.js\?v=20260824brand1/, '存档模块使用更新后的品牌模块');
 assert.ok(gameApp.includes('文 心 棋'), '游戏内流派选择页展示文心棋名称');

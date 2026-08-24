@@ -26,9 +26,9 @@ const dom = new JSDOM(html, {
 const { window } = dom;
 const { document, localStorage } = window;
 
-// 模拟已经使用过旧版编辑器的浏览器：localStorage 里有旧文心，唯独没有新发布的 T034 / TA08。
+// 模拟已经使用过旧版编辑器的浏览器：localStorage 里没有后续发布的官方文心。
 // 必须在 DOMContentLoaded 触发前写入，才能覆盖模块 init() 的真实加载路径。
-const oldTalents = (window.GAME_TALENTS || []).filter(t => !['T034', 'TA08'].includes(t.id));
+const oldTalents = (window.GAME_TALENTS || []).filter(t => !['T034', 'T035', 'T036', 'T037', 'T038', 'T039', 'T040', 'TA08'].includes(t.id));
 localStorage.setItem('feihua_editors_v1_talents', JSON.stringify(oldTalents));
 // 同时模拟隐藏终圈上线前的编辑器缓存：三份旧数据都没有新增的系统字段。
 const oldBoard = JSON.parse(JSON.stringify(window.GAME_BOARD || {}));
@@ -200,6 +200,9 @@ ok(storedTalents.some(t => t.id === 'T034'), '补齐后的 T034 已持久化 loc
 const ta08 = window.TALENT.get().find(t => t.id === 'TA08');
 ok(!!ta08 && ta08.name === '布局谋篇' && ta08.effect.type === 'planned_dice', '旧 localStorage 自动补齐 TA08「布局谋篇」');
 ok(storedTalents.some(t => t.id === 'TA08'), '补齐后的 TA08 已持久化 localStorage');
+const diceWenxin = ['T035', 'T036', 'T037', 'T038', 'T039', 'T040'].map(id => window.TALENT.get().find(t => t.id === id));
+ok(diceWenxin.every(Boolean), '旧 localStorage 自动补齐 6 枚新版文心');
+ok(diceWenxin.some(t => t.effect.type === 'dice_pattern') && diceWenxin.some(t => t.effect.type === 'manuscript_pct'), '新版骰组与稿本效果在编辑器中保持类型');
 const upgradeCount = window.TALENT.get().filter(t => t.upgrade).length;
 ok(upgradeCount === Object.keys(window.GAME_TALENT_UPGRADE || {}).length && upgradeCount >= 40, '游戏升级配置已合并到编辑器文心', upgradeCount);
 const t001 = window.TALENT.get().find(t => t.id === 'T001');
@@ -207,11 +210,27 @@ ok(!!t001 && t001.upgrade && t001.upgrade.maxLevel === 3 && t001.upgrade.levels.
 const ta08Card = window.TALENT.get().find(t => t.id === 'TA08');
 ok(!!ta08Card && ta08Card.cost === 5 && ta08Card.upgrade && ta08Card.upgrade.levels[0].cost === 5, '布局谋篇编辑器成本与升级配置完整');
 ok(document.querySelectorAll('#afflist select.aff-cell').length === 36, '相性矩阵 36 格下拉', document.querySelectorAll('#afflist select.aff-cell').length);
-ok(document.querySelectorAll('#synlist .q-card').length === 9, '羁绊列表 9 条', document.querySelectorAll('#synlist .q-card').length);
+ok(document.querySelectorAll('#synlist .q-card').length === 11, '羁绊列表 11 条', document.querySelectorAll('#synlist .q-card').length);
 ok(document.querySelectorAll('#boardlist .board-card').length === 192 && window.BOARD.get().layout === 'concentric_spiral' && window.BOARD.get().mainRing.length === 192 && window.BOARD.get().rings.map(r => r.cells.length).join(',') === '72,64,56', '三圈地图列表 192 格（72/64/56）', document.querySelectorAll('#boardlist .board-card').length);
 ok(document.querySelectorAll('#skylist .sky-card').length === 6, '天象列表 6 张', document.querySelectorAll('#skylist .sky-card').length);
 ok(window.ALBUM.get().length === 12, '传世名篇默认 12 张', window.ALBUM.get().length);
 ok(document.querySelectorAll('#albumlist .q-card').length === 12, '传世名篇列表 12 张', document.querySelectorAll('#albumlist .q-card').length);
+
+console.log('[2.1] 新版骰组效果：字段可编辑并完整往返');
+{
+  const idx = window.TALENT.get().findIndex(t => t.id === 'T039');
+  click(document.querySelector(`#tallist [data-edit="${idx}"]`));
+  const pattern = document.querySelector('#tal-eff-dyn .tal-pattern');
+  const reward = document.querySelector('#tal-eff-dyn .tal-reward-type');
+  const pct = document.querySelector('#tal-eff-dyn .tal-value-pct');
+  ok(pattern && pattern.value === 'pair', '同声相应正确回填“出现同点”条件');
+  ok(reward && reward.value === 'inspiration', '同声相应正确回填灵感后续收益');
+  if (pct) { pct.value = '9'; fire(pct, 'input'); }
+  click(document.getElementById('talSave'));
+  const saved = window.TALENT.get().find(t => t.id === 'T039');
+  ok(saved && saved.effect.pattern === 'pair' && saved.effect.value === 0.09, '骰组条件与百分比修改写回 state');
+  ok(saved && saved.effect.reward && saved.effect.reward.type === 'inspiration' && saved.effect.reward.value === 1, '后续收益未被保存过程丢弃');
+}
 
 console.log('[3] 相性：改矩阵格 → 状态 + localStorage 同步');
 {

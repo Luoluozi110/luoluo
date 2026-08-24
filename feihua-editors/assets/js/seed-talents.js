@@ -1,4 +1,4 @@
-/* 飞花棋游戏原始文心（config/talents.json）。作为编辑器默认种子数据。由游戏配置同步生成，请勿手工改动 —— 在编辑器内管理后导出即可覆盖。 */
+/* 文心棋游戏原始文心（config/talents.json）。作为编辑器默认种子数据。由游戏配置同步生成，请勿手工改动 —— 在编辑器内管理后导出即可覆盖。 */
 window.GAME_TALENTS = [
   {
     "id": "T001",
@@ -53,10 +53,13 @@ window.GAME_TALENTS = [
     "id": "T005",
     "name": "急智",
     "kind": "passive",
-    "text": "临场生风，机锋不落。每场论战的灵感骰点数 +1。",
+    "text": "临场生风，机锋不落。每场将一枚不高于 2 点的灵感骰抬高 1 点；变形后的骰面可继续触发其他文心。",
     "effect": {
-      "type": "dice_plus",
-      "value": 1
+      "type": "dice_transform",
+      "mode": "low_lift",
+      "threshold": 2,
+      "value": 1,
+      "count": 1
     },
     "school": "qishi"
   },
@@ -76,11 +79,11 @@ window.GAME_TALENTS = [
     "id": "T007",
     "name": "梦笔生花",
     "kind": "passive",
-    "text": "五代王仁裕《开元天宝遗事》载：李白少时梦所用之笔头上生花，此后天才赡逸，名闻天下。创作时 20% 概率灵光爆发，得分 ×1.5。",
+    "text": "五代王仁裕《开元天宝遗事》载：李白少时梦所用之笔头上生花，此后天才赡逸，名闻天下。每枚最终为 6 点的灵感骰令作品得分 +5%。",
     "effect": {
-      "type": "crit",
-      "chance": 0.2,
-      "mult": 1.5
+      "type": "dice_pattern",
+      "pattern": "six",
+      "value": 0.05
     }
   },
   {
@@ -111,10 +114,12 @@ window.GAME_TALENTS = [
     "id": "T010",
     "name": "天马行空",
     "kind": "passive",
-    "text": "笔势腾踔，不拘辙迹。灵感骰点数 +1。",
+    "text": "笔势腾踔，不拘辙迹。首枚追加灵感骰少耗 2 灵感；骰组中每多一种不同点数，作品得分 +3%。",
     "effect": {
-      "type": "dice_plus",
-      "value": 1
+      "type": "dice_pattern",
+      "pattern": "distinct",
+      "value": 0.03,
+      "firstCostDiscount": 2
     }
   },
   {
@@ -130,7 +135,7 @@ window.GAME_TALENTS = [
     "id": "T012",
     "name": "李杜文章",
     "kind": "passive",
-    "text": "「李杜文章在，光焰万丈长。」——韩愈《调张籍》。以诗出战获胜时，诗力额外 +2。",
+    "text": "「李杜文章在，光焰万丈长。」——韩愈《调张籍》。以诗出战获胜时，诗力额外 +2。需先有「浪漫主义」倾向。",
     "effect": {
       "type": "on_win_bonus",
       "style": "shi",
@@ -141,7 +146,7 @@ window.GAME_TALENTS = [
     "id": "T013",
     "name": "凡有井水处",
     "kind": "passive",
-    "text": "南宋叶梦得《避暑录话》载：凡有井水饮处，即能歌柳词。以词出战获胜时，词力额外 +2。",
+    "text": "南宋叶梦得《避暑录话》载：凡有井水饮处，即能歌柳词。以词出战获胜时，词力额外 +2。需先有「婉约派」倾向 ×2。",
     "effect": {
       "type": "on_win_bonus",
       "style": "ci",
@@ -152,7 +157,7 @@ window.GAME_TALENTS = [
     "id": "T014",
     "name": "铁板铜琶",
     "kind": "passive",
-    "text": "俞文豹《吹剑续录》载幕士评东坡词：须关西大汉，执铁板，唱「大江东去」。以联出战获胜时，联力额外 +2。",
+    "text": "俞文豹《吹剑续录》载幕士评东坡词：须关西大汉，执铁板，唱「大江东去」。以联出战获胜时，联力额外 +2。需先有「豪放派」倾向。",
     "effect": {
       "type": "on_win_bonus",
       "style": "lian",
@@ -163,21 +168,22 @@ window.GAME_TALENTS = [
     "id": "T015",
     "name": "不平则鸣",
     "kind": "passive",
-    "text": "「大凡物不得其平则鸣。」——韩愈《送孟东野序》。胸中块垒一朝喷薄：15% 概率得分 ×1.6。",
+    "text": "「大凡物不得其平则鸣。」——韩愈《送孟东野序》。灵感不高于 12 时，胸中块垒尽发，本场得分 +12%。需先有「哲思派」倾向。",
     "effect": {
-      "type": "crit",
-      "chance": 0.15,
-      "mult": 1.6
+      "type": "comeback",
+      "threshold": 12,
+      "value": 0.12
     }
   },
   {
     "id": "T016",
     "name": "文思泉涌",
     "kind": "passive",
-    "text": "思若泉涌，源源不绝。灵感波动改为 1d6×6，下限抬高、上限拉开。",
+    "text": "思若泉涌，源源不绝。首枚追加灵感骰少耗 1 灵感；每追加一枚，作品乘区额外 +5%。",
     "effect": {
-      "type": "dice_mult",
-      "value": 6
+      "type": "extra_dice_pct",
+      "value": 0.05,
+      "firstCostDiscount": 1
     }
   },
   {
@@ -195,10 +201,11 @@ window.GAME_TALENTS = [
     "id": "TA01",
     "name": "七步成诗",
     "kind": "active",
-    "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」跳过审题与选风格，本场灵感波动锁定为固定 +15。",
+    "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」本场首枚灵感骰最低视为 4 点；抬高后的骰面可触发骰组文心。",
     "effect": {
-      "type": "fixed_dice",
-      "value": 15
+      "type": "dice_transform",
+      "mode": "first_floor",
+      "floor": 4
     },
     "cost": 3
   },
@@ -216,10 +223,14 @@ window.GAME_TALENTS = [
     "id": "TA03",
     "name": "语不惊人",
     "kind": "active",
-    "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。本场灵感波动改为 1d6×8，高风险高回报。",
+    "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。本场每枚 5—6 点骰令得分 +14%，每枚 1—2 点骰令得分 −7%。",
     "effect": {
-      "type": "dice_mult",
-      "value": 8
+      "type": "dice_pattern",
+      "pattern": "extremes",
+      "highMin": 5,
+      "highValue": 0.14,
+      "lowMax": 2,
+      "lowValue": -0.07
     },
     "cost": 4
   },
@@ -227,11 +238,11 @@ window.GAME_TALENTS = [
     "id": "TA04",
     "name": "笔落惊风雨",
     "kind": "active",
-    "text": "「笔落惊风雨，诗成泣鬼神。」——杜甫《寄李十二白二十韵》。本场 35% 概率触发灵光爆发，得分 ×1.5。",
+    "text": "「笔落惊风雨，诗成泣鬼神。」——杜甫《寄李十二白二十韵》。本场每枚最终为 6 点的灵感骰令作品得分 +14%。",
     "effect": {
-      "type": "crit",
-      "chance": 0.35,
-      "mult": 1.5
+      "type": "dice_pattern",
+      "pattern": "six",
+      "value": 0.14
     },
     "cost": 3
   },
@@ -239,10 +250,10 @@ window.GAME_TALENTS = [
     "id": "TA05",
     "name": "一气呵成",
     "kind": "active",
-    "text": "行文如一线贯珠，中无断续。本场灵感骰点数 +3。",
+    "text": "行文如一线贯珠，中无断续。本场每追加 1 枚灵感骰，作品乘区额外 +8%。",
     "effect": {
-      "type": "dice_plus",
-      "value": 3
+      "type": "extra_dice_pct",
+      "value": 0.08
     },
     "cost": 2
   },
@@ -261,10 +272,12 @@ window.GAME_TALENTS = [
     "id": "TA07",
     "name": "点铁成金",
     "kind": "active",
-    "text": "黄庭坚《答洪驹父书》：古之能为文章者……虽取古人之陈言入于翰墨，如灵丹一粒，点铁成金也。本场灵感波动改为 1d6×7。",
+    "text": "黄庭坚《答洪驹父书》：虽取古人之陈言入于翰墨，如灵丹一粒，点铁成金也。本场将一枚最低且不高于 2 点的灵感骰化为 6 点。",
     "effect": {
-      "type": "dice_mult",
-      "value": 7
+      "type": "dice_transform",
+      "mode": "lowest_to",
+      "maxPip": 2,
+      "target": 6
     },
     "cost": 3
   },
@@ -480,6 +493,93 @@ window.GAME_TALENTS = [
       "excludeFlag": "inspiration_capacity"
     },
     "acquireText": "进入第二圈且累计至少 5 胜，本局尚未获得扩容文心时进入随机池。"
+  },
+  {
+    "id": "T035",
+    "name": "删繁就简",
+    "kind": "passive",
+    "text": "郑板桥题画有言：删繁就简三秋树，领异标新二月花。只以一枚灵感骰收笔时，作品得分 +8%，战后心得额外 +1。",
+    "effect": {
+      "type": "dice_pattern",
+      "pattern": "single",
+      "value": 0.08,
+      "reward": {
+        "type": "insight",
+        "value": 1,
+        "perMatch": false
+      }
+    }
+  },
+  {
+    "id": "T036",
+    "name": "字字珠玑",
+    "kind": "passive",
+    "text": "字字圆转，句句有光。若本场全部灵感骰最终均不低于 4 点，作品得分 +10%，并额外沉淀 1 份残页。",
+    "effect": {
+      "type": "dice_pattern",
+      "pattern": "all_high",
+      "minPip": 4,
+      "value": 0.1,
+      "reward": {
+        "type": "fragment",
+        "value": 1,
+        "perMatch": false
+      }
+    }
+  },
+  {
+    "id": "T037",
+    "name": "触类旁通",
+    "kind": "passive",
+    "text": "《周易·系辞》言：引而伸之，触类而长之。若本场改用不同于上一场的文体，作品得分 +8%，战后心得额外 +1。",
+    "effect": {
+      "type": "style_switch_pct",
+      "value": 0.08,
+      "insight": 1
+    }
+  },
+  {
+    "id": "T038",
+    "name": "落笔成章",
+    "kind": "passive",
+    "text": "胸中已有篇章，落笔自见经营。每持有 2 页稿本，作品得分 +2%，最多 +10%。",
+    "effect": {
+      "type": "manuscript_pct",
+      "step": 2,
+      "value": 0.02,
+      "cap": 0.1
+    }
+  },
+  {
+    "id": "T039",
+    "name": "同声相应",
+    "kind": "passive",
+    "text": "《周易·乾》言：同声相应，同气相求。若骰组中出现同点灵感骰，作品得分 +8%，战后返还 1 点灵感。",
+    "effect": {
+      "type": "dice_pattern",
+      "pattern": "pair",
+      "value": 0.08,
+      "reward": {
+        "type": "inspiration",
+        "value": 1,
+        "perMatch": false
+      }
+    }
+  },
+  {
+    "id": "T040",
+    "name": "妙手偶得",
+    "kind": "passive",
+    "text": "陆游诗云：文章本天成，妙手偶得之。每枚最终为 6 点的灵感骰额外沉淀 0.5 份残页。",
+    "effect": {
+      "type": "dice_pattern",
+      "pattern": "six",
+      "value": 0,
+      "reward": {
+        "type": "fragment",
+        "value": 0.5
+      }
+    }
   },
   {
     "id": "T034",

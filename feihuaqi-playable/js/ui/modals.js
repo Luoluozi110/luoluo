@@ -841,6 +841,27 @@ export function talentEffectText(t) {
       const discount = Number(e.firstCostDiscount) || 0;
       return discount ? `首枚追加少耗 ${discount} 灵感；${pct}` : pct;
     }
+    case 'dice_transform':
+      if (e.mode === 'first_floor') return `本场首枚灵感骰最低视为 ${e.floor || 4} 点`;
+      if (e.mode === 'lowest_to') return `将最低且不高于 ${e.maxPip || 3} 点的一骰化为 ${e.target || 6} 点`;
+      return `将 ${e.count || 1} 枚不高于 ${e.threshold || 2} 点的最低骰抬高 ${e.value || 1} 点`;
+    case 'dice_pattern': {
+      const pct = n => `${Math.round((Number(n) || 0) * 100)}%`;
+      let s = e.pattern === 'six' ? `每枚最终六点骰，得分 +${pct(e.value)}`
+        : e.pattern === 'distinct' ? `每多一种不同点数，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚追加少耗 ${e.firstCostDiscount} 灵感` : ''}`
+        : e.pattern === 'single' ? `仅以一枚骰结算，得分 +${pct(e.value)}`
+        : e.pattern === 'all_high' ? `全部骰不低于 ${e.minPip || 4} 点，得分 +${pct(e.value)}`
+        : e.pattern === 'pair' ? `骰组出现同点，得分 +${pct(e.value)}`
+        : e.pattern === 'total' ? `骰组总点不少于 ${e.threshold || 12}，得分 +${pct(e.value)}`
+        : `每枚 ≥${e.highMin || 5} 点骰 +${pct(e.highValue)}；每枚 ≤${e.lowMax || 2} 点骰 ${pct(e.lowValue)}`;
+      if (e.reward && Number(e.reward.value) > 0) {
+        const rn = { insight: '心得', fragment: '残页', page: '稿页', inspiration: '灵感' }[e.reward.type] || e.reward.type;
+        s += `；触发后 ${rn} +${e.reward.value}${e.reward.perMatch === false ? '（每场一次）' : '（按命中数）'}`;
+      }
+      return s;
+    }
+    case 'style_switch_pct': return `换用不同于上一场的文体：得分 +${Math.round((e.value || 0) * 100)}%，心得 +${e.insight || 0}`;
+    case 'manuscript_pct': return `每持有 ${e.step || 2} 页稿本，得分 +${Math.round((e.value || 0) * 100)}%（上限 ${Math.round((e.cap || 0) * 100)}%）`;
     case 'copy_affinity': return '复制对手本场风格的相性加成';
     case 'crit': return `${Math.round((e.chance || 0) * 100)}% 概率神来之笔，得分 ×${e.mult}`;
     case 'attr_flat': return Object.entries(e.attrs || {}).map(([k, v]) => `${ATTR_NAMES[k]} +${v}`).join('　');

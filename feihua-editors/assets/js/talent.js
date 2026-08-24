@@ -3,8 +3,8 @@
  * 数据结构与游戏 config/talents.json 完全兼容：
  *   {id, name, kind:'passive'|'active', school?, text,
  *    effect:{type, ...}, cost?(active), source?}
- * effect.type ∈ {on_win_bonus, attr_flat, dice_plus, crit, copy_affinity,
- *                 dice_mult, palace_pct, fixed_dice, planned_dice, unlock_lian}
+ * effect.type 由 TALENT_TYPES 统一声明；新版灵感骰效果使用 dice_transform / dice_pattern，
+ * 避免继续新增彼此割裂的“固定骰”“覆盖倍率”特例。
  * 依赖 common.js（Common.*）。视觉与题库 / 奇遇编辑器保持同一套墨纸主题。
  * ========================================================================= */
 (function (global) {
@@ -17,7 +17,8 @@
   const THEME_NAME = { yongwu: "咏物", songbie: "送别", shanshui: "山水", biansai: "边塞", huaigu: "怀古", jieling: "节令" };
   const TALENT_TYPES = ["on_win_bonus", "attr_flat", "dice_plus", "crit",
     "copy_affinity", "dice_mult", "palace_pct", "fixed_dice", "planned_dice", "unlock_lian",
-    "insp_on_win", "draw_bonus", "insp_on_talent",
+    "insp_on_win", "draw_bonus", "insp_on_talent", "extra_dice_pct",
+    "dice_transform", "dice_pattern", "style_switch_pct", "manuscript_pct",
     // —— 以下为「创意文心」新增效果类型 ——
     "style_pct", "theme_pct", "streak_mult", "insp_floor", "lucky_six",
     "comeback", "armory_pct", "study_bonus", "palace_insp", "start_insp",
@@ -36,6 +37,11 @@
     insp_on_win: "获胜时灵感（每场论战取胜 +value 灵感）",
     draw_bonus: "平局时出战文体（平分秋色时出战文体 +value）",
     insp_on_talent: "获得文心时灵感（每得一枚新文心 +value 灵感）",
+    extra_dice_pct: "追加骰增益（每枚追加骰 +value%，可降低首次消耗）",
+    dice_transform: "骰面化用（抬低点 / 首骰保底 / 最低点化六）",
+    dice_pattern: "骰组章法（六点 / 异点 / 单骰 / 全高 / 同点 / 总和 / 两极）",
+    style_switch_pct: "触类旁通（换文体得分与心得）",
+    manuscript_pct: "稿本成章（按当前稿页提高得分）",
     style_pct: "文体偏爱（以某体出战得分常驻 +value%）",
     theme_pct: "题材偏爱（出战某题材得分 +value%）",
     streak_mult: "连捷增益（气势连捷收益 ×(1+value)）",
@@ -79,6 +85,11 @@
     if (type === "insp_max") return { type, value: 6, group: "inspiration_capacity" };
     if (type === "reincarnate") return { type, inspThreshold: 40, attrRatio: 0.8 };
     if (type === "planned_dice") return { type, baseCost: 5, costStep: 2, maxValue: 6 };
+    if (type === "extra_dice_pct") return { type, value: 0.05, firstCostDiscount: 0 };
+    if (type === "dice_transform") return { type, mode: "low_lift", threshold: 2, value: 1, count: 1 };
+    if (type === "dice_pattern") return { type, pattern: "six", value: 0.05 };
+    if (type === "style_switch_pct") return { type, value: 0.08, insight: 1 };
+    if (type === "manuscript_pct") return { type, step: 2, value: 0.02, cap: 0.1 };
     return { type, value: 1 }; // dice_plus / fixed_dice / dice_mult / palace_pct / insp_on_win / draw_bonus / insp_on_talent
   }
   function cleanAttrs(a) {
@@ -103,6 +114,24 @@
     else if (type === "insp_max") { out.value = Number(eff.value) || 0; out.group = String(eff.group || "inspiration_capacity"); }
     else if (type === "reincarnate") { out.inspThreshold = Math.max(0, Number(eff.inspThreshold) || 0); out.attrRatio = Math.max(0, Math.min(1, Number(eff.attrRatio) || 0)); }
     else if (type === "planned_dice") { out.baseCost = Math.max(1, Number(eff.baseCost) || 5); out.costStep = Math.max(0, Number(eff.costStep) || 2); out.maxValue = Math.max(1, Math.min(6, Number(eff.maxValue) || 6)); }
+    else if (type === "extra_dice_pct") { out.value = Number(eff.value) || 0; out.firstCostDiscount = Math.max(0, Number(eff.firstCostDiscount) || 0); }
+    else if (type === "dice_transform") {
+      out.mode = ["low_lift", "first_floor", "lowest_to"].includes(eff.mode) ? eff.mode : "low_lift";
+      if (out.mode === "low_lift") { out.threshold = Math.max(1, Math.min(6, Number(eff.threshold) || 2)); out.value = Math.max(1, Number(eff.value) || 1); out.count = Math.max(1, Number(eff.count) || 1); }
+      else if (out.mode === "first_floor") out.floor = Math.max(1, Math.min(6, Number(eff.floor) || 4));
+      else { out.maxPip = Math.max(1, Math.min(6, Number(eff.maxPip) || 3)); out.target = Math.max(1, Math.min(6, Number(eff.target) || 6)); }
+    }
+    else if (type === "dice_pattern") {
+      out.pattern = ["six", "distinct", "single", "all_high", "pair", "total", "extremes"].includes(eff.pattern) ? eff.pattern : "six";
+      out.value = Number(eff.value) || 0;
+      if (out.pattern === "all_high") out.minPip = Math.max(1, Math.min(6, Number(eff.minPip) || 4));
+      if (out.pattern === "total") out.threshold = Math.max(1, Number(eff.threshold) || 12);
+      if (out.pattern === "distinct") out.firstCostDiscount = Math.max(0, Number(eff.firstCostDiscount) || 0);
+      if (out.pattern === "extremes") { out.highMin = Math.max(1, Math.min(6, Number(eff.highMin) || 5)); out.highValue = Number(eff.highValue) || 0; out.lowMax = Math.max(1, Math.min(6, Number(eff.lowMax) || 2)); out.lowValue = Number(eff.lowValue) || 0; }
+      if (eff.reward && ["insight", "fragment", "page", "inspiration"].includes(eff.reward.type)) out.reward = { type: eff.reward.type, value: Math.max(0, Number(eff.reward.value) || 0), perMatch: eff.reward.perMatch !== false };
+    }
+    else if (type === "style_switch_pct") { out.value = Number(eff.value) || 0; out.insight = Math.max(0, Number(eff.insight) || 0); }
+    else if (type === "manuscript_pct") { out.step = Math.max(1, Number(eff.step) || 2); out.value = Number(eff.value) || 0; out.cap = Math.max(0, Number(eff.cap) || 0); }
     else if (type === "lucky_six") { out.mult = Number(eff.mult) || 0; }
     else if (type === "comeback") { out.value = Number(eff.value) || 0; out.threshold = Number(eff.threshold) || 12; }
     else if (type === "armory_pct") { out.step = Math.max(1, Number(eff.step) || 3); out.value = Number(eff.value) || 0; }
@@ -142,7 +171,7 @@
     const seed = (window.GAME_TALENTS || []);
     const byId = new Set(state.talents.map(t => t.id));
     let added = 0;
-    ["T034", "TA08"].forEach(id => {
+    ["T034", "T035", "T036", "T037", "T038", "T039", "T040", "TA08"].forEach(id => {
       if (byId.has(id)) return;
       const src = seed.find(t => t && t.id === id);
       if (src) { state.talents.push(normalize(src)); added++; }
@@ -305,6 +334,23 @@
       if (!(Number(t.effect.step) >= 1)) errors.push("armory_pct 的 step 须 ≥ 1");
       if (!(Number(t.effect.value) > 0)) errors.push("armory_pct 的 value 须 > 0");
     }
+    else if (t.effect.type === "extra_dice_pct") {
+      if (!(Number(t.effect.value) >= 0)) errors.push("extra_dice_pct 的 value 须 ≥ 0");
+      if (!(Number(t.effect.firstCostDiscount) >= 0)) errors.push("extra_dice_pct 的首次减费须 ≥ 0");
+    }
+    else if (t.effect.type === "dice_transform") {
+      if (!["low_lift", "first_floor", "lowest_to"].includes(t.effect.mode)) errors.push("dice_transform 的 mode 非法");
+    }
+    else if (t.effect.type === "dice_pattern") {
+      if (!["six", "distinct", "single", "all_high", "pair", "total", "extremes"].includes(t.effect.pattern)) errors.push("dice_pattern 的 pattern 非法");
+      if (t.effect.reward && !["insight", "fragment", "page", "inspiration"].includes(t.effect.reward.type)) errors.push("dice_pattern 的 reward.type 非法");
+    }
+    else if (t.effect.type === "style_switch_pct") {
+      if (!(Number(t.effect.value) >= 0 && Number(t.effect.insight) >= 0)) errors.push("style_switch_pct 数值须 ≥ 0");
+    }
+    else if (t.effect.type === "manuscript_pct") {
+      if (!(Number(t.effect.step) >= 1 && Number(t.effect.value) >= 0 && Number(t.effect.cap) >= 0)) errors.push("manuscript_pct 参数须为非负且 step ≥ 1");
+    }
     if (t.kind === "active" && (t.cost == null)) errors.push("主动文心缺少 cost");
     /* 升级配置校验：quality 合法、upCost 与逐级 levels 长度均 = maxLevel-1；Lv1 恒取基础 effect（导出时回填），故只校验逐级 type 合法。 */
     if (t.upgrade && typeof t.upgrade === "object") {
@@ -324,6 +370,24 @@
   }
 
   /* ---------------- 效果文本 ---------------- */
+  function dicePatternText(eff) {
+    const pct = n => Math.round((Number(n) || 0) * 100) + "%";
+    let base = "";
+    if (eff.pattern === "six") base = "每枚最终六点骰：得分 +" + pct(eff.value);
+    else if (eff.pattern === "distinct") base = "每多一种不同点数：得分 +" + pct(eff.value) + (eff.firstCostDiscount ? "；首枚追加少耗 " + eff.firstCostDiscount : "");
+    else if (eff.pattern === "single") base = "仅以一枚骰结算：得分 +" + pct(eff.value);
+    else if (eff.pattern === "all_high") base = "全部骰不低于 " + (eff.minPip || 4) + " 点：得分 +" + pct(eff.value);
+    else if (eff.pattern === "pair") base = "骰组出现同点：得分 +" + pct(eff.value);
+    else if (eff.pattern === "total") base = "骰组总点数不少于 " + (eff.threshold || 12) + "：得分 +" + pct(eff.value);
+    else if (eff.pattern === "extremes") base = "每枚 ≥" + (eff.highMin || 5) + " 点骰 +" + pct(eff.highValue) + "；每枚 ≤" + (eff.lowMax || 2) + " 点骰 " + pct(eff.lowValue);
+    else base = "骰组章法";
+    const r = eff.reward;
+    if (r && Number(r.value) > 0) {
+      const rn = { insight: "心得", fragment: "残页", page: "稿页", inspiration: "灵感" }[r.type] || r.type;
+      base += "；触发后 " + rn + " +" + r.value + (r.perMatch === false ? "（每场一次）" : "（按命中数）");
+    }
+    return base;
+  }
   function talentEffectText(eff) {
     if (!eff || !eff.type) return "（无效果）";
     switch (eff.type) {
@@ -340,6 +404,15 @@
       case "insp_on_win": return "每场论战取胜，灵感 +" + (eff.value || 0);
       case "draw_bonus": return "与对手平分秋色时，出战文体额外 +" + (eff.value || 0);
       case "insp_on_talent": return "每获得一枚新文心，灵感 +" + (eff.value || 0);
+      case "extra_dice_pct": return "每追加一枚灵感骰，作品得分 +" + Math.round((eff.value || 0) * 100) + "%" + (eff.firstCostDiscount ? "；首枚少耗 " + eff.firstCostDiscount + " 灵感" : "");
+      case "dice_transform": {
+        if (eff.mode === "first_floor") return "本场首骰最低视为 " + (eff.floor || 4) + " 点";
+        if (eff.mode === "lowest_to") return "将最低且不高于 " + (eff.maxPip || 3) + " 点的一骰化为 " + (eff.target || 6) + " 点";
+        return "将 " + (eff.count || 1) + " 枚不高于 " + (eff.threshold || 2) + " 点的最低骰抬高 " + (eff.value || 1) + " 点";
+      }
+      case "dice_pattern": return dicePatternText(eff);
+      case "style_switch_pct": return "换用不同于上一场的文体：得分 +" + Math.round((eff.value || 0) * 100) + "%、心得 +" + (eff.insight || 0);
+      case "manuscript_pct": return "每持有 " + (eff.step || 2) + " 页稿本，得分 +" + Math.round((eff.value || 0) * 100) + "%（上限 " + Math.round((eff.cap || 0) * 100) + "%）";
       case "style_pct": { const sn = eff.style === "any" ? "任意体" : (ATTR[eff.style] || eff.style); return "以" + sn + "出战，得分常驻 +" + Math.round((eff.value || 0) * 100) + "%"; }
       case "theme_pct": return "出战「" + (THEME_NAME[eff.theme] || eff.theme) + "」题材时，得分 +" + Math.round((eff.value || 0) * 100) + "%";
       case "streak_mult": return "气势连捷收益 ×" + (1 + (eff.value || 0)).toFixed(2) + "（连捷越久越强）";
@@ -466,6 +539,31 @@
         <div class="field" style="margin:0"><label>每次递增消耗</label><input type="number" class="tal-planned-step" value="${eff.costStep || 2}" min="0" step="1"/></div>
       </div>`;
     }
+    if (type === "extra_dice_pct") {
+      return `<div class="row2"><div class="field" style="margin:0"><label>每枚追加骰得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" min="0" step="1"/></div><div class="field" style="margin:0"><label>首枚追加少耗灵感</label><input type="number" class="tal-first-discount" value="${eff.firstCostDiscount || 0}" min="0" step="1"/></div></div>`;
+    }
+    if (type === "dice_transform") {
+      const mode = eff.mode || "low_lift";
+      const opts = [["low_lift", "抬高低点"], ["first_floor", "首骰保底"], ["lowest_to", "最低点化用"]];
+      let dyn = "";
+      if (mode === "low_lift") dyn = `<div class="row3"><div class="field" style="margin:0"><label>低点阈值</label><input type="number" class="tal-threshold" value="${eff.threshold || 2}" min="1" max="6"/></div><div class="field" style="margin:0"><label>抬高点数</label><input type="number" class="tal-value" value="${eff.value || 1}" min="1"/></div><div class="field" style="margin:0"><label>最多处理枚数</label><input type="number" class="tal-count" value="${eff.count || 1}" min="1" max="3"/></div></div>`;
+      else if (mode === "first_floor") dyn = `<div class="field"><label>首骰最低点</label><input type="number" class="tal-floor" value="${eff.floor || 4}" min="1" max="6"/></div>`;
+      else dyn = `<div class="row2"><div class="field" style="margin:0"><label>最低骰须不高于</label><input type="number" class="tal-max-pip" value="${eff.maxPip || 3}" min="1" max="6"/></div><div class="field" style="margin:0"><label>化为点数</label><input type="number" class="tal-target-pip" value="${eff.target || 6}" min="1" max="6"/></div></div>`;
+      return `<div class="field"><label>化用方式</label><select class="tal-transform-mode">${opts.map(([v, n]) => `<option value="${v}" ${v === mode ? "selected" : ""}>${n}</option>`).join("")}</select></div>${dyn}`;
+    }
+    if (type === "dice_pattern") {
+      const pattern = eff.pattern || "six";
+      const opts = [["six", "最终六点"], ["distinct", "不同点数"], ["single", "只用单骰"], ["all_high", "全骰高点"], ["pair", "出现同点"], ["total", "总点达标"], ["extremes", "高低两极"]];
+      let dyn = "";
+      if (pattern === "extremes") dyn = `<div class="row2"><div class="field" style="margin:0"><label>高点门槛 / 每枚 +%</label><input type="number" class="tal-high-min" value="${eff.highMin || 5}" min="1" max="6"/><input type="number" class="tal-high-pct" value="${Math.round((eff.highValue || 0) * 100)}" step="1"/></div><div class="field" style="margin:0"><label>低点门槛 / 每枚 +%（可负）</label><input type="number" class="tal-low-max" value="${eff.lowMax || 2}" min="1" max="6"/><input type="number" class="tal-low-pct" value="${Math.round((eff.lowValue || 0) * 100)}" step="1"/></div></div>`;
+      else dyn = `<div class="row2"><div class="field" style="margin:0"><label>每次命中得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" step="1"/></div>${pattern === "all_high" ? `<div class="field" style="margin:0"><label>最低骰点</label><input type="number" class="tal-min-pip" value="${eff.minPip || 4}" min="1" max="6"/></div>` : pattern === "total" ? `<div class="field" style="margin:0"><label>总点阈值</label><input type="number" class="tal-threshold" value="${eff.threshold || 12}" min="1"/></div>` : pattern === "distinct" ? `<div class="field" style="margin:0"><label>首枚追加减费</label><input type="number" class="tal-first-discount" value="${eff.firstCostDiscount || 0}" min="0"/></div>` : ""}</div>`;
+      const rt = eff.reward && eff.reward.type || "none";
+      const rv = eff.reward && eff.reward.value || 0;
+      const once = eff.reward && eff.reward.perMatch === false;
+      return `<div class="field"><label>骰组条件</label><select class="tal-pattern">${opts.map(([v, n]) => `<option value="${v}" ${v === pattern ? "selected" : ""}>${n}</option>`).join("")}</select></div>${dyn}<div class="row3"><div class="field" style="margin:0"><label>后续收益</label><select class="tal-reward-type"><option value="none">无</option>${[["insight", "心得"], ["fragment", "残页"], ["page", "稿页"], ["inspiration", "灵感"]].map(([v,n]) => `<option value="${v}" ${v === rt ? "selected" : ""}>${n}</option>`).join("")}</select></div><div class="field" style="margin:0"><label>收益数值</label><input type="number" class="tal-reward-value" value="${rv}" min="0" step="0.25"/></div><div class="field" style="margin:0"><label>结算方式</label><select class="tal-reward-once"><option value="0" ${!once ? "selected" : ""}>按命中数</option><option value="1" ${once ? "selected" : ""}>每场一次</option></select></div></div>`;
+    }
+    if (type === "style_switch_pct") return `<div class="row2"><div class="field" style="margin:0"><label>换体得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" min="0"/></div><div class="field" style="margin:0"><label>战后心得 +</label><input type="number" class="tal-insight" value="${eff.insight || 0}" min="0"/></div></div>`;
+    if (type === "manuscript_pct") return `<div class="row3"><div class="field" style="margin:0"><label>每 N 页稿本</label><input type="number" class="tal-step" value="${eff.step || 2}" min="1"/></div><div class="field" style="margin:0"><label>每档得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" min="0" step="0.5"/></div><div class="field" style="margin:0"><label>总上限 %</label><input type="number" class="tal-cap-pct" value="${Math.round((eff.cap || 0) * 100)}" min="0" step="0.5"/></div></div>`;
     if (type === "insp_on_win" || type === "draw_bonus" || type === "insp_on_talent") {
       const lbl = type === "insp_on_win" ? "获胜时灵感 +" : type === "draw_bonus" ? "平局时出战文体 +" : "获得文心时灵感 +";
       return `<div class="field" style="margin:6px 0"><label>${lbl}</label>
@@ -1030,8 +1128,25 @@
       const lvlIdx = dyn ? Number(dyn.dataset.lvl) : -1;
       const eff = (dyn && state.form.upgrade) ? state.form.upgrade.levels[lvlIdx].effect : (state.form.effect || null);
       if (!eff) return;
+      if (t.classList.contains("tal-transform-mode")) {
+        const next = defaultEffect("dice_transform"); next.mode = t.value;
+        if (t.value === "first_floor") { delete next.threshold; delete next.value; delete next.count; next.floor = 4; }
+        if (t.value === "lowest_to") { delete next.threshold; delete next.value; delete next.count; next.maxPip = 3; next.target = 6; }
+        if (dyn && state.form.upgrade) state.form.upgrade.levels[lvlIdx].effect = next; else state.form.effect = next;
+        dyn ? renderLevelEffects() : renderEffectFields(); return;
+      }
+      if (t.classList.contains("tal-pattern")) {
+        const next = defaultEffect("dice_pattern"); next.pattern = t.value;
+        if (t.value === "all_high") next.minPip = 4;
+        if (t.value === "total") next.threshold = 12;
+        if (t.value === "distinct") next.firstCostDiscount = 0;
+        if (t.value === "extremes") { delete next.value; next.highMin = 5; next.highValue = 0.14; next.lowMax = 2; next.lowValue = -0.07; }
+        if (dyn && state.form.upgrade) state.form.upgrade.levels[lvlIdx].effect = next; else state.form.effect = next;
+        dyn ? renderLevelEffects() : renderEffectFields(); return;
+      }
       if (t.classList.contains("tal-style")) eff.style = t.value;
       else if (t.classList.contains("tal-theme")) eff.theme = t.value;
+      else if (t.classList.contains("tal-value-pct")) eff.value = (Number(t.value) || 0) / 100;
       else if (t.classList.contains("tal-value")) {
         // 百分比类效果：编辑器填整数百分比，引擎存小数（6 → 0.06）
         eff.value = PCT_VALUE_TYPES.includes(eff.type) ? (Number(t.value) || 0) / 100 : (Number(t.value) || 0);
@@ -1046,6 +1161,30 @@
       else if (t.classList.contains("tal-planned-max")) eff.maxValue = Math.max(1, Math.min(6, Number(t.value) || 6));
       else if (t.classList.contains("tal-planned-base")) eff.baseCost = Math.max(1, Number(t.value) || 5);
       else if (t.classList.contains("tal-planned-step")) eff.costStep = Math.max(0, Number(t.value) || 0);
+      else if (t.classList.contains("tal-first-discount")) eff.firstCostDiscount = Math.max(0, Number(t.value) || 0);
+      else if (t.classList.contains("tal-count")) eff.count = Math.max(1, Number(t.value) || 1);
+      else if (t.classList.contains("tal-floor")) eff.floor = Math.max(1, Math.min(6, Number(t.value) || 4));
+      else if (t.classList.contains("tal-max-pip")) eff.maxPip = Math.max(1, Math.min(6, Number(t.value) || 3));
+      else if (t.classList.contains("tal-target-pip")) eff.target = Math.max(1, Math.min(6, Number(t.value) || 6));
+      else if (t.classList.contains("tal-min-pip")) eff.minPip = Math.max(1, Math.min(6, Number(t.value) || 4));
+      else if (t.classList.contains("tal-high-min")) eff.highMin = Math.max(1, Math.min(6, Number(t.value) || 5));
+      else if (t.classList.contains("tal-high-pct")) eff.highValue = (Number(t.value) || 0) / 100;
+      else if (t.classList.contains("tal-low-max")) eff.lowMax = Math.max(1, Math.min(6, Number(t.value) || 2));
+      else if (t.classList.contains("tal-low-pct")) eff.lowValue = (Number(t.value) || 0) / 100;
+      else if (t.classList.contains("tal-insight")) eff.insight = Math.max(0, Number(t.value) || 0);
+      else if (t.classList.contains("tal-cap-pct")) eff.cap = Math.max(0, (Number(t.value) || 0) / 100);
+      else if (t.classList.contains("tal-reward-type")) {
+        if (t.value === "none") delete eff.reward;
+        else eff.reward = { type: t.value, value: Number(eff.reward && eff.reward.value) || 1, perMatch: eff.reward ? eff.reward.perMatch !== false : true };
+      }
+      else if (t.classList.contains("tal-reward-value")) {
+        if (!eff.reward) eff.reward = { type: "fragment", value: 0, perMatch: true };
+        eff.reward.value = Math.max(0, Number(t.value) || 0);
+      }
+      else if (t.classList.contains("tal-reward-once")) {
+        if (!eff.reward) eff.reward = { type: "fragment", value: 1, perMatch: true };
+        eff.reward.perMatch = t.value !== "1";
+      }
       else if (t.classList.contains("tal-attr-k")) {
         const row = t.closest(".eff-attr"); const oldK = row.dataset.k; const newK = t.value;
         if (newK && newK !== oldK && !(newK in eff.attrs)) { eff.attrs[newK] = eff.attrs[oldK]; delete eff.attrs[oldK]; row.dataset.k = newK; }
