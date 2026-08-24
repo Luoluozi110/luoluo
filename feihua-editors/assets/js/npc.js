@@ -47,6 +47,8 @@
       name: String(n.name || "").trim(),
       title: String(n.title || "").trim(),
       style,
+      // 主属性用于战斗卡片提示；编辑器迁移时必须保留，不能只依赖文体推断。
+      focusAttr: ATTR_KEYS.includes(n.focusAttr) ? n.focusAttr : undefined,
       // 出战权重：正整数；空/非法回退 undefined（引擎默认 100）；显式 0 保留为 0（本阶段不出战）
       weight: (Number.isFinite(w) && w >= 0) ? Math.floor(w) : undefined,
       attrs: cleanAttrs(n.attrs),
@@ -77,6 +79,11 @@
       out.themes = Array.isArray(t.themes) && t.themes.length
         ? t.themes.map(s => String(s).trim()).filter(Boolean)
         : ["huaigu"];
+    }
+    // 难度增强属于档级配置；编辑器不能在一次普通名称编辑后把它丢掉。
+    if (Number.isFinite(Number(t.balanceVersion))) out.balanceVersion = Number(t.balanceVersion);
+    if (t.difficultyBoost && typeof t.difficultyBoost === "object" && !Array.isArray(t.difficultyBoost)) {
+      out.difficultyBoost = JSON.parse(JSON.stringify(t.difficultyBoost));
     }
     return out;
   }
@@ -328,6 +335,11 @@
       t.isHiddenFinal = true;
       t.themes = String(form.themes || "huaigu").split(/[,，\s]+/).map(s => s.trim()).filter(Boolean);
     }
+    const src = state.editTier >= 0 ? state.tiers[state.editTier] : null;
+    if (src && Number.isFinite(Number(src.balanceVersion))) t.balanceVersion = Number(src.balanceVersion);
+    if (src && src.difficultyBoost && typeof src.difficultyBoost === "object" && !Array.isArray(src.difficultyBoost)) {
+      t.difficultyBoost = JSON.parse(JSON.stringify(src.difficultyBoost));
+    }
     return t;
   }
   function saveTierEditor() {
@@ -350,6 +362,7 @@
       name: src ? src.name : "",
       title: src ? src.title : "",
       style: src ? (src.style || autoStyle(src.attrs)) : "",
+      focusAttr: src ? (src.focusAttr || "") : "",
       weight: src ? (src.weight != null ? src.weight : "") : "",
       attrs: src ? JSON.parse(JSON.stringify(src.attrs)) : {},
       mech: src && src.mech ? JSON.parse(JSON.stringify(src.mech)) : null
@@ -365,6 +378,12 @@
       sel.innerHTML = `<option value="">均衡（无明显偏科）</option>`
         + ATTR_KEYS.map(k => `<option value="${k}">偏${ATTR[k]}（${k}）</option>`).join("");
       sel.value = state.npcForm.style || "";
+    }
+    const focusSel = document.getElementById("npc-focus-attr");
+    if (focusSel) {
+      focusSel.innerHTML = `<option value="">自动（按战斗文体）</option>`
+        + ATTR_KEYS.map(k => `<option value="${k}">${ATTR[k]}（${k}）</option>`).join("");
+      focusSel.value = state.npcForm.focusAttr || "";
     }
     const wIn = document.getElementById("npc-weight");
     if (wIn) wIn.value = state.npcForm.weight === "" ? "" : state.npcForm.weight;
@@ -386,15 +405,18 @@
   const MECH_TEMPLATE_OPTIONS = {
     signature: [
       ["", "不配置招牌"], ["sig_style_mastery", "文体专精"], ["sig_repeat_read", "识破重复"], ["sig_dice_response", "追加骰响应"],
-      ["sig_copycat", "仿作惯用"], ["sig_debt_drain", "文债耗神"], ["sig_steady_pressure", "稳稿压迫"], ["sig_manner_theme", "文风立意"], ["sig_palace_adapt", "跨场适应"]
+      ["sig_copycat", "仿作惯用"], ["sig_debt_drain", "文债耗神"], ["sig_steady_pressure", "稳稿压迫"], ["sig_manner_theme", "文风立意"], ["sig_palace_adapt", "跨场适应"],
+      ["sig_zeitgeist_surf", "借风成势"], ["sig_active_talent_tax", "截脉问锋"], ["sig_dice_pattern_hunt", "审律摘瑕"], ["sig_declared_stance", "先声定策"]
     ],
     weakness: [
       ["", "不配置破绽"], ["wea_use_other_style", "改用他体"], ["wea_switch_style", "主动换体"], ["wea_base_dice_only", "只用基础骰"],
-      ["wea_style_manner_combo", "文体＋文风组合"], ["wea_crushing_win", "高分差压卷"], ["wea_harmonious_manner", "相得文风破立意"], ["wea_counter_intent", "识别主要意图"], ["wea_cross_battle_shift", "跨场换策"]
+      ["wea_style_manner_combo", "文体＋文风组合"], ["wea_crushing_win", "高分差压卷"], ["wea_harmonious_manner", "相得文风破立意"], ["wea_counter_intent", "识别主要意图"], ["wea_cross_battle_shift", "跨场换策"],
+      ["wea_go_against_zeitgeist", "逆潮立骨"], ["wea_hold_active_talent", "藏锋守拙"], ["wea_limited_extra_dice", "收束成篇"], ["wea_stance_counter", "对策破锋"]
     ],
     intent: [
       ["", "不配置意图"], ["int_preferred_style", "偏好文体意图"], ["int_manner_theme", "文风立意意图"], ["int_steady", "稳守意图"],
-      ["int_dice_response", "追加骰响应意图"], ["int_copycat", "仿作意图"], ["int_palace_adapt", "殿试适应意图"]
+      ["int_dice_response", "追加骰响应意图"], ["int_copycat", "仿作意图"], ["int_palace_adapt", "殿试适应意图"],
+      ["int_zeitgeist", "逐潮意图"], ["int_active_watch", "封心意图"], ["int_pattern_hunt", "审律意图"], ["int_declared_stance", "定策意图"]
     ]
   };
   const MECH_STYLE_OPTIONS = [["shi", "诗"], ["ci", "词"], ["lian", "联"], ["bi", "笔"], ["xue", "学"], ["si", "思"]];
@@ -409,9 +431,9 @@
   }
   function mechFields(kind, obj) {
     const t = obj.template || ""; let h = "";
-    if (t === "sig_style_mastery" || t === "sig_copycat" || t === "int_preferred_style" || t === "int_copycat") h += mechSelect("核心文体", "style", obj.style || state.npcForm.style || "shi", MECH_STYLE_OPTIONS);
-    if (["sig_style_mastery", "sig_repeat_read", "sig_copycat", "sig_manner_theme"].includes(t)) h += mechField("强度（百分比）", "pct", obj.pct != null ? Math.round(obj.pct * 100) : 6, "number", "填 6 表示 6%");
-    if (["sig_style_mastery", "sig_copycat", "sig_dice_response", "sig_debt_drain", "sig_steady_pressure", "sig_manner_theme", "int_preferred_style", "int_manner_theme", "int_copycat", "int_steady", "int_dice_response", "int_palace_adapt"].includes(t)) h += mechField("意图偏置", "bias", obj.bias == null ? 1.3 : obj.bias);
+    if (["sig_style_mastery", "sig_copycat", "int_preferred_style", "int_copycat", "int_zeitgeist", "int_active_watch", "int_pattern_hunt", "int_declared_stance"].includes(t)) h += mechSelect("核心文体", "style", obj.style || state.npcForm.style || "shi", MECH_STYLE_OPTIONS);
+    if (["sig_style_mastery", "sig_repeat_read", "sig_copycat", "sig_manner_theme", "sig_zeitgeist_surf", "sig_active_talent_tax", "sig_dice_pattern_hunt", "sig_declared_stance"].includes(t)) h += mechField("强度（百分比）", "pct", obj.pct != null ? Math.round(obj.pct * 100) : 6, "number", "填 6 表示 6%");
+    if (["sig_style_mastery", "sig_copycat", "sig_dice_response", "sig_debt_drain", "sig_steady_pressure", "sig_manner_theme", "int_preferred_style", "int_manner_theme", "int_copycat", "int_steady", "int_dice_response", "int_palace_adapt", "int_zeitgeist", "int_active_watch", "int_pattern_hunt", "int_declared_stance"].includes(t)) h += mechField("意图偏置", "bias", obj.bias == null ? 1.3 : obj.bias);
     if (["sig_dice_response"].includes(t)) h += mechField("追加骰递减分（逗号分隔）", "steps", Array.isArray(obj.steps) ? obj.steps.join(",") : (obj.steps || "14,9,4"), "text");
     if (t === "sig_dice_response") h += mechField("递减分封顶", "cap", obj.cap == null ? 22 : obj.cap);
     if (["sig_debt_drain"].includes(t)) { h += mechField("触发分差阈值", "threshold", obj.threshold == null ? 0.12 : Math.round(obj.threshold * 100), "number", "填百分比"); h += mechField("灵感消耗", "cost", obj.cost == null ? 3 : obj.cost); }
@@ -424,6 +446,20 @@
     if (["wea_counter_intent"].includes(t)) h += mechField("招牌削弱比例", "retention", obj.retention == null ? 0.5 : Math.round(obj.retention * 100), "number", "填百分比");
     if (["wea_cross_battle_shift"].includes(t)) h += mechField("移除适应层数", "layerReduce", obj.layerReduce == null ? 1 : obj.layerReduce);
     if (t === "sig_palace_adapt") h += mechField("最多适应层数", "maxLayers", obj.maxLayers == null ? 2 : obj.maxLayers);
+    if (["sig_dice_pattern_hunt", "int_pattern_hunt"].includes(t)) h += mechField("骰组章法", "pattern", obj.pattern || "pair", "text", "如 pair / triple / straight");
+    if (["wea_go_against_zeitgeist"].includes(t)) {
+      h += mechField("最低相性", "minAffinity", obj.minAffinity == null ? 0 : obj.minAffinity);
+      h += mechField("破绽保留比例", "retention", obj.retention == null ? 0.3 : Math.round(obj.retention * 100), "number", "填百分比");
+      h += mechField("玩家创见加成", "playerBonus", obj.playerBonus == null ? 0 : Math.round(obj.playerBonus * 100), "number", "填百分比");
+    }
+    if (["wea_hold_active_talent", "wea_limited_extra_dice", "wea_stance_counter"].includes(t)) {
+      if (t === "wea_limited_extra_dice") h += mechField("最多追加骰", "maxExtraDice", obj.maxExtraDice == null ? 1 : obj.maxExtraDice);
+      h += mechField("破绽保留比例", "retention", obj.retention == null ? 0.3 : Math.round(obj.retention * 100), "number", "填百分比");
+      h += mechField("玩家创见加成", "playerBonus", obj.playerBonus == null ? 0 : Math.round(obj.playerBonus * 100), "number", "填百分比");
+    }
+    if (t === "wea_stance_counter") h += mechField("战策反制映射（JSON）", "counter", obj.counter ? JSON.stringify(obj.counter) : "{\"attack\":\"base_dice\",\"steady\":\"one_extra\",\"turn\":\"change_style\"}", "text", "按战策填写对应打法");
+    if (["int_zeitgeist", "int_active_watch", "int_pattern_hunt", "int_declared_stance"].includes(t)) h += mechField("意图下限（百分比）", "bottom", obj.bottom == null ? 80 : Math.round(obj.bottom * 100), "number", "填 80 表示 80%");
+    if (t === "int_declared_stance") h += mechField("公开战策", "stance", obj.stance || "steady", "text");
     return h || `<div class="dim">该机制无需额外参数。</div>`;
   }
   function renderMechOptions() {
@@ -447,10 +483,11 @@
       card.querySelectorAll("[data-mech-field]").forEach(el => {
         const f = el.dataset.mechField; if (f === "template") return;
         let v = el.value;
-        if (["pct", "threshold", "retention"].includes(f)) v = Number(v || 0) / 100;
-        else if (["bias", "cost", "floor", "ceiling", "cap", "flat", "refund", "layerReduce", "maxLayers"].includes(f)) v = Number(v || 0);
+        if (["pct", "threshold", "retention", "playerBonus", "bottom"].includes(f)) v = Number(v || 0) / 100;
+        else if (["bias", "cost", "floor", "ceiling", "cap", "flat", "refund", "layerReduce", "maxLayers", "minAffinity", "maxExtraDice"].includes(f)) v = Number(v || 0);
         else if (f === "steps") v = String(v).split(",").map(Number).filter(Number.isFinite);
         else if (f === "manners") v = String(v).split(",").map(s => s.trim()).filter(Boolean);
+        else if (f === "counter") { try { v = JSON.parse(v); } catch (_) { /* 高级 JSON 校验会在保存时提示 */ } }
         obj[f] = v;
       });
       if (!obj.name) obj.name = (optsName(kind, template));
@@ -513,7 +550,9 @@
     const wRaw = (document.getElementById("npc-weight") || {}).value;
     const wNum = Number(wRaw);
     const weight = (wRaw !== "" && Number.isFinite(wNum) && wNum >= 0) ? Math.floor(wNum) : undefined;
-    const npc = { id: idVal, name: f.name.trim(), title: f.title.trim(), style: ATTR_KEYS.includes(styleVal) ? styleVal : "", weight, attrs, mech: mech || undefined };
+    const focusSel = document.getElementById("npc-focus-attr");
+    const focusVal = focusSel ? (focusSel.value || "") : (f.focusAttr || "");
+    const npc = { id: idVal, name: f.name.trim(), title: f.title.trim(), style: ATTR_KEYS.includes(styleVal) ? styleVal : "", focusAttr: ATTR_KEYS.includes(focusVal) ? focusVal : undefined, weight, attrs, mech: mech || undefined };
     const names = {}; state.tiers[f.ti].npcs.forEach((x, k) => { if (x.name) names[x.name] = f.ti + ":" + k; });
     const { ok, errors } = validateNpc(npc, names, f.ti + ":" + f.ni);
     const msg = document.getElementById("npcMsg");
@@ -710,6 +749,7 @@
       if (t.id === "npc-id") f.id = t.value;
       else if (t.id === "npc-name") f.name = t.value;
       else if (t.id === "npc-title") f.title = t.value;
+      else if (t.id === "npc-focus-attr") f.focusAttr = ATTR_KEYS.includes(t.value) ? t.value : "";
       else if (t.id === "npc-mech") { _mechLiveCheck(); renderMechOptions(); }
       else if (t.classList.contains("mech-param")) syncMechFromOptions();
     });
@@ -735,6 +775,7 @@
           _mechLiveCheck();
         }
       }
+      if (t.id === "npc-focus-attr") f.focusAttr = ATTR_KEYS.includes(t.value) ? t.value : "";
     });
 
     document.getElementById("npclist").addEventListener("click", e => {
