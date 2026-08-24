@@ -56,7 +56,11 @@
         ? n.mech : undefined,
       // 殿试必遇条件属于 NPC 运行规则；编辑器迁移/保存时必须完整保留。
       palaceForcedWhen: (n.palaceForcedWhen && typeof n.palaceForcedWhen === 'object' && !Array.isArray(n.palaceForcedWhen))
-        ? JSON.parse(JSON.stringify(n.palaceForcedWhen)) : undefined
+        ? JSON.parse(JSON.stringify(n.palaceForcedWhen)) : undefined,
+      // stageForcedWhen 是通用档位规则；旧 palaceForcedWhen 自动映射，保证旧康尔玉数据可编辑。
+      stageForcedWhen: (n.stageForcedWhen && typeof n.stageForcedWhen === 'object' && !Array.isArray(n.stageForcedWhen))
+        ? JSON.parse(JSON.stringify(n.stageForcedWhen))
+        : ((n.palaceForcedWhen && typeof n.palaceForcedWhen === 'object' && !Array.isArray(n.palaceForcedWhen)) ? JSON.parse(JSON.stringify(n.palaceForcedWhen)) : undefined)
     };
   }
   function normalizeTier(t) {
@@ -110,12 +114,15 @@
   const OFFICIAL_NPC_MECH_V2_IDS = new Set([
     "li_mo_tong", "wang_han_sheng", "tang_ji_qing", "zhao_da_ru"
   ]);
+  const OFFICIAL_NPC_STAGE_FORCE_IDS = new Set([
+    "li_mo_tong", "wang_han_sheng", "tang_ji_qing", "yuwen_yuan", "kang_er_yu", "chen_zhiwei"
+  ]);
   function cloneData(v) { return JSON.parse(JSON.stringify(v)); }
   function ensureOfficialNpcSeed(tiers) {
     const out = Array.isArray(tiers) ? tiers : [];
     const seeds = (window.GAME_NPCS || []).map(normalizeTier);
     for (const seedTier of seeds) {
-      const seedTargets = seedTier.npcs.filter(n => OFFICIAL_NPC_BACKFILL_IDS.has(n.id) || OFFICIAL_NPC_MECH_V2_IDS.has(n.id) || n.id === "kang_er_yu");
+      const seedTargets = seedTier.npcs.filter(n => OFFICIAL_NPC_BACKFILL_IDS.has(n.id) || OFFICIAL_NPC_MECH_V2_IDS.has(n.id) || OFFICIAL_NPC_STAGE_FORCE_IDS.has(n.id));
       if (!seedTargets.length) continue;
       let tier = out.find(t => t && t.id === seedTier.id);
       if (!tier) {
@@ -129,6 +136,7 @@
           continue;
         }
         if (seedNpc.palaceForcedWhen && !existing.palaceForcedWhen) existing.palaceForcedWhen = cloneData(seedNpc.palaceForcedWhen);
+        if (seedNpc.stageForcedWhen && !existing.stageForcedWhen) existing.stageForcedWhen = cloneData(seedNpc.stageForcedWhen);
         if (OFFICIAL_NPC_MECH_V2_IDS.has(seedNpc.id) && seedNpc.mech && Number(existing.mech && existing.mech.version) < 2) {
           existing.mech = cloneData(seedNpc.mech);
         }
@@ -292,7 +300,7 @@
         : t.isFinal ? `<span class="badge src">殿试档 · ${t.battles} 场</span>` : "";
       const npcRows = t.npcs.length ? t.npcs.map((n, ni) => `
         <div class="npc-row" data-key="${ti}:${ni}">
-          <div class="npc-id"><b>${C.esc(n.name || "（未命名）")}</b>${n.mech ? '<span class="badge src mech-badge" title="三机制对手">三机制</span>' : ""}${n.palaceForcedWhen ? '<span class="badge src" title="满足三力条件时殿试必遇">殿试必遇</span>' : ""}${n.weight != null ? `<span class="badge ${n.weight === 0 ? "danger" : ""}" title="本阶段出战权重（越大越常出现；0=不出战）">权重${n.weight}</span>` : ""}${n.id ? `<span class="npc-title" style="opacity:.6">${C.esc(n.id)}</span>` : ""}${styleChip(n.style)}${n.title ? ` <span class="npc-title">${C.esc(n.title)}</span>` : ""}</div>
+          <div class="npc-id"><b>${C.esc(n.name || "（未命名）")}</b>${n.mech ? '<span class="badge src mech-badge" title="三机制对手">三机制</span>' : ""}${n.stageForcedWhen || n.palaceForcedWhen ? '<span class="badge src" title="满足三力条件时本阶段必遇">本阶段必遇</span>' : ""}${n.weight != null ? `<span class="badge ${n.weight === 0 ? "danger" : ""}" title="本阶段出战权重（越大越常出现；0=不出战）">权重${n.weight}</span>` : ""}${n.id ? `<span class="npc-title" style="opacity:.6">${C.esc(n.id)}</span>` : ""}${styleChip(n.style)}${n.title ? ` <span class="npc-title">${C.esc(n.title)}</span>` : ""}</div>
           <div class="npc-attrs">${attrsSummary(n.attrs)}<span class="npc-sum">Σ${attrSum(n.attrs)}</span></div>
           <div class="npc-actions">
             <button class="btn sm" data-preview-npc="${ti}:${ni}">预览</button>
@@ -404,7 +412,8 @@
       weight: src ? (src.weight != null ? src.weight : "") : "",
       attrs: src ? JSON.parse(JSON.stringify(src.attrs)) : {},
       mech: src && src.mech ? JSON.parse(JSON.stringify(src.mech)) : null,
-      palaceForcedWhen: src && src.palaceForcedWhen ? JSON.parse(JSON.stringify(src.palaceForcedWhen)) : null
+      palaceForcedWhen: src && src.palaceForcedWhen ? JSON.parse(JSON.stringify(src.palaceForcedWhen)) : null,
+      stageForcedWhen: src && (src.stageForcedWhen || src.palaceForcedWhen) ? JSON.parse(JSON.stringify(src.stageForcedWhen || src.palaceForcedWhen)) : null
     };
     document.getElementById("npcTitle").textContent = (ni >= 0 && src)
       ? `编辑对手 · ${tierLabel(tier)}·${src.name}`
@@ -453,7 +462,7 @@
     const compareBox = document.getElementById("npcPalaceCompareBox");
     const msg = document.getElementById("npcPalaceForceMsg");
     if (!f || !enabled || !box || !primary || !min || !compareBox) return;
-    const cond = f.palaceForcedWhen && typeof f.palaceForcedWhen === "object" ? f.palaceForcedWhen : null;
+    const cond = f.stageForcedWhen && typeof f.stageForcedWhen === "object" ? f.stageForcedWhen : null;
     enabled.checked = !!cond;
     box.hidden = !cond;
     primary.innerHTML = PALACE_FORCE_ATTRS.map(k => `<option value="${k}">${palaceForceLabel(k)}（${k}）</option>`).join("");
@@ -463,7 +472,7 @@
     compareBox.innerHTML = PALACE_FORCE_ATTRS.map(k => `<label class="check" style="display:flex;align-items:center;gap:6px"><input type="checkbox" data-palace-compare="${k}" ${higher.includes(k) ? "checked" : ""} />${palaceForceLabel(k)}</label>`).join("");
     if (msg) {
       msg.className = cond ? "msg ok" : "msg";
-      msg.textContent = cond ? `启用：${palaceForceLabel(primary.value)} ＞ ${min.value}，并严格高于所选三力属性。` : "留空＝按普通殿试权重抽取。";
+      msg.textContent = cond ? `启用：${palaceForceLabel(primary.value)} ＞ ${min.value}，并严格高于所选属性；本阶段首次战斗必遇。` : "留空＝按普通阶段权重抽取。";
     }
   }
   function syncPalaceForcedFromForm() {
@@ -473,15 +482,15 @@
     const min = document.getElementById("npc-palace-min-exclusive");
     if (!f || !enabled || !primary || !min) return;
     if (!enabled.checked) {
-      f.palaceForcedWhen = null;
+      f.stageForcedWhen = null;
       renderPalaceForced();
       return;
     }
-    const previous = f.palaceForcedWhen && typeof f.palaceForcedWhen === "object" ? f.palaceForcedWhen : {};
+    const previous = f.stageForcedWhen && typeof f.stageForcedWhen === "object" ? f.stageForcedWhen : {};
     const selectedPrimary = PALACE_FORCE_ATTRS.includes(primary.value) ? primary.value : "lian";
     const strictlyHigherThan = Array.from(document.querySelectorAll("#npcPalaceCompareBox [data-palace-compare]:checked"))
       .map(input => input.dataset.palaceCompare).filter(k => PALACE_FORCE_ATTRS.includes(k) && k !== selectedPrimary);
-    f.palaceForcedWhen = {
+    f.stageForcedWhen = {
       ...JSON.parse(JSON.stringify(previous)),
       primary: selectedPrimary,
       minExclusive: Number(min.value),
@@ -641,16 +650,16 @@
     const focusSel = document.getElementById("npc-focus-attr");
     const focusVal = focusSel ? (focusSel.value || "") : (f.focusAttr || "");
     syncPalaceForcedFromForm();
-    const palaceForcedWhen = f.palaceForcedWhen;
-    if (palaceForcedWhen) {
-      if (!PALACE_FORCE_ATTRS.includes(palaceForcedWhen.primary)) {
-        const msg = document.getElementById("npcMsg"); msg.className = "msg err"; msg.textContent = "✗ 殿试必遇条件的主属性无效。"; return;
+    const stageForcedWhen = f.stageForcedWhen;
+    if (stageForcedWhen) {
+      if (!PALACE_FORCE_ATTRS.includes(stageForcedWhen.primary)) {
+        const msg = document.getElementById("npcMsg"); msg.className = "msg err"; msg.textContent = "✗ 本阶段必遇条件的主属性无效。"; return;
       }
-      if (!Number.isFinite(Number(palaceForcedWhen.minExclusive))) {
-        const msg = document.getElementById("npcMsg"); msg.className = "msg err"; msg.textContent = "✗ 殿试必遇条件的阈值必须是数字。"; return;
+      if (!Number.isFinite(Number(stageForcedWhen.minExclusive))) {
+        const msg = document.getElementById("npcMsg"); msg.className = "msg err"; msg.textContent = "✗ 本阶段必遇条件的阈值必须是数字。"; return;
       }
     }
-    const npc = { id: idVal, name: f.name.trim(), title: f.title.trim(), style: ATTR_KEYS.includes(styleVal) ? styleVal : "", focusAttr: ATTR_KEYS.includes(focusVal) ? focusVal : undefined, weight, attrs, mech: mech || undefined, palaceForcedWhen: palaceForcedWhen || undefined };
+    const npc = { id: idVal, name: f.name.trim(), title: f.title.trim(), style: ATTR_KEYS.includes(styleVal) ? styleVal : "", focusAttr: ATTR_KEYS.includes(focusVal) ? focusVal : undefined, weight, attrs, mech: mech || undefined, stageForcedWhen: stageForcedWhen || undefined, palaceForcedWhen: f.palaceForcedWhen ? (stageForcedWhen || undefined) : undefined };
     const names = {}; state.tiers[f.ti].npcs.forEach((x, k) => { if (x.name) names[x.name] = f.ti + ":" + k; });
     const { ok, errors } = validateNpc(npc, names, f.ti + ":" + f.ni);
     const msg = document.getElementById("npcMsg");
