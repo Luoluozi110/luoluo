@@ -15,6 +15,8 @@ const attrs = { shi: 10, ci: 10, lian: 10, bi: 10, xue: 10, si: 10 };
 const ordinary = R.styleDiceScore('shi', [4], styles, R.BATTLE_COEF.diceMult, 0, inspiration.dicePct);
 assert.equal(ordinary.score, 30, '保留旧固定分字段供 NPC/旧调用兼容');
 assert.ok(Math.abs(ordinary.pct - 0.3) < 1e-9, '诗四点按高骰规则进入 +30% 乘区');
+const amplified = R.styleDiceScore('shi', [4], styles, 8, 0, inspiration.dicePct);
+assert.ok(Math.abs(amplified.pct - 0.48) < 1e-9, '旧骰倍率文心按相对倍率放大新乘区');
 
 const out = R.battleScore({
   attrs, style: 'shi', dice: 4, dicePct: ordinary.pct,

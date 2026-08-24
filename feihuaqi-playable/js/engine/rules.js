@@ -79,16 +79,18 @@ export function styleDiceScore(style, pips, styleCfg, diceMult = BATTLE_COEF.dic
   const cfg = (styleCfg && styleCfg[style]) || {};
   const dm = num(diceMult, BATTLE_COEF.diceMult);
   const dp = Math.max(0, num(dicePct, BATTLE_COEF.dicePct));
+  // 旧版“骰倍率”文心继续保留语义：在新乘区规则下，按相对倍率缩放本场骰乘区。
+  const diceRateMult = dm / BATTLE_COEF.diceMult;
   if (style === 'shi' && list.length === 1) {
     const pip = list[0] + num(dicePlus, 0);
     const high = pip >= num(cfg.highMin, 4);
     const mult = high ? num(cfg.highMult, 1.5) : num(cfg.lowMult, 0.7);
     return {
       score: Math.round(pip * dm * mult),
-      pct: pip * dp * mult,
+      pct: pip * dp * diceRateMult * mult,
       pips: pip,
       detail: `诗·一气 ${pip} 点 × ${dm} × ${mult}`,
-      pctDetail: `诗·一气 ${pip} 点 × ${Math.round(dp * 100)}% × ${mult}`
+      pctDetail: `诗·一气 ${pip} 点 × ${Math.round(dp * diceRateMult * 100)}% × ${mult}`
     };
   }
   if (style === 'ci') {
@@ -97,19 +99,19 @@ export function styleDiceScore(style, pips, styleCfg, diceMult = BATTLE_COEF.dic
     const total = first + list.slice(1).reduce((s, v) => s + v, 0);
     return {
       score: Math.round(total * dm),
-      pct: total * dp,
+      pct: total * dp * diceRateMult,
       pips: total,
       detail: `词·铺陈 ${list[0]}→${first}，合计 ${total} 点 × ${dm}`,
-      pctDetail: `词·铺陈 ${list[0]}→${first}，合计 ${total} 点 × ${Math.round(dp * 100)}%`
+      pctDetail: `词·铺陈 ${list[0]}→${first}，合计 ${total} 点 × ${Math.round(dp * diceRateMult * 100)}%`
     };
   }
   const total = list.reduce((s, v) => s + v, 0) + num(dicePlus, 0);
   return {
     score: Math.round(total * dm),
-    pct: total * dp,
+    pct: total * dp * diceRateMult,
     pips: total,
     detail: `${total} 点 × ${dm}${style === 'lian' ? '（联·对举）' : ''}`,
-    pctDetail: `${total} 点 × ${Math.round(dp * 100)}%${style === 'lian' ? '（联·对举）' : ''}`
+    pctDetail: `${total} 点 × ${Math.round(dp * diceRateMult * 100)}%${style === 'lian' ? '（联·对举）' : ''}`
   };
 }
 
