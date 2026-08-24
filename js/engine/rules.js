@@ -31,7 +31,7 @@ export const BATTLE_COEF = {
   xueMult: 4,
   siMult: 4,
   diceMult: 5,     // 兼容旧 NPC / 旧调用：普通骰的传统固定分值系数
-  dicePct: 0.05,   // 玩家普通灵感骰：每点进入作品乘区 +5%
+  dicePct: 0.05,   // 普通灵感骰：每点进入作品乘区 +5%（玩家与 NPC 共用）
   drawRatio: 0.05  // 平局带
 };
 

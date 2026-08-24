@@ -1,4 +1,5 @@
-{
+/* 游戏 config/talent-upgrade.json 的编辑器种子，由配置同步生成。 */
+window.GAME_TALENT_UPGRADE = {
   "T001": {
     "quality": "common",
     "maxLevel": 3,
@@ -396,7 +397,7 @@
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1.0
+          "ratio": 1
         }
       },
       {
@@ -742,7 +743,7 @@
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1.0
+          "ratio": 1
         },
         "cost": 3
       },
@@ -1742,68 +1743,331 @@
   "T035": {
     "quality": "rare",
     "maxLevel": 4,
-    "upCost": [7, 11, 16],
+    "upCost": [
+      7,
+      11,
+      16
+    ],
     "levels": [
-      { "effect": { "type": "dice_pattern", "pattern": "single", "value": 0.08, "reward": { "type": "insight", "value": 1, "perMatch": false } } },
-      { "effect": { "type": "dice_pattern", "pattern": "single", "value": 0.1, "reward": { "type": "insight", "value": 1, "perMatch": false } } },
-      { "effect": { "type": "dice_pattern", "pattern": "single", "value": 0.12, "reward": { "type": "insight", "value": 1, "perMatch": false } } },
-      { "effect": { "type": "dice_pattern", "pattern": "single", "value": 0.12, "reward": { "type": "insight", "value": 2, "perMatch": false } } }
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "single",
+          "value": 0.08,
+          "reward": {
+            "type": "insight",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "single",
+          "value": 0.1,
+          "reward": {
+            "type": "insight",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "single",
+          "value": 0.12,
+          "reward": {
+            "type": "insight",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "single",
+          "value": 0.12,
+          "reward": {
+            "type": "insight",
+            "value": 2,
+            "perMatch": false
+          }
+        }
+      }
     ]
   },
   "T036": {
     "quality": "rare",
     "maxLevel": 4,
-    "upCost": [7, 11, 16],
+    "upCost": [
+      7,
+      11,
+      16
+    ],
     "levels": [
-      { "effect": { "type": "dice_pattern", "pattern": "all_high", "minPip": 4, "value": 0.1, "reward": { "type": "fragment", "value": 1, "perMatch": false } } },
-      { "effect": { "type": "dice_pattern", "pattern": "all_high", "minPip": 4, "value": 0.12, "reward": { "type": "fragment", "value": 1, "perMatch": false } } },
-      { "effect": { "type": "dice_pattern", "pattern": "all_high", "minPip": 4, "value": 0.14, "reward": { "type": "fragment", "value": 1, "perMatch": false } } },
-      { "effect": { "type": "dice_pattern", "pattern": "all_high", "minPip": 4, "value": 0.16, "reward": { "type": "fragment", "value": 1.5, "perMatch": false } } }
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "all_high",
+          "minPip": 4,
+          "value": 0.1,
+          "reward": {
+            "type": "fragment",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "all_high",
+          "minPip": 4,
+          "value": 0.12,
+          "reward": {
+            "type": "fragment",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "all_high",
+          "minPip": 4,
+          "value": 0.14,
+          "reward": {
+            "type": "fragment",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "all_high",
+          "minPip": 4,
+          "value": 0.16,
+          "reward": {
+            "type": "fragment",
+            "value": 1.5,
+            "perMatch": false
+          }
+        }
+      }
     ]
   },
   "T037": {
     "quality": "rare",
     "maxLevel": 4,
-    "upCost": [7, 11, 16],
+    "upCost": [
+      7,
+      11,
+      16
+    ],
     "levels": [
-      { "effect": { "type": "style_switch_pct", "value": 0.08, "insight": 1 } },
-      { "effect": { "type": "style_switch_pct", "value": 0.1, "insight": 1 } },
-      { "effect": { "type": "style_switch_pct", "value": 0.12, "insight": 1 } },
-      { "effect": { "type": "style_switch_pct", "value": 0.12, "insight": 2 } }
+      {
+        "effect": {
+          "type": "style_switch_pct",
+          "value": 0.08,
+          "insight": 1
+        }
+      },
+      {
+        "effect": {
+          "type": "style_switch_pct",
+          "value": 0.1,
+          "insight": 1
+        }
+      },
+      {
+        "effect": {
+          "type": "style_switch_pct",
+          "value": 0.12,
+          "insight": 1
+        }
+      },
+      {
+        "effect": {
+          "type": "style_switch_pct",
+          "value": 0.12,
+          "insight": 2
+        }
+      }
     ]
   },
   "T038": {
     "quality": "rare",
     "maxLevel": 4,
-    "upCost": [7, 11, 16],
+    "upCost": [
+      7,
+      11,
+      16
+    ],
     "levels": [
-      { "effect": { "type": "manuscript_pct", "step": 2, "value": 0.02, "cap": 0.1 } },
-      { "effect": { "type": "manuscript_pct", "step": 2, "value": 0.025, "cap": 0.1 } },
-      { "effect": { "type": "manuscript_pct", "step": 2, "value": 0.025, "cap": 0.125 } },
-      { "effect": { "type": "manuscript_pct", "step": 2, "value": 0.03, "cap": 0.15 } }
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 0.02,
+          "cap": 0.1
+        }
+      },
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 0.025,
+          "cap": 0.1
+        }
+      },
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 0.025,
+          "cap": 0.125
+        }
+      },
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 0.03,
+          "cap": 0.15
+        }
+      }
     ]
   },
   "T039": {
     "quality": "rare",
     "maxLevel": 4,
-    "upCost": [7, 11, 16],
+    "upCost": [
+      7,
+      11,
+      16
+    ],
     "levels": [
-      { "effect": { "type": "dice_pattern", "pattern": "pair", "value": 0.08, "reward": { "type": "inspiration", "value": 1, "perMatch": false } } },
-      { "effect": { "type": "dice_pattern", "pattern": "pair", "value": 0.1, "reward": { "type": "inspiration", "value": 1, "perMatch": false } } },
-      { "effect": { "type": "dice_pattern", "pattern": "pair", "value": 0.12, "reward": { "type": "inspiration", "value": 1, "perMatch": false } } },
-      { "effect": { "type": "dice_pattern", "pattern": "pair", "value": 0.14, "reward": { "type": "inspiration", "value": 2, "perMatch": false } } }
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "pair",
+          "value": 0.08,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "pair",
+          "value": 0.1,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "pair",
+          "value": 0.12,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "pair",
+          "value": 0.14,
+          "reward": {
+            "type": "inspiration",
+            "value": 2,
+            "perMatch": false
+          }
+        }
+      }
     ]
   },
   "T040": {
     "quality": "epic",
     "maxLevel": 5,
-    "upCost": [8, 12, 17, 23],
+    "upCost": [
+      8,
+      12,
+      17,
+      23
+    ],
     "levels": [
-      { "effect": { "type": "dice_pattern", "pattern": "six", "value": 0, "reward": { "type": "fragment", "value": 0.5 } } },
-      { "effect": { "type": "dice_pattern", "pattern": "six", "value": 0, "reward": { "type": "fragment", "value": 0.6 } } },
-      { "effect": { "type": "dice_pattern", "pattern": "six", "value": 0, "reward": { "type": "fragment", "value": 0.75 } } },
-      { "effect": { "type": "dice_pattern", "pattern": "six", "value": 0, "reward": { "type": "fragment", "value": 1 } } },
-      { "effect": { "type": "dice_pattern", "pattern": "six", "value": 0, "reward": { "type": "fragment", "value": 1.25 } } }
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 0,
+          "reward": {
+            "type": "fragment",
+            "value": 0.5
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 0,
+          "reward": {
+            "type": "fragment",
+            "value": 0.6
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 0,
+          "reward": {
+            "type": "fragment",
+            "value": 0.75
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 0,
+          "reward": {
+            "type": "fragment",
+            "value": 1
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 0,
+          "reward": {
+            "type": "fragment",
+            "value": 1.25
+          }
+        }
+      }
     ]
   },
   "T034": {
@@ -1856,9 +2120,9 @@
         "effect": {
           "type": "reincarnate",
           "inspThreshold": 20,
-          "attrRatio": 1.0
+          "attrRatio": 1
         }
       }
     ]
   }
-}
+};

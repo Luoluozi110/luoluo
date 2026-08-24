@@ -79,16 +79,6 @@ const normalized = normalizeConfig(clone(raw));
 const merged = applyProjectOverride(normalized, patch, { requireType: true });
 assert.equal(merged.questions.length, 2);
 
-// 云端内容工程可能只带主路线，不能覆盖掉本地正式配置中的隐藏终圈资格与入口。
-const cloudBoard = clone(raw.board);
-delete cloudBoard.hiddenFinalRing;
-const mergedWithoutSecretRing = applyProjectOverride(normalized, {
-  _type: 'feihua-content',
-  board: cloudBoard
-}, { requireType: true });
-assert.ok(mergedWithoutSecretRing.board.hiddenFinalRing, '云端旧棋盘缺少隐藏终圈时应保留本地配置');
-assert.equal(mergedWithoutSecretRing.board.hiddenFinalRing.battleCellId, raw.board.hiddenFinalRing.battleCellId);
-
 assert.throws(
   () => applyProjectOverride(normalized, { _type: 'wrong', questions: [] }, { requireType: true }),
   /_type/

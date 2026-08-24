@@ -2301,10 +2301,12 @@ export class Game {
       for (const m of mechOut.mods.pct) oppPct.push(m);
       for (const m of mechOut.mods.flat) oppFlat.push(m);
     }
-    const npcDiceProfile = R.styleDiceScore(npcStyle, [npcDice], styleSystem, R.BATTLE_COEF.diceMult, 0);
+    // NPC 与玩家使用同一套普通灵感骰乘区；文体骰型仍由 styleSystem 决定。
+    const npcDiceProfile = R.styleDiceScore(npcStyle, [npcDice], styleSystem, R.BATTLE_COEF.diceMult, 0, dicePct);
     let oppCalc = R.battleScore({
-      attrs: npcAttrs, style: npcStyle, dice: npcDice, diceScore: npcDiceProfile.score,
-      diceDetail: npcDiceProfile.detail, coef: battleCoef,
+      attrs: npcAttrs, style: npcStyle, dice: npcDice,
+      dicePct: npcDiceProfile.pct, dicePctDetail: npcDiceProfile.pctDetail,
+      coef: battleCoef,
       pctMods: oppPct, flatMods: oppFlat
     });
     let result = R.judgeBattle(selfCalc.total, oppCalc.total, (this.cfg.grades.battle || {}).drawRatio);
@@ -2337,7 +2339,7 @@ export class Game {
         for (const m of mods2.pct) oppPct.push(m);
         for (const m of mods2.flat) oppFlat.push(m);
         oppCalc = R.battleScore({ attrs: npcAttrs, style: npcStyle, dice: npcDice,
-          diceScore: npcDiceProfile.score, diceDetail: npcDiceProfile.detail, coef: battleCoef,
+          dicePct: npcDiceProfile.pct, dicePctDetail: npcDiceProfile.pctDetail, coef: battleCoef,
           pctMods: oppPct, flatMods: oppFlat });
         result = R.judgeBattle(selfCalc.total, oppCalc.total, (this.cfg.grades.battle || {}).drawRatio);
         mechOut = { tri: mechOut.tri, wea: wea2, mods: mods2 };

@@ -101,6 +101,16 @@ console.log('== 引擎：追加骰同时保留骰面收益并接入结算明细 
   assert.equal(fixed.selfCalc.breakdown.pctSum, one.selfCalc.breakdown.pctSum, '固定骰不叠加追加骰百分比');
 }
 
+console.log('== 引擎：NPC 普通灵感骰同样进入作品乘区 ==');
+{
+  const game = newGame();
+  const session = game.createSession({ npc: npc(), label: 'NPC 灵感骰乘区' });
+  const out = game.resolveBattle(session, 'shi', 'zheli', [3]);
+  assert.ok(out.oppCalc.breakdown.dicePct > 0, 'NPC 普通骰产生有效作品乘区');
+  assert.match(out.oppCalc.items[3].detail, /乘区 \+/, 'NPC 算分明细显示灵感骰乘区');
+  assert.ok(out.oppCalc.diceScore > 0, 'NPC 灵感骰按其创作底盘折算实际贡献');
+}
+
 console.log('== 文心：追加骰增益与骰组章法分工 ==');
 {
   const talents = load('talents');
