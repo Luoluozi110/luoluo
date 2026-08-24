@@ -48,6 +48,31 @@ export function forcedStageNpc(pool, attrs) {
 export const forcedPalaceNpc = forcedStageNpc;
 
 /**
+ * 三圈棋盘的关卡阶段与 NPC 档位并不等同于路线进度百分比：例如进入举人圈时，
+ * 路线进度仍可能落在秀才档的旧区间。常规遭遇必须以已进入的阶段为准，
+ * 旧版棋盘或未知阶段才保留按进度区间抽取的兼容逻辑。
+ */
+const PHASE_TIER_ID = Object.freeze({
+  child: 'tongsheng',
+  xiucai: 'xiucai',
+  juren: 'juren',
+  jinshi: 'jinshi',
+  palace: 'zhukaoguan',
+  secret: 'taohuaxian'
+});
+
+export function tierForCurrentStage(game, list = game.cfg.npcs || []) {
+  const phase = game && game.s && game.s.phase;
+  const tierId = PHASE_TIER_ID[phase];
+  if (tierId) {
+    const tier = list.find(entry => entry && entry.id === tierId);
+    if (tier) return tier;
+  }
+  const progress = game.progress();
+  return list.find(entry => entry.range && progress >= entry.range[0] && progress < entry.range[1]) || list[0];
+}
+
+/**
  * 从一个明确档位抽取对手。阶段必遇只在该档首次命中时生效，
  * 之后恢复权重随机，避免一路反复遭遇同一名 NPC。
  */
@@ -80,8 +105,7 @@ export function pickNpc(game, forPalace) {
       || list.find(n => (n.range || [])[0] >= 1)
       || list[list.length - 1];
   } else {
-    const p = game.progress();
-    tier = list.find(n => n.range && p >= n.range[0] && p < n.range[1]) || list[0];
+    tier = tierForCurrentStage(game, list);
   }
   return pickNpcFromTier(game, tier, { recordStageForce: !forPalace });
 }
