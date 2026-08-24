@@ -24,7 +24,8 @@ export function npcFromPick(tier, pick) {
 
 /**
  * 阶段必遇条件：由 NPC 配置声明，而非在流程里按姓名硬编码。
- * 当前支持「某一三力严格超过门槛，且严格高于指定三力」：
+ * 当前支持「某一属性严格超过门槛，可选地再严格高于指定属性」：
+ * { primary:'lian', minExclusive:35 } 或
  * { primary:'lian', minExclusive:35, strictlyHigherThan:['shi','ci'] }。
  * stageForcedWhen 用于所属档位；palaceForcedWhen 作为康尔玉旧数据的兼容别名。
  * 同时满足多名时按档内配置顺序取首名，保持结果确定、可审计。

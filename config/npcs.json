@@ -1455,16 +1455,11 @@
         "weight": 10,
         "palaceForcedWhen": {
           "primary": "lian",
-          "minExclusive": 35,
-          "strictlyHigherThan": [
-            "shi",
-            "ci"
-          ]
+          "minExclusive": 35
         },
         "stageForcedWhen": {
           "primary": "lian",
-          "minExclusive": 35,
-          "strictlyHigherThan": ["shi", "ci"]
+          "minExclusive": 35
         },
         "attrs": {
           "shi": 23,
