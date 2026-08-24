@@ -57,6 +57,18 @@ export class BattleStage {
 
     const panel = el.querySelector('#btPanel');
 
+    /* 首次论战先讲清六步流程，随后才进入遭遇，避免教学被倒计时打断。 */
+    if (session.tutorialFirstBattle && session.tutorialFirstBattleText) {
+      panel.innerHTML = `<div class="ph">论战六步</div><div style="font-size:14px;line-height:1.9;white-space:pre-line;color:var(--mo-2)">${esc(session.tutorialFirstBattleText)}</div>`;
+      const guideBtn = document.createElement('button');
+      guideBtn.className = 'pick meet-confirm';
+      guideBtn.textContent = '开始第一场论战 →';
+      await new Promise(resolve => {
+        guideBtn.addEventListener('click', () => { guideBtn.disabled = true; resolve(); });
+        panel.appendChild(guideBtn);
+      });
+    }
+
     /* ① 遭遇：介绍弹窗，等待玩家「开始对决」确认后再推进（不再自动快跳） */
     panel.innerHTML = `<div class="ph">① 遭遇</div>
       <div style="font-size:17px;line-height:1.8">「${esc(session.npc.fullName || session.npc.name)}」${esc(session.npc.title || '')}拦路请教，愿以文会友。${session.npc.style ? `<span style="color:var(--zhu)">（此人偏${STYLE_NAMES[session.npc.style] || ''}）</span>` : ''}</div>`;
@@ -122,6 +134,7 @@ export class BattleStage {
     if (slot) slot.innerHTML = '';
     const out = session.resolve(style, manner, dice);
     panel.innerHTML = `<div class="ph">⑥ 算分对决　<span style="font-size:12px;color:var(--mo-3)">
+      ${session.tutorialFirstBattle ? '先看五项来源，再看最终作品得分　·　' : ''}
       对手以「${STYLE_NAMES[out.npcStyle]}·${esc(out.npcMannerName)}」应战，掷出 ${out.npcDice} 点</span></div>
       <div style="font-size:14px;color:var(--mo-2);line-height:1.8" id="btNarrate">正在逐项计分……</div>`;
 
@@ -159,6 +172,7 @@ export class BattleStage {
         </button>`;
       }).join('');
       panel.innerHTML = `<div class="ph">③ 选文体　<span style="font-size:12px;color:var(--mo-3)">三体共通 ×7 ＋ 本体专精 ×3　·　限时 ${this.seconds} 秒</span></div>
+        <div style="font-size:12px;line-height:1.7;color:var(--mo-3);margin:4px 2px 7px">三体共通是诗力、词力、联力的平均功底；本体专精是你本场选择的文体属性。属性最高不一定永远是答案，还要看风潮、文风、对手和灵感。</div>
         <div class="pick-row">${cards}</div>${this.weaknessTip(session)}${this.activeRow(session)}`;
       this.bindActive(panel, session);
       panel.querySelectorAll('[data-s]').forEach(b =>
@@ -188,7 +202,7 @@ export class BattleStage {
       }).join('');
       panel.innerHTML = `<div class="ph">④ 选风格　<span style="font-size:12px;color:var(--mo-3)">限时 ${this.seconds} 秒</span></div>
         <div class="pick-row">${cards}</div>
-        <div style="font-size:12px;color:var(--mo-3);margin:6px 2px 0">有效相性已含本门文风与当朝风潮；连续同风格取胜可叠「气势连捷」。</div>
+        <div style="font-size:12px;color:var(--mo-3);margin:6px 2px 0">文风会影响题材相性、当朝风潮和连续取胜的气势连捷；当前题材与风潮加成已在上方审题阶段标出。</div>
         ${this.weaknessTip(session)}
         ${this.activeRow(session)}`;
       this.bindActive(panel, session);
@@ -247,12 +261,13 @@ export class BattleStage {
         const pipHtml = pips.map(n => `<span class="dice-pip">${'①②③④⑤⑥'[n - 1]}</span>`).join('');
         const extraHint = extraPct > 0 ? ` · 作品乘区 +${Math.round(extraPct * 100)}%` : '';
         panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → 临场发挥 ${score} 分${extraHint}${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
+          <div style="font-size:12px;line-height:1.7;color:var(--mo-3);margin:4px 2px 7px">当前骰点已经计入临场发挥；继续追加会消耗灵感，收笔则以当前骰数结算。</div>
           <div class="dice-pips">${pipHtml}</div>
           <div class="pick-row">
             ${canExtra
-              ? `<button class="pick" id="btExtra" data-sfx="none"><div class="pn">➕ 多掷一枚</div><div class="pv">灵感 −${extraCost} · 作品乘区再 +${Math.round((typeof session.extraDicePct === 'function' ? session.extraDicePct(1) : (Number(this.cfg?.inspiration?.extraDicePct) || 0)) * 100)}%</div></button>`
+              ? `<button class="pick" id="btExtra" data-sfx="none"><div class="pn">多掷一枚</div><div class="pv">消耗灵感 ${extraCost} · 增加一段临场发挥</div></button>`
               : `<button class="pick" disabled><div class="pn">${hasFixed() ? '固定骰·不可叠' : '灵感不足'}</div></button>`}
-            <button class="pick" id="btConfirm"><div class="pn">确定得分</div><div class="pv">以 ${pips.length} 枚结算</div></button>
+            <button class="pick" id="btConfirm"><div class="pn">收笔结算</div><div class="pv">以当前 ${pips.length} 枚骰子完成作品</div></button>
           </div>`;
         if (canExtra) panel.querySelector('#btExtra').addEventListener('click', () => addExtra());
         panel.querySelector('#btConfirm').addEventListener('click', () => finish());
@@ -330,7 +345,7 @@ export class BattleStage {
     return `<div class="jt-tip" style="margin:4px 2px 0"><span class="jt-tag">机</span>${esc(tip)}</div>`;
   }
 
-  /** 五项逐条弹出累加——孩子要能看懂为什么赢 */
+  /** 五项逐条弹出累加——玩家要能看懂为什么赢 */
   async revealScores(out) {
     const selfBox = this.el.querySelector('#selfLines');
     const oppBox = this.el.querySelector('#oppLines');

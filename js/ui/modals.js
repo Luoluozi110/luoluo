@@ -22,6 +22,18 @@ export const DEFAULT_SECONDS = 30;
  * 缺字段时回退到这里，保证不破坏现有表现。绝不在此硬编码数值/公式。
  */
 const NARRATIVE_DEFAULTS = {
+  tutorial: {
+    kickoff: {
+      title: '起步札记',
+      text: '每回合先掷“移动骰”，决定你在棋盘上前进几格。\n\n落到不同格子会触发奇遇、问答或论战。先看看右侧的灵感与文心，再点击“掷骰”出发。',
+      button: '明白，开始第一回合'
+    },
+    battle: {
+      title: '论战六步',
+      text: '① 遭遇：先看对手是否有招牌与破绽\n② 审题：确认题目题材，并留意当朝风潮\n③ 选文体：看属性底盘与本体专精\n④ 选风格：看题材、文风和连捷加成\n⑤ 掷灵感骰：决定临场发挥，可花灵感追加\n⑥ 算分对决：逐项揭示格律、意象、立意、骰子和修正\n\n记住：先看题，再选体；先算资源，再决定要不要追加。',
+      button: '开始第一场论战'
+    }
+  },
   prologue: {
     title: '初入科场',
     text: '你有这么一段模糊的记忆：你来自于所谓的“现代世界”，你或许曾富甲一方，却感到生活寡淡无味，于是抛尽家财，出海寻访；也或许一贫如洗，为虚无缥缈的救赎凭片板到海上流浪；又或许只过着柴米油盐的生活，却在某日下定决心，去寻找那个世外仙源——总之，共同点是，你最终来到了『桃花岛』。岛上的仙人听你说明来意，默然无言，只往你头上一点，你便感觉周围的景物变成万千碎片，万千尘埃，像被狂风割裂，吹散，又重组成了新的场景。“待到种种妄念破灭，自可殿试见我，可涤尔灵台。”你到了蒙学馆，变成了一个小童生。其后十年潜心，你逐渐分不清那段模糊的记忆是真实存在，还只是一段怪谈般的梦境。总之，眼前科举将启，十载寒窗已到迎来回报的时刻，只待踏上征途，一上科场，便一鸣惊人。',
@@ -72,6 +84,10 @@ function narrativeOf(cfg) {
   const src = (cfg && cfg.narrative) || {};
   const d = NARRATIVE_DEFAULTS;
   return {
+    tutorial: {
+      kickoff: Object.assign({}, d.tutorial.kickoff, (src.tutorial || {}).kickoff || {}),
+      battle: Object.assign({}, d.tutorial.battle, (src.tutorial || {}).battle || {})
+    },
     prologue: Object.assign({}, d.prologue, src.prologue || {}),
     zeitgeist: Object.assign({}, d.zeitgeist, src.zeitgeist || {}),
     stageChange: Object.assign({}, d.stageChange, src.stageChange || {}, {
@@ -271,6 +287,7 @@ export class Modals {
       box.innerHTML = `<div class="mtitle"><h2>三功修习</h2><span class="mtag">成长 · 调度 · 沉淀</span></div>
         ${notice ? `<div class="analysis">${esc(notice)}</div>` : ''}
         <div class="dianggu"><b>心得 ${a.insight}/${fb.insightCap}</b>　构思 ${a.strategy.charges}/${fb.strategyCap}　稿页 ${a.manuscript.pages}/${fb.manuscriptCap}　残页 ${fmt(a.manuscript.fragments)}</div>
+        <div class="dianggu" style="color:var(--mo-3)">学力管研修：安排属性成长方向，下一阶段生效。思力管章法：储存构思，按条件自动发动。笔力管稿本：积累稿页与残页，用于润色、刊行和定卷。</div>
         <div class="dianggu" style="color:var(--mo-3)">学力：研修 +${fmt(fb.studyRate)}/场、${fb.studySlots} 个研修位　思力：构思 +${fmt(fb.strategyIncome)}/阶段、余思 ${fmt(fb.strategyRemainder)}　笔力：残页 +${fmt(fb.manuscriptFragmentRate)}/战</div>
         <hr class="hr-ink"/><h3>思力·行文章法</h3>
         <div class="dianggu">当前：<b>${esc(currentPlan.name || '未定章法')}</b>。章法满足条件时自动发动，不中断回合；此处选择将在下阶段生效。</div>
@@ -375,6 +392,7 @@ export class Modals {
         <h3>${esc(t.name)}</h3>
         <div class="efx">${talentEffectText(t)}</div>
         <div class="dianggu">${esc(personalize(t.text || '', this.playerName))}</div>
+        <div class="dianggu" style="margin-top:10px;color:var(--mo-3)">获得后可在右侧“文心”栏查看；点击已有文心，可查看当前等级、下一级效果与升级所需灵感。</div>
         <div style="text-align:center;margin-top:16px"><button class="btn btn-primary" data-ok>收入囊中</button></div>
       </div>`);
     play('talent');
@@ -441,6 +459,7 @@ export class Modals {
           <div class="efx">${talentEffectText(current)}</div>
           ${nextHtml}
           <div class="dianggu">${esc(personalize(current.text || '', this.playerName))}</div>
+          <div class="dianggu" style="margin-top:10px;color:var(--mo-3)">升级只消耗灵感；主动文心需在论战中发动，被动文心会常驻生效。</div>
           ${btnHtml}
         </div>`;
     };
@@ -582,6 +601,14 @@ export class Modals {
   async showPrologue() {
     const N = narrativeOf(this.cfg);
     return this.showStageIntro(N.prologue.title, N.prologue.text, N.prologue.button);
+  }
+  async showKickoffTutorial() {
+    const N = narrativeOf(this.cfg);
+    return this.showStageIntro(N.tutorial.kickoff.title, N.tutorial.kickoff.text, N.tutorial.kickoff.button);
+  }
+  async showBattleTutorial() {
+    const N = narrativeOf(this.cfg);
+    return this.showStageIntro(N.tutorial.battle.title, N.tutorial.battle.text, N.tutorial.battle.button);
   }
   /** 阶段变化说明：会试圈 / 殿试由引擎在相应节点调用。 */
   async showStageIntro(title, text, button = '谨记于心') {
@@ -841,6 +868,27 @@ export function talentEffectText(t) {
       const discount = Number(e.firstCostDiscount) || 0;
       return discount ? `首枚追加少耗 ${discount} 灵感；${pct}` : pct;
     }
+    case 'dice_transform':
+      if (e.mode === 'first_floor') return `本场首枚灵感骰最低视为 ${e.floor || 4} 点`;
+      if (e.mode === 'lowest_to') return `将最低且不高于 ${e.maxPip || 3} 点的一骰化为 ${e.target || 6} 点`;
+      return `将 ${e.count || 1} 枚不高于 ${e.threshold || 2} 点的最低骰抬高 ${e.value || 1} 点`;
+    case 'dice_pattern': {
+      const pct = n => `${Math.round((Number(n) || 0) * 100)}%`;
+      let s = e.pattern === 'six' ? `每枚最终六点骰，得分 +${pct(e.value)}`
+        : e.pattern === 'distinct' ? `每多一种不同点数，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚追加少耗 ${e.firstCostDiscount} 灵感` : ''}`
+        : e.pattern === 'single' ? `仅以一枚骰结算，得分 +${pct(e.value)}`
+        : e.pattern === 'all_high' ? `全部骰不低于 ${e.minPip || 4} 点，得分 +${pct(e.value)}`
+        : e.pattern === 'pair' ? `骰组出现同点，得分 +${pct(e.value)}`
+        : e.pattern === 'total' ? `骰组总点不少于 ${e.threshold || 12}，得分 +${pct(e.value)}`
+        : `每枚 ≥${e.highMin || 5} 点骰 +${pct(e.highValue)}；每枚 ≤${e.lowMax || 2} 点骰 ${pct(e.lowValue)}`;
+      if (e.reward && Number(e.reward.value) > 0) {
+        const rn = { insight: '心得', fragment: '残页', page: '稿页', inspiration: '灵感' }[e.reward.type] || e.reward.type;
+        s += `；触发后 ${rn} +${e.reward.value}${e.reward.perMatch === false ? '（每场一次）' : '（按命中数）'}`;
+      }
+      return s;
+    }
+    case 'style_switch_pct': return `换用不同于上一场的文体：得分 +${Math.round((e.value || 0) * 100)}%，心得 +${e.insight || 0}`;
+    case 'manuscript_pct': return `每持有 ${e.step || 2} 页稿本，得分 +${Math.round((e.value || 0) * 100)}%（上限 ${Math.round((e.cap || 0) * 100)}%）`;
     case 'copy_affinity': return '复制对手本场风格的相性加成';
     case 'crit': return `${Math.round((e.chance || 0) * 100)}% 概率神来之笔，得分 ×${e.mult}`;
     case 'attr_flat': return Object.entries(e.attrs || {}).map(([k, v]) => `${ATTR_NAMES[k]} +${v}`).join('　');

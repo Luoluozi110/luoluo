@@ -4,14 +4,14 @@
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
 import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260822secretfinal1';
-import { Game } from '../engine/game.js?v=20260824reincarnate2';
+import { Game } from '../engine/game.js?v=20260824tutorial1';
 import { BoardView } from './board.js?v=20260824audio1';
-import { Hud, radarSVG } from './hud.js?v=20260823threepower1';
+import { Hud, radarSVG } from './hud.js?v=20260824tutorial1';
 // 奇遇属性收益在 20260823eventattrs1 起于选择前完整展示；独立版本键避免旧模块缓存继续省略属性。
-import { Modals } from './modals.js?v=20260824reincarnate2';
-import { BattleStage } from './battle.js?v=20260824audio1';
+import { Modals } from './modals.js?v=20260824tutorial1';
+import { BattleStage } from './battle.js?v=20260824tutorial1';
 import { AlbumUI } from './album.js?v=20260824audio1';
-import { CodexUI } from './codex.js?v=20260822secretfinal1';
+import { CodexUI } from './codex.js?v=20260824wenxindice1';
 import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260822secretfinal1';
 import { initQuality, getTier, setTier } from './quality.js?v=20260822secretfinal1';
 import { ATTR_NAMES } from '../engine/rules.js?v=20260822secretfinal1';
@@ -20,7 +20,7 @@ import * as Codex from '../engine/codex.js?v=20260822secretfinal1';
 // 音频模块统一使用同一 URL，确保静音、SFX 与配乐共享一个 AudioContext / Master 总线。
 import { initAudio, play } from './audio.js';
 import { setScene, setTension, setStage } from './music.js?v=20260824audio1';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260822secretfinal1';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260824tutorial1';
 import { Leaderboard } from './leaderboard.js?v=20260822secretfinal1';
 import { personalize } from './namefmt.js?v=20260822secretfinal1';
 import { ContentTestUI } from './contentTest.js?v=20260822contenttest1';
@@ -239,6 +239,7 @@ function buildSchoolScreen() {
         ${sch.flavor ? `<div class="flavor">${sch.flavor}</div>` : ''}
         ${masteryLine}
         <div class="meta">${esc(bonusTxt)}</div>
+        ${sch.desc ? `<div class="school-guide">玩法提示：${esc(sch.desc)}</div>` : ''}
       </button>`;
   }).join('');
 
@@ -349,6 +350,10 @@ async function startGame(schoolId, loadout, playerName) {
     await modals.showPrologue();
     s.prologueSeen = true;
   }
+  if (s.tutorialState && !s.tutorialState.firstMoveSeen && typeof modals.showKickoffTutorial === 'function') {
+    await modals.showKickoffTutorial();
+    s.tutorialState.firstMoveSeen = true;
+  }
   if (cards.length) hud.toast(`行囊生效：${cards.map(c => `「${c.name}」`).join('')}`);
   hud.render(s, game);
   showMenuButton(true);
@@ -406,6 +411,7 @@ function makeUi() {
     showBowenChoice: () => modals.showBowenChoice(),
     showSky: c => modals.showSky(c),
     showPrologue: () => modals.showPrologue(),
+    showBattleTutorial: () => modals.showBattleTutorial(),
     showLap2Intro: () => modals.showLap2Intro(),
     // 引擎明确要求同步圈层；不再让阶段弹窗承担唯一的状态切换职责。
     syncStageRing: s => board.revealRouteState(s),
@@ -472,6 +478,11 @@ function onPlan() {
 /** 三功修习：集中管理心得、研修位与稿本，避免每场战后连续弹窗。 */
 function onAbility() {
   if (!game || game.s.over || rolling) return;
+  if (game.s.tutorialState && !game.s.tutorialState.abilitySeen) {
+    game.s.tutorialState.abilitySeen = true;
+    hud.toast('三功修习：学力管研修，思力管章法，笔力管稿本；带“下阶段生效”的设置不会立即改变当前战斗。');
+    game.onForceSave?.();
+  }
   modals.showAbilityPanel(game);
 }
 

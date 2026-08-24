@@ -576,6 +576,16 @@ export class Game {
       seenEvents: new Set(), usedQuestions: new Set(),
       palaceWins: 0, palaceDone: 0,
       zeitgeist: this.seedZeitgeist(cfg.affinity),   // 当朝风潮（每局随机，制造变化性）
+      tutorialState: {
+        schoolSeen: true,
+        firstMoveSeen: false,
+        hudSeen: false,
+        firstBattleSeen: false,
+        scoreSeen: false,
+        talentSeen: false,
+        abilitySeen: false,
+        rulesVisited: false
+      },
       affStreak: { manner: null, n: 0 },             // 气势连捷：连续同风格胜场
       synergies: [],                                 // 当前已激活的文心羁绊（id/name/desc/members）
       talentLevels: {},                              // 文心等级：{ [talentId]: level }（Lv1 起，存档持久化）
@@ -1044,7 +1054,11 @@ export class Game {
     }
 
     Codex.recordTalent(talent.id);   // 图鉴：记录已获得的文心（跨局累计）
+    if (!opts.inherited && s.tutorialState && !s.tutorialState.talentSeen) {
+      s.tutorialState.talentSeen = true;
+    }
     this.ui.onState(s);
+    if (!opts.inherited && s.tutorialState && s.tutorialState.talentSeen) this.onForceSave?.();
     return true;
   }
 
@@ -1056,7 +1070,7 @@ export class Game {
    *     · attr_flat：先 revoke 旧等级属性，再 apply 新等级（净差值刚好）。
    *     · start_insp：仅结算 (新值 − 旧值) 的灵感差值。
    *     · insp_max：仅结算扩容差值（同 group 互斥标记不重设，替换后不回退）。
-   * - 其余类型（dice_plus/ crit/ dice_mult/ copy_affinity/ 各 pct 等）效果在战斗中实时读取 t.effect，替换即生效。
+   * - 其余类型（骰面化用、骰组章法、相性与各 pct 等）效果在战斗中实时读取 t.effect，替换即生效。
    * 返回 { ok, level?, max?, cost?, reason? }。
    */
   upgradeTalent(id) {
@@ -1884,7 +1898,7 @@ export class Game {
         if (style === 'ci' && extraIndex === 1) discount += Number((this.styleSystem.ci || {}).firstExtraDiscount) || 0;
         if (extraIndex === 1) for (const t of this.passiveTalents) {
           const ef = t.effect || {};
-          if (ef.type === 'extra_dice_pct') discount += Math.max(0, Number(ef.firstCostDiscount) || 0);
+          if (ef.type === 'extra_dice_pct' || ef.type === 'dice_pattern') discount += Math.max(0, Number(ef.firstCostDiscount) || 0);
         }
         const a = g.ensureAbilityState();
         if (extraIndex === 1 && a.manuscript.polish > 0) discount += Number(g.abilityConfig().manuscript?.polishDiscount) || 0;
@@ -1951,16 +1965,53 @@ export class Game {
     const battleCoef = (this.cfg.attrs || {}).battleFormula || null;
     const styleSystem = this.styleConfig();
 
-    // 多枚灵感骰支持：dice 可为点数数组（每枚一枚），也可仍是单数字向后兼容。
-    // 总点数 = 各枚求和，与「灵感骰 = 点数 × diceMult」公式自洽；lucky_six 取「任一枚为 6」。
-    // 追加骰的收益另按每枚配置百分比进入作品乘区，避免只靠随机骰面。
-    const dicePips = Array.isArray(dice) ? dice.slice() : [Number(dice) || 1];
+    // 多枚灵感骰支持：先记录原骰组，再按文心次序做无交互变形。
+    // 变形后的骰组统一供文体结构、骰组花样与战后资源读取，确保「点铁成金→梦笔生花」
+    // 之类的组合真正形成规则联动，而不是各自加一条互不相干的百分比。
+    const rawDicePips = (Array.isArray(dice) ? dice.slice() : [Number(dice) || 1])
+      .map(v => Math.max(1, Math.min(6, Number(v) || 1)));
+    const battleTalents = [...(session.passiveTalents || s.passive || []), ...(session.usedActive || [])];
+    const dicePips = rawDicePips.slice();
+    const diceTransformNotes = [];
+    for (const t of battleTalents) {
+      const ef = t.effect || {};
+      if (ef.type !== 'dice_transform') continue;
+      if (ef.mode === 'low_lift') {
+        const threshold = Math.max(1, Math.min(6, Number(ef.threshold) || 2));
+        const count = Math.max(1, Number(ef.count) || 1);
+        const lift = Math.max(1, Number(ef.value) || 1);
+        const targets = dicePips.map((pip, i) => ({ pip, i })).filter(x => x.pip <= threshold)
+          .sort((a, b) => a.pip - b.pip || a.i - b.i).slice(0, count);
+        for (const x of targets) {
+          const before = dicePips[x.i];
+          dicePips[x.i] = Math.min(6, before + lift);
+          diceTransformNotes.push(`文心·${t.name} ${before}→${dicePips[x.i]}`);
+        }
+      } else if (ef.mode === 'first_floor') {
+        const floor = Math.max(1, Math.min(6, Number(ef.floor) || 4));
+        if (dicePips[0] < floor) {
+          const before = dicePips[0];
+          dicePips[0] = floor;
+          diceTransformNotes.push(`文心·${t.name} 首骰 ${before}→${floor}`);
+        }
+      } else if (ef.mode === 'lowest_to') {
+        const maxPip = Math.max(1, Math.min(6, Number(ef.maxPip) || 3));
+        const target = Math.max(1, Math.min(6, Number(ef.target) || 6));
+        let index = 0;
+        for (let i = 1; i < dicePips.length; i++) if (dicePips[i] < dicePips[index]) index = i;
+        if (dicePips[index] <= maxPip && dicePips[index] < target) {
+          const before = dicePips[index];
+          dicePips[index] = target;
+          diceTransformNotes.push(`文心·${t.name} ${before}→${target}`);
+        }
+      }
+    }
     const totalPips = dicePips.reduce((a, b) => a + (Number(b) || 0), 0) || 1;
     const hasSix = dicePips.includes(6);
     const extraDice = dicePips.length > 1 ? dicePips.length - 1 : 0;   // 玩家本场追加的灵感骰数
 
     /* ---- 玩家侧修正 ---- */
-    const pct = [], flat = [];
+    const pct = [], flat = [], talentTriggers = [];
     let dicePlus = 0, diceMult = R.BATTLE_COEF.diceMult, diceFixed = null, critMult = 1;
     const schoolMech = this.schoolMechanics();
     const schoolDicePlus = schoolMech.type === 'cizong_bi'
@@ -2046,6 +2097,41 @@ export class Game {
         pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
       }
       if (ef.type === 'lucky_six' && hasSix) critMult = Math.max(critMult, Number(ef.mult) || 1);
+    }
+
+    // 新版灵感骰文心：围绕骰组形态触发，不再覆盖整场骰倍率。
+    // occurrence 同时驱动得分和战后资源，单骰/多骰、同点/异点、稳健/豪赌由此分出流派。
+    for (const t of battleTalents) {
+      const ef = t.effect || {};
+      if (ef.type === 'dice_pattern') {
+        let occurrence = 0;
+        let scorePct = 0;
+        if (ef.pattern === 'six') occurrence = dicePips.filter(v => v === 6).length;
+        else if (ef.pattern === 'distinct') occurrence = Math.max(0, new Set(dicePips).size - 1);
+        else if (ef.pattern === 'single') occurrence = dicePips.length === 1 ? 1 : 0;
+        else if (ef.pattern === 'all_high') occurrence = dicePips.every(v => v >= (Number(ef.minPip) || 4)) ? 1 : 0;
+        else if (ef.pattern === 'pair') occurrence = new Set(dicePips).size < dicePips.length ? 1 : 0;
+        else if (ef.pattern === 'total') occurrence = totalPips >= (Number(ef.threshold) || 12) ? 1 : 0;
+        else if (ef.pattern === 'extremes') {
+          const high = dicePips.filter(v => v >= (Number(ef.highMin) || 5)).length;
+          const low = dicePips.filter(v => v <= (Number(ef.lowMax) || 2)).length;
+          occurrence = high + low;
+          scorePct = high * (Number(ef.highValue) || 0) + low * (Number(ef.lowValue) || 0);
+        }
+        if (ef.pattern !== 'extremes') scorePct = occurrence * (Number(ef.value) || 0);
+        if (scorePct) pct.push({ source: 'talent', label: `文心·${t.name}`, value: scorePct });
+        if (occurrence > 0) talentTriggers.push({ id: t.id, name: t.name, pattern: ef.pattern, occurrence, reward: ef.reward || null });
+      } else if (ef.type === 'style_switch_pct' && session.lastStyle && session.lastStyle !== style) {
+        const value = Number(ef.value) || 0;
+        if (value) pct.push({ source: 'talent', label: `文心·${t.name}·换体`, value });
+        talentTriggers.push({ id: t.id, name: t.name, pattern: 'style_switch', occurrence: 1,
+          reward: Number(ef.insight) > 0 ? { type: 'insight', value: Number(ef.insight) } : null });
+      } else if (ef.type === 'manuscript_pct') {
+        const pages = Number((this.ensureAbilityState().manuscript || {}).pages) || 0;
+        const stacks = Math.floor(pages / Math.max(1, Number(ef.step) || 2));
+        const value = Math.min(Number(ef.cap) || 0.1, stacks * (Number(ef.value) || 0));
+        if (value) pct.push({ source: 'talent', label: `文心·${t.name}·稿本${pages}页`, value });
+      }
     }
 
     // 文心羁绊：拥有特定组合即激活的联动加成（实时按当前持有重算，无持久状态）
@@ -2156,6 +2242,7 @@ export class Game {
     const selfDiceProfile = diceFixed == null
       ? R.styleDiceScore(style, dicePips, styleSystem, diceMult, dicePlus)
       : null;
+    if (selfDiceProfile && diceTransformNotes.length) selfDiceProfile.detail += `；${diceTransformNotes.join('，')}`;
     const selfCalc = R.battleScore({
       attrs: session.playerAttrs, style, dice: totalPips, dicePlus: selfDiceProfile ? 0 : dicePlus,
       diceMult, diceFixed, diceScore: selfDiceProfile && selfDiceProfile.score,
@@ -2213,7 +2300,7 @@ export class Game {
     }
 
     return {
-      style, manner, dice: totalPips, dicePips, selfCalc,
+      style, manner, dice: totalPips, dicePips, rawDicePips, talentTriggers, selfCalc,
       npcStyle, npcManner, npcDice, oppCalc,
       npcMannerName: af.mannerNames[npcManner], result, upset,
       mech: mechOut
@@ -2233,6 +2320,16 @@ export class Game {
     // 通用心得：胜平负都能学习；每阶段首次使用某体再给轻量广度奖励。
     let insight = out.result === 'lose' ? Number(growth.insightLose) || 2
       : out.result === 'draw' ? Number(growth.insightDraw) || 3 : Number(growth.insightWin) || 3;
+    // 骰组文心的后续反馈与算分使用同一份 trigger 快照，避免结算阶段重新判断时
+    // 因骰面变形、换体历史更新而出现“得分触发了、资源却没发”的割裂。
+    const talentReward = { insight: 0, fragment: 0, page: 0, inspiration: 0 };
+    for (const tr of (out.talentTriggers || [])) {
+      const reward = tr && tr.reward;
+      if (!reward || !Object.prototype.hasOwnProperty.call(talentReward, reward.type)) continue;
+      const times = reward.perMatch === false ? 1 : Math.max(1, Number(tr.occurrence) || 1);
+      talentReward[reward.type] += (Number(reward.value) || 0) * times;
+    }
+    insight += talentReward.insight;
     for (const t of (session.passiveTalents || this.s.passive || [])) {
       const ef = t.effect || {};
       if (out.result === 'win' && ef.type === 'on_win_bonus' && (ef.style === style || ef.style === 'any')) insight += Number(ef.value) || 0;
@@ -2288,7 +2385,7 @@ export class Game {
     // 笔力稿本：胜负先给结果稿页；笔力再把本场沉淀转为可结转的残页。
     const mc = ac.manuscript || {};
     let pages = out.result === 'win' ? ((out.dicePips || []).length === 1 ? 2 : 1) : out.result === 'draw' ? 1 : 0;
-    a.manuscript.fragments += this.manuscriptFragmentRate();
+    a.manuscript.fragments += this.manuscriptFragmentRate() + talentReward.fragment;
     if (out.result === 'lose') a.manuscript.fragments += 1;
     const fragmentNeed = (Number(this.s.attrs.bi) || 0) >= (Number(mc.fragmentFastBi) || 16) ? 1 : (Number(mc.fragmentNeed) || 2);
     const made = Math.floor(a.manuscript.fragments / Math.max(1, fragmentNeed));
@@ -2299,6 +2396,7 @@ export class Game {
     const firstFinished = pages > 0 && !a.manuscript.bonusPagePhases[phase];
     if (firstFinished && (Number(this.s.attrs.bi) || 0) >= (Number(mc.bonusPageBi) || 24)) pages += 1;
     if (firstFinished) a.manuscript.bonusPagePhases[phase] = true;
+    pages += talentReward.page;
     const cizongFirstNoExtra = mech.type === 'cizong_bi' && (out.dicePips || []).length === 1 && !a.manuscript.schoolPagePhases[phase];
     if (cizongFirstNoExtra) {
       pages += Number(mech.firstFinishedPagePlus) || 0;
@@ -2312,10 +2410,13 @@ export class Game {
     if (style === 'ci' && out.result === 'draw' && (out.dicePips || []).length > 1) {
       this.addInspiration(Number((styleCfg.ci || {}).drawRefund) || 1, '词·铺陈回环');
     }
+    if (talentReward.inspiration > 0) this.addInspiration(talentReward.inspiration, '文心·骰组回响');
     if (session.usedPolish && a.manuscript.polish > 0) a.manuscript.polish -= 1;
     a.lastStyle = style;
     const fmt = n => Number.isInteger(Number(n)) ? String(Number(n)) : Number(n).toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-    this.push(`战后所得：心得 +${insightGot}，稿页 +${pageGot}，${R.STYLE_NAMES[style]}熟练 +${practice}，研修 +${fmt(studyGain)}/位，残页 +${fmt(this.manuscriptFragmentRate())}`);
+    const rewardEcho = (talentReward.insight || talentReward.fragment || talentReward.page || talentReward.inspiration)
+      ? `；文心回响：心得 +${fmt(talentReward.insight)}、残页 +${fmt(talentReward.fragment)}、稿页 +${fmt(talentReward.page)}、灵感 +${fmt(talentReward.inspiration)}` : '';
+    this.push(`战后所得：心得 +${insightGot}，稿页 +${pageGot}，${R.STYLE_NAMES[style]}熟练 +${practice}，研修 +${fmt(studyGain)}/位，残页 +${fmt(this.manuscriptFragmentRate() + talentReward.fragment)}${rewardEcho}`);
   }
 
   /** 应用战斗奖惩（UI 播完算分动画后调用） */
@@ -2579,8 +2680,21 @@ export class Game {
     const insp0 = this.cfg.inspiration;
     this.addInspiration(this.lateVal(insp0.battleCost ?? -2, insp0.battleCostLate), '应战');
     const session = this.createSession(opts);
+    if (s.tutorialState && !s.tutorialState.firstBattleSeen) {
+      const tutorial = (this.cfg.narrative && this.cfg.narrative.tutorial && this.cfg.narrative.tutorial.battle) || {};
+      session.tutorialFirstBattle = !!this.ui.showBattleTutorial;
+      session.tutorialFirstBattleText = tutorial.text || '先看题，再选体；先算资源，再决定要不要追加。';
+    }
     const out = await this.ui.runBattle(session);
+    if (s.tutorialState && !s.tutorialState.firstBattleSeen) {
+      s.tutorialState.firstBattleSeen = true;
+      this.onForceSave?.();
+    }
     await this.settleBattle(session, out);
+    if (s.tutorialState && !s.tutorialState.scoreSeen) {
+      s.tutorialState.scoreSeen = true;
+      this.onForceSave?.();
+    }
     return opts && opts.returnOutcome ? out : out.result;
   }
 

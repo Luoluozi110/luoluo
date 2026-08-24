@@ -56,7 +56,7 @@ export class Hud {
     this.root = root;
     root.innerHTML = `
       <div id="leftHudRail">
-      <div id="attrPanel" class="panel paper">
+      <div id="attrPanel" class="panel paper" title="创作力决定三体功底；基本功进入意象分、立意分与成长系统">
         <div class="ph"><span class="ph-left"><span class="pc-ico">❖</span><b>六维才学</b></span><span class="ph-right">
           <span id="phaseTag">乡试圈</span><span id="pnameTag" class="pname"></span>
           <button class="pc-toggle" id="attrToggle" type="button" aria-label="收起或展开六维面板" aria-expanded="true"><svg class="chev" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 5.75 8 10.25 12.5 5.75"/></svg></button>
@@ -70,7 +70,7 @@ export class Hud {
         </div></div>
       </div>
 
-      <div id="inspBar" class="panel paper">
+      <div id="inspBar" class="panel paper" title="灵感可用于追加灵感骰和发动主动文心；归零会封笔">
         <div class="ih"><span class="ih-left"><span class="pc-ico">✒</span><span>灵感</span></span><b id="inspNum">—</b><span>/ <span id="inspMax">—</span></span>
           <span class="insp-warn">墨将尽，慎之！</span>
           <button class="pc-toggle" id="inspToggle" type="button" aria-label="收起或展开灵感条" aria-expanded="true"><svg class="chev" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 5.75 8 10.25 12.5 5.75"/></svg></button>
@@ -87,7 +87,7 @@ export class Hud {
       <div id="rightHudRail">
       <div id="skyBadges"></div>
 
-      <div id="talentBar" class="panel paper">
+      <div id="talentBar" class="panel paper" title="点击已有文心查看效果、等级和升级消耗">
         <div class="th"><span class="th-left"><span class="pc-ico">✶</span><span>文心</span></span><span class="th-right">
           <i id="talCount">0/${PASSIVE_MAX} · 0/${ACTIVE_MAX}</i>
           <button class="pc-toggle" id="talentToggle" type="button" aria-label="收起或展开文心面板" aria-expanded="true"><svg class="chev" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 5.75 8 10.25 12.5 5.75"/></svg></button>
@@ -179,6 +179,22 @@ export class Hud {
   }
 
   render(s, game = null) {
+    // 首次进入棋盘时给出一次可回看的核心资源说明，不改变移动端收起偏好。
+    if (s.tutorialState && !s.tutorialState.hudSeen) {
+      this.el.attrPanel.title = '六维：诗力、词力、联力决定文体功底；笔力、学力、思力进入论战算分与成长。';
+      this.el.inspPanel.title = '灵感：可追加灵感骰、发动主动文心；灵感归零会封笔。';
+      this.el.talentPanel.title = '文心：被动常驻、主动消耗灵感；点击已有文心查看效果和升级。';
+      if (this.el.toast) {
+        const tip = document.createElement('div');
+        tip.className = 'toast';
+        tip.textContent = '先看六维才学、灵感与文心；点击文心卡可查看效果并升级。';
+        this.el.toast.appendChild(tip);
+        setTimeout(() => { tip.style.transition = 'opacity .4s'; tip.style.opacity = '0'; }, 3200);
+        setTimeout(() => tip.remove(), 3650);
+      }
+      s.tutorialState.hudSeen = true;
+      game?.onForceSave?.();
+    }
     // 雷达 + 数值
     this.el.radar.innerHTML = radarSVG(s.attrs);
     for (const k of ATTR_KEYS) {
@@ -236,7 +252,7 @@ export class Hud {
 
     // 文心
     const slot = (t, act, i) => t
-      ? `<div class="slot filled ${act ? 'act' : ''}" data-idx="${i}" title="点击查看文心效果"
+      ? `<div class="slot filled ${act ? 'act' : ''}" data-idx="${i}" title="点击查看文心效果、等级和升级消耗"
            style="cursor:pointer">${t.name}</div>`
       : `<div class="slot">空</div>`;
     this._pas = s.passive;

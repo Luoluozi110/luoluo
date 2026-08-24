@@ -98,7 +98,7 @@ const r3 = game.upgradeTalent('T004');
 assert(!r3.ok && r3.reason === '已满级', '满级后再升级被拒');
 
 console.log('\n== 引擎：灵感不足被拒 ==');
-const T016 = cfg.talentById.get('T016'); // dice_mult 史诗 max5，首级成本 8
+const T016 = cfg.talentById.get('T016'); // extra_dice_pct 史诗 max5，首级成本 8
 game.grantTalent(T016, { silent: true });
 game.s.inspiration = 3; // 不足 8
 const r4 = game.upgradeTalent('T016');

@@ -1,6 +1,6 @@
 {
   "_type": "feihua-content",
-  "_version": 1,
+  "_version": 2,
   "questions": [
     {
       "id": "Q0001",
@@ -2374,10 +2374,13 @@
       "id": "T005",
       "name": "急智",
       "kind": "passive",
-      "text": "临场生风，机锋不落。每场论战的灵感骰点数 +1。",
+      "text": "临场生风，机锋不落。每场将一枚不高于 2 点的灵感骰抬高 1 点；变形后的骰面可继续触发其他文心。",
       "effect": {
-        "type": "dice_plus",
-        "value": 1
+        "type": "dice_transform",
+        "mode": "low_lift",
+        "threshold": 2,
+        "value": 1,
+        "count": 1
       },
       "school": "qishi"
     },
@@ -2397,11 +2400,11 @@
       "id": "T007",
       "name": "梦笔生花",
       "kind": "passive",
-      "text": "五代王仁裕《开元天宝遗事》载：李白少时梦所用之笔头上生花，此后天才赡逸，名闻天下。创作时 20% 概率灵光爆发，得分 ×1.5。",
+      "text": "五代王仁裕《开元天宝遗事》载：李白少时梦所用之笔头上生花，此后天才赡逸，名闻天下。每枚最终为 6 点的灵感骰令作品得分 +5%。",
       "effect": {
-        "type": "crit",
-        "chance": 0.2,
-        "mult": 1.5
+        "type": "dice_pattern",
+        "pattern": "six",
+        "value": 0.05
       }
     },
     {
@@ -2432,10 +2435,12 @@
       "id": "T010",
       "name": "天马行空",
       "kind": "passive",
-      "text": "笔势腾踔，不拘辙迹。灵感骰点数 +1。",
+      "text": "笔势腾踔，不拘辙迹。首枚追加灵感骰少耗 2 灵感；骰组中每多一种不同点数，作品得分 +3%。",
       "effect": {
-        "type": "dice_plus",
-        "value": 1
+        "type": "dice_pattern",
+        "pattern": "distinct",
+        "value": 0.03,
+        "firstCostDiscount": 2
       }
     },
     {
@@ -2484,21 +2489,22 @@
       "id": "T015",
       "name": "不平则鸣",
       "kind": "passive",
-      "text": "「大凡物不得其平则鸣。」——韩愈《送孟东野序》。胸中块垒一朝喷薄：15% 概率得分 ×1.6。需先有「哲思派」倾向。",
+      "text": "「大凡物不得其平则鸣。」——韩愈《送孟东野序》。灵感不高于 12 时，胸中块垒尽发，本场得分 +12%。需先有「哲思派」倾向。",
       "effect": {
-        "type": "crit",
-        "chance": 0.15,
-        "mult": 1.6
+        "type": "comeback",
+        "threshold": 12,
+        "value": 0.12
       }
     },
     {
       "id": "T016",
       "name": "文思泉涌",
       "kind": "passive",
-      "text": "思若泉涌，源源不绝。灵感波动改为 1d6×6，下限抬高、上限拉开。",
+      "text": "思若泉涌，源源不绝。首枚追加灵感骰少耗 1 灵感；每追加一枚，作品乘区额外 +5%。",
       "effect": {
-        "type": "dice_mult",
-        "value": 6
+        "type": "extra_dice_pct",
+        "value": 0.05,
+        "firstCostDiscount": 1
       }
     },
     {
@@ -2516,10 +2522,11 @@
       "id": "TA01",
       "name": "七步成诗",
       "kind": "active",
-      "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」跳过审题与选风格，本场灵感波动锁定为固定 +15。",
+      "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」本场首枚灵感骰最低视为 4 点；抬高后的骰面可触发骰组文心。",
       "effect": {
-        "type": "fixed_dice",
-        "value": 15
+        "type": "dice_transform",
+        "mode": "first_floor",
+        "floor": 4
       },
       "cost": 3
     },
@@ -2537,10 +2544,14 @@
       "id": "TA03",
       "name": "语不惊人",
       "kind": "active",
-      "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。本场灵感波动改为 1d6×8，高风险高回报。",
+      "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。本场每枚 5—6 点骰令得分 +14%，每枚 1—2 点骰令得分 −7%。",
       "effect": {
-        "type": "dice_mult",
-        "value": 8
+        "type": "dice_pattern",
+        "pattern": "extremes",
+        "highMin": 5,
+        "highValue": 0.14,
+        "lowMax": 2,
+        "lowValue": -0.07
       },
       "cost": 4
     },
@@ -2548,11 +2559,11 @@
       "id": "TA04",
       "name": "笔落惊风雨",
       "kind": "active",
-      "text": "「笔落惊风雨，诗成泣鬼神。」——杜甫《寄李十二白二十韵》。本场 35% 概率触发灵光爆发，得分 ×1.5。",
+      "text": "「笔落惊风雨，诗成泣鬼神。」——杜甫《寄李十二白二十韵》。本场每枚最终为 6 点的灵感骰令作品得分 +14%。",
       "effect": {
-        "type": "crit",
-        "chance": 0.35,
-        "mult": 1.5
+        "type": "dice_pattern",
+        "pattern": "six",
+        "value": 0.14
       },
       "cost": 3
     },
@@ -2560,10 +2571,10 @@
       "id": "TA05",
       "name": "一气呵成",
       "kind": "active",
-      "text": "行文如一线贯珠，中无断续。本场灵感骰点数 +3。",
+      "text": "行文如一线贯珠，中无断续。本场每追加 1 枚灵感骰，作品乘区额外 +8%。",
       "effect": {
-        "type": "dice_plus",
-        "value": 3
+        "type": "extra_dice_pct",
+        "value": 0.08
       },
       "cost": 2
     },
@@ -2582,10 +2593,12 @@
       "id": "TA07",
       "name": "点铁成金",
       "kind": "active",
-      "text": "黄庭坚《答洪驹父书》：古之能为文章者……虽取古人之陈言入于翰墨，如灵丹一粒，点铁成金也。本场灵感波动改为 1d6×7。",
+      "text": "黄庭坚《答洪驹父书》：虽取古人之陈言入于翰墨，如灵丹一粒，点铁成金也。本场将一枚最低且不高于 2 点的灵感骰化为 6 点。",
       "effect": {
-        "type": "dice_mult",
-        "value": 7
+        "type": "dice_transform",
+        "mode": "lowest_to",
+        "maxPip": 2,
+        "target": 6
       },
       "cost": 3
     },
@@ -2801,6 +2814,93 @@
         "excludeFlag": "inspiration_capacity"
       },
       "acquireText": "进入第二圈且累计至少 5 胜，本局尚未获得扩容文心时进入随机池。"
+    },
+    {
+      "id": "T035",
+      "name": "删繁就简",
+      "kind": "passive",
+      "text": "郑板桥题画有言：删繁就简三秋树，领异标新二月花。只以一枚灵感骰收笔时，作品得分 +8%，战后心得额外 +1。",
+      "effect": {
+        "type": "dice_pattern",
+        "pattern": "single",
+        "value": 0.08,
+        "reward": {
+          "type": "insight",
+          "value": 1,
+          "perMatch": false
+        }
+      }
+    },
+    {
+      "id": "T036",
+      "name": "字字珠玑",
+      "kind": "passive",
+      "text": "字字圆转，句句有光。若本场全部灵感骰最终均不低于 4 点，作品得分 +10%，并额外沉淀 1 份残页。",
+      "effect": {
+        "type": "dice_pattern",
+        "pattern": "all_high",
+        "minPip": 4,
+        "value": 0.1,
+        "reward": {
+          "type": "fragment",
+          "value": 1,
+          "perMatch": false
+        }
+      }
+    },
+    {
+      "id": "T037",
+      "name": "触类旁通",
+      "kind": "passive",
+      "text": "《周易·系辞》言：引而伸之，触类而长之。若本场改用不同于上一场的文体，作品得分 +8%，战后心得额外 +1。",
+      "effect": {
+        "type": "style_switch_pct",
+        "value": 0.08,
+        "insight": 1
+      }
+    },
+    {
+      "id": "T038",
+      "name": "落笔成章",
+      "kind": "passive",
+      "text": "胸中已有篇章，落笔自见经营。每持有 2 页稿本，作品得分 +2%，最多 +10%。",
+      "effect": {
+        "type": "manuscript_pct",
+        "step": 2,
+        "value": 0.02,
+        "cap": 0.1
+      }
+    },
+    {
+      "id": "T039",
+      "name": "同声相应",
+      "kind": "passive",
+      "text": "《周易·乾》言：同声相应，同气相求。若骰组中出现同点灵感骰，作品得分 +8%，战后返还 1 点灵感。",
+      "effect": {
+        "type": "dice_pattern",
+        "pattern": "pair",
+        "value": 0.08,
+        "reward": {
+          "type": "inspiration",
+          "value": 1,
+          "perMatch": false
+        }
+      }
+    },
+    {
+      "id": "T040",
+      "name": "妙手偶得",
+      "kind": "passive",
+      "text": "陆游诗云：文章本天成，妙手偶得之。每枚最终为 6 点的灵感骰额外沉淀 0.5 份残页。",
+      "effect": {
+        "type": "dice_pattern",
+        "pattern": "six",
+        "value": 0,
+        "reward": {
+          "type": "fragment",
+          "value": 0.5
+        }
+      }
     },
     {
       "id": "T034",
@@ -3056,20 +3156,29 @@
       "levels": [
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 1
+            "type": "dice_transform",
+            "mode": "low_lift",
+            "threshold": 2,
+            "value": 1,
+            "count": 1
           }
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 1
+            "type": "dice_transform",
+            "mode": "low_lift",
+            "threshold": 3,
+            "value": 1,
+            "count": 1
           }
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 2
+            "type": "dice_transform",
+            "mode": "low_lift",
+            "threshold": 3,
+            "value": 1,
+            "count": 2
           }
         }
       ]
@@ -3129,37 +3238,37 @@
       "levels": [
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.16,
-            "mult": 1.45
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0.05
           }
         },
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.19,
-            "mult": 1.475
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0.06
           }
         },
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.22,
-            "mult": 1.5
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0.07
           }
         },
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.25,
-            "mult": 1.525
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0.08
           }
         },
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.28,
-            "mult": 1.55
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0.1
           }
         }
       ]
@@ -3251,20 +3360,26 @@
       "levels": [
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 1
+            "type": "dice_pattern",
+            "pattern": "distinct",
+            "value": 0.03,
+            "firstCostDiscount": 2
           }
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 1
+            "type": "dice_pattern",
+            "pattern": "distinct",
+            "value": 0.04,
+            "firstCostDiscount": 2
           }
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 2
+            "type": "dice_pattern",
+            "pattern": "distinct",
+            "value": 0.05,
+            "firstCostDiscount": 3
           }
         }
       ]
@@ -3447,37 +3562,37 @@
       "levels": [
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.12,
-            "mult": 1.55
+            "type": "comeback",
+            "threshold": 12,
+            "value": 0.12
           }
         },
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.15,
-            "mult": 1.5875
+            "type": "comeback",
+            "threshold": 13,
+            "value": 0.14
           }
         },
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.18,
-            "mult": 1.625
+            "type": "comeback",
+            "threshold": 14,
+            "value": 0.16
           }
         },
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.21,
-            "mult": 1.6625
+            "type": "comeback",
+            "threshold": 15,
+            "value": 0.18
           }
         },
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.24,
-            "mult": 1.7
+            "type": "comeback",
+            "threshold": 16,
+            "value": 0.2
           }
         }
       ]
@@ -3494,32 +3609,37 @@
       "levels": [
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 5.4
+            "type": "extra_dice_pct",
+            "value": 0.05,
+            "firstCostDiscount": 1
           }
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 5.6
+            "type": "extra_dice_pct",
+            "value": 0.06,
+            "firstCostDiscount": 1
           }
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 5.8
+            "type": "extra_dice_pct",
+            "value": 0.07,
+            "firstCostDiscount": 1
           }
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 6
+            "type": "extra_dice_pct",
+            "value": 0.08,
+            "firstCostDiscount": 2
           }
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 6.2
+            "type": "extra_dice_pct",
+            "value": 0.1,
+            "firstCostDiscount": 2
           }
         }
       ]
@@ -3584,31 +3704,35 @@
       "levels": [
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 13
+            "type": "dice_transform",
+            "mode": "first_floor",
+            "floor": 4
           },
           "cost": 3
         },
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 14
+            "type": "dice_transform",
+            "mode": "first_floor",
+            "floor": 5
           },
           "cost": 3
         },
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 15
+            "type": "dice_transform",
+            "mode": "first_floor",
+            "floor": 5
           },
-          "cost": 3
+          "cost": 2
         },
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 17
+            "type": "dice_transform",
+            "mode": "first_floor",
+            "floor": 6
           },
-          "cost": 3
+          "cost": 2
         }
       ]
     },
@@ -3663,36 +3787,56 @@
       "levels": [
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 6.5
+            "type": "dice_pattern",
+            "pattern": "extremes",
+            "highMin": 5,
+            "highValue": 0.14,
+            "lowMax": 2,
+            "lowValue": -0.07
           },
           "cost": 4
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 6.925
+            "type": "dice_pattern",
+            "pattern": "extremes",
+            "highMin": 5,
+            "highValue": 0.16,
+            "lowMax": 2,
+            "lowValue": -0.07
           },
           "cost": 4
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 7.35
+            "type": "dice_pattern",
+            "pattern": "extremes",
+            "highMin": 5,
+            "highValue": 0.18,
+            "lowMax": 2,
+            "lowValue": -0.06
           },
           "cost": 4
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 7.775
+            "type": "dice_pattern",
+            "pattern": "extremes",
+            "highMin": 5,
+            "highValue": 0.2,
+            "lowMax": 2,
+            "lowValue": -0.05
           },
           "cost": 4
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 8.2
+            "type": "dice_pattern",
+            "pattern": "extremes",
+            "highMin": 5,
+            "highValue": 0.22,
+            "lowMax": 2,
+            "lowValue": -0.04
           },
           "cost": 4
         }
@@ -3710,41 +3854,41 @@
       "levels": [
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.3,
-            "mult": 1.45
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0.14
           },
           "cost": 3
         },
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.3425,
-            "mult": 1.475
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0.16
           },
           "cost": 3
         },
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.385,
-            "mult": 1.5
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0.18
           },
           "cost": 3
         },
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.4275,
-            "mult": 1.525
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0.2
           },
           "cost": 3
         },
         {
           "effect": {
-            "type": "crit",
-            "chance": 0.47,
-            "mult": 1.55
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0.24
           },
           "cost": 3
         }
@@ -3761,29 +3905,29 @@
       "levels": [
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 3
+            "type": "extra_dice_pct",
+            "value": 0.08
           },
           "cost": 2
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 4
+            "type": "extra_dice_pct",
+            "value": 0.1
           },
           "cost": 2
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 5
+            "type": "extra_dice_pct",
+            "value": 0.12
           },
           "cost": 2
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 6
+            "type": "extra_dice_pct",
+            "value": 0.14
           },
           "cost": 2
         }
@@ -3855,29 +3999,37 @@
       "levels": [
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 6
+            "type": "dice_transform",
+            "mode": "lowest_to",
+            "maxPip": 2,
+            "target": 6
           },
           "cost": 3
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 6
+            "type": "dice_transform",
+            "mode": "lowest_to",
+            "maxPip": 3,
+            "target": 6
           },
           "cost": 3
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 6
+            "type": "dice_transform",
+            "mode": "lowest_to",
+            "maxPip": 4,
+            "target": 6
           },
           "cost": 3
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 7
+            "type": "dice_transform",
+            "mode": "lowest_to",
+            "maxPip": 5,
+            "target": 6
           },
           "cost": 3
         }
@@ -4603,6 +4755,336 @@
             "type": "insp_max",
             "value": 14,
             "group": "inspiration_capacity"
+          }
+        }
+      ]
+    },
+    "T035": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "single",
+            "value": 0.08,
+            "reward": {
+              "type": "insight",
+              "value": 1,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "single",
+            "value": 0.1,
+            "reward": {
+              "type": "insight",
+              "value": 1,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "single",
+            "value": 0.12,
+            "reward": {
+              "type": "insight",
+              "value": 1,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "single",
+            "value": 0.12,
+            "reward": {
+              "type": "insight",
+              "value": 2,
+              "perMatch": false
+            }
+          }
+        }
+      ]
+    },
+    "T036": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "all_high",
+            "minPip": 4,
+            "value": 0.1,
+            "reward": {
+              "type": "fragment",
+              "value": 1,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "all_high",
+            "minPip": 4,
+            "value": 0.12,
+            "reward": {
+              "type": "fragment",
+              "value": 1,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "all_high",
+            "minPip": 4,
+            "value": 0.14,
+            "reward": {
+              "type": "fragment",
+              "value": 1,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "all_high",
+            "minPip": 4,
+            "value": 0.16,
+            "reward": {
+              "type": "fragment",
+              "value": 1.5,
+              "perMatch": false
+            }
+          }
+        }
+      ]
+    },
+    "T037": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "style_switch_pct",
+            "value": 0.08,
+            "insight": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "style_switch_pct",
+            "value": 0.1,
+            "insight": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "style_switch_pct",
+            "value": 0.12,
+            "insight": 1
+          }
+        },
+        {
+          "effect": {
+            "type": "style_switch_pct",
+            "value": 0.12,
+            "insight": 2
+          }
+        }
+      ]
+    },
+    "T038": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "manuscript_pct",
+            "step": 2,
+            "value": 0.02,
+            "cap": 0.1
+          }
+        },
+        {
+          "effect": {
+            "type": "manuscript_pct",
+            "step": 2,
+            "value": 0.025,
+            "cap": 0.1
+          }
+        },
+        {
+          "effect": {
+            "type": "manuscript_pct",
+            "step": 2,
+            "value": 0.025,
+            "cap": 0.125
+          }
+        },
+        {
+          "effect": {
+            "type": "manuscript_pct",
+            "step": 2,
+            "value": 0.03,
+            "cap": 0.15
+          }
+        }
+      ]
+    },
+    "T039": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        7,
+        11,
+        16
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "pair",
+            "value": 0.08,
+            "reward": {
+              "type": "inspiration",
+              "value": 1,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "pair",
+            "value": 0.1,
+            "reward": {
+              "type": "inspiration",
+              "value": 1,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "pair",
+            "value": 0.12,
+            "reward": {
+              "type": "inspiration",
+              "value": 1,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "pair",
+            "value": 0.14,
+            "reward": {
+              "type": "inspiration",
+              "value": 2,
+              "perMatch": false
+            }
+          }
+        }
+      ]
+    },
+    "T040": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        8,
+        12,
+        17,
+        23
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0,
+            "reward": {
+              "type": "fragment",
+              "value": 0.5
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0,
+            "reward": {
+              "type": "fragment",
+              "value": 0.6
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0,
+            "reward": {
+              "type": "fragment",
+              "value": 0.75
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0,
+            "reward": {
+              "type": "fragment",
+              "value": 1
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0,
+            "reward": {
+              "type": "fragment",
+              "value": 1.25
+            }
           }
         }
       ]
@@ -6112,11 +6594,11 @@
         "T003",
         "T010"
       ],
-      "desc": "对对如流，更兼天马行空——联坛机锋愈利，灵感波动 +1。",
+      "desc": "对对如流，更兼天马行空——联坛机锋不拘一格，论战得分 +4%。",
       "effects": [
         {
-          "type": "dice_plus",
-          "value": 1
+          "type": "syn_pct",
+          "value": 0.04
         }
       ]
     },
@@ -6127,12 +6609,11 @@
         "T016",
         "T005"
       ],
-      "desc": "文思泉涌，急智生风——临场偶得妙手，12% 概率得分 ×1.4。",
+      "desc": "文思泉涌，急智生风——多骰有源，低点有救，论战得分 +4%。",
       "effects": [
         {
-          "type": "crit",
-          "chance": 0.12,
-          "mult": 1.4
+          "type": "syn_pct",
+          "value": 0.04
         }
       ]
     },
@@ -6173,11 +6654,11 @@
         "T007",
         "T016"
       ],
-      "desc": "梦笔生花，文思不绝——创作两绝相济，灵感波动 +1。",
+      "desc": "梦笔生花，文思不绝——泉涌多掷，花开六点，论战得分 +4%。",
       "effects": [
         {
-          "type": "dice_plus",
-          "value": 1
+          "type": "syn_pct",
+          "value": 0.04
         }
       ]
     },
@@ -6208,6 +6689,36 @@
         {
           "type": "syn_pct",
           "value": 0.04
+        }
+      ]
+    },
+    {
+      "id": "S10",
+      "name": "梦花偶得",
+      "members": [
+        "T007",
+        "T040"
+      ],
+      "desc": "梦笔生花，妙手偶得——六点既成华章，也沉淀稿痕，论战得分 +3%。",
+      "effects": [
+        {
+          "type": "syn_pct",
+          "value": 0.03
+        }
+      ]
+    },
+    {
+      "id": "S11",
+      "name": "七步珠玑",
+      "members": [
+        "TA01",
+        "T036"
+      ],
+      "desc": "七步落笔，字字珠玑——首骰有底，满组争高，论战得分 +3%。",
+      "effects": [
+        {
+          "type": "syn_pct",
+          "value": 0.03
         }
       ]
     }

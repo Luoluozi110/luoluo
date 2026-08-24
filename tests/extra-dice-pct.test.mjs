@@ -101,31 +101,34 @@ console.log('== 引擎：追加骰同时保留骰面收益并接入结算明细 
   assert.equal(fixed.selfCalc.breakdown.pctSum, one.selfCalc.breakdown.pctSum, '固定骰不叠加追加骰百分比');
 }
 
-console.log('== 文心：旧骰面加点已迁移为追加骰专属乘区 ==');
+console.log('== 文心：追加骰增益与骰组章法分工 ==');
 {
   const talents = load('talents');
   const upgrades = load('talent-upgrade');
   const byId = new Map(talents.map(t => [t.id, t]));
   const qishi = byId.get('T005');
   const tianma = byId.get('T010');
+  const flow = byId.get('T016');
   const yiqi = byId.get('TA05');
 
-  assert.equal(qishi.effect.type, 'extra_dice_pct', '急智不再直接改骰面');
-  assert.equal(tianma.effect.type, 'extra_dice_pct', '天马行空不再直接改骰面');
+  assert.equal(qishi.effect.type, 'dice_transform', '急智改为低点抬升');
+  assert.equal(tianma.effect.type, 'dice_pattern', '天马行空改为异点骰组章法');
+  assert.equal(flow.effect.type, 'extra_dice_pct', '文思泉涌承接追加骰收益');
   assert.equal(yiqi.effect.type, 'extra_dice_pct', '一气呵成改为追加骰专属主动');
-  assert.equal(upgrades.T005.levels.at(-1).effect.value, 0.05, '急智满级每枚 +5%');
+  assert.equal(upgrades.T005.levels.at(-1).effect.count, 2, '急智满级可抬升两枚低点骰');
   assert.equal(upgrades.T010.levels.at(-1).effect.firstCostDiscount, 3, '天马行空满级首枚减费 3');
+  assert.equal(upgrades.T016.levels.at(-1).effect.value, 0.1, '文思泉涌满级每枚追加骰 +10%');
   assert.equal(upgrades.TA05.levels.at(-1).effect.value, 0.14, '一气呵成满级每枚 +14%');
 
   const game = newGame();
-  game.s.passive = [qishi, tianma];
+  game.s.passive = [flow, tianma];
   const session = game.createSession({ npc: npc(), label: '文心迁移' });
-  assert.equal(session.extraDiceCost('shi', 1), 3, '天马行空让首枚追加骰少耗 2 灵感');
-  assert.equal(session.extraDicePct(1), 0.11, '基础 + 急智 + 天马行空：首枚共 +11%');
-  assert.equal(session.extraDicePct(2), 0.22, '被动增益按追加枚数线性叠加');
+  assert.equal(session.extraDiceCost('shi', 1), 2, '天马行空与文思泉涌合计让首枚追加少耗 3 灵感');
+  assert.equal(session.extraDicePct(1), 0.11, '基础 + 文思泉涌：首枚共 +11%');
+  assert.equal(session.extraDicePct(2), 0.22, '追加骰收益按枚数线性叠加');
   const passiveOut = game.resolveBattle(session, 'shi', 'zheli', [3, 4]);
-  assert.ok(passiveOut.selfCalc.items[4].detail.includes('文心·急智·追加骰 +3%'), '明细显示急智来源');
-  assert.ok(passiveOut.selfCalc.items[4].detail.includes('文心·天马行空·追加骰 +2%'), '明细显示天马行空来源');
+  assert.ok(passiveOut.selfCalc.items[4].detail.includes('文心·文思泉涌·追加骰 +5%'), '明细显示文思泉涌来源');
+  assert.ok(passiveOut.selfCalc.items[4].detail.includes('文心·天马行空 +3%'), '异点骰组另行显示天马行空来源');
 
   session.usedActive = [yiqi];
   assert.equal(session.extraDicePct(1), 0.19, '发动一气呵成后，首枚追加骰共 +19%');
