@@ -861,7 +861,7 @@ export function talentEffectText(t) {
     case 'on_win_bonus': return `${S[e.style] || e.style}战获胜，额外 +${e.value} ${ATTR_NAMES[e.style] || '对应属性'}`;
     case 'fixed_dice': return `本场灵感骰固定为 ${e.value} 分，不受运气左右`;
     case 'planned_dice': return `回合掷移动骰前可指定 1—${e.maxValue || 6} 格；本局每次使用消耗递增（首用 ${e.baseCost || 5}，每次 +${e.costStep || 2}）`;
-    case 'dice_mult': return `本场灵感骰倍率 ×${e.value}（高风险高回报）`;
+    case 'dice_mult': return `本场普通灵感骰每点乘区 +${e.value}%（高风险高回报）`;
     case 'dice_plus': return `灵感骰点数 +${e.value}`;
     case 'extra_dice_pct': {
       const pct = `每追加 1 枚灵感骰，作品乘区额外 +${Math.round((e.value || 0) * 100)}%`;
