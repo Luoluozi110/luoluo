@@ -29,7 +29,7 @@
     dice_plus: "灵感骰 +N",
     crit: "暴击（概率触发得分倍率）",
     copy_affinity: "复制对手相性",
-    dice_mult: "灵感波动倍率",
+    dice_mult: "普通灵感骰每点乘区",
     palace_pct: "殿试得分百分比",
     fixed_dice: "灵感波动固定值",
     planned_dice: "布局谋篇（指定下一骰点数）",
@@ -86,11 +86,12 @@
     if (type === "reincarnate") return { type, inspThreshold: 40, attrRatio: 0.8 };
     if (type === "planned_dice") return { type, baseCost: 5, costStep: 2, maxValue: 6 };
     if (type === "extra_dice_pct") return { type, value: 0.05, firstCostDiscount: 0 };
+    if (type === "dice_mult") return { type, value: 5 };
     if (type === "dice_transform") return { type, mode: "low_lift", threshold: 2, value: 1, count: 1 };
     if (type === "dice_pattern") return { type, pattern: "six", value: 0.05 };
     if (type === "style_switch_pct") return { type, value: 0.08, insight: 1 };
     if (type === "manuscript_pct") return { type, step: 2, value: 0.02, cap: 0.1 };
-    return { type, value: 1 }; // dice_plus / fixed_dice / dice_mult / palace_pct / insp_on_win / draw_bonus / insp_on_talent
+    return { type, value: 1 }; // dice_plus / fixed_dice / palace_pct / insp_on_win / draw_bonus / insp_on_talent
   }
   function cleanAttrs(a) {
     const out = {}; a = a || {};
@@ -396,7 +397,7 @@
       case "dice_plus": return "灵感骰点数 +" + (eff.value || 0);
       case "crit": return Math.round((eff.chance || 0) * 100) + "% 概率得分 ×" + (eff.mult || 0);
       case "copy_affinity": return "复制对手所选风格的相性加成";
-      case "dice_mult": return "灵感波动 ×" + (eff.value || 0);
+      case "dice_mult": return "普通灵感骰每点乘区 +" + (eff.value || 0) + "%";
       case "palace_pct": return "殿试三场得分 +" + Math.round((eff.value || 0) * 100) + "%";
       case "fixed_dice": return "灵感波动锁定为固定 +" + (eff.value || 0);
       case "planned_dice": return "可指定下次灵感骰为 1—" + (eff.maxValue || 6) + " 点；本局每次使用消耗递增（首用 " + (eff.baseCost || 5) + "，每次 +" + (eff.costStep || 2) + "）";
@@ -639,7 +640,9 @@
           <input type="number" class="tal-reinc-ratio" value="${ratioPct}" step="1" min="0" max="100"/></div>
       </div>`;
     }
-    const lbl = type === "palace_pct" ? "比例（如 0.05 = 5%）" : "数值";
+    const lbl = type === "palace_pct" ? "比例（如 0.05 = 5%）"
+      : type === "dice_mult" ? "每点普通灵感骰乘区（如 6 = 每点 +6%；基础为 5%）"
+      : "数值";
     return `<div class="field" style="margin:6px 0"><label>${lbl}</label>
       <input type="number" class="tal-value" value="${eff.value || 0}" step="${type === "palace_pct" ? "0.01" : "1"}" ${type === "palace_pct" ? "" : "min=\"0\""}/></div>`;
   }
