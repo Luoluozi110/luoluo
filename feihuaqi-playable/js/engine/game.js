@@ -5,11 +5,11 @@
 import * as R from './rules.js';
 import * as Album from './album.js';
 import * as Codex from './codex.js';
-import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js';
+import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260824reincarnate2';
 import * as NpcSelection from './npc-selection.js';
 import { stableFoeId } from './npc-selection.js';
 
-export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js';
+export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260824reincarnate2';
 
 export const PASSIVE_MAX = 8;
 export const ACTIVE_MAX = 4;
@@ -528,6 +528,7 @@ export class Game {
    */
   start(schoolId, opts = {}) {
     const cfg = this.cfg;
+    this._inheritApplied = null;
     const school = cfg.schools.find(s => s.id === schoolId) || cfg.schools[0];
     const attrs = { ...cfg.attrs.initial };
     attrs[school.attr] = (attrs[school.attr] || 0) + (cfg.attrs.schoolBonus ?? 3);
@@ -590,6 +591,12 @@ export class Game {
 
     const t0 = cfg.talentById.get(school.talent);
     if (t0) this.grantTalent(t0, { silent: true });
+    // 照我传灯：火种会把点灯文心本体及当时等级带回下一局，使传承能够继续延续。
+    // 若配置已删除该文心，属性仍照常继承，只跳过无法重建的卡牌。
+    const inheritedTalent = _inherit && cfg.talentById && cfg.talentById.get(_inherit.talentId);
+    if (inheritedTalent && inheritedTalent.effect && inheritedTalent.effect.type === 'reincarnate') {
+      this.grantTalent(inheritedTalent, { silent: true, startLevel: _inherit.talentLevel, inherited: true });
+    }
     this.push(`选择「${school.name}」，${R.ATTR_NAMES[school.attr]} +${cfg.attrs.schoolBonus ?? 3}`);
     if (_masteryGain > 0) {
       this.push(`流派造诣·${Album.masteryLevelName(this.masteryLevel)}：${R.ATTR_NAMES[school.attr]} +${_masteryGain}`);
@@ -602,8 +609,9 @@ export class Game {
     if (this._inheritApplied) {
       const a = this._inheritApplied;
       const detail = R.ATTR_KEYS.filter(k => a.added[k]).map(k => `${R.ATTR_NAMES[k]} +${a.added[k]}`).join('、');
-      this.push(`照我传灯·传承：继承「${a.talentName}」前世修为（${Math.round(a.ratio * 100)}%），${detail}`);
-      if (this.ui && this.ui.toast) this.ui.toast(`✦ 照我传灯·传承生效：${detail}`);
+      const inheritedLevel = Math.max(1, Math.floor(Number(a.talentLevel) || 1));
+      this.push(`照我传灯·传承：继承「${a.talentName}」Lv${inheritedLevel} 与前世修为（${Math.round(a.ratio * 100)}%），${detail}`);
+      if (this.ui && this.ui.toast) this.ui.toast(`✦ 照我传灯·传承生效：${a.talentName} Lv${inheritedLevel}，${detail}`);
     }
     return this.s;
   }
@@ -988,7 +996,9 @@ export class Game {
 
     // 持有副本按「继承等级」生效：读取图鉴记录的历史最高等级（跨局保持），
     // 升级时原地替换 effect/cost，不污染 cfg 模板。
-    const startLv = Math.max(1, Codex.getTalentLevel(talent.id) || 1);
+    const maxLv = Math.max(1, Number((this.cfg.talentUpgradeById && this.cfg.talentUpgradeById.get(talent.id) || {}).maxLevel) || 1);
+    const carriedLv = Math.max(1, Math.floor(Number(opts.startLevel) || 1));
+    const startLv = Math.min(maxLv, Math.max(1, Codex.getTalentLevel(talent.id) || 1, carriedLv));
     const lvl1 = this.leveledTalent(talent, startLv);
 
     if (list.length >= max) {
@@ -1003,7 +1013,7 @@ export class Game {
       this.push(`以「${talent.name}」替换「${removed.name}」`);
     } else {
       list.push(lvl1);
-      this.push(`获得文心「${talent.name}」`);
+      this.push(`${opts.inherited ? '传承' : '获得'}文心「${talent.name}」`);
     }
     this.applyTalentFlat(lvl1);
     this.applyTalentInstant(lvl1);
@@ -1012,7 +1022,9 @@ export class Game {
       this.push(`文心「${talent.name}」承袭前世修为，自 Lv${startLv} 起`);
       if (this.ui && this.ui.toast) this.ui.toast(`✦ 文心·${talent.name} 承袭 Lv${startLv}`);
     }
-    s.events.talents++;
+    // 传承带回的是上一局已获得的文心，不应被当成当前局的新奇遇掉落，
+    // 以免错误推进“本局获得文心数”相关的解锁或统计。
+    if (!opts.inherited) s.events.talents++;
 
     // 文心「洛阳纸贵」：每获得一枚新文心，灵感 +2（含替换所得）
     for (const t of s.passive) {

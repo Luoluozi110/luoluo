@@ -11,17 +11,32 @@ export const Reincarnate = {
         const raw = localStorage.getItem(REINCARNATE_KEY);
         if (raw) return JSON.parse(raw);
       }
-    } catch (e) { /* 存储不可用 → 内存兜底 */ }
+    } catch (e) { /* localStorage 不可用或坏档 → 尝试 sessionStorage */ }
+    try {
+      if (typeof sessionStorage !== 'undefined' && sessionStorage) {
+        const raw = sessionStorage.getItem(REINCARNATE_KEY);
+        if (raw) return JSON.parse(raw);
+      }
+    } catch (e) { /* sessionStorage 不可用 → 内存兜底 */ }
     return this._mem;
   },
   _write(obj) {
     this._mem = obj;
+    let wroteLocal = false;
     try {
       if (typeof localStorage !== 'undefined' && localStorage) {
         if (obj) localStorage.setItem(REINCARNATE_KEY, JSON.stringify(obj));
         else localStorage.removeItem(REINCARNATE_KEY);
+        wroteLocal = true;
       }
-    } catch (e) { /* 存储不可用 → 内存兜底 */ }
+    } catch (e) { /* 尝试 sessionStorage；内存副本已在上方保留 */ }
+    try {
+      if (typeof sessionStorage !== 'undefined' && sessionStorage) {
+        // localStorage 成功时清掉旧会话副本，失败时则让会话副本接管。
+        if (wroteLocal || obj == null) sessionStorage.removeItem(REINCARNATE_KEY);
+        else sessionStorage.setItem(REINCARNATE_KEY, JSON.stringify(obj));
+      }
+    } catch (e) { /* 内存兜底已保留 */ }
   },
   pend(game, talentId) {
     const s = game.s;
@@ -32,7 +47,10 @@ export const Reincarnate = {
     if (s.inspiration < threshold || ratio <= 0) return false;
     const attrs = {};
     for (const k of ATTR_KEYS) attrs[k] = Math.floor((Number(s.attrs[k]) || 0) * ratio);
-    this._write({ talentId, talentName: t.name || talentId, ratio, attrs, ts: typeof Date !== 'undefined' ? Date.now() : 0 });
+    const talentLevel = Math.max(1, Math.floor(Number((s.talentLevels || {})[talentId]) || 1));
+    // 传承不仅保留当前属性，也保留点灯者本身。否则下一局虽得到属性，
+    // 却无法再次点灯，传承链会在一局后中断。
+    this._write({ talentId, talentName: t.name || talentId, talentLevel, ratio, attrs, ts: typeof Date !== 'undefined' ? Date.now() : 0 });
     return true;
   },
   consume() {

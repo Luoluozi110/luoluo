@@ -62,7 +62,7 @@ g1.s.attrs = { shi: 50, ci: 40, lian: 30, bi: 20, xue: 60, si: 10 };
 g1.s.inspiration = 45; // ≥ 40 门槛
 g1._maybePendReincarnate();
 const pend1 = Reincarnate.peek();
-ok(pend1 && pend1.talentId === 'T034', '殿试结算点亮传承火种');
+ok(pend1 && pend1.talentId === 'T034' && pend1.talentLevel === 1, '殿试结算点亮传承火种，并记录 T034 Lv1');
 ok(pend1 && pend1.attrs.shi === 40 && pend1.attrs.xue === 48, '继承属性 = floor(本局 × 0.8)：诗 50→40、学 60→48');
 ok(Math.round(pend1.ratio * 100) === 80, '记录比例 80%');
 
@@ -73,6 +73,9 @@ g2.start(S_BOWEN, { name: '乙' }); // 不同流派（xue），验证无视流�
 const inheritGained = g2.s.attrs.shi - baseShi;
 ok(inheritGained === 40, '开局继承：诗力 +40（来自上局 50×0.8，无视新流派）');
 ok(g2.s.attrs.bi === cfg.attrs.initial.bi + 16, '开局继承：笔力 +16（本局基础 5 + 传承 16，bi 非流派属性）');
+const carriedT034 = g2.s.passive.find(t => t.id === 'T034');
+ok(carriedT034 && g2.s.talentLevels.T034 === 1, '开局继承：照我传灯本体保留为 Lv1，可继续点灯');
+ok(g2.s.events.talents === 1, '传承文心不计为本局新掉落，避免污染奇遇统计');
 ok(Reincarnate.peek() === null, '传承消费后已清除（一次性）');
 // 再开一局（换 qishi）不应重复继承——shi 对任何流派均为非流派属性，保持纯初始即证无传承
 const g3 = new Game(cfg, makeUI(), rng);
@@ -106,6 +109,12 @@ g5.s.inspiration = 25; // ≥ 20 门槛
 g5._maybePendReincarnate();
 const pend5 = Reincarnate.peek();
 ok(pend5 && pend5.attrs.shi === 50 && pend5.attrs.xue === 60, 'Lv6 继承 100%：诗 50→50、学 60→60');
+ok(pend5 && pend5.talentLevel === 6, 'Lv6 火种记录照我传灯当前等级');
+const g6 = new Game(cfg, makeUI(), rng);
+g6.start(S_QISHI, { name: '己' });
+const carriedT034Lv6 = g6.s.passive.find(t => t.id === 'T034');
+ok(carriedT034Lv6 && g6.s.talentLevels.T034 === 6 && carriedT034Lv6.effect.inspThreshold === 20,
+  '下一局保留照我传灯 Lv6 及其满级效果');
 
 console.log('\n== 图鉴同步：modals.talentEffectText 须正确渲染 reincarnate ==');
 // 图鉴阁「文心」分页与文心详情/获得/升级弹窗共用同一渲染函数；缺 case 会回退占位文案。
@@ -114,11 +123,11 @@ try { ({ talentEffectText } = await import('../js/ui/modals.js')); } catch (e) {
 ok(!!talentEffectText, 'modals.js 可导入（含 talentEffectText）');
 if (talentEffectText) {
   const baseTxt = talentEffectText(T034);
-  ok(/剩余灵感 ≥ 40/.test(baseTxt) && /继承本局属性的 80%/.test(baseTxt),
-    'Lv1 图鉴文案：殿试结算若剩余灵感 ≥ 40，下一局继承本局属性的 80%');
+  ok(/剩余灵感 ≥ 40/.test(baseTxt) && /继承本局属性的 80%/.test(baseTxt) && /保留此文心/.test(baseTxt),
+    'Lv1 图鉴文案：余灵达标后继承属性，并保留照我传灯');
   const lv6Txt = talentEffectText({ effect: { type: 'reincarnate', inspThreshold: 20, attrRatio: 1 } });
-  ok(/剩余灵感 ≥ 20/.test(lv6Txt) && /继承本局属性的 100%/.test(lv6Txt),
-    'Lv6 图鉴文案：剩余灵感 ≥ 20，继承 100%');
+  ok(/剩余灵感 ≥ 20/.test(lv6Txt) && /继承本局属性的 100%/.test(lv6Txt) && /保留此文心/.test(lv6Txt),
+    'Lv6 图鉴文案：剩余灵感 ≥ 20，继承 100%并保留文心');
   const def = talentEffectText({ effect: { type: 'reincarnate' } });
   ok(!/效果由配置定义/.test(def), 'reincarnate 不回退到占位文案「效果由配置定义」');
 }

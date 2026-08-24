@@ -49,7 +49,7 @@
     insp_on_quiz: "活水源头（答对/抉择额外恢复，限次）",
     insp_battle_recover: "枯木逢春（低灵感战后恢复，限次）",
     insp_max: "灵感扩容（获得时永久提高本局上限，互斥）",
-    reincarnate: "跨局传承（殿试余灵达标，下局继承本局属性）"
+    reincarnate: "跨局传承（殿试余灵达标，下局继承本局属性、此文心与当前等级）"
   };
   const SCHOOLS = { bowen: "博闻", qishi: "奇士", cizong_bi: "辞宗", shixian: "旧诗仙流", cizong: "旧词宗流", liansheng: "旧联圣流", tongru: "旧通儒流" };
   const STYLE_NAME = { shi: "诗", ci: "词", lian: "联", any: "任意体" };
@@ -353,7 +353,7 @@
       case "insp_on_quiz": return "答对/完成抉择额外 +" + (eff.value || 0) + " 灵感（每局最多 " + (eff.maxTriggers || 0) + " 次）";
       case "insp_battle_recover": return "战后灵感 ≤" + (eff.threshold || 0) + " 时恢复 " + (eff.value || 0) + "（每局最多 " + (eff.maxTriggers || 0) + " 次）";
       case "insp_max": return "获得时，本局灵感上限永久 +" + (eff.value || 0) + "（同类扩容互斥）";
-      case "reincarnate": return "殿试结算时若剩余灵感 ≥ " + (Number(eff.inspThreshold) || 0) + "，下一局继承本局属性的 " + Math.round((Number(eff.attrRatio) || 0) * 100) + "%";
+      case "reincarnate": return "殿试结算时若剩余灵感 ≥ " + (Number(eff.inspThreshold) || 0) + "，下一局继承本局属性的 " + Math.round((Number(eff.attrRatio) || 0) * 100) + "%、此文心与当前等级";
       default: return eff.type;
     }
   }
