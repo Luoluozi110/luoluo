@@ -44,8 +44,16 @@ export function forcedStageNpc(pool, attrs) {
   return null;
 }
 
-/** 殿试沿用同一判定，兼容既有调用与 palaceForcedWhen 数据。 */
-export const forcedPalaceNpc = forcedStageNpc;
+/**
+ * 殿试的康尔玉是玩法承诺，不能因旧编辑器工程缺少条件字段而失效。
+ * 因而先按联力门槛锁定档内的稳定 ID，再回退到其他配置化的殿试必遇规则。
+ */
+export function forcedPalaceNpc(pool, attrs) {
+  const lian = Number(attrs && attrs.lian);
+  const kang = Array.isArray(pool) && pool.find(npc => npc && npc.id === 'kang_er_yu');
+  if (kang && Number.isFinite(lian) && lian > 35) return kang;
+  return forcedStageNpc(pool, attrs);
+}
 
 /**
  * 三圈棋盘的关卡阶段与 NPC 档位并不等同于路线进度百分比：例如进入举人圈时，
