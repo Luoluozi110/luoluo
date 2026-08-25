@@ -1058,7 +1058,13 @@
 <script src="assets/js/seed-album.js?v=20260823chapter1"></script>
 <script src="assets/js/seed-copy.js"></script>
 <script src="assets/js/icon-library.js"></script>
-<script src="../feihuaqi-playable/js/engine/config-contract.js?v=20260823eventecho1"></script>
+<!-- 源码工作区与 GitHub Pages 的游戏目录不同；回退路径必须在 common.js 前同步完成。 -->
+<script src="../feihuaqi-playable/js/engine/config-contract.js?v=20260826contractpath1"></script>
+<script>
+if (!window.FeihuaConfigContract) {
+  document.write('<script src="../js/engine/config-contract.js?v=20260826contractpath1"><\\/script>');
+}
+</script>
 <script src="assets/js/common.js?v=20260825npcdice1"></script>
 <script src="assets/js/qbank.js"></script>
 <script src="assets/js/adventure.js?v=20260823eventecho1"></script>

@@ -55,6 +55,7 @@ const fire = (el, type) => el.dispatchEvent(new window.Event(type, { bubbles: tr
 const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
 
 console.log('[1] 十个模块全部初始化（_ready）');
+ok(!!window.FeihuaConfigContract && typeof window.FeihuaConfigContract.assertProject === 'function', '配置契约在编辑器初始化前已加载');
 for (const name of ['QB', 'ADV', 'TALENT', 'NPC', 'AFFINITY', 'SYNERGY', 'BOARD', 'SKY', 'ALBUM', 'COPY']) {
   ok(window[name] && window[name]._ready === true, name + '._ready');
 }
