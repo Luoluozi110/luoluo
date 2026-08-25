@@ -2850,8 +2850,8 @@ export class Game {
     const palaceFoes = palaceSelection.foes;
     if (palaceSelection.forcedEntry) {
       const name = palaceSelection.forcedEntry.name || '主考官';
-      this.push(`三力之中联力冠绝，殿试必遇「${name}」`);
-      this.ui.toast(`联力冠绝三体——「${name}」奉诏出题`);
+      this.push(`联力超过 35，殿试必遇「${name}」`);
+      this.ui.toast(`联力过 35——「${name}」奉诏出题`);
     }
 
     // 殿试跨场适应参数：取自本局殿试池中携带 sig_palace_adapt 的主考官配置，
