@@ -15,15 +15,26 @@ assert.ok(palace, '主考官档存在');
 const kang = palace.npcs.find(npc => npc.id === 'kang_er_yu');
 assert.ok(kang, '康尔玉具有稳定 ID');
 
-// 严格超过 35，且联力为诗/词/联三力唯一最高时，单场殿试必遇康尔玉。
+// 联力严格超过 35 时，单场殿试必遇康尔玉；诗力、词力较高不再阻断这条门槛。
 let picked = makeGame({ shi: 35, ci: 34, lian: 36 }).selectPalaceFoes(palace, 1);
 assert.equal(picked.forcedEntry.id, 'kang_er_yu');
 assert.equal(picked.foes[0].id, 'kang_er_yu');
+picked = makeGame({ shi: 52, ci: 49, lian: 36 }).selectPalaceFoes(palace, 1);
+assert.equal(picked.forcedEntry.id, 'kang_er_yu', '诗、词力较高时仍应命中康尔玉');
 
-// 门槛、平局与非联力最高均不触发，仍由原权重池选择。
+// 门槛不达时不触发，仍由原权重池选择。
 assert.equal(makeGame({ shi: 34, ci: 33, lian: 35 }).selectPalaceFoes(palace, 1).forcedEntry, null);
-assert.equal(makeGame({ shi: 36, ci: 31, lian: 36 }).selectPalaceFoes(palace, 1).forcedEntry, null);
-assert.equal(makeGame({ shi: 38, ci: 30, lian: 37 }).selectPalaceFoes(palace, 1).forcedEntry, null);
+
+// 旧编辑器工程可能没有导出康尔玉的条件字段；殿试规则仍须以稳定 ID 兜底。
+const palaceWithoutKangRule = {
+  ...palace,
+  npcs: palace.npcs.map(npc => npc.id === 'kang_er_yu'
+    ? Object.fromEntries(Object.entries(npc).filter(([key]) => key !== 'palaceForcedWhen' && key !== 'stageForcedWhen'))
+    : npc)
+};
+picked = makeGame({ shi: 60, ci: 58, lian: 36 }).selectPalaceFoes(palaceWithoutKangRule, 1);
+assert.equal(picked.forcedEntry.id, 'kang_er_yu', '旧工程缺少条件字段时仍强制遇到康尔玉');
+assert.equal(picked.foes[0].id, 'kang_er_yu');
 
 // 兼容多场殿试：康尔玉只占一个强制席位，其余席位仍从剩余主考官中抽取。
 picked = makeGame({ shi: 20, ci: 22, lian: 40 }).selectPalaceFoes(palace, 3);
