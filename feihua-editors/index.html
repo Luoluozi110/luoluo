@@ -1058,25 +1058,26 @@
 <script src="assets/js/seed-album.js?v=20260823chapter1"></script>
 <script src="assets/js/seed-copy.js"></script>
 <script src="assets/js/icon-library.js"></script>
-<!-- 源码工作区与 GitHub Pages 的游戏目录不同；回退路径必须在 common.js 前同步完成。 -->
-<script src="../feihuaqi-playable/js/engine/config-contract.js?v=20260826contractpath1"></script>
 <script>
-if (!window.FeihuaConfigContract) {
-  document.write('<script src="../js/engine/config-contract.js?v=20260826contractpath1"><\\/script>');
-}
+(function () {
+  const localContract = "../feihuaqi-playable/js/engine/config-contract.js?v=20260826workspace2";
+  const hostedContract = "../js/engine/config-contract.js?v=20260826workspace2";
+  const contract = location.protocol === "file:" ? localContract : hostedContract;
+  document.write('<script src="' + contract + '"><\/script>');
+})();
 </script>
-<script src="assets/js/common.js?v=20260825npcdice1"></script>
-<script src="assets/js/qbank.js"></script>
-<script src="assets/js/adventure.js?v=20260823eventecho1"></script>
-<script src="assets/js/talent.js?v=20260825npcdice1"></script>
-<script src="assets/js/npc.js?v=20260824npcmech2"></script>
-<script src="assets/js/affinity.js"></script>
-<script src="assets/js/synergy.js"></script>
-<script src="assets/js/board.js"></script>
-<script src="assets/js/sky.js"></script>
-<script src="assets/js/album.js?v=20260823chapter1"></script>
-<script src="assets/js/copy.js"></script>
-<script src="assets/js/cloud.js?v=20260824brand1"></script>
+<script src="assets/js/common.js?v=20260826workspace2"></script>
+<script src="assets/js/qbank.js?v=20260826workspace2"></script>
+<script src="assets/js/adventure.js?v=20260826workspace2"></script>
+<script src="assets/js/talent.js?v=20260826workspace2"></script>
+<script src="assets/js/npc.js?v=20260826workspace2"></script>
+<script src="assets/js/affinity.js?v=20260826workspace2"></script>
+<script src="assets/js/synergy.js?v=20260826workspace2"></script>
+<script src="assets/js/board.js?v=20260826workspace2"></script>
+<script src="assets/js/sky.js?v=20260826workspace2"></script>
+<script src="assets/js/album.js?v=20260826workspace2"></script>
+<script src="assets/js/copy.js?v=20260826workspace2"></script>
+<script src="assets/js/cloud.js?v=20260826workspace2"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   Common.init();
