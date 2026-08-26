@@ -266,7 +266,7 @@ export class BattleStage {
         const pipHtml = pips.map(n => `<span class="dice-pip">${'①②③④⑤⑥'[n - 1]}</span>`).join('');
         const extraHint = extraPct > 0 ? ` · 作品乘区 +${Math.round(extraPct * 100)}%` : '';
         panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → ${pctLabel}${extraHint}${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
-          <div style="font-size:12px;line-height:1.7;color:var(--mo-3);margin:4px 2px 7px">当前骰点已经转为作品乘区；继续追加会消耗灵感，收笔则以当前骰数结算。</div>
+          <div style="font-size:12px;line-height:1.7;color:var(--mo-3);margin:4px 2px 7px">当前骰点已经转为作品乘区；继续追加会消耗灵感，收笔则以当前骰数结算。${preview.pctDetail ? `<br><span style="color:var(--zhu)">${preview.pctDetail}</span>` : ''}</div>
           <div class="dice-pips">${pipHtml}</div>
           <div class="pick-row">
             ${canExtra

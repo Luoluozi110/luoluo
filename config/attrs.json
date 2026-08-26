@@ -95,11 +95,10 @@
       "singleDieInsight": 1
     },
     "ci": {
-      "name": "铺陈",
-      "pipFloor": 3,
-      "pipCeil": 5,
-      "firstExtraDiscount": 2,
-      "drawRefund": 1
+      "name": "叠阕",
+      "highMin": 5,
+      "highPct": 0.08,
+      "firstExtraDiscount": 1
     },
     "lian": {
       "name": "对举",
