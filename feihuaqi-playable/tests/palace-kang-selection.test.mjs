@@ -36,6 +36,17 @@ picked = makeGame({ shi: 60, ci: 58, lian: 36 }).selectPalaceFoes(palaceWithoutK
 assert.equal(picked.forcedEntry.id, 'kang_er_yu', '旧工程缺少条件字段时仍强制遇到康尔玉');
 assert.equal(picked.foes[0].id, 'kang_er_yu');
 
+// 历史云端工程曾把康尔玉条目的 id 序列化成空串：按显示名兜底识别，玩法承诺不因内容缺陷失效。
+const palaceWithBrokenKang = {
+  ...palace,
+  npcs: palace.npcs.map(npc => npc.id === 'kang_er_yu'
+    ? { ...npc, id: '', palaceForcedWhen: undefined, stageForcedWhen: undefined }
+    : npc)
+};
+picked = makeGame({ shi: 60, ci: 58, lian: 36 }).selectPalaceFoes(palaceWithBrokenKang, 1);
+assert.equal(picked.forcedEntry && picked.forcedEntry.name, '康尔玉', 'id 为空时按名字兜底命中康尔玉');
+assert.equal(picked.foes[0] && picked.foes[0].name, '康尔玉');
+
 // 兼容多场殿试：康尔玉只占一个强制席位，其余席位仍从剩余主考官中抽取。
 picked = makeGame({ shi: 20, ci: 22, lian: 40 }).selectPalaceFoes(palace, 3);
 assert.equal(picked.foes.filter(npc => npc.id === 'kang_er_yu').length, 1);
