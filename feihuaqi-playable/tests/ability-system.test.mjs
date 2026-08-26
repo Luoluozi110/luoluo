@@ -69,8 +69,8 @@ console.log('== 文体底盘：最高项不再按 ×10 独占基础分 ==');
 console.log('== 三种文体：骰型形成不同风险与资源倾向 ==');
 {
   const styles = buildCfg().attrs.styleSystem;
-  assert.equal(R.styleDiceScore('shi', [2], styles).score, 7, '诗低骰收缩');
-  assert.equal(R.styleDiceScore('shi', [5], styles).score, 38, '诗高骰爆发');
+  assert.equal(R.styleDiceScore('shi', [2], styles).score, 9, '诗低骰温和收缩');
+  assert.equal(R.styleDiceScore('shi', [5], styles).score, 31, '诗高骰爆发收敛');
   assert.equal(R.styleDiceScore('ci', [1], styles).score, 15, '词首骰保底至 3');
   assert.equal(R.styleDiceScore('ci', [6], styles).score, 25, '词首骰封顶为 5');
   assert.equal(R.styleDiceScore('ci', [1, 6], styles).score, 45, '词的追加骰保留原值');
