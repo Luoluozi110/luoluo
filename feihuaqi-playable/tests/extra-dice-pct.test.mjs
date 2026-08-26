@@ -64,6 +64,7 @@ console.log('== 会话：成本与百分比按追加枚数线性叠加 ==');
   const game = newGame();
   const session = game.createSession({ npc: npc(), label: '追加骰收益' });
   assert.equal(session.extraDiceCost('shi', 1), 5, '普通文体首次追加耗 5 灵感');
+  assert.equal(session.extraDiceCost('ci', 1), 4, '词首次追加仅少耗 1 灵感，鼓励追逐高光而非低骰保底');
   assert.equal(session.extraDicePct(0), 0, '基础骰不获得追加乘区');
   assert.equal(session.extraDicePct(1), 0.06, '追加 1 枚获得 +6%');
   assert.equal(session.extraDicePct(2), 0.12, '追加 2 枚累计 +12%');

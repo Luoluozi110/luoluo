@@ -71,9 +71,13 @@ console.log('== 三种文体：骰型形成不同风险与资源倾向 ==');
   const styles = buildCfg().attrs.styleSystem;
   assert.equal(R.styleDiceScore('shi', [2], styles).score, 9, '诗低骰温和收缩');
   assert.equal(R.styleDiceScore('shi', [5], styles).score, 31, '诗高骰爆发收敛');
-  assert.equal(R.styleDiceScore('ci', [1], styles).score, 15, '词首骰保底至 3');
-  assert.equal(R.styleDiceScore('ci', [6], styles).score, 25, '词首骰封顶为 5');
-  assert.equal(R.styleDiceScore('ci', [1, 6], styles).score, 45, '词的追加骰保留原值');
+  const ciLow = R.styleDiceScore('ci', [1], styles, R.BATTLE_COEF.diceMult, 0, 0.04);
+  const ciHigh = R.styleDiceScore('ci', [5], styles, R.BATTLE_COEF.diceMult, 0, 0.04);
+  const ciExtra = R.styleDiceScore('ci', [5, 6], styles, R.BATTLE_COEF.diceMult, 0, 0.04);
+  assert.equal(ciLow.score, 5, '词保留低骰，不再以保底抹平风险');
+  assert.equal(ciHigh.score, 25, '词保留高骰的原始点数');
+  assert.equal(ciHigh.pct, 0.28, '词首骰 5 点触发长调成阕：普通骰 +20% 与文体 +8%');
+  assert.equal(ciExtra.pct, 0.52, '词的追加骰与长调成阕可以共同叠加');
   assert.equal(R.styleDiceScore('lian', [2, 5], styles).score, 35, '联按对举骰列稳定累加');
 }
 

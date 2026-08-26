@@ -1980,7 +1980,7 @@ export class Game {
       styleHint(style) {
         if (style === 'lian' && !g.lianUnlocked) return '联力尚浅，先积淀对仗功底（需联力 ≥8）';
         if (style === 'shi') return '一气：单骰高低分化；追加后恢复普通骰分';
-        if (style === 'ci') return '铺陈：首骰收束至 3～5；首次追加少耗灵感';
+        if (style === 'ci') return '叠阕：首骰保留本色；掷出 5、6 点即长调成阕，作品 +8%；首次追加少耗 1 灵感';
         return `对举：${this.lastStyle && this.lastStyle !== 'lian' ? '与上一场换体，作品 +8%' : '换体时得势；失利更能止损'}`;
       },
       previewDiceScore(style, pips) {
