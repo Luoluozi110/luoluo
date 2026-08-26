@@ -6963,6 +6963,108 @@
           "value": 0.03
         }
       ]
+    },
+    {
+      "id": "S12",
+      "name": "绝处逢春",
+      "members": [
+        "T025",
+        "T031"
+      ],
+      "desc": "破釜之后犹有春意——灵感不高于 14 时论战得分 +5%，战后灵感不高于 14 时回复 2 点（每局至多 2 次）。",
+      "effects": [
+        {
+          "type": "comeback",
+          "threshold": 14,
+          "value": 0.05
+        },
+        {
+          "type": "insp_battle_recover",
+          "threshold": 14,
+          "value": 2,
+          "maxTriggers": 2
+        }
+      ]
+    },
+    {
+      "id": "S13",
+      "name": "换笔成章",
+      "members": [
+        "T037",
+        "TA02"
+      ],
+      "desc": "换体而不换意，化笔便成章——与上一场换用文体时，论战得分 +6%，并额外获得 1 点心得。",
+      "effects": [
+        {
+          "type": "style_switch_pct",
+          "value": 0.06,
+          "insight": 1
+        }
+      ]
+    },
+    {
+      "id": "S14",
+      "name": "稿本生辉",
+      "members": [
+        "T038",
+        "T040"
+      ],
+      "desc": "稿本累页，偶得成篇——每积 2 页稿本，论战得分 +1%，最多 +6%。",
+      "effects": [
+        {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 0.01,
+          "cap": 0.06
+        }
+      ]
+    },
+    {
+      "id": "S15",
+      "name": "一鼓同声",
+      "members": [
+        "T022",
+        "T039"
+      ],
+      "desc": "同声相应，一鼓再进——同一文风已连捷至少 2 场时，论战得分 +5%。",
+      "effects": [
+        {
+          "type": "streak_pct",
+          "minStreak": 2,
+          "value": 0.05
+        }
+      ]
+    },
+    {
+      "id": "S16",
+      "name": "金殿蓄锐",
+      "members": [
+        "T023",
+        "T028"
+      ],
+      "desc": "养气于平日，发策于金殿——殿试每场开场额外回复 2 点灵感。",
+      "effects": [
+        {
+          "type": "palace_insp",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "S17",
+      "name": "春风问答",
+      "members": [
+        "T017",
+        "T030"
+      ],
+      "desc": "答中有得，春风再来——每次有效答题额外回复 1 点灵感（每局至多 3 次）。",
+      "effects": [
+        {
+          "type": "insp_on_quiz",
+          "value": 1,
+          "maxTriggers": 3
+        }
+      ]
     }
   ],
   "board": {

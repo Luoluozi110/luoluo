@@ -2,7 +2,7 @@
  * synergy.js — 文心羁绊编辑器模块
  * 数据结构与游戏 config/synergies.json 完全兼容：
  *   {id, name, desc, members:[talentId...], effects:[{type, ...}]}
- * effect.type ∈ {syn_pct, on_win_bonus, dice_plus, crit}
+ * effect.type 覆盖得分、成长、资源与阶段条件；与游戏引擎的羁绊效果完全兼容。
  * 依赖 common.js（Common.*）。视觉与文心 / 奇遇编辑器保持同一套墨纸主题。
  *
  * 羁绊的语义：玩家同时持有 members 中全部文心时，effects 自动激活；
@@ -13,12 +13,19 @@
   const C = global.Common;
   const STYLE_NAME = { shi: "诗", ci: "词", lian: "联", any: "任意体" };
 
-  const SYN_EFFECT_TYPES = ["syn_pct", "on_win_bonus", "dice_plus", "crit"];
+  const SYN_EFFECT_TYPES = ["syn_pct", "on_win_bonus", "dice_plus", "crit", "comeback", "insp_battle_recover", "style_switch_pct", "manuscript_pct", "streak_pct", "palace_insp", "insp_on_quiz"];
   const SYN_EFFECT_LABELS = {
     syn_pct: "全局得分加成（整局论战得分 +X%）",
     on_win_bonus: "以某体获胜时额外 +属性（呼应羁绊导向）",
     dice_plus: "灵感骰 +N（创作波动更稳健）",
-    crit: "暴击（概率触发得分倍率）"
+    crit: "暴击（概率触发得分倍率）",
+    comeback: "逆境得分（灵感低于阈值时 +X%）",
+    insp_battle_recover: "战后回灵感（低于阈值，限次数）",
+    style_switch_pct: "换体得分（与上一场不同文体时 +X%）",
+    manuscript_pct: "稿本成长（每若干稿页 +X%，有上限）",
+    streak_pct: "连捷得分（同文风连胜达到次数时 +X%）",
+    palace_insp: "殿试蓄能（每场开场回复灵感）",
+    insp_on_quiz: "答题回灵感（每局限次数）"
   };
 
   const state = { list: [], editIndex: -1, form: null, _ready: false };
@@ -29,6 +36,13 @@
     if (type === "on_win_bonus") return { type, style: "any", value: 1 };
     if (type === "dice_plus") return { type, value: 1 };
     if (type === "crit") return { type, chance: 0.12, mult: 1.4 };
+    if (type === "comeback") return { type, threshold: 14, value: 0.05 };
+    if (type === "insp_battle_recover") return { type, threshold: 14, value: 2, maxTriggers: 2 };
+    if (type === "style_switch_pct") return { type, value: 0.06, insight: 1 };
+    if (type === "manuscript_pct") return { type, step: 2, value: 0.01, cap: 0.06 };
+    if (type === "streak_pct") return { type, minStreak: 2, value: 0.05 };
+    if (type === "palace_insp") return { type, value: 2 };
+    if (type === "insp_on_quiz") return { type, value: 1, maxTriggers: 3 };
     return { type, value: 0.05 };
   }
   function normalizeEffect(eff) {
@@ -42,6 +56,13 @@
     }
     else if (type === "dice_plus") out.value = Number(eff.value) || 0;
     else if (type === "crit") { out.chance = Number(eff.chance) || 0; out.mult = Number(eff.mult) || 0; }
+    else if (type === "comeback") { out.threshold = Number(eff.threshold) || 0; out.value = Number(eff.value) || 0; }
+    else if (type === "insp_battle_recover") { out.threshold = Number(eff.threshold) || 0; out.value = Number(eff.value) || 0; out.maxTriggers = Number(eff.maxTriggers) || 0; }
+    else if (type === "style_switch_pct") { out.value = Number(eff.value) || 0; out.insight = Number(eff.insight) || 0; }
+    else if (type === "manuscript_pct") { out.step = Number(eff.step) || 0; out.value = Number(eff.value) || 0; out.cap = Number(eff.cap) || 0; }
+    else if (type === "streak_pct") { out.minStreak = Number(eff.minStreak) || 0; out.value = Number(eff.value) || 0; }
+    else if (type === "palace_insp") out.value = Number(eff.value) || 0;
+    else if (type === "insp_on_quiz") { out.value = Number(eff.value) || 0; out.maxTriggers = Number(eff.maxTriggers) || 0; }
     return out;
   }
   const talentName = id => (C.TALENTS && C.TALENTS[id]) ? C.TALENTS[id] : id;
@@ -55,7 +76,15 @@
   }
   function loadData() {
     const raw = C.load("synergies", null);
-    if (raw && raw.length) state.list = raw.map(normalize);
+    if (raw && raw.length) {
+      state.list = raw.map(normalize);
+      const existing = new Set(state.list.map(s => s.id));
+      const additions = (window.GAME_SYNERGIES || []).map(normalize).filter(s => s.id && !existing.has(s.id));
+      if (additions.length) {
+        state.list.push(...additions);
+        C.store("synergies", state.list);
+      }
+    }
     else {
       state.list = (window.GAME_SYNERGIES || []).map(normalize);
       C.store("synergies", state.list);
@@ -100,6 +129,8 @@
       else if (ef.type === "on_win_bonus" && !(Number(ef.value) > 0)) errors.push("第 " + (i + 1) + " 条 on_win_bonus 的 value 须 > 0");
       else if (ef.type === "dice_plus" && !(Number(ef.value) > 0)) errors.push("第 " + (i + 1) + " 条 dice_plus 的 value 须 > 0");
       else if (ef.type === "crit" && !(Number(ef.chance) > 0)) errors.push("第 " + (i + 1) + " 条 crit 的 chance 须 > 0");
+      else if (["comeback", "style_switch_pct", "manuscript_pct", "streak_pct"].includes(ef.type) && !(Number(ef.value) > 0)) errors.push("第 " + (i + 1) + " 条效果加成须 > 0");
+      else if (["insp_battle_recover", "palace_insp", "insp_on_quiz"].includes(ef.type) && !(Number(ef.value) > 0)) errors.push("第 " + (i + 1) + " 条灵感回复须 > 0");
     });
     return { ok: errors.length === 0, errors };
   }
@@ -115,6 +146,13 @@
       case "on_win_bonus": return "以" + (STYLE_NAME[ef.style] || ef.style) + "出战获胜 +" + (ef.value || 0);
       case "dice_plus": return "灵感骰 +" + (ef.value || 0);
       case "crit": return Math.round((ef.chance || 0) * 100) + "% 概率得分 ×" + (ef.mult || 0);
+      case "comeback": return "灵感≤" + (ef.threshold || 0) + "时得分 +" + Math.round((ef.value || 0) * 100) + "%";
+      case "insp_battle_recover": return "战后灵感≤" + (ef.threshold || 0) + "回复 " + (ef.value || 0) + "（限 " + (ef.maxTriggers || 0) + " 次）";
+      case "style_switch_pct": return "换体时得分 +" + Math.round((ef.value || 0) * 100) + "%、心得 +" + (ef.insight || 0);
+      case "manuscript_pct": return "每 " + (ef.step || 0) + " 稿页得分 +" + Math.round((ef.value || 0) * 100) + "%（最多 " + Math.round((ef.cap || 0) * 100) + "%）";
+      case "streak_pct": return "连捷 " + (ef.minStreak || 0) + " 场后得分 +" + Math.round((ef.value || 0) * 100) + "%";
+      case "palace_insp": return "殿试每场灵感 +" + (ef.value || 0);
+      case "insp_on_quiz": return "有效答题灵感 +" + (ef.value || 0) + "（限 " + (ef.maxTriggers || 0) + " 次）";
       default: return ef.type;
     }
   }
@@ -190,6 +228,28 @@
     if (ef.type === "crit")
       return `<label>触发概率<input type="number" class="syn-chance" value="${ef.chance || 0}" step="0.01" min="0" max="1"/></label>
               <label>倍率<input type="number" class="syn-mult" value="${ef.mult || 0}" step="0.1" min="1"/></label>`;
+    if (ef.type === "comeback")
+      return `<label>灵感阈值<input type="number" class="syn-threshold" value="${ef.threshold || 0}" step="1" min="0"/></label>
+              <label>得分比例<input type="number" class="syn-val" value="${ef.value || 0}" step="0.01" min="0"/></label>`;
+    if (ef.type === "insp_battle_recover")
+      return `<label>灵感阈值<input type="number" class="syn-threshold" value="${ef.threshold || 0}" step="1" min="0"/></label>
+              <label>回复<input type="number" class="syn-val" value="${ef.value || 0}" step="1" min="0"/></label>
+              <label>每局次数<input type="number" class="syn-max-triggers" value="${ef.maxTriggers || 0}" step="1" min="1"/></label>`;
+    if (ef.type === "style_switch_pct")
+      return `<label>得分比例<input type="number" class="syn-val" value="${ef.value || 0}" step="0.01" min="0"/></label>
+              <label>心得<input type="number" class="syn-insight" value="${ef.insight || 0}" step="1" min="0"/></label>`;
+    if (ef.type === "manuscript_pct")
+      return `<label>每几稿页<input type="number" class="syn-step" value="${ef.step || 0}" step="1" min="1"/></label>
+              <label>每层比例<input type="number" class="syn-val" value="${ef.value || 0}" step="0.01" min="0"/></label>
+              <label>上限比例<input type="number" class="syn-cap" value="${ef.cap || 0}" step="0.01" min="0"/></label>`;
+    if (ef.type === "streak_pct")
+      return `<label>连捷场数<input type="number" class="syn-min-streak" value="${ef.minStreak || 0}" step="1" min="1"/></label>
+              <label>得分比例<input type="number" class="syn-val" value="${ef.value || 0}" step="0.01" min="0"/></label>`;
+    if (ef.type === "palace_insp")
+      return `<label>每场回复<input type="number" class="syn-val" value="${ef.value || 0}" step="1" min="0"/></label>`;
+    if (ef.type === "insp_on_quiz")
+      return `<label>每次回复<input type="number" class="syn-val" value="${ef.value || 0}" step="1" min="0"/></label>
+              <label>每局次数<input type="number" class="syn-max-triggers" value="${ef.maxTriggers || 0}" step="1" min="1"/></label>`;
     return "";
   }
   function renderEffects() {
@@ -360,6 +420,24 @@
     } else if (t.classList.contains("syn-mult")) {
       const i = Number(t.closest(".syn-eff-row").dataset.i);
       state.form.effects[i].mult = Number(t.value) || 0;
+    } else if (t.classList.contains("syn-threshold")) {
+      const i = Number(t.closest(".syn-eff-row").dataset.i);
+      state.form.effects[i].threshold = Number(t.value) || 0;
+    } else if (t.classList.contains("syn-max-triggers")) {
+      const i = Number(t.closest(".syn-eff-row").dataset.i);
+      state.form.effects[i].maxTriggers = Number(t.value) || 0;
+    } else if (t.classList.contains("syn-insight")) {
+      const i = Number(t.closest(".syn-eff-row").dataset.i);
+      state.form.effects[i].insight = Number(t.value) || 0;
+    } else if (t.classList.contains("syn-step")) {
+      const i = Number(t.closest(".syn-eff-row").dataset.i);
+      state.form.effects[i].step = Number(t.value) || 0;
+    } else if (t.classList.contains("syn-cap")) {
+      const i = Number(t.closest(".syn-eff-row").dataset.i);
+      state.form.effects[i].cap = Number(t.value) || 0;
+    } else if (t.classList.contains("syn-min-streak")) {
+      const i = Number(t.closest(".syn-eff-row").dataset.i);
+      state.form.effects[i].minStreak = Number(t.value) || 0;
     }
   }
 
