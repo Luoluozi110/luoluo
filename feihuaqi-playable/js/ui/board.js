@@ -20,6 +20,38 @@ const PAD = 3;          // 外扩单位（浮岛边框留白）
 const CELL = 42;        // 格子边长
 const VIEW_ANGLE_STORE_KEY = 'feihua_board_view_angle';
 
+const MAP_TEXTURES = Object.freeze({
+  full: Object.freeze({
+    tier: 'full',
+    srcset: 'assets/art/peach-academy-island-v1-640.webp 640w, assets/art/peach-academy-island-v1.webp 960w',
+    fallback: 'assets/art/peach-academy-island-v1.png',
+    width: 960,
+    height: 960
+  }),
+  lite: Object.freeze({
+    tier: 'lite',
+    // 省电档不让浏览器在高低档之间猜尺寸，避免移动端误取 960px 贴图。
+    srcset: 'assets/art/peach-academy-island-v1-640.webp 640w',
+    fallback: 'assets/art/peach-academy-island-v1.png',
+    width: 640,
+    height: 640
+  })
+});
+
+/** 根据画质档位返回地图中心图资源，保持高档与低档的下载边界可测试。 */
+export function mapTextureProfile(quality = 'high') {
+  return quality === 'low' || quality === 'lite' ? MAP_TEXTURES.lite : MAP_TEXTURES.full;
+}
+
+function mapPictureMarkup(texture) {
+  return `<picture data-texture-tier="${texture.tier}">
+          <source type="image/webp" srcset="${texture.srcset}"
+            sizes="(max-width: 720px) 74vw, 560px">
+          <img src="${texture.fallback}" width="${texture.width}" height="${texture.height}"
+            alt="" aria-hidden="true" decoding="async" fetchpriority="${texture.tier === 'lite' ? 'low' : 'high'}" draggable="false">
+        </picture>`;
+}
+
 export const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 /** 单环 id → 网格坐标（底边→左边→顶边→右边，对应春/夏/秋/冬） */
@@ -111,20 +143,15 @@ export class BoardView {
     // 中央园景：让棋盘本身成为可读的桃花岛世界，而非一块留白操作台。
     // 仅承担美术叙事，不接收事件；格子与棋子保持更高层级，不影响玩法命中区。
     const world = document.createElement('div');
+    const mapTexture = mapTextureProfile(getBudget().mapTexture);
     world.className = 'world-scene';
     Object.assign(world.style, {
       left: (PAD + 1.4) * UNIT + 'px', top: (PAD + 1.4) * UNIT + 'px',
       width: (baseGrid - 2.8) * UNIT + 'px', height: (baseGrid - 2.8) * UNIT + 'px'
     });
     world.innerHTML = `<div class="world-halo"></div>
-      <div class="world-art world-ground" data-art-version="peach-academy-island-v1">
-        <picture>
-          <source type="image/webp"
-            srcset="assets/art/peach-academy-island-v1-640.webp 640w, assets/art/peach-academy-island-v1.webp 960w"
-            sizes="(max-width: 720px) 74vw, 560px">
-          <img src="assets/art/peach-academy-island-v1.png" width="960" height="960"
-            alt="" aria-hidden="true" decoding="async" fetchpriority="high" draggable="false">
-        </picture>
+      <div class="world-art world-ground" data-art-version="peach-academy-island-v1" data-texture-tier="${mapTexture.tier}">
+        ${mapPictureMarkup(mapTexture)}
       </div>
       <div class="world-billboards" aria-hidden="true"></div>`;
     board.appendChild(world);
@@ -558,12 +585,29 @@ export class BoardView {
     }
   }
 
-  /** 运行时切换档位：移除现有花瓣，按当前预算重新生成（CSS 覆盖部分由 data-quality 实时生效） */
+  /** 运行时切换档位：重建花瓣与地图贴图，CSS 覆盖部分由 data-quality 实时生效。 */
   applyQuality() {
     this.root.querySelectorAll('.petal').forEach(p => p.remove());
     this.spawnPetals();
+    this.applyMapTexture();
     // 省电档会把请求中的 2.5D 自动拍平；切回高画质时再恢复投影并重新 fit。
     this.rescale();
+  }
+
+  /** 运行时替换地图中心图的 source，避免切回高档后仍沿用低清贴图。 */
+  applyMapTexture() {
+    const ground = this.root.querySelector('.world-ground');
+    if (!ground) return false;
+    const quality = getBudget().mapTexture === 'lite' ? 'low' : 'high';
+    const texture = mapTextureProfile(quality);
+    if (ground.dataset.textureTier === texture.tier) return false;
+    const current = ground.querySelector('picture');
+    if (!current) return false;
+    const template = document.createElement('template');
+    template.innerHTML = mapPictureMarkup(texture).trim();
+    current.replaceWith(template.content.firstElementChild);
+    ground.dataset.textureTier = texture.tier;
+    return true;
   }
 
   cellIdOf(state) {
