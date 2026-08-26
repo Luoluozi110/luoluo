@@ -1543,6 +1543,9 @@ export class Game {
         this.addInspiration(this.cfg.inspiration.quizCorrectInsp ?? 0, '答对'); // 核心技能↔燃料闭环
         await this.gainBowenKnowledge('答对知识题');
         for (const t of s.passive) if ((t.effect || {}).type === 'insp_on_quiz') this.triggerTalentLimited(t, `文心·${t.name}`);
+        for (const sy of this.synergySet()) for (const ef of (sy.effects || [])) {
+          if (ef.type === 'insp_on_quiz') this.triggerTalentLimited({ id: `synergy:${sy.id}`, name: `羁绊·${sy.name}`, effect: ef }, `羁绊·${sy.name}`);
+        }
       } else {
         this.addInspiration(this.cfg.inspiration.quizWrong ?? -2, ans.timedOut ? '超时' : '答错');
         this.push(`答错「${q.id}」`);
@@ -1554,6 +1557,9 @@ export class Game {
         s.quiz.right++;
         const feedback = this.applyChoiceStudy(q, ans.index);
         for (const t of s.passive) if ((t.effect || {}).type === 'insp_on_quiz') this.triggerTalentLimited(t, `文心·${t.name}`);
+        for (const sy of this.synergySet()) for (const ef of (sy.effects || [])) {
+          if (ef.type === 'insp_on_quiz') this.triggerTalentLimited({ id: `synergy:${sy.id}`, name: `羁绊·${sy.name}`, effect: ef }, `羁绊·${sy.name}`);
+        }
         await this.ui.showQuizResult(q, ans, true, feedback);
       } else {
         this.addInspiration(this.cfg.inspiration.quizWrong ?? -2, '超时');
@@ -2250,6 +2256,21 @@ export class Game {
         if (ef.type === 'dice_plus') dicePlus += Number(ef.value) || 0;
         else if (ef.type === 'crit' && this.rand() < (Number(ef.chance) || 0)) critMult = Math.max(critMult, Number(ef.mult) || 1);
         else if (ef.type === 'syn_pct') pct.push({ source: 'synergy', label: `羁绊·${sy.name}`, value: Number(ef.value) || 0 });
+        else if (ef.type === 'comeback' && s.inspiration <= (Number(ef.threshold) || 12)) {
+          pct.push({ source: 'synergy', label: `羁绊·${sy.name}·逆境`, value: Number(ef.value) || 0 });
+        } else if (ef.type === 'streak_pct' && (Number(s.affStreak && s.affStreak.n) || 0) >= (Number(ef.minStreak) || 2)) {
+          pct.push({ source: 'synergy', label: `羁绊·${sy.name}·连捷`, value: Number(ef.value) || 0 });
+        } else if (ef.type === 'style_switch_pct' && session.lastStyle && session.lastStyle !== style) {
+          const value = Number(ef.value) || 0;
+          if (value) pct.push({ source: 'synergy', label: `羁绊·${sy.name}·换体`, value });
+          talentTriggers.push({ id: `synergy:${sy.id}`, name: `羁绊·${sy.name}`, pattern: 'style_switch', occurrence: 1,
+            reward: Number(ef.insight) > 0 ? { type: 'insight', value: Number(ef.insight) } : null });
+        } else if (ef.type === 'manuscript_pct') {
+          const pages = Number((this.ensureAbilityState().manuscript || {}).pages) || 0;
+          const stacks = Math.floor(pages / Math.max(1, Number(ef.step) || 2));
+          const value = Math.min(Number(ef.cap) || 0.1, stacks * (Number(ef.value) || 0));
+          if (value) pct.push({ source: 'synergy', label: `羁绊·${sy.name}·稿本${pages}页`, value });
+        }
       }
     }
 
@@ -2759,6 +2780,11 @@ export class Game {
         this.triggerTalentLimited(t, `文心·${t.name}`);
       }
     }
+    for (const sy of this.synergySet()) for (const ef of (sy.effects || [])) {
+      if (ef.type === 'insp_battle_recover' && s.inspiration <= (Number(ef.threshold) || 0)) {
+        this.triggerTalentLimited({ id: `synergy:${sy.id}`, name: `羁绊·${sy.name}`, effect: ef }, `羁绊·${sy.name}`);
+      }
+    }
 
     if (schoolMech.type === 'cizong_bi' && Number(schoolMech.lightEventEvery) > 0 && out.result !== 'lose') await this.runCizongLightEvent();
     this.ui.onState(s);
@@ -2963,6 +2989,9 @@ export class Game {
       for (const t of (s.passive || [])) {
         const ef = t.effect || {};
         if (ef.type === 'palace_insp') this.addInspiration(Number(ef.value) || 0, `文心·${t.name}`);
+      }
+      for (const sy of this.synergySet()) for (const ef of (sy.effects || [])) {
+        if (ef.type === 'palace_insp') this.addInspiration(Number(ef.value) || 0, `羁绊·${sy.name}`);
       }
       palaceOut = await this.doBattle({
         npc: palaceFoes[i], theme: themes[i], isPalace: true,
