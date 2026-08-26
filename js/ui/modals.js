@@ -284,6 +284,11 @@ export class Modals {
       const attrs = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
       const attrNames = { shi: '诗力', ci: '词力', lian: '联力', bi: '笔力', xue: '学力', si: '思力' };
       const latestMarks = (Array.isArray(game.s.choiceHistory) ? game.s.choiceHistory : []).slice(-3).reverse();
+      const conversion = typeof game.talentConversionStatus === 'function' ? game.talentConversionStatus() : null;
+      const conversionBlock = conversion && conversion.enabled ? `
+        <hr class="hr-ink"/><h3>流派·问心转化</h3>
+        <div class="dianggu"><b>${esc(conversion.rule.label || '问心转化')}</b>：${esc(conversion.rule.desc || '以流派专属资源叩问文心。')}<br/>消耗 ${conversion.resourceName} ${conversion.cost}，${Math.round(conversion.chance * 100)}% 概率获得一次三选一机会；本局 ${conversion.record.attempts}/${conversion.maxAttempts} 次，本阶段 ${conversion.phaseUsed}/${conversion.phaseLimit} 次。</div>
+        <div class="opt-list"><button class="opt" data-talent-conversion ${conversion.available ? '' : 'disabled'}><b>${esc(conversion.rule.label || '问心转化')}</b><span>${conversion.available ? `投入 ${conversion.resourceName} ${conversion.cost}，叩问文心` : esc(conversion.reason)}</span></button></div>` : '';
       box.innerHTML = `<div class="mtitle"><h2>三功修习</h2><span class="mtag">成长 · 调度 · 沉淀</span></div>
         ${notice ? `<div class="analysis">${esc(notice)}</div>` : ''}
         <div class="dianggu"><b>心得 ${a.insight}/${fb.insightCap}</b>　构思 ${a.strategy.charges}/${fb.strategyCap}　稿页 ${a.manuscript.pages}/${fb.manuscriptCap}　残页 ${fmt(a.manuscript.fragments)}</div>
@@ -296,6 +301,7 @@ export class Modals {
         <div class="dianggu">当前研修：${a.study.focus.map(k => attrNames[k]).join('、')}。调整只在下阶段生效，既有进度会原样保留。</div>
         <div class="opt-list">${attrs.map(k => `<button class="opt" data-focus="${k}"><b>${nextFocus.has(k) ? '✓ ' : ''}${attrNames[k]}</b><span>进度 ${Number(a.study.progress[k]) || 0}/${Number((game.abilityConfig().study || {}).progressNeed) || 3}${focus.has(k) ? ' · 当前在修' : ''}</span></button>`).join('')}</div>
         <h3>分配心得</h3><div class="opt-list">${attrs.map(k => `<button class="opt" data-insight="${k}" ${a.insight < game.insightCost(k) ? 'disabled' : ''}><b>${attrNames[k]} +1</b><span>消耗 ${game.insightCost(k)} 心得</span></button>`).join('')}</div>
+        ${conversionBlock}
         ${latestMarks.length ? `<h3>墨痕·最近修习</h3><div class="dianggu">${latestMarks.map(mark => `「${esc(mark.optionText || mark.questionId)}」→ ${esc(attrNames[mark.target] || mark.target)}${mark.inkTags && mark.inkTags.length ? ` · ${esc(mark.inkTags.join('、'))}` : ''}`).join('<br/>')}</div>` : ''}
         <h3>笔力·稿本</h3><div class="opt-list">
           <button class="opt" data-manuscript="polish"><b>润色</b><span>下一场首次追加少耗 ${Number(mc.polishDiscount) || 2} 灵感</span></button>
@@ -317,6 +323,10 @@ export class Modals {
       box.querySelectorAll('[data-manuscript]').forEach(b => b.addEventListener('click', () => {
         const r = game.spendManuscript(b.dataset.manuscript); render(r.ok ? '稿本已经付梓。' : r.reason);
       }));
+      box.querySelector('[data-talent-conversion]')?.addEventListener('click', async () => {
+        const r = await game.attemptSchoolTalentConversion();
+        render(r.ok ? (r.reason || (r.talent ? `已收入「${r.talent.name}」。` : '问心转化已结算。')) : r.reason);
+      });
       box.querySelector('[data-close]').addEventListener('click', () => this.close(ov));
     };
     render();
@@ -561,12 +571,12 @@ export class Modals {
         </button>`).join('');
       const ov = this.open(`
         <div class="modal scroll-frame paper scenic-pick-modal">
-          <div class="mtitle" style="justify-content:center"><h2>访 胜 · 三签择一</h2></div>
+          <div class="mtitle" style="justify-content:center"><h2>${esc(meta.title || '访 胜 · 三签择一')}</h2></div>
           <hr class="hr-ink"/>
-          <div class="scenic-pick-intro">${count === 3 ? '三张文心已现，请择一收入囊中；其余两张将自动弃置。' : `当前文心池仅余 ${count} 张，择一收入囊中；未选文心将自动弃置。`}</div>
-          <div class="scenic-pick-cost">确认选择后消耗灵感 ${Number(meta.cost) || 0} 点</div>
+          <div class="scenic-pick-intro">${esc(meta.intro || (count === 3 ? '三张文心已现，请择一收入囊中；其余两张将自动弃置。' : `当前文心池仅余 ${count} 张，择一收入囊中；未选文心将自动弃置。`))}</div>
+          <div class="scenic-pick-cost">${esc(meta.costText || `确认选择后消耗灵感 ${Number(meta.cost) || 0} 点`)}</div>
           <div class="scenic-pick-list">${cards}</div>
-          <div class="btn-row"><button class="btn btn-ink" data-cancel type="button">暂不取签</button></div>
+          <div class="btn-row"><button class="btn btn-ink" data-cancel type="button">${esc(meta.cancelText || '暂不取签')}</button></div>
         </div>`, 'scenic-pick');
       let done = false;
       const finish = value => {

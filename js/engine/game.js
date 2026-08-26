@@ -22,6 +22,14 @@ export const TURN_LIMIT = 84;
  */
 const PALACE_KEY = '__palace__';
 
+// 旧的编辑器工程可能尚未导出 talentConversion；以流派 ID 提供稳定默认值，
+// 同时允许 schools.json 用同名字段覆写数值或文案。
+const SCHOOL_TALENT_CONVERSION_DEFAULTS = Object.freeze({
+  bowen: { label: '穷览求心', resource: 'insight', cost: 8, chance: 0.45, maxAttempts: 2, perPhase: 1, desc: '消耗心得，融会所学以叩问文心。' },
+  qishi: { label: '推演问心', resource: 'strategy', cost: 2, chance: 0.40, maxAttempts: 2, perPhase: 1, desc: '消耗构思，推演万象以觅得灵机。' },
+  cizong_bi: { label: '焚稿悟心', resource: 'manuscript', cost: 3, chance: 0.50, maxAttempts: 2, perPhase: 1, desc: '消耗稿页，焚稿反思以淬炼文心。' }
+});
+
 export class Game {
   constructor(cfg, ui, rand = Math.random) {
     this.cfg = cfg;
@@ -519,6 +527,74 @@ export class Game {
     this.ui.onState(this.s);
     this.onForceSave?.();
     return { ok: true, cost };
+  }
+
+  /** 流派专属资源 → 文心三选一机会；默认值保证旧云端工程也能使用该渠道。 */
+  schoolTalentConversion() {
+    const school = this.s && this.s.school;
+    const fallback = SCHOOL_TALENT_CONVERSION_DEFAULTS[school && school.id] || null;
+    const configured = school && school.schoolMechanics && school.schoolMechanics.talentConversion;
+    if (!fallback && (!configured || typeof configured !== 'object')) return null;
+    return { ...(fallback || {}), ...(configured || {}) };
+  }
+
+  talentConversionStatus() {
+    const rule = this.schoolTalentConversion();
+    if (!rule || !this.s || this.s.over) return { enabled: false, reason: '当前流派没有可用的问心转化。' };
+    const a = this.ensureAbilityState();
+    const ss = this.s.schoolState || (this.s.schoolState = this.createSchoolState(this.s.school));
+    const record = ss.talentConversion || (ss.talentConversion = { attempts: 0, phases: {} });
+    record.phases = record.phases || {};
+    const phase = this.s.phase || 'child';
+    const resource = rule.resource || 'insight';
+    const cost = Math.max(1, Math.floor(Number(rule.cost) || 1));
+    const amount = resource === 'strategy' ? Number(a.strategy.charges) || 0
+      : resource === 'manuscript' ? Number(a.manuscript.pages) || 0
+        : Number(a.insight) || 0;
+    const maxAttempts = Math.max(1, Math.floor(Number(rule.maxAttempts) || 2));
+    const phaseLimit = Math.max(1, Math.floor(Number(rule.perPhase) || 1));
+    const phaseUsed = Number(record.phases[phase]) || 0;
+    const resourceName = resource === 'strategy' ? '构思' : resource === 'manuscript' ? '稿页' : '心得';
+    let reason = '';
+    if (Number(record.attempts) >= maxAttempts) reason = `本局问心已达 ${maxAttempts} 次上限`;
+    else if (phaseUsed >= phaseLimit) reason = '本阶段已完成一次问心转化';
+    else if (amount < cost) reason = `${resourceName}不足（需 ${cost}）`;
+    return { enabled: true, available: !reason, reason, rule, phase, record, resource, resourceName, amount, cost, maxAttempts, phaseUsed, phaseLimit, chance: Math.max(0, Math.min(1, Number(rule.chance) || 0)) };
+  }
+
+  async attemptSchoolTalentConversion() {
+    const status = this.talentConversionStatus();
+    if (!status.enabled || !status.available) return { ok: false, reason: status.reason || '暂不可问心' };
+    const candidates = this.scenicTalentCandidates(3);
+    if (!candidates.length) return { ok: false, reason: '尚未拥有的文心已全部收入囊中' };
+    const a = this.ensureAbilityState();
+    if (status.resource === 'strategy') a.strategy.charges -= status.cost;
+    else if (status.resource === 'manuscript') a.manuscript.pages -= status.cost;
+    else a.insight -= status.cost;
+    status.record.attempts = (Number(status.record.attempts) || 0) + 1;
+    status.record.phases[status.phase] = (Number(status.record.phases[status.phase]) || 0) + 1;
+    const label = status.rule.label || '问心转化';
+    if (this.rand() >= status.chance) {
+      this.push(`${label}：${status.resourceName} -${status.cost}，未觅得文心`);
+      this.ui.toast(`${label}未成（${Math.round(status.chance * 100)}% 机会已结算）`);
+      this.ui.onState(this.s); this.onForceSave?.();
+      return { ok: true, success: false, reason: '这一次灵机未至。' };
+    }
+    this.push(`${label}：${status.resourceName} -${status.cost}，得三枚文心候选`);
+    this.ui.onState(this.s); this.onForceSave?.();
+    const picked = typeof this.ui.chooseScenicTalent === 'function'
+      ? await this.ui.chooseScenicTalent(candidates, { title: `${label} · 三心择一`, intro: '转化已成功。三枚未拥有的文心已现，择一收入囊中；其余两枚散归文海。', costText: `${status.resourceName} ${status.cost} 已用于本次转化`, cancelText: '暂不收取' }) : 0;
+    const index = Number(picked);
+    if (!Number.isInteger(index) || index < 0 || index >= candidates.length) {
+      this.ui.toast('问心转化已成功，但你暂未收取候选文心');
+      return { ok: true, success: true, chosen: false, reason: '已放弃本次候选。' };
+    }
+    const talent = candidates[index];
+    const granted = await this.grantTalent(talent);
+    if (!granted) return { ok: true, success: true, chosen: false, reason: '所选文心未能收入。' };
+    this.push(`${label}：得文心「${talent.name}」`);
+    this.ui.toast(`✦ ${label}成功，得文心「${talent.name}」`);
+    return { ok: true, success: true, chosen: true, talent };
   }
 
   /* ---------------------------------------------------------- 开局 */
