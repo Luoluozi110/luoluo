@@ -12,7 +12,7 @@
   "quizCorrectInsp": 1,
   "lowWarning": 5,
   "eventCellCost": -1,
-  "dicePct": 0.05,
+  "dicePct": 0.04,
   "extraDiceCost": 5,
   "extraDicePct": 0.06,
   "maxExtraDice": 2
