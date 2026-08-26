@@ -24,7 +24,8 @@ export function npcFromPick(tier, pick) {
 
 /**
  * 阶段必遇条件：由 NPC 配置声明，而非在流程里按姓名硬编码。
- * 当前支持「某一三力严格超过门槛，且严格高于指定三力」：
+ * 当前支持「某一属性严格超过门槛，可选地再严格高于指定属性」：
+ * { primary:'lian', minExclusive:35 } 或
  * { primary:'lian', minExclusive:35, strictlyHigherThan:['shi','ci'] }。
  * stageForcedWhen 用于所属档位；palaceForcedWhen 作为康尔玉旧数据的兼容别名。
  * 同时满足多名时按档内配置顺序取首名，保持结果确定、可审计。
@@ -50,7 +51,8 @@ export function forcedStageNpc(pool, attrs) {
  */
 export function forcedPalaceNpc(pool, attrs) {
   const lian = Number(attrs && attrs.lian);
-  const kang = Array.isArray(pool) && pool.find(npc => npc && npc.id === 'kang_er_yu');
+  // 兼容历史云端工程曾把康尔玉条目的 id 序列化成空串：按稳定 id 或显示名兜底识别。
+  const kang = Array.isArray(pool) && pool.find(npc => npc && (npc.id === 'kang_er_yu' || (!npc.id && npc.name === '康尔玉')));
   if (kang && Number.isFinite(lian) && lian > 35) return kang;
   return forcedStageNpc(pool, attrs);
 }
