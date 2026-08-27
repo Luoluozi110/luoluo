@@ -3,8 +3,8 @@
 /* 自托管思源宋体（Noto Serif SC）：subset 到 GBK 全字符集 + 游戏文本（约 2.2 万字，
    覆盖玩家任意起名），压为 woff2 置于 fonts/noto-serif-sc/。断网可用、woff2 已压缩。
    只保留 400 一档：移动端省去 700 字重的 4.4MB 下载，粗体由 font-synthesis:weight
-   （见 :root 下方 html,body 声明）从 400 合成，视觉几乎无差。如需把「汇文明朝体」一并
-   随包分发，把正版 woff2 放入 fonts/ 并补一条 @font-face 即可（见美术资产规范）。 */
+   （见 :root 下方 html,body 声明）从 400 合成，视觉几乎无差。字体网络加载异常或子集未含
+   某个罕见字时，下面的跨平台回退链会立即接管该字符，不能让文字显示为空白。 */
 @font-face {
   font-family: "Noto Serif SC";
   font-style: normal;
@@ -79,14 +79,15 @@
   --text-body: 0.9375rem;
   --text-action: 1rem;
 
-  /* 明朝体（宋体类）主字体：古色古香 + 高清晰度，且为自托管本地字体（断网可用）。
-     优先级：本机已装正版「汇文明朝体」> 自托管思源宋体(Noto Serif SC，fonts/noto-serif-sc/，
-     SIL 开源、CJK hinting 极佳) > 系统宋体回退。子集覆盖 GBK + 游戏文本，玩家任意起名基本不漏；
-     极生僻字自动回落系统宋体。 */
-  --font-song: "汇文明朝体", "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, SimSun, "宋体", serif;
+  /* CJK 兜底覆盖 macOS / Windows / Android / Linux：系统没有宋体或游戏字体暂未就绪时，
+     仍优先选到可显示中文的界面字体，而不是落到只含拉丁字形的通用 serif。 */
+  --font-cjk-fallback: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "WenQuanYi Micro Hei", system-ui, sans-serif;
+  /* 明朝体（宋体类）主字体：先使用随游戏发布的 Noto，避免各设备本机字体版本不一；
+     子集未含的罕见字会逐字回落到后续 CJK 字体，不会显示为空白。 */
+  --font-song: "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, SimSun, "宋体", var(--font-cjk-fallback);
   /* 书法楷体：仅用于标题/大字的笔意点缀（大字号下清晰且典雅）。
      在 Kaiti 之后接思源宋体，使无楷体环境也回落到清晰明朝体而非位图宋体。 */
-  --font-kai: "Kaiti SC", "STKaiti", KaiTi, "楷体", "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, "宋体", serif;
+  --font-kai: "Kaiti SC", "STKaiti", KaiTi, "楷体", "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, "宋体", var(--font-cjk-fallback);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
