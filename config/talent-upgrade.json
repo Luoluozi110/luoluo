@@ -937,43 +937,79 @@
     "levels": [
       {
         "effect": {
-          "type": "fixed_dice",
-          "value": 16
+          "type": "dice_pattern",
+          "pattern": "total",
+          "threshold": 16,
+          "value": 0.14,
+          "reward": {
+            "type": "insight",
+            "value": 1
+          }
         },
         "cost": 4
       },
       {
         "effect": {
-          "type": "fixed_dice",
-          "value": 17
+          "type": "dice_pattern",
+          "pattern": "total",
+          "threshold": 15,
+          "value": 0.16,
+          "reward": {
+            "type": "insight",
+            "value": 1
+          }
         },
         "cost": 4
       },
       {
         "effect": {
-          "type": "fixed_dice",
-          "value": 19
+          "type": "dice_pattern",
+          "pattern": "total",
+          "threshold": 14,
+          "value": 0.18,
+          "reward": {
+            "type": "insight",
+            "value": 2
+          }
         },
         "cost": 4
       },
       {
         "effect": {
-          "type": "fixed_dice",
-          "value": 20
+          "type": "dice_pattern",
+          "pattern": "total",
+          "threshold": 13,
+          "value": 0.20,
+          "reward": {
+            "type": "insight",
+            "value": 2
+          }
         },
         "cost": 4
       },
       {
         "effect": {
-          "type": "fixed_dice",
-          "value": 22
+          "type": "dice_pattern",
+          "pattern": "total",
+          "threshold": 13,
+          "value": 0.22,
+          "reward": {
+            "type": "fragment",
+            "value": 1
+          }
         },
         "cost": 4
       },
       {
         "effect": {
-          "type": "fixed_dice",
-          "value": 24
+          "type": "dice_pattern",
+          "pattern": "total",
+          "threshold": 12,
+          "value": 0.24,
+          "reward": {
+            "type": "insight",
+            "value": 3
+          }
         },
         "cost": 4
       }
