@@ -497,7 +497,7 @@
     </div>
     <div class="field">
       <label>奇遇文本（叙事 / 典故）</label>
-      <textarea id="ev-text" placeholder="描述这个奇遇的情景与典故…"></textarea>
+      <textarea id="ev-text" data-rich="event" placeholder="描述这个奇遇的情景与典故…"></textarea>
     </div>
 
     <!-- 直接生效：单一效果 -->
@@ -603,7 +603,7 @@
     </div>
     <div class="field">
       <label>描述 / 典故</label>
-      <textarea id="tal-text" placeholder="描述这个文心的来历与效果…"></textarea>
+      <textarea id="tal-text" data-rich="talent" placeholder="描述这个文心的来历与效果…"></textarea>
     </div>
 
     <!-- 主动文心：灵感消耗 -->
@@ -954,7 +954,7 @@
     </div>
     <div class="field">
       <label>叙事文本（第二人称为「你」，游戏内会替换名号）</label>
-      <textarea id="sky-text" placeholder="描述这个天象的情景与典故…"></textarea>
+      <textarea id="sky-text" data-rich="sky" placeholder="描述这个天象的情景与典故…"></textarea>
     </div>
     <div class="row2">
       <div class="field" style="margin:0;max-width:160px">
@@ -1058,25 +1058,28 @@
 <script src="assets/js/seed-album.js?v=20260823chapter1"></script>
 <script src="assets/js/seed-copy.js"></script>
 <script src="assets/js/icon-library.js"></script>
-<!-- 源码工作区与 GitHub Pages 的游戏目录不同；回退路径必须在 common.js 前同步完成。 -->
-<script src="../feihuaqi-playable/js/engine/config-contract.js?v=20260826contractpath1"></script>
+<!-- 源码工作区与 GitHub Pages 的游戏目录不同；回退路径必须在 common.js 前同步完成。
+     静态标签优先加载源码工作区同级目录（file:// 与本地 http 预览均命中），
+     部署到 GitHub Pages（扁平根目录）时首个 404，由下方 document.write 回退到 ../js/engine/。 -->
+<script src="../feihuaqi-playable/js/engine/config-contract.js?v=20260827contractfix1"></script>
 <script>
 if (!window.FeihuaConfigContract) {
-  document.write('<script src="../js/engine/config-contract.js?v=20260826contractpath1"><\\/script>');
+  document.write('<script src="../js/engine/config-contract.js?v=20260827contractfix1"><\\/script>');
 }
 </script>
-<script src="assets/js/common.js?v=20260825npcdice1"></script>
+<script src="assets/js/common.js?v=20260826workspace2"></script>
+<script src="assets/js/richedit.js?v=20260827richedit1"></script>
 <script src="assets/js/qbank.js?v=20260827-qbank-additions"></script>
-<script src="assets/js/adventure.js?v=20260823eventecho1"></script>
-<script src="assets/js/talent.js?v=20260825npcdice1"></script>
-<script src="assets/js/npc.js?v=20260824npcmech2"></script>
-<script src="assets/js/affinity.js"></script>
-<script src="assets/js/synergy.js"></script>
-<script src="assets/js/board.js"></script>
-<script src="assets/js/sky.js"></script>
-<script src="assets/js/album.js?v=20260823chapter1"></script>
-<script src="assets/js/copy.js"></script>
-<script src="assets/js/cloud.js?v=20260824brand1"></script>
+<script src="assets/js/adventure.js?v=20260826workspace2"></script>
+<script src="assets/js/talent.js?v=20260826workspace2"></script>
+<script src="assets/js/npc.js?v=20260826workspace2"></script>
+<script src="assets/js/affinity.js?v=20260826workspace2"></script>
+<script src="assets/js/synergy.js?v=20260826workspace2"></script>
+<script src="assets/js/board.js?v=20260826workspace2"></script>
+<script src="assets/js/sky.js?v=20260826workspace2"></script>
+<script src="assets/js/album.js?v=20260826workspace2"></script>
+<script src="assets/js/copy.js?v=20260826workspace2"></script>
+<script src="assets/js/cloud.js?v=20260826workspace2"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   Common.init();
