@@ -284,6 +284,12 @@ export class Modals {
       const attrs = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
       const attrNames = { shi: '诗力', ci: '词力', lian: '联力', bi: '笔力', xue: '学力', si: '思力' };
       const latestMarks = (Array.isArray(game.s.choiceHistory) ? game.s.choiceHistory : []).slice(-3).reverse();
+      const inkHighlights = typeof game.choiceInkHighlights === 'function' ? game.choiceInkHighlights(2) : [];
+      const inkHighlightsBlock = inkHighlights.length ? `<h3>本局·主要倾向</h3><div class="dianggu">${inkHighlights.map((item, i) => {
+        const mark = item.representative || {};
+        const choice = mark.optionText || mark.questionId || '这一笔选择';
+        return `<b>${i + 1}. ${esc(item.dominant)}</b> · ${esc(item.label)}<br/><span style="color:var(--mo-3)">代表选择：「${esc(choice)}」</span>`;
+      }).join('<br/><br/>')}</div>` : '';
       const conversion = typeof game.talentConversionStatus === 'function' ? game.talentConversionStatus() : null;
       const conversionBlock = conversion && conversion.enabled ? `
         <hr class="hr-ink"/><h3>流派·问心转化</h3>
@@ -302,6 +308,7 @@ export class Modals {
         <div class="opt-list">${attrs.map(k => `<button class="opt" data-focus="${k}"><b>${nextFocus.has(k) ? '✓ ' : ''}${attrNames[k]}</b><span>进度 ${Number(a.study.progress[k]) || 0}/${Number((game.abilityConfig().study || {}).progressNeed) || 3}${focus.has(k) ? ' · 当前在修' : ''}</span></button>`).join('')}</div>
         <h3>分配心得</h3><div class="opt-list">${attrs.map(k => `<button class="opt" data-insight="${k}" ${a.insight < game.insightCost(k) ? 'disabled' : ''}><b>${attrNames[k]} +1</b><span>消耗 ${game.insightCost(k)} 心得</span></button>`).join('')}</div>
         ${conversionBlock}
+        ${inkHighlightsBlock}
         ${latestMarks.length ? `<h3>墨痕·最近修习</h3><div class="dianggu">${latestMarks.map(mark => `「${esc(mark.optionText || mark.questionId)}」→ ${esc(attrNames[mark.target] || mark.target)}${mark.inkTags && mark.inkTags.length ? ` · ${esc(mark.inkTags.join('、'))}` : ''}`).join('<br/>')}</div>` : ''}
         <h3>笔力·稿本</h3><div class="opt-list">
           <button class="opt" data-manuscript="polish"><b>润色</b><span>下一场首次追加少耗 ${Number(mc.polishDiscount) || 2} 灵感</span></button>

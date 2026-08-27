@@ -419,6 +419,29 @@ export class Game {
     return { history, counts, axes, dominant: dominant && dominant.dominant ? dominant : null };
   }
 
+  /** 修习面板只展示最鲜明的两条倾向；同强度时以最近一次代表选择优先。 */
+  choiceInkHighlights(limit = 2) {
+    const profile = this.choiceInkProfile();
+    if (!profile.history.length) return [];
+    return profile.axes
+      .map((axis, axisIndex) => {
+        if (!axis.dominant) return null;
+        let representative = null;
+        let recentIndex = -1;
+        for (let i = profile.history.length - 1; i >= 0; i--) {
+          if ((profile.history[i].inkTags || []).includes(axis.dominant)) {
+            representative = profile.history[i];
+            recentIndex = i;
+            break;
+          }
+        }
+        return { ...axis, axisIndex, strength: Math.abs(axis.balance), recentIndex, representative };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.strength - a.strength || b.recentIndex - a.recentIndex || a.axisIndex - b.axisIndex)
+      .slice(0, Math.max(0, Number(limit) || 0));
+  }
+
   choiceInkSummary(phase) {
     const profile = this.choiceInkProfile(phase);
     if (!profile.history.length) return '';
