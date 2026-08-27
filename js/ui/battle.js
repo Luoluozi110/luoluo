@@ -142,6 +142,7 @@ export class BattleStage {
 
     await this.revealScores(out);
     await this.revealMech(out, session);
+    await this.revealInsight(session);
     await this.showVerdict(out, session);
 
     el.classList.remove('on');
@@ -404,6 +405,19 @@ export class BattleStage {
       lines.map(l => `<div class="mech-line tone-${l.tone}">
         <span class="lb">${esc(l.label)}</span><span class="bd">${esc(l.body)}</span></div>`).join('');
     this.el.querySelector('#btPanel').appendChild(box);
+    await sleep(700);
+  }
+
+  /** 知人论世揭示：把结算时写入 session._revealLines 的洞察逐条呈现 */
+  async revealInsight(session) {
+    const lines = (session && session._revealLines) || [];
+    if (!lines.length) return;
+    const box = document.createElement('div');
+    box.className = 'mech-result scroll-frame';
+    box.innerHTML = `<div class="ph">知人论世　<span style="font-size:11px;color:var(--mo-3)">洞察</span></div>` +
+      lines.map(l => `<div class="mech-line tone-info"><span class="lb">洞察</span><span class="bd">${esc(l)}</span></div>`).join('');
+    const panel = this.el.querySelector('#btPanel');
+    if (panel) panel.appendChild(box);
     await sleep(700);
   }
 

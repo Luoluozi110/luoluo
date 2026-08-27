@@ -2182,6 +2182,18 @@ export class Game {
     const mom = R.momentumPct(s.affStreak, manner, af) * (session.streakMult || 1);
     if (mom !== 0) pct.push({ source: 'momentum', label: `气势连捷·${s.affStreak.n}连`, value: mom });
 
+    // 重置本场「复制相性 / 借敌招牌」相关标志，避免沿用上一场残留
+    session._copyAffinity = false;
+    session._copyAffinityRatio = 0;
+    session._copyAffinityName = null;
+    session._copyRevealIntent = false;
+    session._copyRevealWeakness = false;
+    session._copySynergyPct = 0;
+    session._copyThemeFlat = 0;
+    session._copyConvertPct = 0;
+    session._borrowSignature = 0;
+    session._revealLines = [];
+
     for (const t of (session.passiveTalents || s.passive)) {
       const ef = t.effect || {};
       if (ef.type === 'dice_plus') dicePlus += Number(ef.value) || 0;
@@ -2205,7 +2217,12 @@ export class Game {
       if (ef.type === 'copy_affinity') {
         session._copyAffinity = true;
         session._copyAffinityName = t.name;
-        session._copyAffinityRatio = Math.max(session._copyAffinityRatio || 0, Number(ef.ratio) || 1);
+        session._copyAffinityRatio = Math.max(session._copyAffinityRatio || 0, Number(ef.ratio) || 0);
+        if (ef.revealIntent) session._copyRevealIntent = true;
+        if (ef.revealWeakness) session._copyRevealWeakness = true;
+        if (ef.synergyPct) session._copySynergyPct = Math.max(session._copySynergyPct || 0, Number(ef.synergyPct) || 0);
+        if (ef.themeFlat) session._copyThemeFlat = Math.max(session._copyThemeFlat || 0, Number(ef.themeFlat) || 0);
+        if (ef.convertPct) session._copyConvertPct = Math.max(session._copyConvertPct || 0, Number(ef.convertPct) || 0);
       }
     }
     for (const t of session.usedActive) {
@@ -2217,7 +2234,16 @@ export class Game {
       if (ef.type === 'copy_affinity') {
         session._copyAffinity = true;
         session._copyAffinityName = t.name;
-        session._copyAffinityRatio = Math.max(session._copyAffinityRatio || 0, Number(ef.ratio) || 1);
+        session._copyAffinityRatio = Math.max(session._copyAffinityRatio || 0, Number(ef.ratio) || 0);
+        if (ef.revealIntent) session._copyRevealIntent = true;
+        if (ef.revealWeakness) session._copyRevealWeakness = true;
+        if (ef.synergyPct) session._copySynergyPct = Math.max(session._copySynergyPct || 0, Number(ef.synergyPct) || 0);
+        if (ef.themeFlat) session._copyThemeFlat = Math.max(session._copyThemeFlat || 0, Number(ef.themeFlat) || 0);
+        if (ef.convertPct) session._copyConvertPct = Math.max(session._copyConvertPct || 0, Number(ef.convertPct) || 0);
+      }
+      // 夺胎换骨：仅记录借技比例，具体折算待对手招牌(mechOut)算出后于结算段落地
+      if (ef.type === 'borrow_signature') {
+        session._borrowSignature = Math.max(session._borrowSignature || 0, Number(ef.fraction) || 0);
       }
       // —— 主动文心亦可触发创意效果 ——
       if (ef.type === 'style_pct' && (ef.style === style || ef.style === 'any')) {
@@ -2410,8 +2436,44 @@ export class Game {
     }
 
     if (session._copyAffinity && npcAff > 0) {
-      const r = session._copyAffinityRatio || 1;
-      pct.push({ source: 'copy', label: `复制相性·${session._copyAffinityName || '文心'}`, value: npcAff * r });
+      const r = session._copyAffinityRatio || 0;
+      const name = session._copyAffinityName || '文心';
+      pct.push({ source: 'copy', label: `复制相性·${name}`, value: npcAff * r });
+      // 相性化境（Lv6）：将复制到的相性再按比率转化为额外得分 pct
+      if (session._copyConvertPct) pct.push({ source: 'copy', label: `相性化境·${name}`, value: npcAff * r * session._copyConvertPct });
+      // 相性协同（Lv4）：文风与对手一致时额外加成
+      if (session._copySynergyPct && manner === npcManner) pct.push({ source: 'copy', label: `相性协同·${name}`, value: session._copySynergyPct });
+      // 通晓题材（Lv5）：泛化的题材领悟加成
+      if (session._copyThemeFlat) pct.push({ source: 'copy', label: `通晓题材·${name}`, value: session._copyThemeFlat });
+    }
+    // 夺胎换骨：借敌招牌之强（按对手本场招牌修正的缩放比例折算为玩家 pct）
+    if (session._borrowSignature) {
+      if (session._mechOut) {
+        const mods = session._mechOut.mods || {};
+        const sigPct = (mods.pct || []).reduce((a, p) => a + (Number(p.value) || 0), 0);
+        const sigFlat = (mods.flat || []).reduce((a, f) => a + (Number(f.value) || 0), 0);
+        let bonus = sigPct * session._borrowSignature;
+        // 纯 flat 招牌（如稳稿压迫）兜底：按对手期望分归一化，仍随敌强而强
+        if (Math.abs(bonus) < 1e-9 && sigFlat !== 0) {
+          const exp = Math.max(1, Math.round(npcExpected || 1));
+          bonus = (sigFlat / exp) * session._borrowSignature;
+        }
+        const sigObj = session.npc && session.npc.mech && (session.npc.mech.signature.main || session.npc.mech.signature);
+        const sigName = (sigObj && sigObj.name) || '敌';
+        if (bonus !== 0) pct.push({ source: 'borrow', label: `夺胎换骨·借${sigName}`, value: bonus });
+      } else {
+        session._revealLines.push('文心·夺胎换骨：对手无技艺可借，此招落空');
+      }
+    }
+    // 知人论世：揭示对手意图 / 破绽（Lv3 / Lv6）
+    if (session._copyRevealIntent) {
+      const sN = { shi: '诗', ci: '词', lian: '联' }[npcStyle] || npcStyle || '某体';
+      const mN = (af.mannerNames && af.mannerNames[npcManner]) || npcManner || '某风';
+      session._revealLines.push(`文心·知人论世：洞悉对手本场以「${sN}·${mN}」应战`);
+    }
+    if (session._copyRevealWeakness && session.npc && session.npc.mech && session.npc.mech.weakness) {
+      const wn = session.npc.mech.weakness.name || '破绽';
+      session._revealLines.push(`文心·知人论世：窥得对手破绽「${wn}」`);
     }
     if (s.nextBattlePct) {
       pct.push({ source: 'sky', label: '金榜题名时', value: s.nextBattlePct });
