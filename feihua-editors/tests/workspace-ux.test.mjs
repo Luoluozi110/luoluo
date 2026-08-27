@@ -41,6 +41,7 @@ localStorage.setItem('feihua_editors_v1_cloud', JSON.stringify({
 window.Common.showManagement();
 const saved = JSON.parse(localStorage.getItem('feihua_editors_v1_cloud'));
 assert.equal(Object.hasOwn(saved, 'token'), false, '旧版本地 Token 会被迁移移除');
-assert.equal(document.getElementById('cloudToken').value, '', '访问令牌不再自动回填');
+assert.equal(document.getElementById('cloudToken'), null, '编辑器不再渲染 GitHub Token 输入框');
+assert.ok(document.getElementById('cloudBridgeStatus'), '编辑器会显示本机 gh 桥接状态');
 
-console.log('workspace-ux.test.mjs: 工作台状态、快捷操作与 Token 安全迁移通过');
+console.log('workspace-ux.test.mjs: 工作台状态、Token 移除与 gh 桥接提示通过');

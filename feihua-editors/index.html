@@ -33,7 +33,7 @@
 </header>
 
 <div class="sync-banner">
-  <b>改动默认仅存于本机浏览器</b>。想让<b>所有玩家自动同步、无需手动载入</b>：在「数据管理 → 云端同步」填好 GitHub 仓库 / Gist 与 Token，点「发布到云端」即可——
+  <b>改动默认仅存于本机浏览器</b>。想让<b>所有玩家自动同步、无需手动载入</b>：用 <code>npm run editor:bridge</code> 启动后，在「数据管理 → 云端同步」填好 GitHub 仓库 / Gist，点「发布到云端」即可（使用本机 <code>gh</code> 登录，无需 Token）——
   游戏端读取该地址后会在启动时自动拉取最新配置。也可走手动通道：导出 <code>feihua-content.json</code> 后在游戏菜单「载入自定义配置」粘贴。
 </div>
 
