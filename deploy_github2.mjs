@@ -24,6 +24,28 @@ function walk(dir, base = '') {
   return out;
 }
 
+function assertSourceUnchanged(files, snapshot) {
+  const currentFiles = walk(ROOT).sort();
+  const allFiles = new Set([...files, ...currentFiles]);
+  const changed = [];
+  for (const rel of allFiles) {
+    const before = snapshot.get(rel);
+    const full = join(ROOT, rel);
+    if (!before || !existsSync(full)) {
+      changed.push(rel);
+      continue;
+    }
+    try {
+      if (!readFileSync(full).equals(before)) changed.push(rel);
+    } catch {
+      changed.push(rel);
+    }
+  }
+  if (changed.length) {
+    throw new Error(`部署期间源文件发生变化，请重新执行发布：${changed.slice(0, 8).join(', ')}${changed.length > 8 ? '…' : ''}`);
+  }
+}
+
 async function api(method, path, body) {
   let lastErr;
   for (let attempt = 1; attempt <= 4; attempt++) {
@@ -69,10 +91,13 @@ async function main() {
 
   // 2) 上传全部静态文件
   const files = walk(ROOT).sort();
+  // 上传可能持续数十分钟。先冻结一份内存快照，并在更新 main 前复核，
+  // 避免同一轮部署混入修改前后的文件（例如旧 index/CSS 覆盖刚完成的字体修复）。
+  const sourceSnapshot = new Map(files.map((rel) => [rel, readFileSync(join(ROOT, rel))]));
   console.log('待上传文件:', files.length);
   const blobs = {};
   for (const rel of files) {
-    const buf = readFileSync(join(ROOT, rel));
+    const buf = sourceSnapshot.get(rel);
     const ext = rel.slice(rel.lastIndexOf('.'));
     const isText = TEXT.has(ext);
     const content = isText ? buf.toString('utf-8') : buf.toString('base64');
@@ -130,6 +155,11 @@ async function main() {
   });
   console.log('commit:', commit.sha);
 
+  assertSourceUnchanged(files, sourceSnapshot);
+  const latestRef = await api('GET', `/repos/${OWNER}/${REPO}/git/refs/heads/main`);
+  if (latestRef.object.sha !== parentSha) {
+    throw new Error(`main 在部署期间已更新（${parentSha.slice(0, 8)} -> ${latestRef.object.sha.slice(0, 8)}），请重新执行发布`);
+  }
   await api('PATCH', `/repos/${OWNER}/${REPO}/git/refs/heads/main`, { sha: commit.sha });
   console.log('main 已更新为完整部署');
 }
