@@ -220,7 +220,11 @@
     if (!el) return;
     const health = getWorkspaceHealth();
     if (health.ready < MODULES.length) {
-      el.textContent = `正在载入 ${health.ready}/${MODULES.length} 个模块…`;
+      // 显示具体缺失模块，便于定位是哪段脚本未加载（多为对应 JS 文件 404/缓存）
+      const missing = MODULES.filter(m => !(global[m.api] && global[m.api]._ready)).map(m => m.label);
+      el.textContent = `已载入 ${health.ready}/${MODULES.length}（缺失：${missing.join("、")}）`;
+      el.title = "部分模块脚本未能初始化，通常是对应 JS 文件未加载或被缓存。请硬刷新（Ctrl/Cmd+Shift+R）后重试。";
+      el.classList.add("has-issues");
       return;
     }
     const issueText = health.issues ? `${health.issues} 项待处理` : "全部规则通过";
