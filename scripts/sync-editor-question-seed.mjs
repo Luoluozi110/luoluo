@@ -16,10 +16,11 @@ const header = '/* 飞花棋游戏原始题库（config/questions.json）。作�
 fs.writeFileSync(target, `${header}window.GAME_QUESTIONS = ${JSON.stringify(questions, null, 2)};\n`, 'utf8');
 const standalone = fs.readFileSync(standaloneTarget, 'utf8');
 const seed = `const SEED = ${JSON.stringify(questions, null, 2)};`;
+const seedPattern = /const SEED = \[[\s\S]*?\n\];(?=\s*\/\* ---------------- 启动)/;
+if (!seedPattern.test(standalone)) throw new Error('未能定位独立题库编辑器的 SEED 数据块');
 const syncedStandalone = standalone.replace(
-  /const SEED = \[[\s\S]*?\n\];(?=\s*\/\* ---------------- 启动)/,
+  seedPattern,
   seed
 );
-if (syncedStandalone === standalone) throw new Error('未能定位独立题库编辑器的 SEED 数据块');
 fs.writeFileSync(standaloneTarget, syncedStandalone, 'utf8');
 console.log(`已同步 ${questions.length} 道题到 ${path.relative(root, target)} 与 ${path.relative(root, standaloneTarget)}`);
