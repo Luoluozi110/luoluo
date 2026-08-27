@@ -11,9 +11,20 @@ const clone = value => JSON.parse(JSON.stringify(value));
 const valid = validateConfig(raw);
 assert.equal(valid.ok, true, JSON.stringify(valid.errors.slice(0, 5)));
 
+const missingNpcId = clone(raw);
+missingNpcId.npcs[0].npcs[0].id = '';
+let result = validateConfig(missingNpcId);
+assert.equal(result.ok, false);
+assert.ok(result.errors.some(x => x.path === 'npcs[0].npcs[0].id' && x.code === 'id'));
+
+const duplicateNpcId = clone(raw);
+duplicateNpcId.npcs[1].npcs[0].id = duplicateNpcId.npcs[0].npcs[0].id;
+result = validateConfig(duplicateNpcId);
+assert.ok(result.errors.some(x => x.path === 'npcs[1].npcs[0].id' && x.code === 'duplicate_id'));
+
 const badAnswer = clone(raw);
 badAnswer.questions[0].answer = 999;
-let result = validateConfig(badAnswer);
+result = validateConfig(badAnswer);
 assert.equal(result.ok, false);
 assert.ok(result.errors.some(x => x.path === 'questions[0].answer'));
 
@@ -83,6 +94,13 @@ assert.equal(validateProject(patch, { requireComplete: false }).ok, true);
 const normalized = normalizeConfig(clone(raw));
 const merged = applyProjectOverride(normalized, patch, { requireType: true });
 assert.equal(merged.questions.length, 2);
+
+const oldNpcProject = { _type: 'feihua-content', npcs: clone(raw.npcs) };
+const oldKang = oldNpcProject.npcs.find(tier => tier.id === 'zhukaoguan').npcs.find(npc => npc.name === '康尔玉');
+oldKang.id = '';
+const migratedNpcs = applyProjectOverride(normalized, oldNpcProject, { requireType: true });
+const migratedKang = migratedNpcs.npcs.find(tier => tier.id === 'zhukaoguan').npcs.find(npc => npc.name === '康尔玉');
+assert.equal(migratedKang.id, 'kang_er_yu', '旧工程的康尔玉 ID 会在载入前恢复');
 
 // 云端内容工程可能只带主路线，不能覆盖掉本地正式配置中的隐藏终圈资格与入口。
 const cloudBoard = clone(raw.board);

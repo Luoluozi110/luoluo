@@ -30,6 +30,7 @@ const INK_TAGS = new Set(INK_AXES.flat());
   const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
   const finite = v => Number.isFinite(Number(v));
   const text = v => typeof v === 'string' && v.trim().length > 0;
+  const NPC_ID_RE = /^[a-z][a-z0-9_-]*$/;
 
   function validateConfig(config, options = {}) {
     const errors = [];
@@ -315,6 +316,7 @@ const INK_TAGS = new Set(INK_AXES.flat());
       uniqueIds(cfg.npcs, 'npcs');
       if (Array.isArray(cfg.npcs)) {
         if (cfg.npcs.filter(tier => tier && tier.isHiddenFinal).length !== 1) add('npcs', '必须且只能提供一个隐藏终圈对手档');
+        const npcIds = new Set();
         cfg.npcs.forEach((tier, i) => {
         if (!isObj(tier)) return;
         if (!Array.isArray(tier.npcs) || !tier.npcs.length) add(`npcs[${i}].npcs`, '档位必须包含对手数组');
@@ -322,10 +324,10 @@ const INK_TAGS = new Set(INK_AXES.flat());
           const seen = new Set();
           tier.npcs.forEach((npc, j) => {
             if (!isObj(npc) || !text(npc.name)) add(`npcs[${i}].npcs[${j}].name`, '对手名称不能为空');
-            if (npc && text(npc.id)) {
-              if (seen.has(npc.id)) add(`npcs[${i}].npcs[${j}].id`, `档位内 ID 重复：${npc.id}`);
-              seen.add(npc.id);
-            }
+            if (!npc || !text(npc.id)) add(`npcs[${i}].npcs[${j}].id`, '必须是非空稳定 ID', 'id');
+            else if (!NPC_ID_RE.test(npc.id)) add(`npcs[${i}].npcs[${j}].id`, '必须以小写字母开头，且只能含小写字母、数字、下划线和连字符', 'id');
+            else if (npcIds.has(npc.id)) add(`npcs[${i}].npcs[${j}].id`, `NPC ID 全局重复：${npc.id}`, 'duplicate_id');
+            else { seen.add(npc.id); npcIds.add(npc.id); }
           });
           if (tier.isHiddenFinal) {
             if (tier.npcs.length !== 1) add(`npcs[${i}].npcs`, '隐藏终圈必须且只能配置一名对手');

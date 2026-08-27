@@ -11,6 +11,7 @@
   const C = global.Common;
   const ATTR = C.ATTR, ATTR_KEYS = C.ATTR_KEYS;
   const THEME_LABELS = { yongwu: "咏物", songbie: "送别", shanshui: "山水", biansai: "边塞", huaigu: "怀古", jieling: "节令" };
+  const NPC_ID_RE = /^[a-z][a-z0-9_-]*$/;
 
   const state = { tiers: [], editTier: -1, tierForm: null, npcForm: null, _ready: false };
 
@@ -23,11 +24,11 @@
   function loadData() {
     const raw = C.load("npcs", null);
     if (raw && raw.length) {
-      state.tiers = ensureHiddenFinalTier(ensureOfficialNpcSeed(raw.map(normalizeTier)));
+      state.tiers = ensureStableNpcIds(ensureHiddenFinalTier(ensureOfficialNpcSeed(raw.map(normalizeTier))));
       C.store("npcs", state.tiers); // 旧档迁移后立即持久化
     }
     else {
-      state.tiers = ensureHiddenFinalTier(ensureOfficialNpcSeed((window.GAME_NPCS || []).map(normalizeTier)));
+      state.tiers = ensureStableNpcIds(ensureHiddenFinalTier(ensureOfficialNpcSeed((window.GAME_NPCS || []).map(normalizeTier))));
       C.store("npcs", state.tiers);
     }
   }
@@ -118,6 +119,47 @@
     "li_mo_tong", "wang_han_sheng", "tang_ji_qing", "yuwen_yuan", "kang_er_yu", "chen_zhiwei"
   ]);
   function cloneData(v) { return JSON.parse(JSON.stringify(v)); }
+
+  /**
+   * 所有具名 NPC 都必须有全局唯一、可作为存档/机制键的稳定 ID。
+   * 旧编辑器曾把“留空则自动生成”仅写在提示里，实际会保存空串；这里在
+   * 读取、导入与复制后统一修复，避免内容进入游戏后退化为档位级 ID。
+   */
+  function nextNpcId(tierId, used) {
+    const safeTier = String(tierId || "tier").toLowerCase().replace(/[^a-z0-9_-]+/g, "_").replace(/^[_-]+|[_-]+$/g, "") || "tier";
+    const base = "npc_" + safeTier;
+    let n = 1, id = base + "_" + n;
+    while (used.has(id)) id = base + "_" + (++n);
+    return id;
+  }
+  function allNpcIds(exceptKey) {
+    const ids = {};
+    state.tiers.forEach((tier, ti) => (tier.npcs || []).forEach((npc, ni) => {
+      const key = ti + ":" + ni;
+      if (key !== exceptKey && npc && npc.id) ids[npc.id] = key;
+    }));
+    return ids;
+  }
+  function suggestedNpcId(tierId, exceptKey) {
+    return nextNpcId(tierId, new Set(Object.keys(allNpcIds(exceptKey))));
+  }
+  function ensureStableNpcIds(tiers) {
+    const used = new Set();
+    for (const tier of (Array.isArray(tiers) ? tiers : [])) {
+      for (const npc of (tier.npcs || [])) {
+        const id = String(npc && npc.id || "").trim().toLowerCase();
+        if (NPC_ID_RE.test(id) && !used.has(id)) {
+          npc.id = id;
+          used.add(id);
+        } else {
+          const generated = nextNpcId(tier && tier.id, used);
+          npc.id = generated;
+          used.add(generated);
+        }
+      }
+    }
+    return tiers;
+  }
   function ensureOfficialNpcSeed(tiers) {
     const out = Array.isArray(tiers) ? tiers : [];
     const seeds = (window.GAME_NPCS || []).map(normalizeTier);
@@ -130,11 +172,14 @@
         continue;
       }
       for (const seedNpc of seedTargets) {
-        const existing = tier.npcs.find(n => n && n.id === seedNpc.id);
+        // 某些历史工程保存时丢失了 ID，但名字仍在（尤其是康尔玉）。
+        // 先按官方稳定 ID 匹配，再对无 ID 的同名条目做安全回填。
+        const existing = tier.npcs.find(n => n && (n.id === seedNpc.id || (!n.id && n.name === seedNpc.name)));
         if (!existing) {
           if (OFFICIAL_NPC_BACKFILL_IDS.has(seedNpc.id)) tier.npcs.push(cloneData(seedNpc));
           continue;
         }
+        if (!existing.id) existing.id = seedNpc.id;
         if (seedNpc.palaceForcedWhen && !existing.palaceForcedWhen) existing.palaceForcedWhen = cloneData(seedNpc.palaceForcedWhen);
         if (seedNpc.stageForcedWhen && !existing.stageForcedWhen) existing.stageForcedWhen = cloneData(seedNpc.stageForcedWhen);
         if (OFFICIAL_NPC_MECH_V2_IDS.has(seedNpc.id) && seedNpc.mech && Number(existing.mech && existing.mech.version) < 2) {
@@ -146,10 +191,13 @@
   }
 
   /* ---------------- 校验 ---------------- */
-  function validateNpc(n, allNames, selfKey) {
+  function validateNpc(n, allNames, selfKey, ids) {
     const errors = [];
     if (!n.name) errors.push("对手名称不能为空");
     else if (allNames && allNames[n.name] && allNames[n.name] !== selfKey) errors.push("对手名称「" + n.name + "」在本档内重复");
+    if (!n.id) errors.push("稳定 ID 不能为空");
+    else if (!NPC_ID_RE.test(n.id)) errors.push("稳定 ID 须以小写字母开头，只能含小写字母、数字、下划线和连字符");
+    else if (ids && ids[n.id] && ids[n.id] !== selfKey) errors.push("稳定 ID「" + n.id + "」已被其他对手使用");
     const a = n.attrs || {};
     for (const k of ATTR_KEYS) if (a[k] != null && (Number(a[k]) < 0)) errors.push(ATTR[k] + "不能为负");
     if (n.weight != null && (!Number.isInteger(n.weight) || n.weight < 0)) errors.push("出战权重须为非负整数（0=本阶段不出战）");
@@ -177,12 +225,13 @@
   }
   function validateAll() {
     const out = [];
+    const ids = allNpcIds();
     state.tiers.forEach((t, ti) => {
       const tv = validateTier(t, state.tiers, ti);
       if (!tv.ok) out.push({ kind: "tier", ti, i: ti, errors: tv.errors });
       t.npcs.forEach((n, ni) => {
         const names = {}; t.npcs.forEach((x, k) => { if (x.name) names[x.name] = ti + ":" + k; });
-        const nv = validateNpc(n, names, ti + ":" + ni);
+        const nv = validateNpc(n, names, ti + ":" + ni, ids);
         if (!nv.ok) out.push({ kind: "npc", ti, ni, i: ti, errors: nv.errors });
       });
     });
@@ -404,7 +453,7 @@
     const src = (ni >= 0 ? tier.npcs[ni] : null) || (prefill || null);
     state.npcForm = {
       ti, ni,
-      id: src ? (src.id || "") : "",
+      id: src && src.id ? src.id : suggestedNpcId(tier.id),
       name: src ? src.name : "",
       title: src ? src.title : "",
       style: src ? (src.style || autoStyle(src.attrs)) : "",
@@ -627,7 +676,7 @@
     });
     const sel = document.getElementById("npc-style");
     const styleVal = sel ? (sel.value || "") : "";
-    const idVal = String((document.getElementById("npc-id") || {}).value || "").trim();
+    const idVal = String((document.getElementById("npc-id") || {}).value || "").trim().toLowerCase() || suggestedNpcId(state.tiers[f.ti].id, f.ti + ":" + f.ni);
     // mech：解析 textarea；空字符串 → null（普通对手）；非法 JSON → 拦截
     let mech = f.mech;
     const mechTa = document.getElementById("npc-mech");
@@ -661,7 +710,7 @@
     }
     const npc = { id: idVal, name: f.name.trim(), title: f.title.trim(), style: ATTR_KEYS.includes(styleVal) ? styleVal : "", focusAttr: ATTR_KEYS.includes(focusVal) ? focusVal : undefined, weight, attrs, mech: mech || undefined, stageForcedWhen: stageForcedWhen || undefined, palaceForcedWhen: f.palaceForcedWhen ? (stageForcedWhen || undefined) : undefined };
     const names = {}; state.tiers[f.ti].npcs.forEach((x, k) => { if (x.name) names[x.name] = f.ti + ":" + k; });
-    const { ok, errors } = validateNpc(npc, names, f.ti + ":" + f.ni);
+    const { ok, errors } = validateNpc(npc, names, f.ti + ":" + f.ni, allNpcIds(f.ti + ":" + f.ni));
     const msg = document.getElementById("npcMsg");
     if (!ok) { msg.className = "msg err"; msg.innerHTML = "✗ 无法保存：<br>• " + errors.join("<br>• "); return; }
     if (f.ni >= 0) { state.tiers[f.ti].npcs[f.ni] = npc; C.toast("已更新 " + npc.name); }
@@ -676,6 +725,7 @@
     do { newId = base + "_" + n; n++; } while (state.tiers.some(t => t.id === newId));
     copy.id = newId;
     state.tiers.splice(ti + 1, 0, copy);
+    ensureStableNpcIds(state.tiers);
     save(); renderList(); C.toast("已复制为 " + newId);
   }
   function removeTier(ti) {
@@ -691,11 +741,7 @@
     let newName2 = copy.name || "对手", m = 1;
     while (tier.npcs.some(x => x.name === newName2)) { newName2 = (copy.name || "对手") + "_" + m; m++; }
     copy.name = newName2;
-    if (copy.id) {
-      let baseId = copy.id, k = 1, newId;
-      do { newId = baseId + "_" + k; k++; } while (tier.npcs.some(x => x.id === newId));
-      copy.id = newId;
-    }
+    copy.id = suggestedNpcId(tier.id);
     tier.npcs.splice(ni + 1, 0, copy);
     save(); renderList(); C.toast("已复制为 " + copy.name);
   }
@@ -738,14 +784,14 @@
   /* ---------------- 导入 / 导出 ---------------- */
   function importData(arr, mode) {
     const norm = arr.map(normalizeTier).filter(t => t.id || t.tier);
-    if (mode) { state.tiers = ensureHiddenFinalTier(ensureOfficialNpcSeed(norm)); C.toast("已替换为 " + state.tiers.length + " 档"); }
+    if (mode) { state.tiers = ensureStableNpcIds(ensureHiddenFinalTier(ensureOfficialNpcSeed(norm))); C.toast("已替换为 " + state.tiers.length + " 档"); }
     else {
       const map = new Map(state.tiers.map((t, i) => [t.id, i]));
       let added = 0, updated = 0;
       norm.forEach(t => { if (map.has(t.id)) { state.tiers[map.get(t.id)] = t; updated++; } else { state.tiers.push(t); added++; } });
       C.toast(`合并完成：新增 ${added}，更新 ${updated}`);
     }
-    state.tiers = ensureHiddenFinalTier(ensureOfficialNpcSeed(state.tiers));
+    state.tiers = ensureStableNpcIds(ensureHiddenFinalTier(ensureOfficialNpcSeed(state.tiers)));
     save(); renderList();
   }
   function importFile(file) {

@@ -438,6 +438,33 @@ console.log('[7.5] NPC：出战权重字段编辑往返 + 0 校验');
   }
 }
 
+console.log('[7.55] NPC：新增/旧缓存自动补齐稳定 ID，确保可被游戏唯一追踪');
+{
+  const legacy = window.NPC.exportRaw();
+  const oldKang = legacy.flatMap(tier => tier.npcs).find(npc => npc.name === '康尔玉');
+  if (oldKang) oldKang.id = '';
+  window.NPC.importData(legacy, true);
+  const repairedKang = window.NPC.exportRaw().flatMap(tier => tier.npcs).find(npc => npc.name === '康尔玉');
+  ok(repairedKang?.id === 'kang_er_yu', '旧缓存的康尔玉按名称恢复官方稳定 ID', repairedKang?.id);
+
+  const add = document.querySelector('#npclist [data-add-npc="0"]');
+  ok(!!add, '新增对手入口存在');
+  if (add) {
+    click(add);
+    const id = document.getElementById('npc-id');
+    const name = document.getElementById('npc-name');
+    ok(/^npc_[a-z0-9_-]+_\d+$/.test(id.value), '新增对手预填自动稳定 ID', id.value);
+    name.value = 'ID 回归对手'; fire(name, 'input');
+    id.value = ''; fire(id, 'input'); // 验证手动清空仍会在保存时补齐
+    click(document.getElementById('npcSave'));
+    const created = window.NPC.exportRaw()[0].npcs.find(npc => npc.name === 'ID 回归对手');
+    ok(!!created?.id && /^npc_[a-z0-9_-]+_\d+$/.test(created.id), '清空 ID 后保存仍自动生成稳定 ID', created?.id);
+    const ids = window.NPC.exportRaw().flatMap(tier => tier.npcs).map(npc => npc.id);
+    ok(new Set(ids).size === ids.length, '编辑器内 NPC ID 保持全局唯一');
+  }
+  window.NPC.importData(window.GAME_NPCS, true);
+}
+
 console.log('[7.6] NPC：本阶段必遇条件可视化编辑 + 保存往返');
 {
   const tiers = window.NPC.exportRaw();

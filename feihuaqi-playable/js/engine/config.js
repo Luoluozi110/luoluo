@@ -16,6 +16,50 @@ const OPTIONAL_FILES = ['album', 'synergies', 'npc-mechanics', 'talent-upgrade',
 const OPTIONAL_DEFAULTS = {
   album: [], synergies: [], 'npc-mechanics': {}, 'talent-upgrade': {}, narrative: {}
 };
+const NPC_ID_RE = /^[a-z][a-z0-9_-]*$/;
+
+/**
+ * 为历史工程补齐每位具名 NPC 的稳定 ID。编辑器现在会在创建时生成 ID，
+ * 但游戏端仍需容纳旧导出文件，避免其因为空 ID 而无法正常遭遇或丢失机制历史。
+ */
+export function normalizeNpcIds(cfg) {
+  if (!cfg || !Array.isArray(cfg.npcs)) return cfg;
+  const used = new Set();
+  const nextId = tierId => {
+    const safeTier = String(tierId || 'tier').toLowerCase().replace(/[^a-z0-9_-]+/g, '_').replace(/^[_-]+|[_-]+$/g, '') || 'tier';
+    const base = `npc_${safeTier}`;
+    let n = 1, id = `${base}_${n}`;
+    while (used.has(id)) id = `${base}_${++n}`;
+    return id;
+  };
+  for (const tier of cfg.npcs) {
+    if (!tier || !Array.isArray(tier.npcs)) continue;
+    for (const npc of tier.npcs) {
+      if (!npc || typeof npc !== 'object') continue;
+      const id = String(npc.id || '').trim().toLowerCase();
+      if (NPC_ID_RE.test(id) && !used.has(id)) {
+        npc.id = id;
+      } else if (!id && tier.id === 'zhukaoguan' && npc.name === '康尔玉' && !used.has('kang_er_yu')) {
+        // 旧编辑器曾丢失康尔玉 ID；恢复官方 ID，才能继续命中其殿试必遇规则。
+        npc.id = 'kang_er_yu';
+      } else {
+        npc.id = nextId(tier.id);
+      }
+      used.add(npc.id);
+    }
+  }
+  return cfg;
+}
+
+function cloneProjectNpcData(project) {
+  if (!project || !Array.isArray(project.npcs)) return project;
+  return {
+    ...project,
+    npcs: project.npcs.map(tier => tier && typeof tier === 'object'
+      ? { ...tier, npcs: Array.isArray(tier.npcs) ? tier.npcs.map(npc => npc && typeof npc === 'object' ? { ...npc } : npc) : tier.npcs }
+      : tier)
+  };
+}
 
 export const configSource = {};   // { attrs: 'config' | 'config-dev' }
 
@@ -45,6 +89,7 @@ export async function loadConfig() {
     catch (_) { configSource[n] = '缺失'; return [n, OPTIONAL_DEFAULTS[n]]; }
   });
   const cfg = Object.fromEntries(await Promise.all([...required, ...optional]));
+  normalizeNpcIds(cfg);
   CONTRACT.assertConfig(cfg);
   return normalizeConfig(cfg);
 }
@@ -77,6 +122,7 @@ export async function loadCloudUrl() {
  */
 export function applyProjectOverride(baseCfg, project, options = {}) {
   if (!project || typeof project !== 'object') return baseCfg;
+  project = normalizeNpcIds(cloneProjectNpcData(project));
   // 引擎内部与测试可直接传配置补丁（无工程包装层）；外部编辑器发布仍由 assertProject 默认严格校验 _type。
   CONTRACT.assertProject(project, { requireComplete: false, requireType: !!options.requireType });
   const next = Object.assign({}, baseCfg);
@@ -96,6 +142,7 @@ export const validateProject = CONTRACT.validateProject;
 
 /** 归一化：补齐派生结构，容忍内容方省略可选字段 */
 export function normalizeConfig(cfg) {
+  normalizeNpcIds(cfg);
   const board = cfg.board;
   board.layout = board.layout || 'single_ring';
   board.route = Array.isArray(board.route) && board.route.length
