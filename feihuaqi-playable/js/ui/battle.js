@@ -261,12 +261,12 @@ export class BattleStage {
         const extraPct = typeof session.extraDicePct === 'function'
           ? session.extraDicePct(extraCount)
           : extraCount * (Number(this.cfg?.inspiration?.extraDicePct) || 0);
-        const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length) : (Number(this.cfg?.inspiration?.extraDiceCost) || 5);
+        const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length, pips) : (Number(this.cfg?.inspiration?.extraDiceCost) || 5);
         const canExtra = !hasFixed() && session.inspiration >= extraCost && extraCount < extraCap;
         const pipHtml = pips.map(n => `<span class="dice-pip">${'①②③④⑤⑥'[n - 1]}</span>`).join('');
         const extraHint = extraPct > 0 ? ` · 作品乘区 +${Math.round(extraPct * 100)}%` : '';
         panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → ${pctLabel}${extraHint}${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
-          <div style="font-size:12px;line-height:1.7;color:var(--mo-3);margin:4px 2px 7px">当前骰点已经转为作品乘区；继续追加会消耗灵感，收笔则以当前骰数结算。${preview.pctDetail ? `<br><span style="color:var(--zhu)">${preview.pctDetail}</span>` : ''}</div>
+          <div style="font-size:12px;line-height:1.7;color:var(--mo-3);margin:4px 2px 7px">当前骰点已经转为作品乘区；继续追加会消耗灵感，收笔则以当前骰数结算。${session._extraDiceChainNote ? `<br><span style="color:var(--zhu)">${session._extraDiceChainNote}</span>` : ''}${preview.pctDetail ? `<br><span style="color:var(--zhu)">${preview.pctDetail}</span>` : ''}</div>
           <div class="dice-pips">${pipHtml}</div>
           <div class="pick-row">
             ${canExtra
@@ -279,7 +279,7 @@ export class BattleStage {
       };
 
       const addExtra = () => {
-        const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length) : (Number(this.cfg?.inspiration?.extraDiceCost) || 5);
+        const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length, pips) : (Number(this.cfg?.inspiration?.extraDiceCost) || 5);
         if (done || session.inspiration < extraCost || hasFixed() || pips.length - 1 >= extraCap) return;
         if (typeof session.spendExtraDice === 'function') session.spendExtraDice(extraCost);
         else session.spendInspiration(extraCost, '追加灵感骰');
@@ -287,11 +287,20 @@ export class BattleStage {
         pips.push(n);
         play('spend', { amount: extraCost });
         play('dice', { value: n, delay: 0.09 });
+        // 一气呵成的第二笔不再弹出一次交互：付出首枚续掷后直接自动落骰。
+        const chain = pips.length === 2 && pips.length - 1 < extraCap && typeof session.useExtraDiceChain === 'function'
+          ? session.useExtraDiceChain() : null;
+        if (chain) {
+          const chained = 1 + Math.floor(Math.random() * 6);
+          pips.push(chained);
+          session._extraDiceChainNote = `文心·${chain.name}续章：自动掷出 ${chained} 点`;
+          play('dice', { value: chained, delay: 0.18 });
+        }
         renderExtra();
         armTimer(() => finish());
       };
 
-      const firstCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, 1) : (Number(this.cfg?.inspiration?.extraDiceCost) || 5);
+      const firstCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, 1, pips) : (Number(this.cfg?.inspiration?.extraDiceCost) || 5);
       const extraPctPerDie = typeof session.extraDicePct === 'function'
         ? session.extraDicePct(1)
         : (Number(this.cfg?.inspiration?.extraDicePct) || 0);

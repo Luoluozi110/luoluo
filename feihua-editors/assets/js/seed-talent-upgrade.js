@@ -137,29 +137,32 @@ window.GAME_TALENT_UPGRADE = {
     "levels": [
       {
         "effect": {
-          "type": "dice_transform",
-          "mode": "low_lift",
-          "threshold": 2,
-          "value": 1,
-          "count": 1
+          "type": "dice_pattern",
+          "pattern": "low_then_high",
+          "lowMax": 2,
+          "nextHighMin": 5,
+          "value": 0.1,
+          "conditionalFirstCostDiscount": 2
         }
       },
       {
         "effect": {
-          "type": "dice_transform",
-          "mode": "low_lift",
-          "threshold": 3,
-          "value": 1,
-          "count": 1
+          "type": "dice_pattern",
+          "pattern": "low_then_high",
+          "lowMax": 2,
+          "nextHighMin": 5,
+          "value": 0.16,
+          "conditionalFirstCostDiscount": 3
         }
       },
       {
         "effect": {
-          "type": "dice_transform",
-          "mode": "low_lift",
-          "threshold": 3,
-          "value": 1,
-          "count": 2
+          "type": "dice_pattern",
+          "pattern": "low_then_high",
+          "lowMax": 3,
+          "nextHighMin": 5,
+          "value": 0.22,
+          "conditionalFirstCostDiscount": 3
         }
       }
     ]
@@ -342,25 +345,43 @@ window.GAME_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "dice_pattern",
-          "pattern": "distinct",
-          "value": 0.03,
-          "firstCostDiscount": 2
+          "pattern": "all_distinct",
+          "minDice": 3,
+          "value": 0.15,
+          "firstCostDiscount": 2,
+          "reward": {
+            "type": "fragment",
+            "value": 0.5,
+            "perMatch": false
+          }
         }
       },
       {
         "effect": {
           "type": "dice_pattern",
-          "pattern": "distinct",
-          "value": 0.04,
-          "firstCostDiscount": 2
+          "pattern": "all_distinct",
+          "minDice": 3,
+          "value": 0.19,
+          "firstCostDiscount": 3,
+          "reward": {
+            "type": "fragment",
+            "value": 0.5,
+            "perMatch": false
+          }
         }
       },
       {
         "effect": {
           "type": "dice_pattern",
-          "pattern": "distinct",
-          "value": 0.05,
-          "firstCostDiscount": 3
+          "pattern": "all_distinct",
+          "minDice": 3,
+          "value": 0.22,
+          "firstCostDiscount": 3,
+          "reward": {
+            "type": "fragment",
+            "value": 1,
+            "perMatch": false
+          }
         }
       }
     ]
@@ -590,37 +611,82 @@ window.GAME_TALENT_UPGRADE = {
     "levels": [
       {
         "effect": {
-          "type": "extra_dice_pct",
-          "value": 0.05,
-          "firstCostDiscount": 1
+          "type": "dice_pattern",
+          "pattern": "ascending",
+          "minDice": 2,
+          "perStepValue": 0.05,
+          "fullDice": 3,
+          "fullValue": 0.1,
+          "firstCostDiscount": 1,
+          "fullReward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
         }
       },
       {
         "effect": {
-          "type": "extra_dice_pct",
-          "value": 0.06,
-          "firstCostDiscount": 1
+          "type": "dice_pattern",
+          "pattern": "ascending",
+          "minDice": 2,
+          "perStepValue": 0.06,
+          "fullDice": 3,
+          "fullValue": 0.1,
+          "firstCostDiscount": 1,
+          "fullReward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
         }
       },
       {
         "effect": {
-          "type": "extra_dice_pct",
-          "value": 0.07,
-          "firstCostDiscount": 1
+          "type": "dice_pattern",
+          "pattern": "ascending",
+          "minDice": 2,
+          "perStepValue": 0.07,
+          "fullDice": 3,
+          "fullValue": 0.12,
+          "firstCostDiscount": 1,
+          "fullReward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
         }
       },
       {
         "effect": {
-          "type": "extra_dice_pct",
-          "value": 0.08,
-          "firstCostDiscount": 2
+          "type": "dice_pattern",
+          "pattern": "ascending",
+          "minDice": 2,
+          "perStepValue": 0.08,
+          "fullDice": 3,
+          "fullValue": 0.12,
+          "firstCostDiscount": 2,
+          "fullReward": {
+            "type": "inspiration",
+            "value": 2,
+            "perMatch": false
+          }
         }
       },
       {
         "effect": {
-          "type": "extra_dice_pct",
-          "value": 0.1,
-          "firstCostDiscount": 2
+          "type": "dice_pattern",
+          "pattern": "ascending",
+          "minDice": 2,
+          "perStepValue": 0.08,
+          "fullDice": 3,
+          "fullValue": 0.14,
+          "firstCostDiscount": 2,
+          "fullReward": {
+            "type": "inspiration",
+            "value": 2,
+            "perMatch": false
+          }
         }
       }
     ]
@@ -685,33 +751,65 @@ window.GAME_TALENT_UPGRADE = {
     "levels": [
       {
         "effect": {
-          "type": "dice_transform",
-          "mode": "first_floor",
-          "floor": 4
+          "type": "dice_pattern",
+          "pattern": "exact_total",
+          "diceCount": 2,
+          "total": 7,
+          "value": 0.18,
+          "firstExtraFree": true,
+          "reward": {
+            "type": "insight",
+            "value": 1,
+            "perMatch": false
+          }
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "dice_transform",
-          "mode": "first_floor",
-          "floor": 5
+          "type": "dice_pattern",
+          "pattern": "exact_total",
+          "diceCount": 2,
+          "total": 7,
+          "value": 0.22,
+          "firstExtraFree": true,
+          "reward": {
+            "type": "insight",
+            "value": 1,
+            "perMatch": false
+          }
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "dice_transform",
-          "mode": "first_floor",
-          "floor": 5
+          "type": "dice_pattern",
+          "pattern": "exact_total",
+          "diceCount": 2,
+          "total": 7,
+          "value": 0.26,
+          "firstExtraFree": true,
+          "reward": {
+            "type": "insight",
+            "value": 2,
+            "perMatch": false
+          }
         },
         "cost": 2
       },
       {
         "effect": {
-          "type": "dice_transform",
-          "mode": "first_floor",
-          "floor": 6
+          "type": "dice_pattern",
+          "pattern": "exact_total",
+          "diceCount": 2,
+          "total": 7,
+          "value": 0.3,
+          "firstExtraFree": true,
+          "reward": {
+            "type": "insight",
+            "value": 2,
+            "perMatch": false
+          }
         },
         "cost": 2
       }
@@ -795,7 +893,7 @@ window.GAME_TALENT_UPGRADE = {
           "highMin": 5,
           "highValue": 0.18,
           "lowMax": 2,
-          "lowValue": -0.06
+          "lowValue": -0.08
         },
         "cost": 4
       },
@@ -806,7 +904,7 @@ window.GAME_TALENT_UPGRADE = {
           "highMin": 5,
           "highValue": 0.2,
           "lowMax": 2,
-          "lowValue": -0.05
+          "lowValue": -0.09
         },
         "cost": 4
       },
@@ -817,7 +915,7 @@ window.GAME_TALENT_UPGRADE = {
           "highMin": 5,
           "highValue": 0.22,
           "lowMax": 2,
-          "lowValue": -0.04
+          "lowValue": -0.1
         },
         "cost": 4
       }
@@ -886,29 +984,33 @@ window.GAME_TALENT_UPGRADE = {
     "levels": [
       {
         "effect": {
-          "type": "extra_dice_pct",
+          "type": "extra_dice_chain",
+          "compare": "not_lower",
+          "value": 0.04
+        },
+        "cost": 2
+      },
+      {
+        "effect": {
+          "type": "extra_dice_chain",
+          "compare": "not_lower",
+          "value": 0.06
+        },
+        "cost": 2
+      },
+      {
+        "effect": {
+          "type": "extra_dice_chain",
+          "compare": "not_lower",
           "value": 0.08
         },
         "cost": 2
       },
       {
         "effect": {
-          "type": "extra_dice_pct",
+          "type": "extra_dice_chain",
+          "compare": "not_lower",
           "value": 0.1
-        },
-        "cost": 2
-      },
-      {
-        "effect": {
-          "type": "extra_dice_pct",
-          "value": 0.12
-        },
-        "cost": 2
-      },
-      {
-        "effect": {
-          "type": "extra_dice_pct",
-          "value": 0.14
         },
         "cost": 2
       }
@@ -927,45 +1029,165 @@ window.GAME_TALENT_UPGRADE = {
     "levels": [
       {
         "effect": {
-          "type": "fixed_dice",
-          "value": 16
+          "type": "dice_pattern",
+          "pattern": "total_tiers",
+          "tiers": [
+            {
+              "threshold": 16,
+              "value": 0.3,
+              "reward": {
+                "type": "inspiration",
+                "value": 3,
+                "perMatch": false
+              }
+            },
+            {
+              "threshold": 12,
+              "value": 0.16,
+              "reward": {
+                "type": "inspiration",
+                "value": 3,
+                "perMatch": false
+              }
+            }
+          ]
         },
-        "cost": 4
+        "cost": 3
       },
       {
         "effect": {
-          "type": "fixed_dice",
-          "value": 17
+          "type": "dice_pattern",
+          "pattern": "total_tiers",
+          "tiers": [
+            {
+              "threshold": 16,
+              "value": 0.34,
+              "reward": {
+                "type": "inspiration",
+                "value": 3,
+                "perMatch": false
+              }
+            },
+            {
+              "threshold": 12,
+              "value": 0.18,
+              "reward": {
+                "type": "inspiration",
+                "value": 3,
+                "perMatch": false
+              }
+            }
+          ]
         },
-        "cost": 4
+        "cost": 3
       },
       {
         "effect": {
-          "type": "fixed_dice",
-          "value": 19
+          "type": "dice_pattern",
+          "pattern": "total_tiers",
+          "tiers": [
+            {
+              "threshold": 16,
+              "value": 0.38,
+              "reward": {
+                "type": "inspiration",
+                "value": 3,
+                "perMatch": false
+              }
+            },
+            {
+              "threshold": 12,
+              "value": 0.2,
+              "reward": {
+                "type": "inspiration",
+                "value": 3,
+                "perMatch": false
+              }
+            }
+          ]
         },
-        "cost": 4
+        "cost": 3
       },
       {
         "effect": {
-          "type": "fixed_dice",
-          "value": 20
+          "type": "dice_pattern",
+          "pattern": "total_tiers",
+          "tiers": [
+            {
+              "threshold": 16,
+              "value": 0.42,
+              "reward": {
+                "type": "inspiration",
+                "value": 3,
+                "perMatch": false
+              }
+            },
+            {
+              "threshold": 12,
+              "value": 0.22,
+              "reward": {
+                "type": "inspiration",
+                "value": 3,
+                "perMatch": false
+              }
+            }
+          ]
         },
-        "cost": 4
+        "cost": 3
       },
       {
         "effect": {
-          "type": "fixed_dice",
-          "value": 22
+          "type": "dice_pattern",
+          "pattern": "total_tiers",
+          "tiers": [
+            {
+              "threshold": 16,
+              "value": 0.46,
+              "reward": {
+                "type": "inspiration",
+                "value": 3,
+                "perMatch": false
+              }
+            },
+            {
+              "threshold": 12,
+              "value": 0.24,
+              "reward": {
+                "type": "inspiration",
+                "value": 3,
+                "perMatch": false
+              }
+            }
+          ]
         },
-        "cost": 4
+        "cost": 3
       },
       {
         "effect": {
-          "type": "fixed_dice",
-          "value": 24
+          "type": "dice_pattern",
+          "pattern": "total_tiers",
+          "tiers": [
+            {
+              "threshold": 16,
+              "value": 0.5,
+              "reward": {
+                "type": "inspiration",
+                "value": 3,
+                "perMatch": false
+              }
+            },
+            {
+              "threshold": 12,
+              "value": 0.26,
+              "reward": {
+                "type": "inspiration",
+                "value": 3,
+                "perMatch": false
+              }
+            }
+          ]
         },
-        "cost": 4
+        "cost": 3
       }
     ]
   },
