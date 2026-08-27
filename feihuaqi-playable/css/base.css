@@ -6,11 +6,12 @@
    （见 :root 下方 html,body 声明）从 400 合成，视觉几乎无差。字体网络加载异常或子集未含
    某个罕见字时，下面的跨平台回退链会立即接管该字符，不能让文字显示为空白。 */
 @font-face {
-  font-family: "Noto Serif SC";
+  /* 使用游戏专属族名，避开设备本机同名字体和旧缓存的错误匹配。 */
+  font-family: "Wenxin Serif SC";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("../fonts/noto-serif-sc/NotoSerifSC-400.woff2") format("woff2");
+  src: url("../fonts/noto-serif-sc/NotoSerifSC-400.woff2?v=20260828-font2") format("woff2");
 }
 
 :root {
@@ -79,21 +80,30 @@
   --text-body: 0.9375rem;
   --text-action: 1rem;
 
-  /* CJK 兜底覆盖 macOS / Windows / Android / Linux：系统没有宋体或游戏字体暂未就绪时，
-     仍优先选到可显示中文的界面字体，而不是落到只含拉丁字形的通用 serif。 */
-  --font-cjk-fallback: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "WenQuanYi Micro Hei", system-ui, sans-serif;
-  /* 明朝体（宋体类）主字体：先使用随游戏发布的 Noto，避免各设备本机字体版本不一；
-     子集未含的罕见字会逐字回落到后续 CJK 字体，不会显示为空白。 */
-  --font-song: "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, SimSun, "宋体", var(--font-cjk-fallback);
+  /* 首屏先用系统 CJK 字体：即使 4MB 字体下载慢、缓存损坏或 WebView 拒绝字体，文字也始终可见。 */
+  --font-system-cjk: "Songti SC", STSong, "Noto Serif CJK SC", "Source Han Serif SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "WenQuanYi Micro Hei", SimSun, "宋体", system-ui, sans-serif;
+  --font-song: var(--font-system-cjk);
   /* 书法楷体：仅用于标题/大字的笔意点缀（大字号下清晰且典雅）。
      在 Kaiti 之后接思源宋体，使无楷体环境也回落到清晰明朝体而非位图宋体。 */
-  --font-kai: "Kaiti SC", "STKaiti", KaiTi, "楷体", "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, "宋体", var(--font-cjk-fallback);
+  --font-kai: "Kaiti SC", "STKaiti", KaiTi, "楷体", var(--font-system-cjk);
+  --font-symbol: "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols 2", "Arial Unicode MS", var(--font-system-cjk);
+  --font-emoji: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", var(--font-symbol);
+}
+
+/* 仅在浏览器确认字体完整加载后切换；失败时永久保留稳定的系统字体。 */
+html.font-web-ready {
+  --font-song: "Wenxin Serif SC", var(--font-system-cjk);
+  --font-kai: "Kaiti SC", "STKaiti", KaiTi, "楷体", "Wenxin Serif SC", var(--font-system-cjk);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 /* 表单控件默认不继承字体，会回落系统字体导致按钮文字发虚；统一继承以享用明朝体。 */
 button, input, textarea, select { font-family: inherit; }
+
+/* 图标与彩色表情使用专门字库，避免 CJK 子集把符号显示成方框。 */
+.pc-ico { font-family: var(--font-symbol); }
+.sky-ico { font-family: var(--font-emoji); }
 
 html, body {
   margin: 0; padding: 0; height: 100%;

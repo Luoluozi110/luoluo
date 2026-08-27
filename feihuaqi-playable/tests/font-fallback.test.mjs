@@ -6,19 +6,25 @@ const css = fs.readFileSync(new URL('../css/base.css', import.meta.url), 'utf8')
 const page = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const font = new URL('../fonts/noto-serif-sc/NotoSerifSC-400.woff2', import.meta.url);
 
-assert.match(css, /@font-face\s*\{[\s\S]*?font-family:\s*"Noto Serif SC";[\s\S]*?font-display:\s*swap;[\s\S]*?NotoSerifSC-400\.woff2/s,
+assert.match(css, /@font-face\s*\{[\s\S]*?font-family:\s*"Wenxin Serif SC";[\s\S]*?font-display:\s*swap;[\s\S]*?NotoSerifSC-400\.woff2\?v=20260828-font2/s,
   '自托管字体须使用 swap，网络加载未完成时可立即显示回退字体');
-assert.match(css, /--font-song:\s*"Noto Serif SC"/, '正文优先使用随游戏发布的字体');
-assert.match(css, /--font-cjk-fallback:[\s\S]*?"PingFang SC"[\s\S]*?"Microsoft YaHei"[\s\S]*?"Noto Sans CJK SC"[\s\S]*?system-ui/s,
+assert.match(css, /--font-song:\s*var\(--font-system-cjk\)/, '首屏必须优先使用系统中文字体');
+assert.match(css, /--font-system-cjk:[\s\S]*?"Songti SC"[\s\S]*?"PingFang SC"[\s\S]*?"Microsoft YaHei"[\s\S]*?"Noto Sans CJK SC"[\s\S]*?system-ui/s,
   '跨平台中文回退链须覆盖主流系统');
-assert.match(css, /--font-song:[\s\S]*?var\(--font-cjk-fallback\)/,
-  '正文在缺字时必须能进入 CJK 回退链');
-assert.match(css, /--font-kai:[\s\S]*?var\(--font-cjk-fallback\)/,
-  '标题在缺字时必须能进入 CJK 回退链');
-assert.match(page, /rel="preload" as="font" type="font\/woff2" href="fonts\/noto-serif-sc\/NotoSerifSC-400\.woff2" crossorigin/,
+assert.match(css, /html\.font-web-ready[\s\S]*?--font-song:\s*"Wenxin Serif SC", var\(--font-system-cjk\)/,
+  '仅在字体健康检查通过后启用自托管字体');
+assert.match(css, /--font-symbol:[\s\S]*?"Segoe UI Symbol"[\s\S]*?"Noto Sans Symbols 2"/,
+  '符号必须使用独立回退链');
+assert.match(css, /--font-emoji:[\s\S]*?"Apple Color Emoji"[\s\S]*?"Segoe UI Emoji"/,
+  '彩色表情必须使用独立回退链');
+assert.match(page, /rel="preload" as="font" type="font\/woff2" href="fonts\/noto-serif-sc\/NotoSerifSC-400\.woff2\?v=20260828-font2" crossorigin/,
   '首屏应预加载自托管字体');
-assert.match(page, /css\/base\.css\?v=20260828-font-fallback1/,
+assert.match(page, /css\/base\.css\?v=20260828-font-fallback2/,
   '字体策略更新必须更新样式缓存版本');
+assert.match(page, /document\.fonts\.load\('400 16px "Wenxin Serif SC"',[\s\S]*?font-web-ready/,
+  '页面必须在字体加载成功后才启用自托管字体');
+assert.match(page, /loadingerror[\s\S]*?classList\.remove\('font-web-ready'\)/,
+  '字体运行时加载失败时必须切回系统字体');
 
 const bytes = fs.readFileSync(font);
 assert.equal(bytes.subarray(0, 4).toString(), 'wOF2', '随包字体必须是有效的 WOFF2 文件');
