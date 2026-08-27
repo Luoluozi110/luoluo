@@ -14,6 +14,7 @@ const port = Number(process.env.EDITOR_BRIDGE_PORT) || 8787;
 const host = '127.0.0.1';
 const maxBodyBytes = 5 * 1024 * 1024;
 const ghTimeoutMs = 20_000;
+const allowedStaticRoots = ['/feihua-editors/', '/feihuaqi-playable/'];
 const mime = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -144,6 +145,7 @@ async function handleApi(req, res, pathname) {
 async function serveStatic(req, res, pathname) {
   try {
     const targetPath = pathname === '/' ? '/feihua-editors/' : pathname;
+    if (!allowedStaticRoots.some(prefix => targetPath.startsWith(prefix))) return res.writeHead(404).end('Not Found');
     let file = resolve(workspaceRoot, '.' + targetPath);
     if (file !== workspaceRoot && !file.startsWith(workspaceRoot + sep)) return res.writeHead(403).end('Forbidden');
     if ((await stat(file)).isDirectory()) file = resolve(file, 'index.html');

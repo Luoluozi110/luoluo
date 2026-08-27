@@ -17,6 +17,8 @@ assert.equal(common.includes('id="cloudToken"'), false, '发布面板不应再�
 assert.ok(common.includes('id="cloudBridgeStatus"'), '发布面板应显示 gh 桥接状态');
 assert.equal(bridge.includes("const host = '127.0.0.1';"), true, '桥接服务必须绑定回环地址');
 assert.ok(bridge.includes(".listen(port, host"), '桥接服务必须显式使用回环 host 监听');
+assert.ok(bridge.includes("const allowedStaticRoots = ['/feihua-editors/', '/feihuaqi-playable/'];"),
+  '静态服务只能提供编辑器与游戏目录，不能暴露整个工作区');
 assert.ok(bridge.includes("'/api/github/publish'"), '桥接服务应提供发布接口');
 assert.ok(bridge.includes("'HTTP_PROXY'"), '桥接服务应清理可能失效的代理环境变量');
 assert.equal(bridge.includes('Authorization'), false, '桥接服务不得接收或构造浏览器 Token');
