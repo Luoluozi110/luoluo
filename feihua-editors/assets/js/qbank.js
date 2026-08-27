@@ -59,6 +59,20 @@
   }
   // 旧版「示例种子」的 ID 集合：仅含这两条时视为未正式导入，自动升级为游戏原数据。
   const OLD_QBANK_SEED_IDS = new Set(["Q0001", "Q0101"]);
+  // 已发布的增量题目：旧编辑器缓存不可被新版种子静默覆盖，但应安全补入这些从未存在过的题目。
+  const PUBLISHED_ADDITION_IDS = new Set(["Q0130", "Q0131", "Q0132", "Q0133", "Q0134", "Q0135", "Q0136", "Q0137", "Q0138", "Q0139"]);
+  function mergePublishedAdditions() {
+    const runtime = Array.isArray(window.GAME_QUESTIONS) ? window.GAME_QUESTIONS : [];
+    const existingIds = new Set(state.questions.map(q => q.id));
+    const additions = runtime
+      .filter(q => PUBLISHED_ADDITION_IDS.has(q.id) && !existingIds.has(q.id))
+      .map(normalizeOne);
+    if (additions.length) {
+      state.questions.push(...additions);
+      C.store("qbank", state.questions);
+    }
+    return additions.length;
+  }
   function loadData() {
     const raw = C.load("qbank", null);
     const isOldSeed = raw && raw.length === OLD_QBANK_SEED_IDS.size &&
@@ -71,6 +85,8 @@
     } else {
       state.questions = normalizeAll(raw);
     }
+    const added = mergePublishedAdditions();
+    if (added) C.setStatus("qbank", `已补入 ${added} 道最新发布题目`);
   }
 
   /* ---------------- 规范化 / 校验 ---------------- */

@@ -33,6 +33,8 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
 
 assert.equal(window.QB.get()[0].scenario, original.scenario, '独立版读取 scenario');
 assert.deepEqual([...window.QB.get()[0].optionActs], original.optionActs, '独立版读取 optionActs');
+assert.equal(window.QB.get().filter(q => /^Q013[0-9]$/.test(q.id)).length, 10,
+  '旧版独立编辑器缓存会安全补入 10 道新发布题目');
 click(document.querySelector('#qlist [data-edit="0"]'));
 assert.equal(document.getElementById('ed-scenario').value, original.scenario, '情境预填');
 assert.equal(document.querySelectorAll('#ed-options .opt-act').length, 2, '行动文案输入框数量正确');
