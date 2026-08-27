@@ -20,18 +20,25 @@
     const source = (raw && typeof raw === "object") ? raw : { text: raw };
     const studyTarget = ATTR[source.studyTarget] ? source.studyTarget : (ATTR[source.attr] ? source.attr : "bi");
     const text = String(source.text || "").trim();
+    // 历史缓存可能同时保存同一双向轴的两个端点（如「逐名、求真」）。
+    // 契约要求恰好两条、且来自不同轴；保留第一条后自动补入该修习方向的
+    // 默认标签（最后再用通用标签兜底），让旧内容可以直接重新发布。
+    const inkTags = [];
     const usedAxes = new Set();
-    const inkTags = (Array.isArray(source.inkTags) ? source.inkTags : defaultInkTags(studyTarget))
-      .map(x => String(x || "").trim()).filter(x => {
-        const axis = inkAxisOf(x);
-        if (!INK_TAGS.includes(x) || usedAxes.has(axis)) return false;
-        usedAxes.add(axis);
-        return true;
-      }).slice(0, 2);
+    const addTag = value => {
+      const tag = String(value || "").trim();
+      const axis = inkAxisOf(tag);
+      if (!INK_TAGS.includes(tag) || usedAxes.has(axis) || inkTags.length >= 2) return;
+      usedAxes.add(axis);
+      inkTags.push(tag);
+    };
+    (Array.isArray(source.inkTags) ? source.inkTags : []).forEach(addTag);
+    defaultInkTags(studyTarget).forEach(addTag);
+    INK_TAGS.forEach(addTag);
     return {
       text,
       studyTarget,
-      inkTags: inkTags.length ? inkTags : defaultInkTags(studyTarget),
+      inkTags,
       resultText: String(source.resultText || `你把「${text || "这一笔"}」记入行卷，留待日后再看。`).trim()
     };
   };
@@ -94,6 +101,9 @@
       C.store("qbank", state.questions);
     } else {
       state.questions = normalizeAll(raw);
+      // 将迁移结果立即写回；否则每次打开虽然暂时修好，旧 localStorage 仍会
+      // 在下一次启动时触发同一份发布失败。
+      if (JSON.stringify(raw) !== JSON.stringify(state.questions)) C.store("qbank", state.questions);
     }
     const added = mergePublishedAdditions();
     if (added) C.setStatus("qbank", `已补入 ${added} 道最新发布题目`);

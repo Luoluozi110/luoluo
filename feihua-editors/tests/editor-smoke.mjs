@@ -154,6 +154,22 @@ console.log('[1.6] 创作抉择：墨痕字段迁移 → 编辑 → 保存往返
   window.QB.importData(window.GAME_QUESTIONS, true);
 }
 
+console.log('[1.65] 创作抉择：同轴旧墨痕自动补齐为两条不同轴，允许发布');
+{
+  const broken = JSON.parse(JSON.stringify(window.GAME_QUESTIONS));
+  const q = broken[69];
+  q.options[2].inkTags = ['逐名', '求真']; // 同一双向轴的两个端点，模拟旧缓存
+  window.QB.importData(broken, true);
+  const repaired = window.QB.get()[69].options[2].inkTags;
+  const axes = repaired.map(tag => [['逐名', '求真'], ['守法', '出新'], ['与人', '独行'], ['惜身', '燃笔']]
+    .findIndex(axis => axis.includes(tag)));
+  ok(repaired.length === 2 && new Set(axes).size === 2, '同轴旧墨痕补齐为两条不同双向轴的有效端点', repaired.join('、'));
+  let project = null;
+  try { project = window.Common.buildProject(); } catch (_) { /* 由断言给出明确失败 */ }
+  ok(!!project, '修复后的旧题库可通过工程配置契约并发布');
+  window.QB.importData(window.GAME_QUESTIONS, true);
+}
+
 console.log('[1.7] 奇遇：属性收益可见 → 可编辑 → 预览与保存往返');
 {
   const eventIndex = window.ADV.get().findIndex(e => e.kind === 'direct' && e.effect && e.effect.attrs && Object.keys(e.effect.attrs).length);
