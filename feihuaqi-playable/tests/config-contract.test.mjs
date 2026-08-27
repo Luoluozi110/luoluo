@@ -32,6 +32,11 @@ result = validateConfig(leakedChoice);
 assert.ok(result.errors.some(x => x.path === `questions[${choiceIndex}].scenario`));
 assert.ok(result.errors.some(x => x.path === `questions[${choiceIndex}].optionActs`));
 
+const badChoiceAxes = clone(raw);
+badChoiceAxes.questions[choiceIndex].options[0].inkTags = ['逐名', '求真'];
+result = validateConfig(badChoiceAxes);
+assert.ok(result.errors.some(x => x.path === `questions[${choiceIndex}].options[0].inkTags`));
+
 const legacyKnowledge = clone(raw);
 delete legacyKnowledge.questions[0].scenario;
 delete legacyKnowledge.questions[0].optionActs;

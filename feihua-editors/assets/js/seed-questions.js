@@ -1117,7 +1117,7 @@ window.GAME_QUESTIONS = [
         "text": "举杯邀明月，对影成三人",
         "studyTarget": "shi",
         "inkTags": [
-          "守法",
+          "惜身",
           "独行"
         ],
         "resultText": "杯中月、天上月、身畔影被你写作三位知己，清寂里遂有了几分旷达。"
@@ -1126,7 +1126,7 @@ window.GAME_QUESTIONS = [
         "text": "江畔何人初见月，江月何年初照人",
         "studyTarget": "si",
         "inkTags": [
-          "求真",
+          "逐名",
           "出新"
         ],
         "resultText": "你的目光越过江波，追问明月与行人的来处，眼前夜色也因此忽然深远。"
@@ -1135,8 +1135,8 @@ window.GAME_QUESTIONS = [
         "text": "不借旧句，只记下江面碎光，归后自写一行",
         "studyTarget": "bi",
         "inkTags": [
-          "求真",
-          "惜身"
+          "燃笔",
+          "守法"
         ],
         "resultText": "你按住诗兴，只收下水面碎光与杯沿清辉，等它们沉成自己的句子。"
       }
@@ -1155,8 +1155,8 @@ window.GAME_QUESTIONS = [
         "text": "劝君更尽一杯酒，西出阳关无故人",
         "studyTarget": "shi",
         "inkTags": [
-          "守法",
-          "独行"
+          "独行",
+          "燃笔"
         ],
         "resultText": "酒盏又添一巡，你把不舍藏进古调，只让友人听见一句稳妥的珍重。"
       },
@@ -1165,7 +1165,7 @@ window.GAME_QUESTIONS = [
         "studyTarget": "shi",
         "inkTags": [
           "守法",
-          "独行"
+          "燃笔"
         ],
         "resultText": "你以边塞旧句壮其行色，把席间离愁压进铿锵誓语，不肯让它先露出来。"
       },
@@ -1173,8 +1173,8 @@ window.GAME_QUESTIONS = [
         "text": "不引旧句，替他写一句只有你们懂得的道别",
         "studyTarget": "bi",
         "inkTags": [
-          "求真",
-          "惜身"
+          "燃笔",
+          "逐名"
         ],
         "resultText": "你避开满座皆知的名句，只拾起你们共有的一段往事，写成旁人不能移用的送别。"
       }
@@ -1193,7 +1193,7 @@ window.GAME_QUESTIONS = [
         "text": "疏影横斜水清浅，暗香浮动月黄昏",
         "studyTarget": "shi",
         "inkTags": [
-          "守法",
+          "惜身",
           "独行"
         ],
         "resultText": "疏枝横水、冷香入月，你依着咏梅旧法安排清影，章法端稳而气息幽微。"
@@ -1202,7 +1202,7 @@ window.GAME_QUESTIONS = [
         "text": "已是悬崖百丈冰，犹有花枝俏",
         "studyTarget": "si",
         "inkTags": [
-          "求真",
+          "与人",
           "出新"
         ],
         "resultText": "你不只写梅的颜色与香气，还要追问它为何在严寒中开得更明亮。"
@@ -1231,7 +1231,7 @@ window.GAME_QUESTIONS = [
         "text": "会当凌绝顶，一览众山小",
         "studyTarget": "shi",
         "inkTags": [
-          "守法",
+          "燃笔",
           "独行"
         ],
         "resultText": "群山尽收眼底，你循着登临诗的昂扬声调，把胸中志气推到峰顶。"
@@ -1240,7 +1240,7 @@ window.GAME_QUESTIONS = [
         "text": "遥知兄弟登高处，遍插茱萸少一人",
         "studyTarget": "ci",
         "inkTags": [
-          "出新",
+          "燃笔",
           "独行"
         ],
         "resultText": "茱萸与山风忽然都成了远方的凭证，你在人群未至处独自想起缺席之人。"
@@ -1269,7 +1269,7 @@ window.GAME_QUESTIONS = [
         "text": "无可奈何花落去，似曾相识燕归来",
         "studyTarget": "ci",
         "inkTags": [
-          "出新",
+          "燃笔",
           "独行"
         ],
         "resultText": "燕归与花落在你笔下相互映照，惋惜没有消失，却被一线重逢轻轻托住。"
@@ -1278,7 +1278,7 @@ window.GAME_QUESTIONS = [
         "text": "落红不是无情物，化作春泥更护花",
         "studyTarget": "si",
         "inkTags": [
-          "求真",
+          "逐名",
           "出新"
         ],
         "resultText": "你把凋零向前推想一步：花离枝并非终止，也可能成为下一场春事的根。"
@@ -1308,7 +1308,7 @@ window.GAME_QUESTIONS = [
         "studyTarget": "lian",
         "inkTags": [
           "与人",
-          "守法"
+          "惜身"
         ],
         "resultText": "熟悉的岁时吉语落在红纸上，邻里一望便知其意，门前也添了安稳年味。"
       },
@@ -1316,7 +1316,7 @@ window.GAME_QUESTIONS = [
         "text": "为每家量身撰一副，嵌上各家姓氏行当",
         "studyTarget": "si",
         "inkTags": [
-          "求真",
+          "逐名",
           "出新"
         ],
         "resultText": "姓氏、行当与家门旧事被你逐一嵌入，两扇门终于有了不可互换的上下联。"
@@ -1345,7 +1345,7 @@ window.GAME_QUESTIONS = [
         "text": "立在船头，任雨打衣衫，吟啸徐行",
         "studyTarget": "si",
         "inkTags": [
-          "求真",
+          "燃笔",
           "出新"
         ],
         "resultText": "骤雨压低江天，你偏把狼狈写作从容，仿佛要亲自问一问风波能奈你何。"
@@ -1422,7 +1422,7 @@ window.GAME_QUESTIONS = [
         "studyTarget": "xue",
         "inkTags": [
           "守法",
-          "与人"
+          "惜身"
         ],
         "resultText": "你记下同窗所指的段落，回房逐条核对出处与文脉，让每一处修改都有凭据。"
       },
@@ -1430,7 +1430,7 @@ window.GAME_QUESTIONS = [
         "text": "引经据典，与他辩到日落",
         "studyTarget": "si",
         "inkTags": [
-          "求真",
+          "逐名",
           "出新"
         ],
         "resultText": "经义与例证在席间往返，你追着分歧问到底，也逼自己换一个角度重看旧说。"
@@ -1439,8 +1439,8 @@ window.GAME_QUESTIONS = [
         "text": "请他稍候，重写一段来回应这处疏漏",
         "studyTarget": "bi",
         "inkTags": [
-          "求真",
-          "惜身"
+          "燃笔",
+          "守法"
         ],
         "resultText": "你暂且放下口头胜负，当席重理章句，用一段更周密的文字回答那处质疑。"
       }
@@ -1468,7 +1468,7 @@ window.GAME_QUESTIONS = [
         "text": "「乡书何处达？归雁洛阳边」",
         "studyTarget": "shi",
         "inkTags": [
-          "守法",
+          "燃笔",
           "独行"
         ],
         "resultText": "你循着鸿雁传书的旧意落笔，让漂泊之愁有了一条可以抵达故乡的路。"
@@ -1498,7 +1498,7 @@ window.GAME_QUESTIONS = [
         "studyTarget": "shi",
         "inkTags": [
           "守法",
-          "独行"
+          "燃笔"
         ],
         "resultText": "你依怀古名篇的开阔笔势召回旧日豪杰，让断戟先成为英雄兴亡的见证。"
       },
@@ -1506,7 +1506,7 @@ window.GAME_QUESTIONS = [
         "text": "写兴亡之理：「兴，百姓苦；亡，百姓苦」",
         "studyTarget": "si",
         "inkTags": [
-          "求真",
+          "逐名",
           "出新"
         ],
         "resultText": "你绕过胜负簿上的名字，追问荒草之下埋着谁的生计，兴亡因此换了一副面目。"
@@ -1535,7 +1535,7 @@ window.GAME_QUESTIONS = [
         "text": "「海内存知己，天涯若比邻」",
         "studyTarget": "shi",
         "inkTags": [
-          "守法",
+          "逐名",
           "独行"
         ],
         "resultText": "你借古人稳健的赠别声口把天涯说近，先替将行之人卸下一分离忧。"
@@ -1620,7 +1620,7 @@ window.GAME_QUESTIONS = [
         "text": "「岂不罹凝寒，松柏有本性」，以志写其贞坚",
         "studyTarget": "si",
         "inkTags": [
-          "求真",
+          "逐名",
           "出新"
         ],
         "resultText": "你越过枝干形貌，追问严寒为何不能改其青色，松意便从景物转向人格。"
@@ -1629,7 +1629,7 @@ window.GAME_QUESTIONS = [
         "text": "先听主人说完平生所守，再拟一联相赠",
         "studyTarget": "bi",
         "inkTags": [
-          "求真",
+          "逐名",
           "惜身"
         ],
         "resultText": "你先听完主人经年所守，再把松针、霜雪与他的旧事一一配入联语。"
@@ -1667,8 +1667,8 @@ window.GAME_QUESTIONS = [
         "text": "收起榜单，把今晚的失意写完再动身",
         "studyTarget": "bi",
         "inkTags": [
-          "求真",
-          "惜身"
+          "燃笔",
+          "与人"
         ],
         "resultText": "你收起榜单，只写灯尽前最难承认的那一段心绪，写完才让它随夜色过去。"
       }
@@ -1734,7 +1734,7 @@ window.GAME_QUESTIONS = [
         "text": "把先生生平事迹嵌入联中，专为他一人而作",
         "studyTarget": "si",
         "inkTags": [
-          "求真",
+          "逐名",
           "出新"
         ],
         "resultText": "你从数十年讲席中挑出最能见其人的两件事，让上下联成为不可移赠他人的小传。"
@@ -1743,7 +1743,7 @@ window.GAME_QUESTIONS = [
         "text": "先记下先生平日的口头禅，再写一副只属于他的寿联",
         "studyTarget": "bi",
         "inkTags": [
-          "求真",
+          "逐名",
           "惜身"
         ],
         "resultText": "你记下先生讲到得意处常说的那句话，让同窗一读便想起他的声气与神情。"
@@ -1833,7 +1833,7 @@ window.GAME_QUESTIONS = [
         "text": "由宫瓦积雪想到城外寒屋，换一层写法",
         "studyTarget": "si",
         "inkTags": [
-          "求真",
+          "逐名",
           "出新"
         ],
         "resultText": "你让一片雪从宫墙越向城外，华美景色因多了一层冷意，而有了不只为称颂的分量。"
@@ -1985,7 +1985,7 @@ window.GAME_QUESTIONS = [
         "text": "先查渡口旧名与修桥缘起，再嵌入联中",
         "studyTarget": "xue",
         "inkTags": [
-          "求真",
+          "逐名",
           "与人"
         ],
         "resultText": "旧渡名与筑桥人的故事被你逐一问明，两行字从此有了旁处桥梁无法照搬的来历。"
@@ -2033,7 +2033,7 @@ window.GAME_QUESTIONS = [
         "studyTarget": "lian",
         "inkTags": [
           "出新",
-          "求真"
+          "逐名"
         ],
         "resultText": "你把新联刻在断碑另一侧，并明白署上今名；旧句未被假装完整，却因此多了一位隔世应答者。"
       }
@@ -2109,7 +2109,7 @@ window.GAME_QUESTIONS = [
         "studyTarget": "xue",
         "inkTags": [
           "出新",
-          "惜身"
+          "与人"
         ],
         "resultText": "你把古人遇旱时的得失嵌进篇中，话未直指一人，却已让该听的人无法只把它当作寻常祈愿。"
       }
@@ -2167,7 +2167,7 @@ window.GAME_QUESTIONS = [
         "studyTarget": "xue",
         "inkTags": [
           "逐名",
-          "惜身"
+          "燃笔"
         ],
         "resultText": "你依次删改几篇，诗集终于得以上架；有些锋芒被收进夹页，却换来更多人能翻到其余的篇章。"
       },
@@ -2184,7 +2184,7 @@ window.GAME_QUESTIONS = [
         "text": "自选篇目重编，并写一篇序说明取舍",
         "studyTarget": "bi",
         "inkTags": [
-          "求真",
+          "逐名",
           "出新"
         ],
         "resultText": "你重新排定篇次，又在序中说明留下与割舍的缘由；旧稿没有被供成原物，却有了新的来路。"
