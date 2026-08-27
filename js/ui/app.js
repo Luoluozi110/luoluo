@@ -430,7 +430,7 @@ function makeUi() {
       setStage(stageFromProgress(game.progress())); // 战后阶段可能已进阶，重新移调
       return out;
     },
-    showPalaceIntro: (themes, names, inkSummary) => modals.showPalaceIntro(themes, names, inkSummary),
+    showPalaceIntro: (themes, names, inkSummary, questions, echoes) => modals.showPalaceIntro(themes, names, inkSummary, questions, echoes),
     askHiddenFinal: meta => modals.askHiddenFinal(meta),
     showHiddenFinalRing: async () => {
       setScene('board');
@@ -954,6 +954,12 @@ async function showResult(sum) {
       <div>${esc(sum.inkEpilogue)}</div>
     </div>`
     : '';
+  const narrativeBlock = sum.narrativeEpilogue
+    ? `<div class="result-mastery paper" style="margin-top:10px;padding:10px 14px;font-size:13px;line-height:1.85;white-space:pre-line">
+      <div style="font-size:14px;letter-spacing:.16em;color:var(--mo-2);margin-bottom:4px">卷 末 余 音</div>
+      <div>${esc(sum.narrativeEpilogue)}</div>
+    </div>`
+    : '';
 
   resultEl.innerHTML = `
     <div class="result-wrap">
@@ -978,6 +984,7 @@ async function showResult(sum) {
           ${unlockBlock}
           ${masteryBlock}
           ${inkBlock}
+          ${narrativeBlock}
         </div>
       </div>
       <div class="result-actions">

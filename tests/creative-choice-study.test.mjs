@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { Game } from '../js/engine/game.js';
+import { Game, INK_AXES } from '../js/engine/game.js';
 import { normalizeConfig } from '../js/engine/config.js';
 import { deserializeRun, serializeRun } from '../js/engine/save.js';
 
@@ -35,12 +35,46 @@ console.log('== 创作抉择题内容契约 ==');
   assert.equal(choices.length, 84, '28 道抉择题各有 3 个选项');
   assert.ok(choices.every(o => ['shi','ci','lian','bi','xue','si'].includes(o.studyTarget)), '每项都有有效修习方向');
   assert.ok(choices.every(o => Array.isArray(o.inkTags) && o.inkTags.length >= 1 && o.inkTags.length <= 2), '每项都有 1–2 个墨痕');
+  assert.ok(choices.every(o => o.inkTags.length === 2), '每项都有两条流派倾向');
+  const tagCounts = Object.fromEntries(INK_AXES.flatMap(axis => [axis.left, axis.right]).map(tag => [tag, 0]));
+  for (const option of choices) {
+    const touchedAxes = new Set();
+    for (const tag of option.inkTags) {
+      const axis = INK_AXES.find(item => item.left === tag || item.right === tag);
+      assert.ok(axis, `倾向端点有效：${tag}`);
+      touchedAxes.add(axis.id);
+      tagCounts[tag]++;
+    }
+    assert.equal(touchedAxes.size, 2, '同一选项的两条倾向来自不同双向轴');
+  }
+  for (const axis of INK_AXES) {
+    assert.equal(tagCounts[axis.left], 21, `${axis.left} 端点均衡为 21`);
+    assert.equal(tagCounts[axis.right], 21, `${axis.right} 端点均衡为 21`);
+  }
   assert.ok(choices.every(o => typeof o.resultText === 'string' && o.resultText.trim()), '每项都有即时回声');
   assert.equal(new Set(choices.map(o => o.resultText)).size, choices.length, '每个选项都有不重复的专属即时回声');
   assert.ok(choices.every(o => o.resultText.length >= 20 && o.resultText.length <= 60), '即时回声长度适合结算弹层阅读');
   const choiceQuestions = config().questions.filter(q => q.type === 'choice');
   assert.ok(choiceQuestions.every(q => !/安全通过|高阶玩法|传统套路|邮路|诗的社交|没想通/.test(q.analysis || '')), '解析不含破坏时代氛围的措辞');
-  console.log('  ✓ 84 个选项均具备方向、墨痕与专属回声');
+  console.log('  ✓ 84 个选项均具备方向、四轴倾向与专属回声；八端点各 21 次');
+}
+
+console.log('== 四条双向轴：逐名评语与中性回声 ==');
+{
+  const { game } = setup(0);
+  game.s.choiceHistory = [
+    { phase: 'child', inkTags: ['逐名', '守法'], optionText: '应制成篇', resultText: '你让文章走到人前。' },
+    { phase: 'child', inkTags: ['逐名', '燃笔'], optionText: '当场成篇', resultText: '你把当下写尽。' }
+  ];
+  const profile = game.choiceInkProfile('child');
+  assert.equal(profile.axes.length, 4, '完整提供四条双向轴');
+  assert.equal(profile.axes.find(axis => axis.id === 'recognition').dominant, '逐名', '逐名端点可被识别');
+  const highlights = game.choiceInkHighlights();
+  assert.deepEqual(highlights.map(item => item.dominant), ['逐名', '燃笔'], '修习面板按强度和最近选择取两条主要倾向');
+  assert.equal(highlights[0].representative.optionText, '当场成篇', '主要倾向携带代表选择');
+  assert.match(game.choiceInkSummary('child'), /让文章走到人前/, '逐名拥有专属阶段评语');
+  assert.match(game.choiceInkEpilogue(), /让文章走到人前/, '逐名拥有专属终局评语');
+  console.log('  ✓ 四条双向轴均可汇总，逐名评语已补齐');
 }
 
 console.log('== 当前研修方向：推进进度，不直接灌属性 ==');
