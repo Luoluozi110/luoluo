@@ -899,7 +899,17 @@ export function talentEffectText(t) {
     }
     case 'style_switch_pct': return `换用不同于上一场的文体：得分 +${Math.round((e.value || 0) * 100)}%，心得 +${e.insight || 0}`;
     case 'manuscript_pct': return `每持有 ${e.step || 2} 页稿本，得分 +${Math.round((e.value || 0) * 100)}%（上限 ${Math.round((e.cap || 0) * 100)}%）`;
-    case 'copy_affinity': return '复制对手本场风格的相性加成';
+    case 'copy_affinity': {
+      const r = e.ratio != null ? e.ratio : 0.6;
+      const parts = [`复制对手本场风格相性（${Math.round(r * 100)}%）`];
+      if (e.revealIntent) parts.push('揭示对手意图');
+      if (e.synergyPct) parts.push(`文风相合 +${Math.round((e.synergyPct || 0) * 100)}%`);
+      if (e.themeFlat) parts.push(`通晓题材 +${Math.round((e.themeFlat || 0) * 100)}%`);
+      if (e.convertPct) parts.push('相性化境');
+      if (e.revealWeakness) parts.push('揭示破绽');
+      return parts.join('；');
+    }
+    case 'borrow_signature': return `本场借对手招牌之强（${Math.round((e.fraction || 0) * 100)}%），敌愈强此招愈利`;
     case 'crit': return `${Math.round((e.chance || 0) * 100)}% 概率神来之笔，得分 ×${e.mult}`;
     case 'attr_flat': return Object.entries(e.attrs || {}).map(([k, v]) => `${ATTR_NAMES[k]} +${v}`).join('　');
     case 'unlock_lian': return '解除联力 8 点门槛';
