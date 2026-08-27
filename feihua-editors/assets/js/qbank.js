@@ -10,14 +10,24 @@
   const C = global.Common;
 
   const ATTR = C.ATTR, CATEGORY = C.CATEGORY, TYPE_NAME = { knowledge: "知识题", choice: "创作抉择题" };
-  const INK_TAGS = ["逐名", "求真", "守法", "出新", "与人", "独行", "惜身", "燃笔"];
+  const INK_AXES = [
+    ["逐名", "求真"], ["守法", "出新"], ["与人", "独行"], ["惜身", "燃笔"]
+  ];
+  const INK_TAGS = INK_AXES.flat();
+  const inkAxisOf = tag => INK_AXES.findIndex(axis => axis.includes(tag));
   const defaultInkTags = target => ({ shi: ["守法", "独行"], ci: ["出新", "独行"], lian: ["与人", "守法"], bi: ["求真", "惜身"], xue: ["守法", "与人"], si: ["求真", "出新"] }[target] || ["求真"]);
   const normalizeChoiceOption = raw => {
     const source = (raw && typeof raw === "object") ? raw : { text: raw };
     const studyTarget = ATTR[source.studyTarget] ? source.studyTarget : (ATTR[source.attr] ? source.attr : "bi");
     const text = String(source.text || "").trim();
+    const usedAxes = new Set();
     const inkTags = (Array.isArray(source.inkTags) ? source.inkTags : defaultInkTags(studyTarget))
-      .map(x => String(x || "").trim()).filter(x => INK_TAGS.includes(x)).slice(0, 2);
+      .map(x => String(x || "").trim()).filter(x => {
+        const axis = inkAxisOf(x);
+        if (!INK_TAGS.includes(x) || usedAxes.has(axis)) return false;
+        usedAxes.add(axis);
+        return true;
+      }).slice(0, 2);
     return {
       text,
       studyTarget,
@@ -375,7 +385,7 @@
     document.getElementById("optLabel").textContent = isK ? "选项（勾选圆圈标记正确答案）" : "选项（每项设置修习方向与倾向回声）";
     document.getElementById("optHint").textContent = isK
       ? "单选知识题：勾选正确答案，游戏答错会扣灵感。"
-      : "创作抉择题：无标准答案；当前研修方向推进进度，旁通方向沉淀为心得。倾向请从固定标签中选择 1–2 项。";
+      : "创作抉择题：无标准答案；当前研修方向推进进度，旁通方向沉淀为心得。每项须选择两条不同的流派双向轴。";
     if (isK) {
       if (!state.form.options.length || typeof state.form.options[0] !== "string") state.form.options = ["", ""];
       if (!Array.isArray(state.form.optionActs)) state.form.optionActs = [];
@@ -414,10 +424,10 @@
           <span class="ord">${i + 1}</span>
           <input type="text" class="opt-text" value="${C.esc(o.text)}" placeholder="选项内容"/>
           <select class="opt-study-target" title="修习方向">${targetOpts}</select>
-          <div class="choice-ink-picker" role="group" aria-label="倾向标签">
-            <span class="choice-field-label">倾向</span>
+          <div class="choice-ink-picker" role="group" aria-label="流派倾向">
+            <span class="choice-field-label">流派倾向</span>
             <div class="choice-ink-tags">${inkButtons}</div>
-            <small>已选 ${selectedTags.size}/2，点击标签切换</small>
+            <small>已选 ${selectedTags.size}/2 条轴；同轴点击另一端会替换</small>
           </div>
           <input type="text" class="opt-result" value="${C.esc(o.resultText || "")}" placeholder="选择后的即时回声"/>
           <button class="opt-del" data-delopt="${i}" title="删除此选项">×</button>
@@ -435,7 +445,7 @@
       button.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
     const hint = row.querySelector('.choice-ink-picker small');
-    if (hint) hint.textContent = `已选 ${selected.size}/2，点击标签切换`;
+    if (hint) hint.textContent = `已选 ${selected.size}/2 条轴；同轴点击另一端会替换`;
     updateRuntimePreview();
   }
 
@@ -655,8 +665,13 @@
           const tags = Array.isArray(option.inkTags) ? option.inkTags.slice() : [];
           const at = tags.indexOf(tag);
           if (at >= 0) tags.splice(at, 1);
-          else if (tags.length < 2) tags.push(tag);
-          else { C.toast("每项最多选择 2 个倾向标签"); return; }
+          else {
+            const axis = inkAxisOf(tag);
+            const sameAxis = tags.findIndex(x => inkAxisOf(x) === axis);
+            if (sameAxis >= 0) tags.splice(sameAxis, 1, tag);
+            else if (tags.length < 2) tags.push(tag);
+            else { C.toast("每项最多选择 2 条不同的流派倾向轴"); return; }
+          }
           option.inkTags = tags;
           refreshInkPicker(row, tags);
         }
