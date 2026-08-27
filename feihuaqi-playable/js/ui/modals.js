@@ -660,7 +660,31 @@ export class Modals {
     const title = (tpl.titleTpl || '{name}阶段 · 晋阶试').replace(/\{name\}/g, name);
     const button = (tpl.buttonTpl || '进入{name}阶段').replace(/\{name\}/g, name);
     const ink = String(gate.inkSummary || '').trim();
-    return this.showStageIntro(title, ink ? `${text}\n\n${ink}` : text, button);
+    const tactics = Array.isArray(gate.chapterTactics) ? gate.chapterTactics : [];
+    const echoes = Array.isArray(gate.echoes) ? gate.echoes : [];
+    const relations = Array.isArray(gate.relations) ? gate.relations : [];
+    const cards = (items, kind) => items.map(item => `
+      <div class="dianggu" style="margin-top:9px;text-align:left">
+        <b style="letter-spacing:.08em">${esc(item.title || kind)}</b>
+        <div style="margin-top:3px;line-height:1.75">${esc(item.text || '')}</div>
+      </div>`).join('');
+    const tacticCards = tactics.map(item => ({ title: `${item.axisLabel} · ${item.title}`, text: item.text }));
+    const ov = this.open(`
+      <div class="modal scroll-frame paper" style="width:min(620px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center">
+        <div class="kind">${esc(tpl.kind || '科 场 叙 事')}</div>
+        <div class="title-ink" style="font-size:40px">${esc(title)}</div>
+        <hr class="hr-ink"/>
+        <p style="white-space:pre-line;font-size:15px;line-height:1.9;color:var(--mo-2);margin:0">${esc(text)}</p>
+        ${ink ? `<div class="dianggu" style="margin-top:12px;text-align:left">${esc(ink)}</div>` : ''}
+        ${tacticCards.length ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">行 卷 章 法</div>${cards(tacticCards, '章法')}` : ''}
+        ${echoes.length ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">旧 选 回 声</div>${cards(echoes, '回声')}` : ''}
+        ${relations.length ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">故 人 来 笺</div>${cards(relations, '来笺')}` : ''}
+        <div class="btn-row"><button class="btn btn-primary" data-ok>${esc(button)}</button></div>
+      </div>`, 'stage-change');
+    const ok = ov.querySelector('[data-ok]');
+    setTimeout(() => ok.focus(), 30);
+    await new Promise(r => ok.addEventListener('click', r));
+    this.close(ov);
   }
 
   /* ---------------------------------------------------- 当朝文风（风潮） */
@@ -698,7 +722,7 @@ export class Modals {
   }
 
   /* ---------------------------------------------------- 殿试开场 */
-  async showPalaceIntro(themes, names, inkSummary = '') {
+  async showPalaceIntro(themes, names, inkSummary = '', questions = [], echoes = []) {
     // 圈数、殿试场次、金榜奖励分全部从配置读取；殿试题材由主考官配置决定
     const boardCfg = this.cfg.board || {};
     const isSpiral = boardCfg.layout === 'concentric_spiral';
@@ -709,6 +733,13 @@ export class Modals {
     const sweepN = isSpiral ? 1 : ((themes && themes.length) ? themes.length : (((jb || {}).cond || {}).value ?? 3));
     const sweepScore = bonusScore(grades, 'yuanman', 'jinbangtiming', 200);
     const themeLabels = (names && names.length) ? names : (themes || ['咏物', '送别', '怀古']);
+    const questionCards = (Array.isArray(questions) ? questions : []).map((item, index) => `
+      <div class="dianggu" style="margin-top:8px;text-align:left">
+        <b>${index + 1}. ${esc(item.examiner || '主考官')} · ${esc(item.key || '问')}</b>
+        <div style="margin-top:3px;line-height:1.7">${esc(item.prompt || '')}</div>
+        ${item.reading ? `<div style="margin-top:4px;color:var(--mo-2);line-height:1.7">${esc(item.reading)}</div>` : ''}
+      </div>`).join('');
+    const echoCards = (Array.isArray(echoes) ? echoes : []).map(item => `<div class="dianggu" style="margin-top:8px;text-align:left"><b>${esc(item.title || '旧选回声')}</b><div style="margin-top:3px;line-height:1.7">${esc(item.text || '')}</div></div>`).join('');
     const ov = this.open(`
       <div class="modal scroll-frame paper" style="text-align:center;width:min(600px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
         <div class="title-ink" style="font-size:46px">金 殿 對 策</div>
@@ -717,10 +748,14 @@ export class Modals {
           主考官出题 ${sweepN} 道：<b>${themeLabels.join('</b>、<b>')}</b>${isSpiral ? '，一场定榜。' : '，须连场应对。'}<br/>
           <span style="color:var(--zhu)">${isSpiral ? '此场取胜' : `${sweepN} 场全胜`}，可得「${esc((jb || {}).name || '金榜题名')}」圆满分 +${sweepScore}。</span></div>
         ${String(inkSummary || '').trim() ? `<div class="dianggu" style="margin-top:12px;text-align:left">${esc(String(inkSummary).trim())}</div>` : ''}
+        ${questionCards ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">殿 试 三 问</div>${questionCards}` : ''}
+        ${echoCards ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">旧 选 回 声</div>${echoCards}` : ''}
         <div class="btn-row"><button class="btn btn-primary" data-ok>整冠入殿</button></div>
       </div>`, 'palace-intro');
     goldBurst(ov, 40);
-    await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', r));
+    const ok = ov.querySelector('[data-ok]');
+    setTimeout(() => ok.focus(), 30);
+    await new Promise(r => ok.addEventListener('click', r));
     this.close(ov);
   }
 

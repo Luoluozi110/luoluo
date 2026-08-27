@@ -348,6 +348,107 @@ export class Game {
     return s.choiceHistory;
   }
 
+  /** 叙事状态只记已发生的事实；绝不参与属性、战斗或随机判定。 */
+  ensureNarrativeState() {
+    const s = this.s;
+    const state = (s.narrativeState && typeof s.narrativeState === 'object') ? s.narrativeState : {};
+    s.narrativeState = state;
+    state.eventChoices = Array.isArray(state.eventChoices) ? state.eventChoices : [];
+    state.echoesShown = (state.echoesShown && typeof state.echoesShown === 'object') ? state.echoesShown : {};
+    state.relationEncounters = (state.relationEncounters && typeof state.relationEncounters === 'object') ? state.relationEncounters : {};
+    state.relationIntroduced = (state.relationIntroduced && typeof state.relationIntroduced === 'object') ? state.relationIntroduced : {};
+    return state;
+  }
+
+  narrativeConfig() { return (this.cfg && this.cfg.narrative) || {}; }
+
+  recordNarrativeEventChoice(ev, choiceText, resultText) {
+    const state = this.ensureNarrativeState();
+    const eventId = String(ev && ev.id || '');
+    if (!eventId || state.eventChoices.some(item => item && item.eventId === eventId)) return;
+    state.eventChoices.push({
+      eventId, eventName: String(ev && ev.name || '奇遇').slice(0, 40),
+      choiceText: String(choiceText || '').slice(0, 120), resultText: String(resultText || '').slice(0, 180),
+      turn: Number(this.s.turn) || 0
+    });
+    if (state.eventChoices.length > 24) state.eventChoices.splice(0, state.eventChoices.length - 24);
+  }
+
+  /** 已命中的强回声会在下一次换圈或入殿时统一返场；无随机，每条仅一次。 */
+  consumeNarrativeEchoes() {
+    const state = this.ensureNarrativeState();
+    const seen = new Set(state.eventChoices.map(item => item && item.eventId));
+    const chains = Array.isArray(this.narrativeConfig().echoChains) ? this.narrativeConfig().echoChains : [];
+    const hits = chains.filter(chain => chain && chain.id && seen.has(chain.eventId) && !state.echoesShown[chain.id]);
+    for (const chain of hits) state.echoesShown[chain.id] = true;
+    return hits.map(chain => ({ id: String(chain.id), title: String(chain.title || '旧选回声'), text: String(chain.text || '') }));
+  }
+
+  chapterTactics() {
+    const profile = this.choiceInkProfile();
+    const configured = this.narrativeConfig().chapterTactics || {};
+    return ['craft', 'cost'].map(axisId => {
+      const axis = profile.axes.find(item => item.id === axisId);
+      const tendency = axis && axis.dominant ? axis.dominant : 'neutral';
+      const item = (configured[axisId] || {})[tendency] || {};
+      return {
+        axisId, axisLabel: axis && axis.label || axisId,
+        tendency: tendency === 'neutral' ? '并读' : tendency,
+        title: String(item.title || `${axis && axis.label || axisId}·${tendency}`), text: String(item.text || '')
+      };
+    });
+  }
+
+  relationBeats(phase) {
+    const state = this.ensureNarrativeState();
+    const relations = Array.isArray(this.narrativeConfig().relations) ? this.narrativeConfig().relations : [];
+    const hits = relations.filter(item => item && item.npcId && item.phase === phase && !state.relationIntroduced[item.npcId]);
+    for (const item of hits) state.relationIntroduced[item.npcId] = true;
+    return hits.map(item => ({ npcId: String(item.npcId), title: String(item.title || '故人来笺'), text: String(item.text || '') }));
+  }
+
+  recordRelationEncounter(npc) {
+    const id = String(npc && npc.id || '');
+    const configured = Array.isArray(this.narrativeConfig().relations) ? this.narrativeConfig().relations : [];
+    if (!id || !configured.some(item => item && item.npcId === id)) return;
+    const state = this.ensureNarrativeState();
+    state.relationEncounters[id] = Math.max(0, Number(state.relationEncounters[id]) || 0) + 1;
+  }
+
+  palaceQuestions() {
+    const all = Array.isArray(this.narrativeConfig().palaceQuestions) ? this.narrativeConfig().palaceQuestions : [];
+    const profile = this.choiceInkProfile();
+    const craft = profile.axes.find(axis => axis.id === 'craft');
+    const company = profile.axes.find(axis => axis.id === 'company');
+    const varied = Object.values((this.s.battle && this.s.battle.winsByStyle) || {}).filter(n => Number(n) > 0).length >= 2;
+    const helped = this.ensureNarrativeState().eventChoices.some(item => item && item.eventId === 'E018');
+    return all.slice(0, 3).map(item => {
+      let reading = '';
+      if (item.id === 'change') reading = item[varied ? 'varied' : 'steady'];
+      else if (item.id === 'feeling') reading = item[company && company.dominant === '与人' ? 'withPeople' : 'alone'];
+      else if (item.id === 'use') reading = item[helped || (craft && craft.dominant === '出新') ? 'open' : 'strict'];
+      return { examiner: String(item.examiner || '主考官'), key: String(item.key || ''), prompt: String(item.prompt || ''), reading: String(reading || '') };
+    });
+  }
+
+  composedEpilogue() {
+    const cfg = this.narrativeConfig();
+    const parts = [];
+    const school = this.s.school && this.s.school.name;
+    if (school && cfg.endingFragments && cfg.endingFragments.school) parts.push(`${school}：${cfg.endingFragments.school}`);
+    const relations = Array.isArray(cfg.relations) ? cfg.relations : [];
+    const state = this.ensureNarrativeState();
+    const relation = relations.slice().sort((a, b) => (Number(state.relationEncounters[b.npcId]) || 0) - (Number(state.relationEncounters[a.npcId]) || 0))[0];
+    if (relation) {
+      const npc = (this.cfg.npcs || []).flatMap(tier => tier.npcs || []).find(item => item.id === relation.npcId);
+      const met = Number(state.relationEncounters[relation.npcId]) || 0;
+      parts.push(met > 0
+        ? `${npc ? npc.name : relation.npcId}曾与你在卷上相逢 ${met} 次；${relation.text}`
+        : String((cfg.endingFragments || {}).relationFallback || '故人仍在卷外等你回音。'));
+    }
+    return parts.join('\n');
+  }
+
   /** 研修进度的唯一推进入口；论战与创作抉择共用同一阈值和属性兑现规则。 */
   gainStudyProgress(attr, amount = 1, reason = '') {
     if (!R.ATTR_KEYS.includes(attr)) return { attr, added: 0, progress: 0, need: 1, gained: 0 };
@@ -726,6 +827,7 @@ export class Game {
       events: { total: 0, rare: 0, legend: 0, talents: 0, items: 0 },
       quiz: { asked: 0, right: 0 },
       choiceHistory: [],                              // 创作抉择的墨痕来源；只服务修习反馈与叙事回看
+      narrativeState: { eventChoices: [], echoesShown: {}, relationEncounters: {}, relationIntroduced: {} },
       seenEvents: new Set(), usedQuestions: new Set(),
       palaceWins: 0, palaceDone: 0,
       zeitgeist: this.seedZeitgeist(cfg.affinity),   // 当朝风潮（每局随机，制造变化性）
@@ -1675,6 +1777,7 @@ export class Game {
     if (this.ui.showChoiceEcho) this.ui.showChoiceEcho(echo);
     else this.ui.toast(`已选择：${choiceText}\n${resultText}`);
     this.push(`选择「${echo.eventName}」：${choiceText}｜${resultText}`);
+    this.recordNarrativeEventChoice(ev, choiceText, resultText);
     await this.applyEffect(c.effect || {});
     return echo;
   }
@@ -1868,7 +1971,12 @@ export class Game {
     if (this.s.inspiration <= 0) { this.ui.toast('灵感枯竭，无力应战'); return; }
     const gate = cell.phaseGate;
     if (this.cfg.board.layout === 'concentric_spiral' && gate && !this.s.phaseGateSeen[gate.phase]) {
-      const gateWithInk = Object.assign({}, gate, { inkSummary: this.choiceInkSummary(this.s.phase) });
+      const gateWithInk = Object.assign({}, gate, {
+        inkSummary: this.choiceInkSummary(this.s.phase),
+        chapterTactics: this.chapterTactics(),
+        echoes: this.consumeNarrativeEchoes(),
+        relations: this.relationBeats(gate.transition)
+      });
       // 状态先落定，UI 再展示：即使弹窗/资源加载被中断，棋盘也能按 routeIndex 自愈到正确圈层。
       if (gate.transition) this.s.ringId = gate.transition;
       this.s.phaseGateSeen[gate.phase] = true;
@@ -1904,6 +2012,7 @@ export class Game {
     const themes = af.themes || ['yongwu'];
     const theme = opts.theme || themes[Math.floor(this.rand() * themes.length)];
     const npc = opts.npc;
+    this.recordRelationEncounter(npc);
 
     // 图鉴：记录本次邂逅的对手（发现进度持久化；具名 NPC 用稳定 id，无稳定 id 回退档位 id）
     if (npc && npc.name) {
@@ -3134,7 +3243,7 @@ export class Game {
     const themes = (zk.themes && zk.themes.length ? zk.themes : ['yongwu', 'songbie', 'huaigu']).slice();
     const themeNames = (this.cfg.affinity || {}).themeNames || {};
     const names = themes.map(t => themeNames[t] || t);
-    await this.ui.showPalaceIntro(themes, names, this.choiceInkSummary());
+    await this.ui.showPalaceIntro(themes, names, this.choiceInkSummary(), this.palaceQuestions(), this.consumeNarrativeEchoes());
 
     const n = this.cfg.board.layout === 'concentric_spiral' ? 1 : themes.length;
     // 殿试对手：三圈正式配置为单场；旧配置仍按 themes.length 兼容。「按出战权重加权、不重复抽取 n 个」（幂等去重，防止撞同名考官）。
@@ -3255,6 +3364,7 @@ export class Game {
       secret_loss: '金榜已定，桃源终问留待来局。'
     }[reason] || '对局结束';
     summary.inkEpilogue = this.choiceInkEpilogue();
+    summary.narrativeEpilogue = this.composedEpilogue();
     summary.state = s;
     Object.assign(summary, this.commitAlbum(summary));
     // 流派熟练度：结算后按本局结果累加（完成即加、通关/文宗额外）

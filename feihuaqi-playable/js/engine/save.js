@@ -38,7 +38,7 @@ const STATE_KEYS = [
   'school', 'playerName', 'attrs', 'inspiration', 'inspirationMax',
   'passive', 'active', 'track', 'pos', 'branchId', 'branchIndex',
   'lap', 'routeIndex', 'ringId', 'phaseGateSeen', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
-  'quiz', 'choiceHistory', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
+  'quiz', 'choiceHistory', 'narrativeState', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
   'zeitgeist', 'prologueSeen', 'tutorialState', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
   'talentLevels', 'schoolState', 'abilityState', 'albumState', 'secretFinal', 'over', 'reachedEnd', 'endReason', 'log'
 ];
@@ -377,6 +377,20 @@ export function deserializeRun(rawObj, cfg) {
       turn: Math.max(0, Number(src.turn) || 0)
     };
   }).slice(-24);
+  out.narrativeState = (out.narrativeState && typeof out.narrativeState === 'object') ? out.narrativeState : {};
+  out.narrativeState.eventChoices = (Array.isArray(out.narrativeState.eventChoices) ? out.narrativeState.eventChoices : []).map(item => {
+    const src = item && typeof item === 'object' ? item : {};
+    return {
+      eventId: typeof src.eventId === 'string' ? src.eventId.slice(0, 40) : '',
+      eventName: typeof src.eventName === 'string' ? src.eventName.slice(0, 40) : '',
+      choiceText: typeof src.choiceText === 'string' ? src.choiceText.slice(0, 120) : '',
+      resultText: typeof src.resultText === 'string' ? src.resultText.slice(0, 180) : '',
+      turn: Math.max(0, Number(src.turn) || 0)
+    };
+  }).filter(item => item.eventId).slice(-24);
+  out.narrativeState.echoesShown = (out.narrativeState.echoesShown && typeof out.narrativeState.echoesShown === 'object') ? out.narrativeState.echoesShown : {};
+  out.narrativeState.relationEncounters = (out.narrativeState.relationEncounters && typeof out.narrativeState.relationEncounters === 'object') ? out.narrativeState.relationEncounters : {};
+  out.narrativeState.relationIntroduced = (out.narrativeState.relationIntroduced && typeof out.narrativeState.relationIntroduced === 'object') ? out.narrativeState.relationIntroduced : {};
   out.log = Array.isArray(out.log) ? out.log.slice(-LOG_KEEP) : [];
   out.titles = Array.isArray(out.titles) ? out.titles : [];
   out.synergies = Array.isArray(out.synergies) ? out.synergies : [];
