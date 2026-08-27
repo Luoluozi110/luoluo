@@ -89,17 +89,16 @@
     "shi": {
       "name": "一气",
       "lowMax": 3,
-      "lowMult": 0.7,
+      "lowMult": 0.85,
       "highMin": 4,
-      "highMult": 1.5,
+      "highMult": 1.25,
       "singleDieInsight": 1
     },
     "ci": {
-      "name": "铺陈",
-      "pipFloor": 3,
-      "pipCeil": 5,
-      "firstExtraDiscount": 2,
-      "drawRefund": 1
+      "name": "叠阕",
+      "highMin": 5,
+      "highPct": 0.08,
+      "firstExtraDiscount": 1
     },
     "lian": {
       "name": "对举",

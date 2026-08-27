@@ -13,7 +13,9 @@
     'questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity',
     'synergies', 'board', 'sky', 'album', 'schools', 'grades', 'narrative'
   ];
-  const ATTR_KEYS = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
+const ATTR_KEYS = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
+const INK_AXES = [['逐名', '求真'], ['守法', '出新'], ['与人', '独行'], ['惜身', '燃笔']];
+const INK_TAGS = new Set(INK_AXES.flat());
   const STYLE_KEYS = new Set(['shi', 'ci', 'lian']);
 
   class ConfigContractError extends Error {
@@ -178,8 +180,10 @@
               add(`${qp}.options[${j}].resultText`, '选择回声不能为空');
             }
             if (option && Object.prototype.hasOwnProperty.call(option, 'inkTags')) {
-              if (!Array.isArray(option.inkTags) || option.inkTags.length < 1 || option.inkTags.length > 2 || option.inkTags.some(tag => !text(tag))) {
-                add(`${qp}.options[${j}].inkTags`, '墨痕须为 1–2 个非空标签');
+              const tags = Array.isArray(option.inkTags) ? option.inkTags : [];
+              const axes = tags.map(tag => INK_AXES.findIndex(axis => axis.includes(tag)));
+              if (tags.length !== 2 || tags.some(tag => !text(tag) || !INK_TAGS.has(tag)) || new Set(axes).size !== tags.length) {
+                add(`${qp}.options[${j}].inkTags`, '流派倾向须为两条不同双向轴上的有效端点');
               }
             }
           });
@@ -261,8 +265,10 @@
           if (!Array.isArray(b.rings) || b.rings.length !== 3) add('board.rings', '三圈地图必须恰好包含三个圈层');
           if (!Array.isArray(b.phaseGates) || b.phaseGates.length < 2) add('board.phaseGates', '三圈地图至少需要两个阶段门');
           const h = b.hiddenFinalRing;
-          if (!isObj(h)) add('board.hiddenFinalRing', '必须提供独立的隐藏终圈配置');
-          else {
+          // 增量工程允许只携带主路线；完整运行配置仍必须声明隐藏终圈。
+          if (!isObj(h)) {
+            if (!partial) add('board.hiddenFinalRing', '必须提供独立的隐藏终圈配置');
+          } else {
             if (!text(h.id) || !text(h.name)) add('board.hiddenFinalRing', '必须包含 id 与名称');
             if (!Array.isArray(h.cells) || h.cells.length < 2 || h.cells.length > 16) add('board.hiddenFinalRing.cells', '隐藏终圈必须包含 2～16 个格子');
             else {

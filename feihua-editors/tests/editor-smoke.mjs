@@ -12,6 +12,9 @@ const { JSDOM } = require('C:/Users/77522/.workbuddy/binaries/node/workspace/nod
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 let html = readFileSync(join(root, 'index.html'), 'utf8');
 
+// 契约由静态 <script src="../feihuaqi-playable/js/engine/config-contract.js"> 提供，
+// 随下方内联步骤载入真契约；document.write 回退路径仅服务线上扁平布局，测试不涉及。
+
 // 把 <script src> 替换为内联脚本（jsdom 不主动加载本地资源），保持原有加载顺序
 html = html.replace(/<script src="([^"]+)"><\/script>/g, (m, src) => {
   const code = readFileSync(join(root, src.split('?')[0]), 'utf8');
@@ -228,7 +231,7 @@ ok(!!t001 && t001.upgrade && t001.upgrade.maxLevel === 3 && t001.upgrade.levels.
 const ta08Card = window.TALENT.get().find(t => t.id === 'TA08');
 ok(!!ta08Card && ta08Card.cost === 5 && ta08Card.upgrade && ta08Card.upgrade.levels[0].cost === 5, '布局谋篇编辑器成本与升级配置完整');
 ok(document.querySelectorAll('#afflist select.aff-cell').length === 36, '相性矩阵 36 格下拉', document.querySelectorAll('#afflist select.aff-cell').length);
-ok(document.querySelectorAll('#synlist .q-card').length === 11, '羁绊列表 11 条', document.querySelectorAll('#synlist .q-card').length);
+ok(document.querySelectorAll('#synlist .q-card').length === 17, '羁绊列表 17 条', document.querySelectorAll('#synlist .q-card').length);
 ok(document.querySelectorAll('#boardlist .board-card').length === 192 && window.BOARD.get().layout === 'concentric_spiral' && window.BOARD.get().mainRing.length === 192 && window.BOARD.get().rings.map(r => r.cells.length).join(',') === '72,64,56', '三圈地图列表 192 格（72/64/56）', document.querySelectorAll('#boardlist .board-card').length);
 ok(document.querySelectorAll('#skylist .sky-card').length === 6, '天象列表 6 张', document.querySelectorAll('#skylist .sky-card').length);
 ok(window.ALBUM.get().length === 12, '传世名篇默认 12 张', window.ALBUM.get().length);

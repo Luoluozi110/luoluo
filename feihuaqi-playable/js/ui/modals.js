@@ -284,6 +284,11 @@ export class Modals {
       const attrs = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
       const attrNames = { shi: '诗力', ci: '词力', lian: '联力', bi: '笔力', xue: '学力', si: '思力' };
       const latestMarks = (Array.isArray(game.s.choiceHistory) ? game.s.choiceHistory : []).slice(-3).reverse();
+      const conversion = typeof game.talentConversionStatus === 'function' ? game.talentConversionStatus() : null;
+      const conversionBlock = conversion && conversion.enabled ? `
+        <hr class="hr-ink"/><h3>流派·问心转化</h3>
+        <div class="dianggu"><b>${esc(conversion.rule.label || '问心转化')}</b>：${esc(conversion.rule.desc || '以流派专属资源叩问文心。')}<br/>消耗 ${conversion.resourceName} ${conversion.cost}，${Math.round(conversion.chance * 100)}% 概率获得一次三选一机会；本局 ${conversion.record.attempts}/${conversion.maxAttempts} 次，本阶段 ${conversion.phaseUsed}/${conversion.phaseLimit} 次。</div>
+        <div class="opt-list"><button class="opt" data-talent-conversion ${conversion.available ? '' : 'disabled'}><b>${esc(conversion.rule.label || '问心转化')}</b><span>${conversion.available ? `投入 ${conversion.resourceName} ${conversion.cost}，叩问文心` : esc(conversion.reason)}</span></button></div>` : '';
       box.innerHTML = `<div class="mtitle"><h2>三功修习</h2><span class="mtag">成长 · 调度 · 沉淀</span></div>
         ${notice ? `<div class="analysis">${esc(notice)}</div>` : ''}
         <div class="dianggu"><b>心得 ${a.insight}/${fb.insightCap}</b>　构思 ${a.strategy.charges}/${fb.strategyCap}　稿页 ${a.manuscript.pages}/${fb.manuscriptCap}　残页 ${fmt(a.manuscript.fragments)}</div>
@@ -296,6 +301,7 @@ export class Modals {
         <div class="dianggu">当前研修：${a.study.focus.map(k => attrNames[k]).join('、')}。调整只在下阶段生效，既有进度会原样保留。</div>
         <div class="opt-list">${attrs.map(k => `<button class="opt" data-focus="${k}"><b>${nextFocus.has(k) ? '✓ ' : ''}${attrNames[k]}</b><span>进度 ${Number(a.study.progress[k]) || 0}/${Number((game.abilityConfig().study || {}).progressNeed) || 3}${focus.has(k) ? ' · 当前在修' : ''}</span></button>`).join('')}</div>
         <h3>分配心得</h3><div class="opt-list">${attrs.map(k => `<button class="opt" data-insight="${k}" ${a.insight < game.insightCost(k) ? 'disabled' : ''}><b>${attrNames[k]} +1</b><span>消耗 ${game.insightCost(k)} 心得</span></button>`).join('')}</div>
+        ${conversionBlock}
         ${latestMarks.length ? `<h3>墨痕·最近修习</h3><div class="dianggu">${latestMarks.map(mark => `「${esc(mark.optionText || mark.questionId)}」→ ${esc(attrNames[mark.target] || mark.target)}${mark.inkTags && mark.inkTags.length ? ` · ${esc(mark.inkTags.join('、'))}` : ''}`).join('<br/>')}</div>` : ''}
         <h3>笔力·稿本</h3><div class="opt-list">
           <button class="opt" data-manuscript="polish"><b>润色</b><span>下一场首次追加少耗 ${Number(mc.polishDiscount) || 2} 灵感</span></button>
@@ -317,6 +323,10 @@ export class Modals {
       box.querySelectorAll('[data-manuscript]').forEach(b => b.addEventListener('click', () => {
         const r = game.spendManuscript(b.dataset.manuscript); render(r.ok ? '稿本已经付梓。' : r.reason);
       }));
+      box.querySelector('[data-talent-conversion]')?.addEventListener('click', async () => {
+        const r = await game.attemptSchoolTalentConversion();
+        render(r.ok ? (r.reason || (r.talent ? `已收入「${r.talent.name}」。` : '问心转化已结算。')) : r.reason);
+      });
       box.querySelector('[data-close]').addEventListener('click', () => this.close(ov));
     };
     render();
@@ -561,12 +571,12 @@ export class Modals {
         </button>`).join('');
       const ov = this.open(`
         <div class="modal scroll-frame paper scenic-pick-modal">
-          <div class="mtitle" style="justify-content:center"><h2>访 胜 · 三签择一</h2></div>
+          <div class="mtitle" style="justify-content:center"><h2>${esc(meta.title || '访 胜 · 三签择一')}</h2></div>
           <hr class="hr-ink"/>
-          <div class="scenic-pick-intro">${count === 3 ? '三张文心已现，请择一收入囊中；其余两张将自动弃置。' : `当前文心池仅余 ${count} 张，择一收入囊中；未选文心将自动弃置。`}</div>
-          <div class="scenic-pick-cost">确认选择后消耗灵感 ${Number(meta.cost) || 0} 点</div>
+          <div class="scenic-pick-intro">${esc(meta.intro || (count === 3 ? '三张文心已现，请择一收入囊中；其余两张将自动弃置。' : `当前文心池仅余 ${count} 张，择一收入囊中；未选文心将自动弃置。`))}</div>
+          <div class="scenic-pick-cost">${esc(meta.costText || `确认选择后消耗灵感 ${Number(meta.cost) || 0} 点`)}</div>
           <div class="scenic-pick-list">${cards}</div>
-          <div class="btn-row"><button class="btn btn-ink" data-cancel type="button">暂不取签</button></div>
+          <div class="btn-row"><button class="btn btn-ink" data-cancel type="button">${esc(meta.cancelText || '暂不取签')}</button></div>
         </div>`, 'scenic-pick');
       let done = false;
       const finish = value => {
@@ -868,6 +878,7 @@ export function talentEffectText(t) {
       const discount = Number(e.firstCostDiscount) || 0;
       return discount ? `首枚追加少耗 ${discount} 灵感；${pct}` : pct;
     }
+    case 'extra_dice_chain': return `支付首枚续掷后自动续得第二枚骰；若自动骰不低于首枚续骰，得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'dice_transform':
       if (e.mode === 'first_floor') return `本场首枚灵感骰最低视为 ${e.floor || 4} 点`;
       if (e.mode === 'lowest_to') return `将最低且不高于 ${e.maxPip || 3} 点的一骰化为 ${e.target || 6} 点`;
@@ -876,10 +887,15 @@ export function talentEffectText(t) {
       const pct = n => `${Math.round((Number(n) || 0) * 100)}%`;
       let s = e.pattern === 'six' ? `每枚最终六点骰，得分 +${pct(e.value)}`
         : e.pattern === 'distinct' ? `每多一种不同点数，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚追加少耗 ${e.firstCostDiscount} 灵感` : ''}`
+        : e.pattern === 'all_distinct' ? `${e.minDice || 3} 枚骰点各不相同，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚续掷少耗 ${e.firstCostDiscount} 灵感` : ''}`
+        : e.pattern === 'low_then_high' ? `首骰 ≤${e.lowMax || 2} 后续骰 ≥${e.nextHighMin || 5}，得分 +${pct(e.value)}；低开时首枚续掷少耗 ${e.conditionalFirstCostDiscount || 0} 灵感`
+        : e.pattern === 'ascending' ? `续骰逐枚递升，每次 +${pct(e.perStepValue)}；${e.fullDice || 3} 骰连升另 +${pct(e.fullValue)}`
         : e.pattern === 'single' ? `仅以一枚骰结算，得分 +${pct(e.value)}`
         : e.pattern === 'all_high' ? `全部骰不低于 ${e.minPip || 4} 点，得分 +${pct(e.value)}`
         : e.pattern === 'pair' ? `骰组出现同点，得分 +${pct(e.value)}`
         : e.pattern === 'total' ? `骰组总点不少于 ${e.threshold || 12}，得分 +${pct(e.value)}`
+        : e.pattern === 'exact_total' ? `前 ${e.diceCount || 2} 骰合计恰为 ${e.total || 7} 点，得分 +${pct(e.value)}${e.firstExtraFree ? '；首枚续掷免费' : ''}`
+        : e.pattern === 'total_tiers' ? (e.tiers || []).map(x => `总点 ≥${x.threshold}：+${pct(x.value)}`).join('；')
         : `每枚 ≥${e.highMin || 5} 点骰 +${pct(e.highValue)}；每枚 ≤${e.lowMax || 2} 点骰 ${pct(e.lowValue)}`;
       if (e.reward && Number(e.reward.value) > 0) {
         const rn = { insight: '心得', fragment: '残页', page: '稿页', inspiration: '灵感' }[e.reward.type] || e.reward.type;
@@ -889,7 +905,17 @@ export function talentEffectText(t) {
     }
     case 'style_switch_pct': return `换用不同于上一场的文体：得分 +${Math.round((e.value || 0) * 100)}%，心得 +${e.insight || 0}`;
     case 'manuscript_pct': return `每持有 ${e.step || 2} 页稿本，得分 +${Math.round((e.value || 0) * 100)}%（上限 ${Math.round((e.cap || 0) * 100)}%）`;
-    case 'copy_affinity': return '复制对手本场风格的相性加成';
+    case 'copy_affinity': {
+      const r = e.ratio != null ? e.ratio : 0.6;
+      const parts = [`复制对手本场风格相性（${Math.round(r * 100)}%）`];
+      if (e.revealIntent) parts.push('揭示对手意图');
+      if (e.synergyPct) parts.push(`文风相合 +${Math.round((e.synergyPct || 0) * 100)}%`);
+      if (e.themeFlat) parts.push(`通晓题材 +${Math.round((e.themeFlat || 0) * 100)}%`);
+      if (e.convertPct) parts.push('相性化境');
+      if (e.revealWeakness) parts.push('揭示破绽');
+      return parts.join('；');
+    }
+    case 'borrow_signature': return `本场借对手招牌之强（${Math.round((e.fraction || 0) * 100)}%），敌愈强此招愈利`;
     case 'crit': return `${Math.round((e.chance || 0) * 100)}% 概率神来之笔，得分 ×${e.mult}`;
     case 'attr_flat': return Object.entries(e.attrs || {}).map(([k, v]) => `${ATTR_NAMES[k]} +${v}`).join('　');
     case 'unlock_lian': return '解除联力 8 点门槛';

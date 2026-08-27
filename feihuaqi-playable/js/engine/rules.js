@@ -31,7 +31,7 @@ export const BATTLE_COEF = {
   xueMult: 4,
   siMult: 4,
   diceMult: 5,     // 兼容旧 NPC / 旧调用：普通骰的传统固定分值系数
-  dicePct: 0.05,   // 普通灵感骰：每点进入作品乘区 +5%（玩家与 NPC 共用）
+  dicePct: 0.04,   // 普通灵感骰：每点进入作品乘区 +4%（玩家与 NPC 共用）
   drawRatio: 0.05  // 平局带
 };
 
@@ -94,15 +94,20 @@ export function styleDiceScore(style, pips, styleCfg, diceMult = BATTLE_COEF.dic
     };
   }
   if (style === 'ci') {
-    const floor = num(cfg.pipFloor, 3), ceil = num(cfg.pipCeil, 5);
-    const first = clamp(list[0] + num(dicePlus, 0), floor, ceil);
+    // 词不再把低骰“收束”为保底，而是保留首句本色：高骰才有成阕的高光。
+    // 只读取已掷出的首骰；不涉及未来骰面、对手或任何隐藏信息。
+    const first = list[0] + num(dicePlus, 0);
     const total = first + list.slice(1).reduce((s, v) => s + v, 0);
+    const highMin = num(cfg.highMin, 5);
+    const highPct = first >= highMin ? Math.max(0, num(cfg.highPct, 0.08)) : 0;
+    const styleName = cfg.name || '叠阕';
+    const climax = highPct > 0 ? `；长调成阕 +${Math.round(highPct * 100)}%` : '';
     return {
       score: Math.round(total * dm),
-      pct: total * dp * diceRateMult,
+      pct: total * dp * diceRateMult + highPct,
       pips: total,
-      detail: `词·铺陈 ${list[0]}→${first}，合计 ${total} 点 × ${dm}`,
-      pctDetail: `词·铺陈 ${list[0]}→${first}，合计 ${total} 点 × ${Math.round(dp * diceRateMult * 100)}%`
+      detail: `词·${styleName} 首骰 ${first} 点，合计 ${total} 点 × ${dm}${climax}`,
+      pctDetail: `词·${styleName} ${total} 点 × ${Math.round(dp * diceRateMult * 100)}%${climax}`
     };
   }
   const total = list.reduce((s, v) => s + v, 0) + num(dicePlus, 0);

@@ -64,6 +64,7 @@ console.log('== 会话：成本与百分比按追加枚数线性叠加 ==');
   const game = newGame();
   const session = game.createSession({ npc: npc(), label: '追加骰收益' });
   assert.equal(session.extraDiceCost('shi', 1), 5, '普通文体首次追加耗 5 灵感');
+  assert.equal(session.extraDiceCost('ci', 1), 4, '词首次追加仅少耗 1 灵感，鼓励追逐高光而非低骰保底');
   assert.equal(session.extraDicePct(0), 0, '基础骰不获得追加乘区');
   assert.equal(session.extraDicePct(1), 0.06, '追加 1 枚获得 +6%');
   assert.equal(session.extraDicePct(2), 0.12, '追加 2 枚累计 +12%');
@@ -111,7 +112,7 @@ console.log('== 引擎：NPC 普通灵感骰同样进入作品乘区 ==');
   assert.ok(out.oppCalc.diceScore > 0, 'NPC 灵感骰按其创作底盘折算实际贡献');
 }
 
-console.log('== 文心：追加骰增益与骰组章法分工 ==');
+console.log('== 文心：骰组构型、免费续掷与续章链 ==');
 {
   const talents = load('talents');
   const upgrades = load('talent-upgrade');
@@ -121,29 +122,43 @@ console.log('== 文心：追加骰增益与骰组章法分工 ==');
   const flow = byId.get('T016');
   const yiqi = byId.get('TA05');
 
-  assert.equal(qishi.effect.type, 'dice_transform', '急智改为低点抬升');
-  assert.equal(tianma.effect.type, 'dice_pattern', '天马行空改为异点骰组章法');
-  assert.equal(flow.effect.type, 'extra_dice_pct', '文思泉涌承接追加骰收益');
-  assert.equal(yiqi.effect.type, 'extra_dice_pct', '一气呵成改为追加骰专属主动');
-  assert.equal(upgrades.T005.levels.at(-1).effect.count, 2, '急智满级可抬升两枚低点骰');
+  const qibu = byId.get('TA01');
+  const yima = byId.get('TA06');
+  assert.equal(qishi.effect.pattern, 'low_then_high', '急智改为低开高走构型');
+  assert.equal(tianma.effect.pattern, 'all_distinct', '天马行空改为三骰各异构型');
+  assert.equal(flow.effect.pattern, 'ascending', '文思泉涌改为逐骰递升构型');
+  assert.equal(yiqi.effect.type, 'extra_dice_chain', '一气呵成改为无弹窗续章链');
+  assert.equal(qibu.effect.firstExtraFree, true, '七步成诗首枚续掷免费');
+  assert.equal(yima.effect.pattern, 'total_tiers', '倚马可待使用总点分档');
+  assert.equal(upgrades.T005.levels.at(-1).effect.value, 0.22, '急智满级高走收益提升');
   assert.equal(upgrades.T010.levels.at(-1).effect.firstCostDiscount, 3, '天马行空满级首枚减费 3');
-  assert.equal(upgrades.T016.levels.at(-1).effect.value, 0.1, '文思泉涌满级每枚追加骰 +10%');
-  assert.equal(upgrades.TA05.levels.at(-1).effect.value, 0.14, '一气呵成满级每枚 +14%');
+  assert.equal(upgrades.T016.levels.at(-1).effect.fullValue, 0.14, '文思泉涌满级保留三骰连升高潮');
+  assert.equal(upgrades.TA05.levels.at(-1).effect.value, 0.1, '一气呵成满级续章命中 +10%');
 
   const game = newGame();
-  game.s.passive = [flow, tianma];
+  game.s.passive = [qishi, flow, tianma];
   const session = game.createSession({ npc: npc(), label: '文心迁移' });
-  assert.equal(session.extraDiceCost('shi', 1), 2, '天马行空与文思泉涌合计让首枚追加少耗 3 灵感');
-  assert.equal(session.extraDicePct(1), 0.11, '基础 + 文思泉涌：首枚共 +11%');
-  assert.equal(session.extraDicePct(2), 0.22, '追加骰收益按枚数线性叠加');
-  const passiveOut = game.resolveBattle(session, 'shi', 'zheli', [3, 4]);
-  assert.ok(passiveOut.selfCalc.items[4].detail.includes('文心·文思泉涌·追加骰 +5%'), '明细显示文思泉涌来源');
-  assert.ok(passiveOut.selfCalc.items[4].detail.includes('文心·天马行空 +3%'), '异点骰组另行显示天马行空来源');
+  assert.equal(session.extraDiceCost('shi', 1, [1]), 1, '低开急智与两枚构型文心合计压低首枚续掷成本');
+  assert.equal(session.extraDiceCost('shi', 1, [4]), 2, '急智不在非低开时无条件减费');
+  const passiveOut = game.resolveBattle(session, 'shi', 'zheli', [1, 5, 6]);
+  assert.ok(passiveOut.selfCalc.items[4].detail.includes('文心·急智 +10%'), '明细显示急智低开高走');
+  assert.ok(passiveOut.selfCalc.items[4].detail.includes('文心·文思泉涌 +20%'), '明细显示文思泉涌两段递升与连升奖励');
+  assert.ok(passiveOut.selfCalc.items[4].detail.includes('文心·天马行空 +15%'), '明细显示三骰各异奖励');
 
   session.usedActive = [yiqi];
-  assert.equal(session.extraDicePct(1), 0.19, '发动一气呵成后，首枚追加骰共 +19%');
-  const activeOut = game.resolveBattle(session, 'shi', 'zheli', [3, 4]);
-  assert.ok(activeOut.selfCalc.items[4].detail.includes('文心·一气呵成·追加骰 +8%'), '明细显示主动文心追加乘区');
+  session._extraDiceChainUsed = true;
+  const activeOut = game.resolveBattle(session, 'shi', 'zheli', [3, 4, 5]);
+  assert.ok(activeOut.selfCalc.items[4].detail.includes('文心·一气呵成·续章 +4%'), '明细显示一气呵成续章命中');
+
+  session.usedActive = [qibu];
+  assert.equal(session.extraDiceCost('shi', 1, [3]), 0, '七步成诗使首枚续掷真正免费');
+  const qibuOut = game.resolveBattle(session, 'shi', 'zheli', [3, 4]);
+  assert.ok(qibuOut.selfCalc.items[4].detail.includes('文心·七步成诗 +18%'), '七点合诗进入作品乘区');
+
+  session.usedActive = [yima];
+  const yimaOut = game.resolveBattle(session, 'shi', 'zheli', [6, 5, 5]);
+  assert.ok(yimaOut.selfCalc.items[4].detail.includes('文心·倚马可待 +30%'), '高档总点只取最高分档');
+  assert.equal(yimaOut.talentTriggers.find(x => x.id === 'TA06').reward.value, 3, '倚马可待高档返还灵感');
 }
 
 console.log('追加灵感骰百分比收益测试：全部通过 ✓');

@@ -83,6 +83,10 @@ export function applyProjectOverride(baseCfg, project, options = {}) {
   for (const key of ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics', 'sky', 'album', 'schools', 'grades', 'narrative']) {
     if (project[key] !== undefined && project[key] !== null) next[key] = project[key];
   }
+  // 内容编辑器的棋盘工程只描述主路线；隐藏终圈属于玩法契约，旧工程未携带时不得把本地配置抹掉。
+  if (project.board && !project.board.hiddenFinalRing && baseCfg.board && baseCfg.board.hiddenFinalRing) {
+    next.board = { ...next.board, hiddenFinalRing: baseCfg.board.hiddenFinalRing };
+  }
   CONTRACT.assertConfig(next);
   return normalizeConfig(next);
 }

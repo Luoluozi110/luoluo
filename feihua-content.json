@@ -1921,7 +1921,7 @@
           "studyTarget": "ci",
           "inkTags": [
             "燃笔",
-            "惜身"
+            "逐名"
           ],
           "resultText": "你亲口唱到那一韵便停下，终于把它划去；词句少了一点炫目，却让整阕有了呼吸。"
         }
@@ -3272,63 +3272,16 @@
       "id": "T005",
       "name": "急智",
       "kind": "passive",
-      "text": "临场生风，机锋不落。每场论战的灵感骰点数 +1。",
+      "text": "临场生风，机锋不落。首骰为 1—2 点时，首次续掷少耗 2 灵感；续骰若为 5—6 点，作品得分 +10%。低开而能翻盘，方见机锋。",
       "effect": {
-        "type": "dice_plus",
-        "value": 1
+        "type": "dice_pattern",
+        "pattern": "low_then_high",
+        "lowMax": 2,
+        "nextHighMin": 5,
+        "value": 0.1,
+        "conditionalFirstCostDiscount": 2
       },
-      "school": "qishi",
-      "upgrade": {
-        "quality": "common",
-        "maxLevel": 3,
-        "upCost": [
-          6,
-          10
-        ],
-        "levels": [
-          {
-            "effect": {
-              "type": "dice_plus",
-              "value": 1
-            }
-          },
-          {
-            "effect": {
-              "type": "dice_plus",
-              "value": 2
-            }
-          }
-        ],
-        "levelStyles": [
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        ]
-      }
+      "school": "qishi"
     },
     {
       "id": "T006",
@@ -3669,61 +3622,18 @@
       "id": "T010",
       "name": "天马行空",
       "kind": "passive",
-      "text": "笔势腾踔，不拘辙迹。灵感骰点数 +1。",
+      "text": "笔势腾踔，不拘辙迹。首枚续掷少耗 2 灵感；三枚灵感骰点数各不相同，作品得分 +15%，并得残页 0.5。",
       "effect": {
-        "type": "dice_plus",
-        "value": 1
-      },
-      "upgrade": {
-        "quality": "common",
-        "maxLevel": 3,
-        "upCost": [
-          6,
-          10
-        ],
-        "levels": [
-          {
-            "effect": {
-              "type": "dice_plus",
-              "value": 1
-            }
-          },
-          {
-            "effect": {
-              "type": "dice_plus",
-              "value": 2
-            }
-          }
-        ],
-        "levelStyles": [
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        ]
+        "type": "dice_pattern",
+        "pattern": "all_distinct",
+        "minDice": 3,
+        "value": 0.15,
+        "firstCostDiscount": 2,
+        "reward": {
+          "type": "fragment",
+          "value": 0.5,
+          "perMatch": false
+        }
       }
     },
     {
@@ -4174,93 +4084,20 @@
       "id": "T016",
       "name": "文思泉涌",
       "kind": "passive",
-      "text": "思若泉涌，源源不绝。灵感波动改为 1d6×6，下限抬高、上限拉开。",
+      "text": "思若泉涌，源源不绝。首枚续掷少耗 1 灵感；每枚续骰都高于前骰时，每次递升得分 +5%；三骰连升另 +10%，并得 1 灵感。",
       "effect": {
-        "type": "dice_mult",
-        "value": 6
-      },
-      "upgrade": {
-        "quality": "epic",
-        "maxLevel": 5,
-        "upCost": [
-          8,
-          12,
-          17,
-          23
-        ],
-        "levels": [
-          {
-            "effect": {
-              "type": "dice_mult",
-              "value": 5.6
-            }
-          },
-          {
-            "effect": {
-              "type": "dice_mult",
-              "value": 5.8
-            }
-          },
-          {
-            "effect": {
-              "type": "dice_mult",
-              "value": 6
-            }
-          },
-          {
-            "effect": {
-              "type": "dice_mult",
-              "value": 6.2
-            }
-          }
-        ],
-        "levelStyles": [
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        ]
+        "type": "dice_pattern",
+        "pattern": "ascending",
+        "minDice": 2,
+        "perStepValue": 0.05,
+        "fullDice": 3,
+        "fullValue": 0.1,
+        "firstCostDiscount": 1,
+        "fullReward": {
+          "type": "inspiration",
+          "value": 1,
+          "perMatch": false
+        }
       }
     },
     {
@@ -4376,83 +4213,22 @@
     {
       "id": "TA01",
       "name": "七步成诗",
-      "kind": "passive",
-      "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」跳过审题与选风格，本场灵感波动锁定为固定 +15。",
+      "kind": "active",
+      "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」本场首枚续掷免费；前两骰合计恰为 7 点，作品得分 +18%，并得 1 心得。",
       "effect": {
-        "type": "insp_on_quiz",
-        "value": 3,
-        "maxTriggers": 6
+        "type": "dice_pattern",
+        "pattern": "exact_total",
+        "diceCount": 2,
+        "total": 7,
+        "value": 0.18,
+        "firstExtraFree": true,
+        "reward": {
+          "type": "insight",
+          "value": 1,
+          "perMatch": false
+        }
       },
-      "upgrade": {
-        "quality": "rare",
-        "maxLevel": 4,
-        "upCost": [
-          7,
-          11,
-          16
-        ],
-        "levels": [
-          {
-            "effect": {
-              "type": "insp_on_quiz",
-              "value": 3,
-              "maxTriggers": 7
-            }
-          },
-          {
-            "effect": {
-              "type": "insp_on_quiz",
-              "value": 4,
-              "maxTriggers": 7
-            }
-          },
-          {
-            "effect": {
-              "type": "insp_on_quiz",
-              "value": 4,
-              "maxTriggers": 8
-            }
-          }
-        ],
-        "levelStyles": [
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        ]
-      }
+      "cost": 3
     },
     {
       "id": "TA02",
@@ -4534,95 +4310,17 @@
     {
       "id": "TA03",
       "name": "语不惊人",
-      "kind": "passive",
-      "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。本场灵感波动改为 1d6×8，高风险高回报。",
+      "kind": "active",
+      "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。本场每枚 5—6 点骰令得分 +14%，每枚 1—2 点骰令得分 −7%。",
       "effect": {
-        "type": "lucky_six",
-        "mult": 1.5
+        "type": "dice_pattern",
+        "pattern": "extremes",
+        "highMin": 5,
+        "highValue": 0.14,
+        "lowMax": 2,
+        "lowValue": -0.07
       },
-      "upgrade": {
-        "quality": "epic",
-        "maxLevel": 5,
-        "upCost": [
-          8,
-          12,
-          17,
-          23
-        ],
-        "levels": [
-          {
-            "effect": {
-              "type": "lucky_six",
-              "mult": 1.55
-            }
-          },
-          {
-            "effect": {
-              "type": "lucky_six",
-              "mult": 1.58
-            }
-          },
-          {
-            "effect": {
-              "type": "lucky_six",
-              "mult": 1.6
-            }
-          },
-          {
-            "effect": {
-              "type": "lucky_six",
-              "mult": 1.65
-            }
-          }
-        ],
-        "levelStyles": [
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        ]
-      }
+      "cost": 4
     },
     {
       "id": "TA04",
@@ -4731,197 +4429,44 @@
       "id": "TA05",
       "name": "一气呵成",
       "kind": "active",
-      "text": "行文如一线贯珠，中无断续。本场灵感骰点数 +3。",
+      "text": "行文如一线贯珠，中无断续。支付首枚续掷后，自动续得第二枚骰（不再消耗灵感）；若自动续骰不低于首枚续骰，作品得分再 +4%。",
       "effect": {
-        "type": "dice_plus",
-        "value": 3
+        "type": "extra_dice_chain",
+        "compare": "not_lower",
+        "value": 0.04
       },
-      "cost": 2,
-      "upgrade": {
-        "quality": "rare",
-        "maxLevel": 4,
-        "upCost": [
-          7,
-          11,
-          16
-        ],
-        "levels": [
-          {
-            "effect": {
-              "type": "dice_plus",
-              "value": 4
-            },
-            "cost": 2
-          },
-          {
-            "effect": {
-              "type": "dice_plus",
-              "value": 5
-            },
-            "cost": 2
-          },
-          {
-            "effect": {
-              "type": "dice_plus",
-              "value": 6
-            },
-            "cost": 2
-          }
-        ],
-        "levelStyles": [
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        ]
-      }
+      "cost": 2
     },
     {
       "id": "TA06",
       "name": "倚马可待",
       "kind": "active",
-      "text": "《世说新语·文学》载袁虎倚马前，须臾作露布文七纸，殊可观。本场灵感波动锁定为固定 +18。",
+      "text": "《世说新语·文学》载袁虎倚马前，须臾作露布文七纸，殊可观。本场三骰总点至少 12 时得分 +16% 并返还 3 灵感；若达到 16 点，则改为得分 +30% 并同样返还灵感。未达标则徒耗锋芒。",
       "effect": {
-        "type": "fixed_dice",
-        "value": 18
-      },
-      "cost": 4,
-      "upgrade": {
-        "quality": "legend",
-        "maxLevel": 6,
-        "upCost": [
-          9,
-          13,
-          18,
-          24,
-          31
-        ],
-        "levels": [
+        "type": "dice_pattern",
+        "pattern": "total_tiers",
+        "tiers": [
           {
-            "effect": {
-              "type": "fixed_dice",
-              "value": 17
-            },
-            "cost": 4
+            "threshold": 16,
+            "value": 0.3,
+            "reward": {
+              "type": "inspiration",
+              "value": 3,
+              "perMatch": false
+            }
           },
           {
-            "effect": {
-              "type": "fixed_dice",
-              "value": 19
-            },
-            "cost": 4
-          },
-          {
-            "effect": {
-              "type": "fixed_dice",
-              "value": 20
-            },
-            "cost": 4
-          },
-          {
-            "effect": {
-              "type": "fixed_dice",
-              "value": 22
-            },
-            "cost": 4
-          },
-          {
-            "effect": {
-              "type": "fixed_dice",
-              "value": 24
-            },
-            "cost": 4
-          }
-        ],
-        "levelStyles": [
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "threshold": 12,
+            "value": 0.16,
+            "reward": {
+              "type": "inspiration",
+              "value": 3,
+              "perMatch": false
+            }
           }
         ]
-      }
+      },
+      "cost": 3
     },
     {
       "id": "TA07",
@@ -5008,71 +4553,14 @@
       "id": "TA08",
       "name": "布局谋篇",
       "kind": "active",
-      "text": "胸中先有丘壑，落笔方能从容。发动后可指定下一枚灵感骰为 1—6 点；一局内每次再用，所耗灵感递增，谋定之后不可反悔。",
+      "text": "胸中先有丘壑，落笔方能从容。发动后于回合掷移动骰前指定 1—6 格落点；本局每次再用，所耗灵感递增，谋定之后不可反悔。",
       "effect": {
         "type": "planned_dice",
         "baseCost": 5,
         "costStep": 2,
         "maxValue": 6
       },
-      "cost": 5,
-      "upgrade": {
-        "quality": "common",
-        "maxLevel": 3,
-        "upCost": [
-          6,
-          10
-        ],
-        "levels": [
-          {
-            "effect": {
-              "type": "planned_dice",
-              "baseCost": 5,
-              "costStep": 2,
-              "maxValue": 6
-            },
-            "cost": 5
-          },
-          {
-            "effect": {
-              "type": "planned_dice",
-              "baseCost": 5,
-              "costStep": 2,
-              "maxValue": 6
-            },
-            "cost": 5
-          }
-        ],
-        "levelStyles": [
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        ]
-      }
+      "cost": 5
     },
     {
       "id": "T017",
@@ -7517,47 +7005,32 @@
       "levels": [
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 1
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "dice_pattern",
+            "pattern": "low_then_high",
+            "lowMax": 2,
+            "nextHighMin": 5,
+            "value": 0.1,
+            "conditionalFirstCostDiscount": 2
           }
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 1
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "dice_pattern",
+            "pattern": "low_then_high",
+            "lowMax": 2,
+            "nextHighMin": 5,
+            "value": 0.16,
+            "conditionalFirstCostDiscount": 3
           }
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 2
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "dice_pattern",
+            "pattern": "low_then_high",
+            "lowMax": 3,
+            "nextHighMin": 5,
+            "value": 0.22,
+            "conditionalFirstCostDiscount": 3
           }
         }
       ]
@@ -7883,47 +7356,44 @@
       "levels": [
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 1
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "dice_pattern",
+            "pattern": "all_distinct",
+            "minDice": 3,
+            "value": 0.15,
+            "firstCostDiscount": 2,
+            "reward": {
+              "type": "fragment",
+              "value": 0.5,
+              "perMatch": false
+            }
           }
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 1
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "dice_pattern",
+            "pattern": "all_distinct",
+            "minDice": 3,
+            "value": 0.19,
+            "firstCostDiscount": 3,
+            "reward": {
+              "type": "fragment",
+              "value": 0.5,
+              "perMatch": false
+            }
           }
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 2
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "dice_pattern",
+            "pattern": "all_distinct",
+            "minDice": 3,
+            "value": 0.22,
+            "firstCostDiscount": 3,
+            "reward": {
+              "type": "fragment",
+              "value": 1,
+              "perMatch": false
+            }
           }
         }
       ]
@@ -8354,77 +7824,82 @@
       "levels": [
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 6
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "dice_pattern",
+            "pattern": "ascending",
+            "minDice": 2,
+            "perStepValue": 0.05,
+            "fullDice": 3,
+            "fullValue": 0.1,
+            "firstCostDiscount": 1,
+            "fullReward": {
+              "type": "inspiration",
+              "value": 1,
+              "perMatch": false
+            }
           }
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 5.6
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "dice_pattern",
+            "pattern": "ascending",
+            "minDice": 2,
+            "perStepValue": 0.06,
+            "fullDice": 3,
+            "fullValue": 0.1,
+            "firstCostDiscount": 1,
+            "fullReward": {
+              "type": "inspiration",
+              "value": 1,
+              "perMatch": false
+            }
           }
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 5.8
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "dice_pattern",
+            "pattern": "ascending",
+            "minDice": 2,
+            "perStepValue": 0.07,
+            "fullDice": 3,
+            "fullValue": 0.12,
+            "firstCostDiscount": 1,
+            "fullReward": {
+              "type": "inspiration",
+              "value": 1,
+              "perMatch": false
+            }
           }
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 6
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "dice_pattern",
+            "pattern": "ascending",
+            "minDice": 2,
+            "perStepValue": 0.08,
+            "fullDice": 3,
+            "fullValue": 0.12,
+            "firstCostDiscount": 2,
+            "fullReward": {
+              "type": "inspiration",
+              "value": 2,
+              "perMatch": false
+            }
           }
         },
         {
           "effect": {
-            "type": "dice_mult",
-            "value": 6.2
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "dice_pattern",
+            "pattern": "ascending",
+            "minDice": 2,
+            "perStepValue": 0.08,
+            "fullDice": 3,
+            "fullValue": 0.14,
+            "firstCostDiscount": 2,
+            "fullReward": {
+              "type": "inspiration",
+              "value": 2,
+              "perMatch": false
+            }
           }
         }
       ]
@@ -8543,67 +8018,67 @@
       "levels": [
         {
           "effect": {
-            "type": "insp_on_quiz",
-            "value": 3,
-            "maxTriggers": 6
+            "type": "dice_pattern",
+            "pattern": "exact_total",
+            "diceCount": 2,
+            "total": 7,
+            "value": 0.18,
+            "firstExtraFree": true,
+            "reward": {
+              "type": "insight",
+              "value": 1,
+              "perMatch": false
+            }
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
+          "cost": 3
         },
         {
           "effect": {
-            "type": "insp_on_quiz",
-            "value": 3,
-            "maxTriggers": 7
+            "type": "dice_pattern",
+            "pattern": "exact_total",
+            "diceCount": 2,
+            "total": 7,
+            "value": 0.22,
+            "firstExtraFree": true,
+            "reward": {
+              "type": "insight",
+              "value": 1,
+              "perMatch": false
+            }
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
+          "cost": 3
         },
         {
           "effect": {
-            "type": "insp_on_quiz",
-            "value": 4,
-            "maxTriggers": 7
+            "type": "dice_pattern",
+            "pattern": "exact_total",
+            "diceCount": 2,
+            "total": 7,
+            "value": 0.26,
+            "firstExtraFree": true,
+            "reward": {
+              "type": "insight",
+              "value": 2,
+              "perMatch": false
+            }
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
+          "cost": 2
         },
         {
           "effect": {
-            "type": "insp_on_quiz",
-            "value": 4,
-            "maxTriggers": 8
+            "type": "dice_pattern",
+            "pattern": "exact_total",
+            "diceCount": 2,
+            "total": 7,
+            "value": 0.3,
+            "firstExtraFree": true,
+            "reward": {
+              "type": "insight",
+              "value": 2,
+              "perMatch": false
+            }
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
+          "cost": 2
         }
       ]
     },
@@ -8690,78 +8165,58 @@
       "levels": [
         {
           "effect": {
-            "type": "lucky_six",
-            "mult": 1.5
+            "type": "dice_pattern",
+            "pattern": "extremes",
+            "highMin": 5,
+            "highValue": 0.14,
+            "lowMax": 2,
+            "lowValue": -0.07
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
+          "cost": 4
         },
         {
           "effect": {
-            "type": "lucky_six",
-            "mult": 1.55
+            "type": "dice_pattern",
+            "pattern": "extremes",
+            "highMin": 5,
+            "highValue": 0.16,
+            "lowMax": 2,
+            "lowValue": -0.07
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
+          "cost": 4
         },
         {
           "effect": {
-            "type": "lucky_six",
-            "mult": 1.58
+            "type": "dice_pattern",
+            "pattern": "extremes",
+            "highMin": 5,
+            "highValue": 0.18,
+            "lowMax": 2,
+            "lowValue": -0.08
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
+          "cost": 4
         },
         {
           "effect": {
-            "type": "lucky_six",
-            "mult": 1.6
+            "type": "dice_pattern",
+            "pattern": "extremes",
+            "highMin": 5,
+            "highValue": 0.2,
+            "lowMax": 2,
+            "lowValue": -0.09
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
+          "cost": 4
         },
         {
           "effect": {
-            "type": "lucky_six",
-            "mult": 1.65
+            "type": "dice_pattern",
+            "pattern": "extremes",
+            "highMin": 5,
+            "highValue": 0.22,
+            "lowMax": 2,
+            "lowValue": -0.1
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
+          "cost": 4
         }
       ]
     },
@@ -8873,65 +8328,33 @@
       "levels": [
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 3
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "extra_dice_chain",
+            "compare": "not_lower",
+            "value": 0.04
           },
           "cost": 2
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 4
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "extra_dice_chain",
+            "compare": "not_lower",
+            "value": 0.06
           },
           "cost": 2
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 5
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "extra_dice_chain",
+            "compare": "not_lower",
+            "value": 0.08
           },
           "cost": 2
         },
         {
           "effect": {
-            "type": "dice_plus",
-            "value": 6
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
+            "type": "extra_dice_chain",
+            "compare": "not_lower",
+            "value": 0.1
           },
           "cost": 2
         }
@@ -8950,99 +8373,165 @@
       "levels": [
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 18
+            "type": "dice_pattern",
+            "pattern": "total_tiers",
+            "tiers": [
+              {
+                "threshold": 16,
+                "value": 0.3,
+                "reward": {
+                  "type": "inspiration",
+                  "value": 3,
+                  "perMatch": false
+                }
+              },
+              {
+                "threshold": 12,
+                "value": 0.16,
+                "reward": {
+                  "type": "inspiration",
+                  "value": 3,
+                  "perMatch": false
+                }
+              }
+            ]
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          "cost": 4
+          "cost": 3
         },
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 17
+            "type": "dice_pattern",
+            "pattern": "total_tiers",
+            "tiers": [
+              {
+                "threshold": 16,
+                "value": 0.34,
+                "reward": {
+                  "type": "inspiration",
+                  "value": 3,
+                  "perMatch": false
+                }
+              },
+              {
+                "threshold": 12,
+                "value": 0.18,
+                "reward": {
+                  "type": "inspiration",
+                  "value": 3,
+                  "perMatch": false
+                }
+              }
+            ]
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          "cost": 4
+          "cost": 3
         },
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 19
+            "type": "dice_pattern",
+            "pattern": "total_tiers",
+            "tiers": [
+              {
+                "threshold": 16,
+                "value": 0.38,
+                "reward": {
+                  "type": "inspiration",
+                  "value": 3,
+                  "perMatch": false
+                }
+              },
+              {
+                "threshold": 12,
+                "value": 0.2,
+                "reward": {
+                  "type": "inspiration",
+                  "value": 3,
+                  "perMatch": false
+                }
+              }
+            ]
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          "cost": 4
+          "cost": 3
         },
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 20
+            "type": "dice_pattern",
+            "pattern": "total_tiers",
+            "tiers": [
+              {
+                "threshold": 16,
+                "value": 0.42,
+                "reward": {
+                  "type": "inspiration",
+                  "value": 3,
+                  "perMatch": false
+                }
+              },
+              {
+                "threshold": 12,
+                "value": 0.22,
+                "reward": {
+                  "type": "inspiration",
+                  "value": 3,
+                  "perMatch": false
+                }
+              }
+            ]
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          "cost": 4
+          "cost": 3
         },
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 22
+            "type": "dice_pattern",
+            "pattern": "total_tiers",
+            "tiers": [
+              {
+                "threshold": 16,
+                "value": 0.46,
+                "reward": {
+                  "type": "inspiration",
+                  "value": 3,
+                  "perMatch": false
+                }
+              },
+              {
+                "threshold": 12,
+                "value": 0.24,
+                "reward": {
+                  "type": "inspiration",
+                  "value": 3,
+                  "perMatch": false
+                }
+              }
+            ]
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          "cost": 4
+          "cost": 3
         },
         {
           "effect": {
-            "type": "fixed_dice",
-            "value": 24
+            "type": "dice_pattern",
+            "pattern": "total_tiers",
+            "tiers": [
+              {
+                "threshold": 16,
+                "value": 0.5,
+                "reward": {
+                  "type": "inspiration",
+                  "value": 3,
+                  "perMatch": false
+                }
+              },
+              {
+                "threshold": 12,
+                "value": 0.26,
+                "reward": {
+                  "type": "inspiration",
+                  "value": 3,
+                  "perMatch": false
+                }
+              }
+            ]
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
-          "cost": 4
+          "cost": 3
         }
       ]
     },
@@ -9136,15 +8625,6 @@
             "costStep": 2,
             "maxValue": 6
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
           "cost": 5
         },
         {
@@ -9154,15 +8634,6 @@
             "costStep": 2,
             "maxValue": 6
           },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          },
           "cost": 5
         },
         {
@@ -9171,15 +8642,6 @@
             "baseCost": 5,
             "costStep": 2,
             "maxValue": 6
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
           },
           "cost": 5
         }

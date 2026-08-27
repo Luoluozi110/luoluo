@@ -52,13 +52,14 @@
     "id": "T005",
     "name": "急智",
     "kind": "passive",
-    "text": "临场生风，机锋不落。每场将一枚不高于 2 点的灵感骰抬高 1 点；变形后的骰面可继续触发其他文心。",
+    "text": "临场生风，机锋不落。首骰为 1—2 点时，首次续掷少耗 2 灵感；续骰若为 5—6 点，作品得分 +10%。低开而能翻盘，方见机锋。",
     "effect": {
-      "type": "dice_transform",
-      "mode": "low_lift",
-      "threshold": 2,
-      "value": 1,
-      "count": 1
+      "type": "dice_pattern",
+      "pattern": "low_then_high",
+      "lowMax": 2,
+      "nextHighMin": 5,
+      "value": 0.1,
+      "conditionalFirstCostDiscount": 2
     },
     "school": "qishi"
   },
@@ -113,12 +114,18 @@
     "id": "T010",
     "name": "天马行空",
     "kind": "passive",
-    "text": "笔势腾踔，不拘辙迹。首枚追加灵感骰少耗 2 灵感；骰组中每多一种不同点数，作品得分 +3%。",
+    "text": "笔势腾踔，不拘辙迹。首枚续掷少耗 2 灵感；三枚灵感骰点数各不相同，作品得分 +15%，并得残页 0.5。",
     "effect": {
       "type": "dice_pattern",
-      "pattern": "distinct",
-      "value": 0.03,
-      "firstCostDiscount": 2
+      "pattern": "all_distinct",
+      "minDice": 3,
+      "value": 0.15,
+      "firstCostDiscount": 2,
+      "reward": {
+        "type": "fragment",
+        "value": 0.5,
+        "perMatch": false
+      }
     }
   },
   {
@@ -178,11 +185,20 @@
     "id": "T016",
     "name": "文思泉涌",
     "kind": "passive",
-    "text": "思若泉涌，源源不绝。首枚追加灵感骰少耗 1 灵感；每追加一枚，作品乘区额外 +5%。",
+    "text": "思若泉涌，源源不绝。首枚续掷少耗 1 灵感；每枚续骰都高于前骰时，每次递升得分 +5%；三骰连升另 +10%，并得 1 灵感。",
     "effect": {
-      "type": "extra_dice_pct",
-      "value": 0.05,
-      "firstCostDiscount": 1
+      "type": "dice_pattern",
+      "pattern": "ascending",
+      "minDice": 2,
+      "perStepValue": 0.05,
+      "fullDice": 3,
+      "fullValue": 0.1,
+      "firstCostDiscount": 1,
+      "fullReward": {
+        "type": "inspiration",
+        "value": 1,
+        "perMatch": false
+      }
     }
   },
   {
@@ -200,11 +216,19 @@
     "id": "TA01",
     "name": "七步成诗",
     "kind": "active",
-    "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」本场首枚灵感骰最低视为 4 点；抬高后的骰面可触发骰组文心。",
+    "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」本场首枚续掷免费；前两骰合计恰为 7 点，作品得分 +18%，并得 1 心得。",
     "effect": {
-      "type": "dice_transform",
-      "mode": "first_floor",
-      "floor": 4
+      "type": "dice_pattern",
+      "pattern": "exact_total",
+      "diceCount": 2,
+      "total": 7,
+      "value": 0.18,
+      "firstExtraFree": true,
+      "reward": {
+        "type": "insight",
+        "value": 1,
+        "perMatch": false
+      }
     },
     "cost": 3
   },
@@ -212,9 +236,9 @@
     "id": "TA02",
     "name": "夺胎换骨",
     "kind": "active",
-    "text": "惠洪《冷斋夜话》记黄庭坚论诗：不易其意而造其语，谓之换骨法；窥入其意而形容之，谓之夺胎法。本场复制对手所选风格的相性加成。",
+    "text": "惠洪《冷斋夜话》记黄庭坚论诗：不易其意而造其语，谓之换骨法；窥入其意而形容之，谓之夺胎法。本场窥敌之技，暂借对手招牌之强为我所用——敌愈强，此招愈利。",
     "effect": {
-      "type": "copy_affinity"
+      "type": "borrow_signature"
     },
     "cost": 3
   },
@@ -249,10 +273,11 @@
     "id": "TA05",
     "name": "一气呵成",
     "kind": "active",
-    "text": "行文如一线贯珠，中无断续。本场每追加 1 枚灵感骰，作品乘区额外 +8%。",
+    "text": "行文如一线贯珠，中无断续。支付首枚续掷后，自动续得第二枚骰（不再消耗灵感）；若自动续骰不低于首枚续骰，作品得分再 +4%。",
     "effect": {
-      "type": "extra_dice_pct",
-      "value": 0.08
+      "type": "extra_dice_chain",
+      "compare": "not_lower",
+      "value": 0.04
     },
     "cost": 2
   },
@@ -260,12 +285,32 @@
     "id": "TA06",
     "name": "倚马可待",
     "kind": "active",
-    "text": "《世说新语·文学》载袁虎倚马前，须臾作露布文七纸，殊可观。本场灵感波动锁定为固定 +18。",
+    "text": "《世说新语·文学》载袁虎倚马前，须臾作露布文七纸，殊可观。本场三骰总点至少 12 时得分 +16% 并返还 3 灵感；若达到 16 点，则改为得分 +30% 并同样返还灵感。未达标则徒耗锋芒。",
     "effect": {
-      "type": "fixed_dice",
-      "value": 18
+      "type": "dice_pattern",
+      "pattern": "total_tiers",
+      "tiers": [
+        {
+          "threshold": 16,
+          "value": 0.3,
+          "reward": {
+            "type": "inspiration",
+            "value": 3,
+            "perMatch": false
+          }
+        },
+        {
+          "threshold": 12,
+          "value": 0.16,
+          "reward": {
+            "type": "inspiration",
+            "value": 3,
+            "perMatch": false
+          }
+        }
+      ]
     },
-    "cost": 4
+    "cost": 3
   },
   {
     "id": "TA07",
@@ -284,7 +329,7 @@
     "id": "TA08",
     "name": "布局谋篇",
     "kind": "active",
-    "text": "胸中先有丘壑，落笔方能从容。发动后可指定下一枚灵感骰为 1—6 点；一局内每次再用，所耗灵感递增，谋定之后不可反悔。",
+    "text": "胸中先有丘壑，落笔方能从容。发动后于回合掷移动骰前指定 1—6 格落点；本局每次再用，所耗灵感递增，谋定之后不可反悔。",
     "effect": {
       "type": "planned_dice",
       "baseCost": 5,

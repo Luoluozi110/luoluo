@@ -1919,7 +1919,7 @@ window.GAME_QUESTIONS = [
         "studyTarget": "ci",
         "inkTags": [
           "燃笔",
-          "惜身"
+          "逐名"
         ],
         "resultText": "你亲口唱到那一韵便停下，终于把它划去；词句少了一点炫目，却让整阕有了呼吸。"
       }
