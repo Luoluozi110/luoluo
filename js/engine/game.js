@@ -2007,13 +2007,22 @@ export class Game {
       extraDicePct(extraCount = 0) {
         return this.extraDiceModifiers(extraCount).reduce((sum, mod) => sum + (Number(mod.value) || 0), 0);
       },
-      extraDiceCost(style, extraIndex = 1) {
+      extraDiceCost(style, extraIndex = 1, pips = []) {
         const base = Number((g.cfg.inspiration || {}).extraDiceCost) || 5;
+        const activeEffects = this.usedActive.map(t => t.effect || {});
+        // 七步成诗把「第一笔续写」变成真正的免费选择；其余减费仍至少保留 1 灵感成本。
+        if (extraIndex === 1 && activeEffects.some(ef => ef.type === 'dice_pattern' && ef.firstExtraFree)) return 0;
         let discount = 0;
         if (style === 'ci' && extraIndex === 1) discount += Number((this.styleSystem.ci || {}).firstExtraDiscount) || 0;
         if (extraIndex === 1) for (const t of this.passiveTalents) {
           const ef = t.effect || {};
-          if (ef.type === 'extra_dice_pct' || ef.type === 'dice_pattern') discount += Math.max(0, Number(ef.firstCostDiscount) || 0);
+          if (ef.type === 'extra_dice_pct' || ef.type === 'dice_pattern') {
+            discount += Math.max(0, Number(ef.firstCostDiscount) || 0);
+            // 急智只在低开后给出追笔的机会，避免成为无条件的最优减费。
+            if (ef.pattern === 'low_then_high' && Number(pips[0]) <= (Number(ef.lowMax) || 2)) {
+              discount += Math.max(0, Number(ef.conditionalFirstCostDiscount) || 0);
+            }
+          }
         }
         const a = g.ensureAbilityState();
         if (extraIndex === 1 && a.manuscript.polish > 0) discount += Number(g.abilityConfig().manuscript?.polishDiscount) || 0;
@@ -2065,6 +2074,14 @@ export class Game {
         const a = g.ensureAbilityState();
         if (!this.usedPolish && a.manuscript.polish > 0) this.usedPolish = true;
         return true;
+      },
+      /** 一气呵成：玩家付费续写第一笔后，自动续成第二笔；同一场只触发一次。 */
+      useExtraDiceChain() {
+        if (this._extraDiceChainUsed) return null;
+        const talent = this.usedActive.find(t => (t.effect || {}).type === 'extra_dice_chain');
+        if (!talent) return null;
+        this._extraDiceChainUsed = true;
+        return talent;
       },
       /** 结算：返回双方明细 */
       resolve(style, manner, dice) {
@@ -2248,21 +2265,59 @@ export class Game {
       if (ef.type === 'dice_pattern') {
         let occurrence = 0;
         let scorePct = 0;
+        let reward = ef.reward || null;
         if (ef.pattern === 'six') occurrence = dicePips.filter(v => v === 6).length;
         else if (ef.pattern === 'distinct') occurrence = Math.max(0, new Set(dicePips).size - 1);
+        else if (ef.pattern === 'all_distinct') {
+          const minDice = Math.max(2, Number(ef.minDice) || 3);
+          occurrence = dicePips.length >= minDice && new Set(dicePips).size === dicePips.length ? 1 : 0;
+        }
+        else if (ef.pattern === 'low_then_high') {
+          occurrence = dicePips.length >= 2 && dicePips[0] <= (Number(ef.lowMax) || 2) && dicePips[1] >= (Number(ef.nextHighMin) || 5) ? 1 : 0;
+        }
+        else if (ef.pattern === 'ascending') {
+          const minDice = Math.max(2, Number(ef.minDice) || 2);
+          let rising = 0;
+          for (let i = 1; i < dicePips.length; i++) {
+            if (dicePips[i] > dicePips[i - 1]) rising++;
+            else break;
+          }
+          occurrence = dicePips.length >= minDice ? rising : 0;
+          scorePct = occurrence * (Number(ef.perStepValue) || 0);
+          const fullDice = Math.max(minDice, Number(ef.fullDice) || 3);
+          if (dicePips.length >= fullDice && rising >= fullDice - 1) {
+            scorePct += Number(ef.fullValue) || 0;
+            reward = ef.fullReward || reward;
+          } else reward = null;
+        }
         else if (ef.pattern === 'single') occurrence = dicePips.length === 1 ? 1 : 0;
         else if (ef.pattern === 'all_high') occurrence = dicePips.every(v => v >= (Number(ef.minPip) || 4)) ? 1 : 0;
         else if (ef.pattern === 'pair') occurrence = new Set(dicePips).size < dicePips.length ? 1 : 0;
         else if (ef.pattern === 'total') occurrence = totalPips >= (Number(ef.threshold) || 12) ? 1 : 0;
+        else if (ef.pattern === 'exact_total') {
+          const diceCount = Math.max(2, Number(ef.diceCount) || 2);
+          occurrence = dicePips.length === diceCount && totalPips === (Number(ef.total) || 7) ? 1 : 0;
+        }
+        else if (ef.pattern === 'total_tiers') {
+          const tiers = Array.isArray(ef.tiers) ? ef.tiers.slice().sort((a, b) => (Number(b.threshold) || 0) - (Number(a.threshold) || 0)) : [];
+          const tier = tiers.find(x => totalPips >= (Number(x.threshold) || 99));
+          occurrence = tier ? 1 : 0;
+          scorePct = tier ? Number(tier.value) || 0 : 0;
+          reward = tier ? tier.reward || null : null;
+        }
         else if (ef.pattern === 'extremes') {
           const high = dicePips.filter(v => v >= (Number(ef.highMin) || 5)).length;
           const low = dicePips.filter(v => v <= (Number(ef.lowMax) || 2)).length;
           occurrence = high + low;
           scorePct = high * (Number(ef.highValue) || 0) + low * (Number(ef.lowValue) || 0);
         }
-        if (ef.pattern !== 'extremes') scorePct = occurrence * (Number(ef.value) || 0);
+        if (!['extremes', 'ascending', 'total_tiers'].includes(ef.pattern)) scorePct = occurrence * (Number(ef.value) || 0);
         if (scorePct) pct.push({ source: 'talent', label: `文心·${t.name}`, value: scorePct });
-        if (occurrence > 0) talentTriggers.push({ id: t.id, name: t.name, pattern: ef.pattern, occurrence, reward: ef.reward || null });
+        if (occurrence > 0) talentTriggers.push({ id: t.id, name: t.name, pattern: ef.pattern, occurrence, reward });
+      } else if (ef.type === 'extra_dice_chain') {
+        const pips = dicePips;
+        const chainHit = session._extraDiceChainUsed && pips.length >= 3 && (ef.compare !== 'not_lower' || pips[2] >= pips[1]);
+        if (chainHit && Number(ef.value)) pct.push({ source: 'talent', label: `文心·${t.name}·续章`, value: Number(ef.value) || 0 });
       } else if (ef.type === 'style_switch_pct' && session.lastStyle && session.lastStyle !== style) {
         const value = Number(ef.value) || 0;
         if (value) pct.push({ source: 'talent', label: `文心·${t.name}·换体`, value });

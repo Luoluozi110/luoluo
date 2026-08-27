@@ -32,7 +32,7 @@ function setup(index) {
 console.log('== 创作抉择题内容契约 ==');
 {
   const choices = config().questions.filter(q => q.type === 'choice').flatMap(q => q.options || []);
-  assert.equal(choices.length, 54, '18 道抉择题各有 3 个选项');
+  assert.equal(choices.length, 84, '28 道抉择题各有 3 个选项');
   assert.ok(choices.every(o => ['shi','ci','lian','bi','xue','si'].includes(o.studyTarget)), '每项都有有效修习方向');
   assert.ok(choices.every(o => Array.isArray(o.inkTags) && o.inkTags.length >= 1 && o.inkTags.length <= 2), '每项都有 1–2 个墨痕');
   assert.ok(choices.every(o => typeof o.resultText === 'string' && o.resultText.trim()), '每项都有即时回声');
@@ -40,7 +40,7 @@ console.log('== 创作抉择题内容契约 ==');
   assert.ok(choices.every(o => o.resultText.length >= 20 && o.resultText.length <= 60), '即时回声长度适合结算弹层阅读');
   const choiceQuestions = config().questions.filter(q => q.type === 'choice');
   assert.ok(choiceQuestions.every(q => !/安全通过|高阶玩法|传统套路|邮路|诗的社交|没想通/.test(q.analysis || '')), '解析不含破坏时代氛围的措辞');
-  console.log('  ✓ 54 个选项均具备方向、墨痕与专属回声');
+  console.log('  ✓ 84 个选项均具备方向、墨痕与专属回声');
 }
 
 console.log('== 当前研修方向：推进进度，不直接灌属性 ==');

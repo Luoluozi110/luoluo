@@ -878,6 +878,7 @@ export function talentEffectText(t) {
       const discount = Number(e.firstCostDiscount) || 0;
       return discount ? `首枚追加少耗 ${discount} 灵感；${pct}` : pct;
     }
+    case 'extra_dice_chain': return `支付首枚续掷后自动续得第二枚骰；若自动骰不低于首枚续骰，得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'dice_transform':
       if (e.mode === 'first_floor') return `本场首枚灵感骰最低视为 ${e.floor || 4} 点`;
       if (e.mode === 'lowest_to') return `将最低且不高于 ${e.maxPip || 3} 点的一骰化为 ${e.target || 6} 点`;
@@ -886,10 +887,15 @@ export function talentEffectText(t) {
       const pct = n => `${Math.round((Number(n) || 0) * 100)}%`;
       let s = e.pattern === 'six' ? `每枚最终六点骰，得分 +${pct(e.value)}`
         : e.pattern === 'distinct' ? `每多一种不同点数，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚追加少耗 ${e.firstCostDiscount} 灵感` : ''}`
+        : e.pattern === 'all_distinct' ? `${e.minDice || 3} 枚骰点各不相同，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚续掷少耗 ${e.firstCostDiscount} 灵感` : ''}`
+        : e.pattern === 'low_then_high' ? `首骰 ≤${e.lowMax || 2} 后续骰 ≥${e.nextHighMin || 5}，得分 +${pct(e.value)}；低开时首枚续掷少耗 ${e.conditionalFirstCostDiscount || 0} 灵感`
+        : e.pattern === 'ascending' ? `续骰逐枚递升，每次 +${pct(e.perStepValue)}；${e.fullDice || 3} 骰连升另 +${pct(e.fullValue)}`
         : e.pattern === 'single' ? `仅以一枚骰结算，得分 +${pct(e.value)}`
         : e.pattern === 'all_high' ? `全部骰不低于 ${e.minPip || 4} 点，得分 +${pct(e.value)}`
         : e.pattern === 'pair' ? `骰组出现同点，得分 +${pct(e.value)}`
         : e.pattern === 'total' ? `骰组总点不少于 ${e.threshold || 12}，得分 +${pct(e.value)}`
+        : e.pattern === 'exact_total' ? `前 ${e.diceCount || 2} 骰合计恰为 ${e.total || 7} 点，得分 +${pct(e.value)}${e.firstExtraFree ? '；首枚续掷免费' : ''}`
+        : e.pattern === 'total_tiers' ? (e.tiers || []).map(x => `总点 ≥${x.threshold}：+${pct(x.value)}`).join('；')
         : `每枚 ≥${e.highMin || 5} 点骰 +${pct(e.highValue)}；每枚 ≤${e.lowMax || 2} 点骰 ${pct(e.lowValue)}`;
       if (e.reward && Number(e.reward.value) > 0) {
         const rn = { insight: '心得', fragment: '残页', page: '稿页', inspiration: '灵感' }[e.reward.type] || e.reward.type;

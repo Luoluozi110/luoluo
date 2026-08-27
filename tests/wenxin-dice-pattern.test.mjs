@@ -33,21 +33,20 @@ const cfg = config();
 const get = id => structuredClone(cfg.talentById.get(id));
 function game() { const g = new Game(cfg, ui(), () => 0); g.push = () => {}; g.start('bowen', { name: '' }); return g; }
 
-console.log('== 低点抬升与点铁成金使用同一变形链 ==');
+console.log('== 急智低开高走与保留的点铁成金、梦笔生花联动 ==');
 {
   const g = game();
   g.s.passive = [get('T005'), get('T007'), get('T040')];
-  const session = g.createSession({ npc: foe, label: '变形联动' });
+  const session = g.createSession({ npc: foe, label: '低开高走' });
   session.usedActive = [get('TA07')];
-  const out = g.resolveBattle(session, 'ci', 'zheli', [1, 6]);
-  assert.deepEqual(out.rawDicePips, [1, 6], '保留原始骰组供展示和诊断');
-  assert.deepEqual(out.dicePips, [6, 6], '急智先把 1 抬至 2，点铁成金再将最低骰化六');
-  assert.match(out.selfCalc.items[3].detail, /急智 1→2.*点铁成金 2→6/, '灵感骰明细说明完整变形链');
+  const out = g.resolveBattle(session, 'ci', 'zheli', [1, 5]);
+  assert.deepEqual(out.rawDicePips, [1, 5], '保留原始骰组供展示和诊断');
+  assert.deepEqual(out.dicePips, [6, 5], '点铁成金仍独立把最低低点化六');
+  assert.match(out.selfCalc.items[3].detail, /点铁成金 1→6/, '灵感骰明细说明保留的变形效果');
+  assert.ok(out.selfCalc.items[4].detail.includes('文心·急智 +10%'), '急智在低开高走时给出翻盘收益');
   const bloom = out.talentTriggers.find(t => t.id === 'T007');
-  const lucky = out.talentTriggers.find(t => t.id === 'T040');
-  assert.equal(bloom.occurrence, 2, '梦笔生花按两枚最终六点计数');
-  assert.equal(lucky.occurrence, 2, '妙手偶得按两枚最终六点发放后续收益');
-  assert.ok(out.selfCalc.items[4].detail.includes('文心·梦笔生花 +10%'), '两枚六点合计 +10% 得分');
+  assert.equal(bloom.occurrence, 1, '梦笔生花仍按最终六点计数，未修改其效果');
+  assert.ok(out.selfCalc.items[4].detail.includes('文心·梦笔生花 +5%'), '保留的梦笔生花仍给出原有收益');
 }
 
 console.log('== 多骰分出异点与同点两套构筑 ==');
@@ -56,7 +55,7 @@ console.log('== 多骰分出异点与同点两套构筑 ==');
   g.s.passive = [get('T010'), get('T039')];
   const session = g.createSession({ npc: foe, label: '骰组分流' });
   const varied = g.resolveBattle(session, 'ci', 'zheli', [1, 3, 6]);
-  assert.ok(varied.selfCalc.items[4].detail.includes('文心·天马行空 +6%'), '三种点数令天马行空触发两档');
+  assert.ok(varied.selfCalc.items[4].detail.includes('文心·天马行空 +15%'), '三种点数令天马行空触发完整构型');
   assert.ok(!varied.talentTriggers.some(t => t.id === 'T039'), '全异点不触发同声相应');
   const paired = g.resolveBattle(session, 'ci', 'zheli', [3, 3]);
   assert.ok(paired.selfCalc.items[4].detail.includes('文心·同声相应 +8%'), '同点骰触发另一条路线');

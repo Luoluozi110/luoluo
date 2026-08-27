@@ -6,7 +6,7 @@
  *   high —— 默认档，PC / 强机，开满氛围层与柔影。
  *   low  —— 省电档，移动 / 弱机，关掉最贵的几项（全屏噪点混合、bloom、
  *           SVG 柔影、格子大模糊投影、远山），并拍平渐变（flatGraphics）、
- *           关遮罩模糊（blur）、画布锁 1x（precision）。
+ *           关遮罩模糊（blur）、地图中心图固定低清贴图（mapTexture）、画布锁 1x（precision）。
  *   档位预算见 BUDGETS：flatGraphics/blur 由 board.css 的
  *   html[data-quality="low"] 覆盖实时驱动；precision 由 precisionScale()
  *   供 album.js 成绩图绘制读取。
@@ -31,6 +31,7 @@ export const BUDGETS = {
     cellSoftShadow: true,// 格子大模糊投影（box-shadow 12px）
     flatGraphics: false, // 是否保留体积渐变 / 柔影细节（false=保留；low 档拍平为实色）
     blur: true,          // 弹窗 / 遮罩的 backdrop-filter 模糊是否开启（CSS 驱动）
+    mapTexture: 'full',   // 地图中心图：full=最高 960px；lite=固定 640px
     precision: 'high'    // 渲染精度：high=画布按 DPR 提像素比；low=锁 1x 省显存与导出体积
   },
   low: {
@@ -44,6 +45,7 @@ export const BUDGETS = {
     cellSoftShadow: false,
     flatGraphics: true,  // 拍平渐变→实色（board.css 实色背景 + 徽记填充覆盖）
     blur: false,         // 关掉最贵的 backdrop-filter 模糊（board.css 覆盖）
+    mapTexture: 'lite',   // 地图中心图只保留 640px WebP，减少下载与解码内存
     precision: 'low'     // 画布锁 1x，降低内存占用与 toDataURL 体积
   }
 };

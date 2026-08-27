@@ -22,7 +22,9 @@ const load = n => JSON.parse(fs.readFileSync(path.join(CFG_DIR, `${n}.json`), 'u
 const questions = load('questions');
 const knowledge = questions.filter(q => q.type === 'knowledge');
 const choice = questions.filter(q => q.type === 'choice');
-assert.ok(knowledge.length >= 49, `knowledge 题应不少于 49 道，实为 ${knowledge.length}`);
+assert.equal(questions.length, 87, `题库总数应为 87 道，实为 ${questions.length}`);
+assert.equal(knowledge.length, 59, `knowledge 题应为 59 道，实为 ${knowledge.length}`);
+assert.equal(choice.length, 28, `choice 题应保持 28 道，实为 ${choice.length}`);
 
 let situ = 0;
 for (const q of knowledge) {

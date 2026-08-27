@@ -3,13 +3,13 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260822secretfinal1';
-import { Game } from '../engine/game.js?v=20260827wenxinredesign1';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260825secretfinalfix1';
+import { Game } from '../engine/game.js?v=20260825secretfinalfix1';
 import { BoardView } from './board.js?v=20260824audio1';
 import { Hud, radarSVG } from './hud.js?v=20260824tutorial1';
 // 奇遇属性收益在 20260823eventattrs1 起于选择前完整展示；独立版本键避免旧模块缓存继续省略属性。
-import { Modals } from './modals.js?v=20260827wenxinredesign1';
-import { BattleStage } from './battle.js?v=20260827wenxinredesign1';
+import { Modals } from './modals.js?v=20260824tutorial1';
+import { BattleStage } from './battle.js?v=20260824tutorial1';
 import { AlbumUI } from './album.js?v=20260824audio1';
 import { CodexUI } from './codex.js?v=20260824wenxindice1';
 import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260822secretfinal1';

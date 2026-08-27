@@ -261,8 +261,10 @@
           if (!Array.isArray(b.rings) || b.rings.length !== 3) add('board.rings', '三圈地图必须恰好包含三个圈层');
           if (!Array.isArray(b.phaseGates) || b.phaseGates.length < 2) add('board.phaseGates', '三圈地图至少需要两个阶段门');
           const h = b.hiddenFinalRing;
-          if (!isObj(h)) add('board.hiddenFinalRing', '必须提供独立的隐藏终圈配置');
-          else {
+          // 增量工程允许只携带主路线；完整运行配置仍必须声明隐藏终圈。
+          if (!isObj(h)) {
+            if (!partial) add('board.hiddenFinalRing', '必须提供独立的隐藏终圈配置');
+          } else {
             if (!text(h.id) || !text(h.name)) add('board.hiddenFinalRing', '必须包含 id 与名称');
             if (!Array.isArray(h.cells) || h.cells.length < 2 || h.cells.length > 16) add('board.hiddenFinalRing.cells', '隐藏终圈必须包含 2～16 个格子');
             else {
