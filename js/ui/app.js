@@ -3,27 +3,27 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260828sky1';
-import { Game } from '../engine/game.js?v=20260828sky1';
-import { BoardView } from './board.js?v=20260828sky1';
-import { Hud, radarSVG } from './hud.js?v=20260828sky1';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260822secretfinal1';
+import { Game } from '../engine/game.js?v=20260824tutorial1';
+import { BoardView } from './board.js?v=20260824audio1';
+import { Hud, radarSVG } from './hud.js?v=20260824tutorial1';
 // 奇遇属性收益在 20260823eventattrs1 起于选择前完整展示；独立版本键避免旧模块缓存继续省略属性。
-import { Modals } from './modals.js?v=20260828sky1';
-import { BattleStage } from './battle.js?v=20260828sky1';
-import { AlbumUI } from './album.js?v=20260828sky1';
-import { CodexUI } from './codex.js?v=20260828sky1';
-import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260828sky1';
-import { initQuality, getTier, setTier } from './quality.js?v=20260828sky1';
-import { ATTR_NAMES } from '../engine/rules.js?v=20260828sky1';
-import * as Album from '../engine/album.js?v=20260828sky1';
-import * as Codex from '../engine/codex.js?v=20260828sky1';
+import { Modals } from './modals.js?v=20260824tutorial1';
+import { BattleStage } from './battle.js?v=20260824tutorial1';
+import { AlbumUI } from './album.js?v=20260824audio1';
+import { CodexUI } from './codex.js?v=20260824wenxindice1';
+import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260822secretfinal1';
+import { initQuality, getTier, setTier } from './quality.js?v=20260822secretfinal1';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260822secretfinal1';
+import * as Album from '../engine/album.js?v=20260824brand1';
+import * as Codex from '../engine/codex.js?v=20260822secretfinal1';
 // 音频模块统一使用同一 URL，确保静音、SFX 与配乐共享一个 AudioContext / Master 总线。
 import { initAudio, play } from './audio.js';
-import { setScene, setTension, setStage } from './music.js?v=20260828sky1';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260828sky1';
-import { Leaderboard } from './leaderboard.js?v=20260828sky1';
-import { personalize } from './namefmt.js?v=20260828sky1';
-import { ContentTestUI } from './contentTest.js?v=20260828sky1';
+import { setScene, setTension, setStage } from './music.js?v=20260824audio1';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260824tutorial1';
+import { Leaderboard } from './leaderboard.js?v=20260822secretfinal1';
+import { personalize } from './namefmt.js?v=20260822secretfinal1';
+import { ContentTestUI } from './contentTest.js?v=20260822contenttest1';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -114,7 +114,6 @@ async function ensureGameUi() {
     hud = new Hud($('#hud'));
     if (cfg.inspiration && cfg.inspiration.lowWarning) hud.lowWarning = cfg.inspiration.lowWarning;
     hud.onTalent = t => modals.showTalentDetail(t);
-    hud.onSideQuest = () => { if (game && typeof game.sideQuestJournal === 'function') modals.showSideQuestJournal(game.sideQuestJournal()); };
     hud.onRoll(onRoll);
     hud.onPlan(onPlan);
     hud.onAbility(onAbility);
@@ -420,13 +419,8 @@ function makeUi() {
       if (modals.showStageChange) await modals.showStageChange(gate, state);
     },
     showZeitgeist: z => modals.showZeitgeist(z),
-    askScenic: (cell, cost, curInsp, sideQuestMeta) => modals.askScenic(cell, cost, curInsp, sideQuestMeta),
+    askScenic: (cell, cost, curInsp) => modals.askScenic(cell, cost, curInsp),
     chooseScenicTalent: (candidates, meta) => modals.chooseScenicTalent(candidates, meta),
-    chooseSideQuest: (routes, cell) => modals.chooseSideQuest(routes, cell),
-    showSideQuestAct: (route, act, meta) => modals.showSideQuestAct(route, act, meta),
-    showSideQuestComplete: (route, state) => modals.showSideQuestComplete(route, state),
-    showSideQuestJournal: journal => modals.showSideQuestJournal(journal),
-    askSideQuestFinal: meta => modals.askSideQuestFinal(meta),
     runBattle: async sess => {
       setScene('battle');     // 挥毫论战：切 combat 配乐
       setTension(0.7);
@@ -436,7 +430,7 @@ function makeUi() {
       setStage(stageFromProgress(game.progress())); // 战后阶段可能已进阶，重新移调
       return out;
     },
-    showPalaceIntro: (themes, names, inkSummary, questions, echoes, sideQuestFinal) => modals.showPalaceIntro(themes, names, inkSummary, questions, echoes, sideQuestFinal),
+    showPalaceIntro: (themes, names, inkSummary) => modals.showPalaceIntro(themes, names, inkSummary),
     askHiddenFinal: meta => modals.askHiddenFinal(meta),
     showHiddenFinalRing: async () => {
       setScene('board');
@@ -744,6 +738,32 @@ async function waitForCloudBeforeGame() {
 }
 
 /* ------------------------------------------------------ 载入自定义配置（编辑器导出 → 本机生效） */
+/**
+ * 旧编辑器导出的工程会把“当时的官方文心”一并写入 localStorage，进而遮住后来部署的
+ * 官方规则。仅识别明确的旧版灵感骰签名并迁移；真正改写过效果的自定义文心保持原样。
+ */
+function migrateLegacyOfficialDiceTalents(project) {
+  if (!project || !Array.isArray(project.talents) || !cloudBaseCfg) return { project, migrated: [] };
+  const legacy = {
+    T005: e => e && e.type === 'dice_transform' && e.mode === 'low_lift',
+    T010: e => e && e.type === 'dice_pattern' && e.pattern === 'distinct',
+    T016: e => e && e.type === 'extra_dice_pct',
+    TA01: e => e && e.type === 'dice_transform' && e.mode === 'first_floor',
+    TA05: e => e && e.type === 'extra_dice_pct',
+    TA06: e => e && (e.type === 'fixed_dice' || (e.type === 'dice_pattern' && e.pattern === 'total'))
+  };
+  const official = new Map((cloudBaseCfg.talents || []).map(t => [t.id, t]));
+  const migrated = project.talents.filter(t => legacy[t.id] && legacy[t.id](t.effect)).map(t => t.id);
+  if (!migrated.length) return { project, migrated };
+  const next = JSON.parse(JSON.stringify(project));
+  next.talents = next.talents.map(t => migrated.includes(t.id) ? JSON.parse(JSON.stringify(official.get(t.id))) : t);
+  if (next['talent-upgrade']) {
+    const current = cloudBaseCfg['talent-upgrade'] || {};
+    for (const id of migrated) if (current[id]) next['talent-upgrade'][id] = JSON.parse(JSON.stringify(current[id]));
+  }
+  return { project: next, migrated };
+}
+
 function openCustomConfig() {
   const cur = localStorage.getItem('feihua_custom_config');
   const html = `
@@ -804,13 +824,15 @@ function openCustomConfig() {
       setMsg('地图配置缺少三圈阶段门或路线映射，已拒绝载入；请从最新版内容编辑器重新导出。', true);
       return;
     }
-    try { customProject = proj; cfg = composeProjects(); }
+    const migrated = migrateLegacyOfficialDiceTalents(proj);
+    try { customProject = migrated.project; cfg = composeProjects(); }
     catch (err) { setMsg('合并失败：' + err.message, true); return; }
     refreshConfigBoundUi();
-    localStorage.setItem('feihua_custom_config', JSON.stringify(proj));
+    localStorage.setItem('feihua_custom_config', JSON.stringify(migrated.project));
     customConfigActive = true;
     modals.close(ov);
-    hud.toast(`已载入自定义配置（${keys.join('/')}），下一局起生效`);
+    const notice = migrated.migrated.length ? `；已迁移旧版官方文心：${migrated.migrated.join('、')}` : '';
+    hud.toast(`已载入自定义配置（${keys.join('/')}），下一局起生效${notice}`);
   });
   // 云端同步地址：保存即拉取一次，持久化到本机
   ov.querySelector('#cloudSave').addEventListener('click', async () => {
@@ -960,12 +982,6 @@ async function showResult(sum) {
       <div>${esc(sum.inkEpilogue)}</div>
     </div>`
     : '';
-  const narrativeBlock = sum.narrativeEpilogue
-    ? `<div class="result-mastery paper" style="margin-top:10px;padding:10px 14px;font-size:13px;line-height:1.85;white-space:pre-line">
-      <div style="font-size:14px;letter-spacing:.16em;color:var(--mo-2);margin-bottom:4px">卷 末 余 音</div>
-      <div>${esc(sum.narrativeEpilogue)}</div>
-    </div>`
-    : '';
 
   resultEl.innerHTML = `
     <div class="result-wrap">
@@ -990,7 +1006,6 @@ async function showResult(sum) {
           ${unlockBlock}
           ${masteryBlock}
           ${inkBlock}
-          ${narrativeBlock}
         </div>
       </div>
       <div class="result-actions">
@@ -1019,7 +1034,13 @@ async function showResult(sum) {
       const raw = localStorage.getItem('feihua_custom_config');
       if (raw) {
         const project = JSON.parse(raw);
-        if (isRingProject(project)) { customProject = project; cfg = composeProjects(); customConfigActive = true; }
+        if (isRingProject(project)) {
+          const migrated = migrateLegacyOfficialDiceTalents(project);
+          customProject = migrated.project;
+          cfg = composeProjects();
+          customConfigActive = true;
+          if (migrated.migrated.length) localStorage.setItem('feihua_custom_config', JSON.stringify(migrated.project));
+        }
         else localStorage.removeItem('feihua_custom_config');
       }
     } catch (_) { localStorage.removeItem('feihua_custom_config'); }
