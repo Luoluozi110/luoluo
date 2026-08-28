@@ -244,10 +244,18 @@ export class Hud {
     this.el.inspInk.style.width = Math.round(100 * s.inspiration / s.inspirationMax) + '%';
     this.el.inspBar.classList.toggle('low', s.inspiration < (this.lowWarning ?? 5));
 
-    // 天象
-    const skyBadges = s.sky.map(sk => `
-      <div class="sky-badge"><svg class="st" viewBox="0 0 24 24"><path d="M12 3l2.4 5.4 5.8.6-4.3 4 1.2 5.7L12 15.8 6.9 18.7l1.2-5.7-4.3-4 5.8-.6z" fill="#ffe08a"/></svg>
-      <span>${sk.card.name}</span><span class="left">剩 ${sk.left} 回合</span></div>`).join('');
+    // 天象（配置了应势选项的卡，角标追加待应势 / 已应势状态）
+    const skyBadges = s.sky.map(sk => {
+      const choices = Array.isArray(sk.card.choices) ? sk.card.choices.filter(c => c && c.id) : [];
+      const picked = choices.find(c => c.id === sk.choiceId);
+      const status = !choices.length ? ''
+        : picked ? (sk.choiceUsed ? `已应势·${picked.name}` : `待应势·${picked.name}`)
+        : '顺其自然';
+      const cls = picked ? (sk.choiceUsed ? ' used' : ' pending') : '';
+      return `
+      <div class="sky-badge${cls}"><svg class="st" viewBox="0 0 24 24"><path d="M12 3l2.4 5.4 5.8.6-4.3 4 1.2 5.7L12 15.8 6.9 18.7l1.2-5.7-4.3-4 5.8-.6z" fill="#ffe08a"/></svg>
+      <span>${sk.card.name}</span>${status ? `<span class="sky-status">${status}</span>` : ''}<span class="left">剩 ${sk.left} 回合</span></div>`;
+    }).join('');
     const nbBadge = s.nextBattlePct
       ? `<div class="sky-badge nb"><svg class="st" viewBox="0 0 24 24"><path d="M12 3l2.4 5.4 5.8.6-4.3 4 1.2 5.7L12 15.8 6.9 18.7l1.2-5.7-4.3-4 5.8-.6z" fill="#ffd24a"/></svg>
       <span>金榜题名时</span><span class="left">下一场论战 +${Math.round(s.nextBattlePct * 100)}%</span></div>`

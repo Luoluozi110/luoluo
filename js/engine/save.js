@@ -17,7 +17,7 @@
 
 export const RUN_SAVE_KEY = 'feihua_run_save';               // 自动存档槽（每回合结束）
 export const RUN_SAVE_MANUAL_KEY = 'feihua_run_save_manual'; // 手动存档槽（菜单「保存当前进度」）
-export const RUN_SAVE_VERSION = 8;
+export const RUN_SAVE_VERSION = 9;
 export const SAVE_WARN_BYTES = 3 * 1024 * 1024;              // 体积预警阈值 3MB
 
 const LOG_MAX = 200;   // 超过则截断
@@ -190,9 +190,17 @@ export function serializeRun(game) {
         state[k] = idsOf(v);
         break;
       case 'sky':
+        // v9：天象应势字段随档保存（choiceId / choiceUsed / choiceTriggeredAt），
+        // 一次性应势兑现后立即存档，刷新页面不会重复获得。
         state.sky = (Array.isArray(v) ? v : [])
           .filter(sk => sk && sk.card && sk.card.id)
-          .map(sk => ({ id: sk.card.id, left: Number(sk.left) || 1 }));
+          .map(sk => ({
+            id: sk.card.id,
+            left: Number(sk.left) || 1,
+            choiceId: sk.choiceId || null,
+            choiceUsed: !!sk.choiceUsed,
+            choiceTriggeredAt: Number(sk.choiceTriggeredAt) || null
+          }));
         break;
       case 'loadout':
         state.loadout = idsOf(v);
@@ -352,12 +360,22 @@ export function deserializeRun(rawObj, cfg) {
   out.talentLevels = levels;
   if (lostTalents.length) warnings.push(`有 ${lostTalents.length} 枚文心在当前配置中已失效，已移除（${lostTalents.join('、')}）`);
 
-  // 天象：按 ID 重新关联 cfg.sky
+  // 天象：按 ID 重新关联 cfg.sky；应势字段缺省回退（v9 前旧档视为「顺其自然」）。
+  // choiceId 必须能在当前配置卡里找到，配置变更后失效的选择回退为未选择。
   const skyPool = new Map((cfg.sky || []).map(c => [c.id, c]));
   out.sky = (Array.isArray(st.sky) ? st.sky : [])
     .map(sk => {
       const card = skyPool.get(sk.id);
-      return card ? { card, left: Math.max(1, Number(sk.left) || 1) } : null;
+      if (!card) return null;
+      const cfgChoices = Array.isArray(card.choices) ? card.choices : [];
+      const choiceId = cfgChoices.some(c => c && c.id === sk.choiceId) ? sk.choiceId : null;
+      return {
+        card,
+        left: Math.max(1, Number(sk.left) || 1),
+        choiceId,
+        choiceUsed: choiceId ? !!sk.choiceUsed : false,
+        choiceTriggeredAt: choiceId ? (Number(sk.choiceTriggeredAt) || null) : null
+      };
     })
     .filter(Boolean);
 

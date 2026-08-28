@@ -165,6 +165,32 @@
 }
 .sky-badge .st { width: 14px; height: 14px; }
 .sky-badge .left { font-size: 11px; opacity: .75; }
+.sky-badge .sky-status { font-size: 11px; padding: 1px 7px; border-radius: 9px; letter-spacing: .06em; }
+.sky-badge.pending .sky-status { background: rgba(255,208,74,.18); color: #ffd24a; border: 1px solid rgba(255,208,74,.45); }
+.sky-badge.used .sky-status { background: rgba(160,170,200,.14); color: #a7b0c8; border: 1px solid rgba(160,170,200,.35); }
+.sky-badge.used > .st { filter: grayscale(.75); opacity: .7; }
+
+/* --- 天象应势选择按钮（弹窗内） --- */
+.sky-choice-title {
+  margin-top: 14px; text-align: center; font-size: 13px; letter-spacing: .3em;
+  color: #6d84c8; text-indent: .3em;
+}
+.sky-choice-list { display: flex; flex-direction: column; gap: 8px; margin-top: 9px; }
+.sky-choice {
+  display: flex; flex-direction: column; gap: 3px; text-align: left;
+  padding: 9px 13px; border-radius: 10px; cursor: pointer;
+  background: rgba(76,102,168,.10); border: 1px solid rgba(96,124,196,.42);
+  color: #2c3a66; font-family: inherit; font-size: 12.5px; line-height: 1.5;
+  transition: background .18s ease, border-color .18s ease, transform .18s var(--ease-back, ease);
+}
+.sky-choice:hover { background: rgba(76,102,168,.20); border-color: #607cc4; transform: translateY(-1px); }
+.sky-choice b { font-size: 13.5px; letter-spacing: .12em; color: #33477e; }
+.sky-choice span { opacity: .85; }
+.sky-choice .sky-choice-cost {
+  font-style: normal; align-self: flex-start; font-size: 11px;
+  color: #8a5a20; background: rgba(255,184,74,.16);
+  border: 1px solid rgba(214,144,44,.4); border-radius: 8px; padding: 0 7px;
+}
 
 /* --- 右侧：文心栏（跟随天象角标下移） --- */
 #talentBar {

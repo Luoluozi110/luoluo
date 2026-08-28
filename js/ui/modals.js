@@ -674,19 +674,38 @@ export class Modals {
   }
 
   /* ---------------------------------------------------- 天象 */
+  /** 天象弹窗：展示卡面；若配置了应势选项，玩家须择其一或「顺其自然」（resolve 值为 choiceId 或 null）。 */
   async showSky(card) {
+    const choices = Array.isArray(card && card.choices) ? card.choices.filter(c => c && c.id) : [];
+    const hasChoices = choices.length > 0;
+    const isOnce = (card.effect || {}).type === 'next_battle_pct';
+    const choiceList = hasChoices ? `
+        <div class="sky-choice-title">应势一念 · 请择其一</div>
+        <div class="sky-choice-list">${choices.map(c => `
+          <button class="sky-choice" data-choice="${esc(c.id)}" type="button">
+            <b>${esc(c.name || c.id)}</b><span>${esc(c.desc || '')}</span>${Number(c.effect && c.effect.cost) > 0 ? `<em class="sky-choice-cost">消耗构思 ${Number(c.effect.cost)}</em>` : ''}
+          </button>`).join('')}</div>` : '';
+    const buttons = hasChoices
+      ? '<button class="btn btn-ink" data-cancel>顺其自然</button>'
+      : '<button class="btn btn-ink" data-ok>观星毕</button>';
     const ov = this.open(`
       <div class="talent-card paper" style="border-color:#7f95cf;box-shadow:0 16px 40px rgba(0,0,0,.5),0 0 34px rgba(127,149,207,.55)">
-        <div class="kind">天象　${(card.effect || {}).type === 'next_battle_pct' ? '下一场论战 · 一次性' : `持续 ${card.turns || 6} 回合`}</div>
+        <div class="kind">天象　${isOnce ? '下一场论战 · 一次性' : `持续 ${card.turns || 6} 回合`}</div>
         <div class="sky-ico" style="font-size:46px;text-align:center;line-height:1.15">${card.icon ? esc(card.icon) : '✦'}</div>
         <h3>${esc(card.name)}</h3>
         <div class="dianggu" style="background:rgba(76,102,168,.13);border-left-color:#4a5a80">${esc(personalize(card.text || '', this.playerName))}</div>
         <div class="efx" style="color:#3a4a80">${skyEffectText(card)}</div>
-        <div style="text-align:center;margin-top:16px"><button class="btn btn-ink" data-ok>观星毕</button></div>
+        ${choiceList}
+        <div class="btn-row" style="margin-top:14px;justify-content:center">${buttons}</div>
       </div>`);
     play('sky');
-    await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', r));
-    this.close(ov);
+    return new Promise(resolve => {
+      let done = false;
+      const finish = value => { if (done) return; done = true; this.close(ov); resolve(value); };
+      ov.querySelectorAll('[data-choice]').forEach(b => b.addEventListener('click', () => finish(b.dataset.choice)));
+      ov.querySelector('[data-cancel]')?.addEventListener('click', () => finish(null));
+      ov.querySelector('[data-ok]')?.addEventListener('click', () => finish(null));
+    });
   }
 
   /* ---------------------------------------------------- 开局序章 / 阶段叙事 */

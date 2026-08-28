@@ -5,11 +5,11 @@
 import * as R from './rules.js';
 import * as Album from './album.js';
 import * as Codex from './codex.js';
-import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260824reincarnate2';
+import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260828sky1';
 import * as NpcSelection from './npc-selection.js';
 import { stableFoeId } from './npc-selection.js';
 
-export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260824reincarnate2';
+export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260828sky1';
 
 export const PASSIVE_MAX = 8;
 export const ACTIVE_MAX = 4;
@@ -1102,7 +1102,107 @@ export class Game {
     return a;
   }
 
-  skyActive(type) { return this.s.sky.find(sk => (sk.card.effect || {}).type === type) || null; }
+  /** 当前仍生效的天象；「避风收笔」会主动关闭科场风起的奖惩翻倍。 */
+  skyActive(type) {
+    return (this.s.sky || []).find(sk => {
+      const effect = (sk.card && sk.card.effect) || {};
+      if (effect.type !== type) return false;
+      return !(type === 'battle_reward_mult' && sk.choiceId === 'guard');
+    }) || null;
+  }
+
+  skyEntry(cardId) {
+    return (this.s.sky || []).find(sk => sk.card && sk.card.id === cardId) || null;
+  }
+
+  skyChoice(cardId, choiceId) {
+    const sk = this.skyEntry(cardId);
+    if (!sk || !choiceId) return null;
+    return (Array.isArray(sk.card.choices) ? sk.card.choices : []).find(c => c && c.id === choiceId) || null;
+  }
+
+  /**
+   * 按应势 key（choice.effect.key）在全部生效天象中查找绑定条目与 choice 配置。
+   * 未选该方向（choiceId 不符）或已用尽时，sk.choiceUsed / sk.choiceId 会挡住后续消耗。
+   */
+  skyChoiceByKey(key) {
+    for (const sk of (this.s.sky || [])) {
+      const choices = Array.isArray(sk.card && sk.card.choices) ? sk.card.choices : [];
+      for (const c of choices) {
+        if (c && c.effect && c.effect.key === key) return { sk, choice: c };
+      }
+    }
+    return null;
+  }
+
+  /** 按 key 尝试消耗一次性应势：成功返回 choice 配置；未选/已用/构思不足返回 null。 */
+  consumeSkyKey(key) {
+    const found = this.skyChoiceByKey(key);
+    if (!found) return null;
+    return this.consumeSkyChoice(found.sk.card.id, found.choice.id) ? found.choice : null;
+  }
+
+  consumeSkyChoice(cardId, choiceId, detail = '') {
+    const choice = this.skyChoice(cardId, choiceId);
+    if (!choice) return false;
+    const ef = choice.effect || {};
+    const sk = this.skyEntry(cardId);
+    return this.activateSkyChoice(cardId, choiceId, {
+      cost: Math.max(0, Number(ef.cost) || 0),
+      label: `${sk.card.name}·${choice.name || choiceId}`,
+      detail
+    });
+  }
+
+  /**
+   * 天象应势的一次性消费点。应势资源统一使用构思，但不强行要求当前阶段章法
+   * 与该效果一致；这是天象专属的“择时”支出，避免与原有章法自动发动互相吞费。
+   */
+  activateSkyChoice(cardId, choiceId, opts = {}) {
+    const sk = this.skyEntry(cardId);
+    if (!sk || sk.choiceId !== choiceId || sk.choiceUsed) return false;
+    const cost = Math.max(0, Math.floor(Number(opts.cost) || 0));
+    const a = this.ensureAbilityState();
+    if (cost > 0 && (Number(a.strategy.charges) || 0) < cost) return false;
+    if (cost > 0) a.strategy.charges -= cost;
+    sk.choiceUsed = true;
+    sk.choiceTriggeredAt = Number(this.s.turn) || 0;
+    const label = opts.label || sk.card.name || '天象应势';
+    const spend = cost ? `：构思 -${cost}` : '';
+    this.push(`${label}·${choiceId}发动${spend}${opts.detail || ''}`);
+    this.ui.toast?.(`${label}发动${cost ? ` · 构思余 ${a.strategy.charges}` : ''}${opts.detail || ''}`);
+    this.ui.onState(this.s);
+    this.onForceSave?.();
+    return true;
+  }
+
+  addSkyStrategyCharge(value, reason = '天象·借月养思') {
+    const n = Math.max(0, Math.floor(Number(value) || 0));
+    if (!n) return 0;
+    const a = this.ensureAbilityState();
+    const before = Number(a.strategy.charges) || 0;
+    a.strategy.charges = Math.min(this.strategyCap(), before + n);
+    const gained = a.strategy.charges - before;
+    if (gained) {
+      this.push(`${reason}：构思 +${gained}`);
+      this.ui.toast?.(`${reason} · 构思 +${gained}`);
+      this.ui.onState(this.s);
+      this.onForceSave?.();
+    }
+    return gained;
+  }
+
+  addSkyFragment(value = 1, reason = '天象·雨中磨墨') {
+    const n = Math.max(0, Number(value) || 0);
+    if (!n) return 0;
+    const a = this.ensureAbilityState();
+    a.manuscript.fragments = (Number(a.manuscript.fragments) || 0) + n;
+    this.push(`${reason}：残页 +${n}`);
+    this.ui.toast?.(`${reason} · 残页 +${n}`);
+    this.ui.onState(this.s);
+    this.onForceSave?.();
+    return n;
+  }
 
   /** 整体进度 0–1；三圈路线使用 routeIndex，旧单环配置继续使用 lap/pos。 */
   progress() {
@@ -1685,11 +1785,30 @@ export class Game {
       this.push(`「${cell.name}」触发额外效果`);
       await this.applyEffect(cell.effect);
     }
+    // 应势「趁月趋行」：月圆之夜落入仄韵格或奇遇格后，消耗 1 构思额外前行 1 格并结算新格
+    // （本窗口仅一次；新格若再为仄韵/奇遇，因选择已耗尽不会再连跳）
+    if ((cell.type === 'ze' || cell.type === 'event') && this.consumeSkyKey('strategy_move_plus')) {
+      const extra = await this.moveSteps(1);
+      if (this.s.over) return;
+      const extraArrived = typeof extra === 'string' ? extra : (extra && extra.arrived);
+      if (extraArrived === 'palace') { await this.runPalace(); return; }
+      await this.resolveCell();
+    }
   }
 
   async doPing(cell) {
+    // 应势「避雨改韵」：构思充足时，本格改按仄韵格结算（棋子仍停原格，每窗口一次）
+    if (this.consumeSkyKey('ping_to_ze')) {
+      this.ui.toast(`${cell.name}——雨中改换仄韵，此格按仄韵结算`);
+      return this.doZe(cell);
+    }
     if (this.skyActive('no_ping_recover')) {
-      this.ui.toast(`${cell.name}——梅雨愁绪，纸墨皆潮，灵感未复`);
+      // 应势「雨中磨墨」：接受灵感不恢复，改为获得残页（每窗口一次）
+      if (this.consumeSkyKey('ping_fragment')) {
+        this.addSkyFragment(1, `${cell.name}·雨中磨墨`);
+      } else {
+        this.ui.toast(`${cell.name}——梅雨愁绪，纸墨皆潮，灵感未复`);
+      }
       return;
     }
     this.addInspiration(this.cfg.inspiration.pingCell ?? 1, '平韵');
@@ -1734,6 +1853,8 @@ export class Game {
         this.addAttrs({ [key]: gain }, { reason: '答对考题' });
         this.push(`答对「${q.id}」，${R.ATTR_NAMES[key]} +${gain}`);
         this.addInspiration(this.cfg.inspiration.quizCorrectInsp ?? 0, '答对'); // 核心技能↔燃料闭环
+        // 应势「借月养思」：月圆之夜首次答题成功，构思 +1（每窗口一次）
+        if (this.consumeSkyKey('strategy_on_quiz')) this.addSkyStrategyCharge(1, '月圆之夜·借月养思');
         await this.gainBowenKnowledge('答对知识题');
         for (const t of s.passive) if ((t.effect || {}).type === 'insp_on_quiz') this.triggerTalentLimited(t, `文心·${t.name}`);
         for (const sy of this.synergySet()) for (const ef of (sy.effects || [])) {
@@ -1749,6 +1870,8 @@ export class Game {
       if (!ans.timedOut && ans.index >= 0) {
         s.quiz.right++;
         const feedback = this.applyChoiceStudy(q, ans.index);
+        // 应势「借月养思」：完成创作抉择同样视为答题成功（每窗口一次）
+        if (this.consumeSkyKey('strategy_on_quiz')) this.addSkyStrategyCharge(1, '月圆之夜·借月养思');
         for (const t of s.passive) if ((t.effect || {}).type === 'insp_on_quiz') this.triggerTalentLimited(t, `文心·${t.name}`);
         for (const sy of this.synergySet()) for (const ef of (sy.effects || [])) {
           if (ef.type === 'insp_on_quiz') this.triggerTalentLimited({ id: `synergy:${sy.id}`, name: `羁绊·${sy.name}`, effect: ef }, `羁绊·${sy.name}`);
@@ -1915,18 +2038,34 @@ export class Game {
     if (!pool.length) return this.doPing(cell);
     const card = pool[Math.floor(this.rand() * pool.length)];
     const isNextBattle = (card.effect || {}).type === 'next_battle_pct';
+    let entry = null;
     if (isNextBattle) {
       // 「金榜题名时」是「下一场论战」一次性增益，与回合无关，不计入回合倒计时列表；
       // 仅写入 nextBattlePct，由结算（resolveBattle）在下一场所论战消耗掉。
       this.s.nextBattlePct = Number(card.effect.value) || 0;
     } else {
       const exist = this.s.sky.find(x => x.card.id === card.id);
-      // 契约字段是 duration；turns 为引擎侧别名，两者都认
+      // 契约字段是 duration；turns 为引擎侧别名，两者都认。
+      // 天象再次触发时，视为新一轮“应势窗口”，旧选择不沿用。
       const turns = Number(card.turns) || Number(card.duration) || 6;
-      if (exist) exist.left = turns;
-      else this.s.sky.push({ card, left: turns });
+      entry = exist || { card, left: turns };
+      entry.left = turns;
+      entry.choiceId = null;
+      entry.choiceUsed = false;
+      entry.choiceTriggeredAt = null;
+      if (!exist) this.s.sky.push(entry);
     }
-    await this.ui.showSky(card);
+    let choiceId = null;
+    try {
+      choiceId = await this.ui.showSky(card);
+    } catch (_) {
+      // 天象说明/应势弹窗异常时，保留原有被动效果，不让一次 UI 故障中断回合。
+      choiceId = null;
+    }
+    if (entry && Array.isArray(card.choices)) {
+      const choice = card.choices.find(c => c && c.id === choiceId);
+      if (choice) entry.choiceId = choice.id;
+    }
     Codex.recordSky(card.id); // 图鉴：记录本次邂逅的天象（跨局累计收集）
     this.ui.onState(this.s);
   }
@@ -2438,6 +2577,7 @@ export class Game {
               discount += Math.max(0, Number(ef.conditionalFirstCostDiscount) || 0);
             }
           }
+          if (ef.type === 'dice_commitment' && ef.condition === 'exactly_one_paid') discount += Math.max(0, Number(ef.firstCostDiscount) || 0);
         }
         const a = g.ensureAbilityState();
         if (extraIndex === 1 && a.manuscript.polish > 0) discount += Number(g.abilityConfig().manuscript?.polishDiscount) || 0;
@@ -2945,6 +3085,10 @@ export class Game {
       pct.push({ source: 'sideQuestFinal', label: '携道赴问', value: s.sideQuest.finalBonusPct });
       s.sideQuest.finalBonusPct = 0;
     }
+    // 应势「迎风入场」：科场风起期间论战开始时，构思充足即消耗 1 点，本场得分 +8%
+    // （构思不足时保持待应势，留待窗口内下一场论战再试）
+    const skyAtkChoice = this.consumeSkyKey('battle_attack_pct');
+    if (skyAtkChoice) pct.push({ source: 'sky', label: '科场风起·迎风入场', value: Number(skyAtkChoice.effect && skyAtkChoice.effect.value) || 0.08 });
 
     if (mechOut && mechOut.wea && mechOut.wea.hit) for (const t of battleTalents) {
       const ef = t.effect || {};
@@ -3256,6 +3400,9 @@ export class Game {
       if (abilityOn) {
         loss = this.strategyLossAmount(loss, out.style);
       }
+      // 应势「避风收笔」：放弃本卡奖惩翻倍（skyActive 已生效），本窗口首次败北少损 2 点灵感
+      const skyGuardChoice = this.consumeSkyKey('battle_guard');
+      if (skyGuardChoice && loss < 0) loss = Math.min(0, loss + (Number(skyGuardChoice.effect && skyGuardChoice.effect.value) || 2));
       this.addInspiration(loss, '败北');
       /* 败中有得（Round 3 F1 降方差的关键）：
        * Round 2 的战斗是纯正反馈——胜者得属性、败者一无所获。于是「胜→变强→再胜」

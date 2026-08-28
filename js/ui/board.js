@@ -1,5 +1,5 @@
 /** board.js —— 镜头可切换棋盘渲染、棋子移动、掷骰、飘字 */
-import { glyph, cellGlyphKey, FAR_HILLS, ensureDefs } from './svg.js?v=20260828full1';
+import { glyph, cellGlyphKey, FAR_HILLS, ensureDefs } from './svg.js?v=20260828sky1';
 import { getBudget } from './quality.js';
 import { play } from './audio.js';
 import {
@@ -12,7 +12,7 @@ import {
   resolveBoardViewAngle,
   resolveBoardViewMode,
   resolveEffectiveBoardViewMode
-} from './boardView.js?v=20260828full1';
+} from './boardView.js?v=20260828sky1';
 
 const UNIT = 46;        // 原版单环格距：42px 格面 + 4px 间距
 const GRID = 21;        // 兼容旧单环；三圈布局按各 ring.grid 计算
