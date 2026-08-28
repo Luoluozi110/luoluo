@@ -8,7 +8,7 @@ const workspaceRoot = join(editorRoot, '..');
 const cloud = readFileSync(join(editorRoot, 'assets/js/cloud.js'), 'utf8');
 const common = readFileSync(join(editorRoot, 'assets/js/common.js'), 'utf8');
 const bridge = readFileSync(join(workspaceRoot, 'scripts/serve-editor-bridge.mjs'), 'utf8');
-const launcher = readFileSync(join(workspaceRoot, 'scripts/start-editor-bridge.ps1'), 'utf8');
+const launcher = readFileSync(join(workspaceRoot, 'scripts/start-editor-bridge.mjs'), 'utf8');
 const launcherCmd = readFileSync(join(workspaceRoot, '启动编辑器.cmd'), 'utf8');
 const packageJson = JSON.parse(readFileSync(join(workspaceRoot, 'package.json'), 'utf8'));
 
@@ -25,12 +25,13 @@ assert.ok(bridge.includes("'/api/github/publish'"), '桥接服务应提供发布
 assert.ok(bridge.includes("'HTTP_PROXY'"), '桥接服务应清理可能失效的代理环境变量');
 assert.equal(bridge.includes('Authorization'), false, '桥接服务不得接收或构造浏览器 Token');
 assert.equal(packageJson.scripts['editor:bridge'], 'node scripts/serve-editor-bridge.mjs', '应提供桥接启动命令');
-assert.equal(packageJson.scripts['editor:open'], 'powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-editor-bridge.ps1',
+assert.equal(packageJson.scripts['editor:open'], 'node scripts/start-editor-bridge.mjs',
   '应提供一键启动命令');
-assert.ok(launcher.includes('Test-EditorBridge'), '启动器应检查既有桥接状态');
-assert.ok(launcher.includes('$env:EDITOR_BRIDGE_PORT = [string]$Port'), '启动器应把所选端口传给桥接进程');
-assert.ok(launcher.includes('-WindowStyle Hidden'), '启动器应在后台启动桥接');
-assert.ok(launcher.includes('Start-Process $editorUrl'), '启动器就绪后应自动打开编辑器');
-assert.ok(launcherCmd.includes('start-editor-bridge.ps1'), '项目根目录应提供可双击的启动文件');
+assert.ok(launcher.includes('bridgeReady'), '启动器应检查既有桥接状态');
+assert.ok(launcher.includes('EDITOR_BRIDGE_PORT: String(port)'), '启动器应把所选端口传给桥接进程');
+assert.ok(launcher.includes('detached: true'), '启动器应在后台启动桥接');
+assert.ok(launcher.includes('openEditor()'), '启动器就绪后应自动打开编辑器');
+assert.equal(launcher.includes('powershell.exe'), false, '启动器不应调用 PowerShell');
+assert.ok(launcherCmd.includes('start-editor-bridge.mjs'), '项目根目录应提供可双击的启动文件');
 
 console.log('gh-bridge.test.mjs: Token 已移除，localhost gh 桥接契约通过');
