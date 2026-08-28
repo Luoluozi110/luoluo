@@ -162,7 +162,12 @@ function normalizeSideQuestState(raw, cfg) {
     finalChoice: ['carry', 'release'].includes(src.finalChoice) ? src.finalChoice : '',
     finalBonusPct: Math.max(0, Math.min(0.5, Number(src.finalBonusPct) || 0)),
     rewardClaimed: !!src.rewardClaimed,
-    lateNoCarry: !!src.lateNoCarry
+    lateNoCarry: !!src.lateNoCarry,
+    talentOfferIds: (Array.isArray(src.talentOfferIds) ? src.talentOfferIds : []).filter(id => typeof id === 'string').slice(0, 3),
+    talentOfferGenerated: !!src.talentOfferGenerated,
+    talentClaimedId: typeof src.talentClaimedId === 'string' ? src.talentClaimedId.slice(0, 32) : '',
+    talentClaimCost: Math.max(0, Math.min(99, Number(src.talentClaimCost) || 6)),
+    talentOfferExpired: !!src.talentOfferExpired
   };
 }
 

@@ -12,9 +12,9 @@ const FILES = [
   'talents', 'schools', 'affinity', 'npcs', 'sky', 'grades'
 ];
 /** 可选配置：缺失时降级为空数组/空对象，不阻断启动 */
-const OPTIONAL_FILES = ['album', 'synergies', 'npc-mechanics', 'talent-upgrade', 'narrative', 'sidequests'];
+const OPTIONAL_FILES = ['album', 'synergies', 'npc-mechanics', 'talent-upgrade', 'narrative', 'sidequests', 'sidequest-talents'];
 const OPTIONAL_DEFAULTS = {
-  album: [], synergies: [], 'npc-mechanics': {}, 'talent-upgrade': {}, narrative: {}, sidequests: { version: 1, routes: [], final: {} }
+  album: [], synergies: [], 'npc-mechanics': {}, 'talent-upgrade': {}, narrative: {}, sidequests: { version: 1, routes: [], final: {} }, 'sidequest-talents': { talents: [], upgrades: {}, offers: {} }
 };
 const NPC_ID_RE = /^[a-z][a-z0-9_-]*$/;
 
@@ -211,6 +211,15 @@ export function normalizeConfig(cfg) {
   af.mannerNames = af.mannerNames || { wanyue: '婉约', haofang: '豪放', zheli: '哲理' };
   af.matrix = af.matrix || {};
 
+  // 支线限定文心始终由本地独立配置补入：云端内容工程尚未同步它们时也不能把
+  // 这批路线专属卡抹掉；同 ID 则以限定配置为准，避免旧缓存产生两张卡。
+  const sideTalentCfg = (cfg['sidequest-talents'] && typeof cfg['sidequest-talents'] === 'object') ? cfg['sidequest-talents'] : {};
+  const sideTalents = Array.isArray(sideTalentCfg.talents) ? sideTalentCfg.talents.filter(t => t && t.id) : [];
+  const sideIds = new Set(sideTalents.map(t => t.id));
+  cfg.talents = [...(Array.isArray(cfg.talents) ? cfg.talents : []).filter(t => !sideIds.has(t && t.id)), ...sideTalents];
+  cfg['talent-upgrade'] = { ...(cfg['talent-upgrade'] || {}), ...(sideTalentCfg.upgrades || {}) };
+  sideTalentCfg.offers = sideTalentCfg.offers && typeof sideTalentCfg.offers === 'object' ? sideTalentCfg.offers : {};
+  cfg['sidequest-talents'] = sideTalentCfg;
   cfg.talentById = new Map((cfg.talents || []).map(t => [t.id, t]));
 
   // 名胜支线：内容缺失时退化为空，不影响旧工程与旧存档继续开局。

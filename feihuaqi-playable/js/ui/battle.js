@@ -231,6 +231,7 @@ export class BattleStage {
       const dicePct = Number(this.cfg?.inspiration?.dicePct) || BATTLE_COEF.dicePct;
       const pips = [];                                  // 已掷出的灵感骰点数（可叠加）
       const hasFixed = () => session.usedActive.some(t => (t.effect || {}).type === 'fixed_dice');
+      const blocksExtra = () => session.usedActive.some(t => (t.effect || {}).type === 'dice_transform' && (t.effect || {}).mode === 'first_floor');
       const stopTimer = () => { if (timerStop) { timerStop(); timerStop = null; } };
       const armTimer = (onExpire) => { stopTimer(); timerStop = this.startTimer(panel, onExpire, this.seconds); };
 
@@ -267,7 +268,10 @@ export class BattleStage {
           ? session.extraDicePct(extraCount)
           : extraCount * (Number(this.cfg?.inspiration?.extraDicePct) || 0);
         const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length, pips) : (Number(this.cfg?.inspiration?.extraDiceCost) || 5);
-        const canExtra = !hasFixed() && session.inspiration >= extraCost && extraCount < extraCap;
+        const canExtra = !hasFixed() && !blocksExtra() && session.inspiration >= extraCost && extraCount < extraCap;
+        const polarize = (session.activeTalents || []).find(t => (t.effect || {}).type === 'dice_transform' && (t.effect || {}).mode === 'polarize' && !session.usedActive.some(x => x.id === t.id));
+        const polarizeCost = polarize && typeof session.activeCost === 'function' ? session.activeCost(polarize.id) : (polarize && polarize.cost);
+        const canPolarize = polarize && pips.length >= Math.max(2, Number((polarize.effect || {}).minDice) || 2) && session.inspiration >= polarizeCost;
         const pipHtml = pips.map(n => `<span class="dice-pip">${'①②③④⑤⑥'[n - 1]}</span>`).join('');
         const extraHint = extraPct > 0 ? ` · 作品乘区 +${Math.round(extraPct * 100)}%` : '';
         panel.innerHTML = `<div class="ph">⑤ ${esc(session._stepDiceLabel || '掷灵感骰')}　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → ${pctLabel}${extraHint}${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
@@ -277,15 +281,17 @@ export class BattleStage {
             ${canExtra
               ? `<button class="pick" id="btExtra" data-sfx="none"><div class="pn">多掷一枚</div><div class="pv">消耗灵感 ${extraCost} · 增加一段临场发挥</div></button>`
               : `<button class="pick" disabled><div class="pn">${hasFixed() ? '固定骰·不可叠' : '灵感不足'}</div></button>`}
+            ${canPolarize ? `<button class="pick" id="btPolarize"><div class="pn">${esc(polarize.name)}</div><div class="pv">灵感 -${polarizeCost} · 化一最低骰与一最高骰</div></button>` : ''}
             <button class="pick" id="btConfirm"><div class="pn">收笔结算</div><div class="pv">以当前 ${pips.length} 枚骰子完成作品</div></button>
           </div>`;
         if (canExtra) panel.querySelector('#btExtra').addEventListener('click', () => addExtra());
+        if (canPolarize) panel.querySelector('#btPolarize').addEventListener('click', () => { if (session.useActive(polarize.id)) { play('talent'); renderExtra(); } });
         panel.querySelector('#btConfirm').addEventListener('click', () => finish());
       };
 
       const addExtra = () => {
         const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length, pips) : (Number(this.cfg?.inspiration?.extraDiceCost) || 5);
-        if (done || session.inspiration < extraCost || hasFixed() || pips.length - 1 >= extraCap) return;
+        if (done || session.inspiration < extraCost || hasFixed() || blocksExtra() || pips.length - 1 >= extraCap) return;
         if (typeof session.spendExtraDice === 'function') session.spendExtraDice(extraCost);
         else session.spendInspiration(extraCost, '追加灵感骰');
         const n = 1 + Math.floor(Math.random() * 6);
@@ -319,7 +325,7 @@ export class BattleStage {
 
   activeRow(session) {
     if (!session.activeTalents.length) return '';
-    const btns = session.activeTalents.filter(t => (t.effect || {}).type !== 'planned_dice').map(t => {
+    const btns = session.activeTalents.filter(t => (t.effect || {}).type !== 'planned_dice' && !((t.effect || {}).type === 'dice_transform' && (t.effect || {}).mode === 'polarize')).map(t => {
       const used = session.usedActive.some(x => x.id === t.id);
       const repeatable = (t.effect || {}).type === 'planned_dice';
       const cost = typeof session.activeCost === 'function' ? session.activeCost(t.id) : (t.cost || 1);

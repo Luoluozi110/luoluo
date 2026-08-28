@@ -823,8 +823,8 @@ export class Game {
       track: 'main', pos: 0, routeIndex: 0, ringId: cfg.board.routeCells?.[0]?.ring || 'outer', branchId: null, branchIndex: -1,
       lap: 1, turn: 0, phase: cfg.board.layout === 'concentric_spiral' ? 'child' : 'lap1', phaseGateSeen: {},
       sky: [], nextBattlePct: 0,
-      sideQuest: { routeId: '', stage: 'none', startedAtCell: null, choices: [], merit: 0, climaxResult: '', pendingBattlePct: 0, finalChoice: '', finalBonusPct: 0, rewardClaimed: false, lateNoCarry: false },
-      battle: { win: 0, draw: 0, loss: 0, streak: 0, maxStreak: 0, upsets: 0, winsByStyle: { shi: 0, ci: 0, lian: 0 } },
+      sideQuest: { routeId: '', stage: 'none', startedAtCell: null, choices: [], merit: 0, climaxResult: '', pendingBattlePct: 0, finalChoice: '', finalBonusPct: 0, rewardClaimed: false, lateNoCarry: false, talentOfferIds: [], talentOfferGenerated: false, talentClaimedId: '', talentClaimCost: 6, talentOfferExpired: false },
+      battle: { win: 0, draw: 0, loss: 0, streak: 0, maxStreak: 0, upsets: 0, winsByStyle: { shi: 0, ci: 0, lian: 0 }, lastStyle: null, lastResult: null },
       events: { total: 0, rare: 0, legend: 0, talents: 0, items: 0 },
       quiz: { asked: 0, right: 0 },
       choiceHistory: [],                              // 创作抉择的墨痕来源；只服务修习反馈与叙事回看
@@ -1452,7 +1452,7 @@ export class Game {
     const pool = this.cfg.talents.filter(t =>
       !have.has(t.id)
       && (!kind || t.kind === kind)
-      && t.source !== 'album'
+      && !['album', 'sidequest'].includes(t.source)
       && !(t.effect && t.effect.type === 'reincarnate')
       && eligible(t));
     if (!pool.length) return null;
@@ -1943,13 +1943,14 @@ export class Game {
   sideQuestState() {
     const src = this.s.sideQuest;
     if (src && typeof src === 'object') return src;
-    return (this.s.sideQuest = { routeId: '', stage: 'none', startedAtCell: null, choices: [], merit: 0, climaxResult: '', pendingBattlePct: 0, finalChoice: '', finalBonusPct: 0, rewardClaimed: false, lateNoCarry: false });
+    return (this.s.sideQuest = { routeId: '', stage: 'none', startedAtCell: null, choices: [], merit: 0, climaxResult: '', pendingBattlePct: 0, finalChoice: '', finalBonusPct: 0, rewardClaimed: false, lateNoCarry: false, talentOfferIds: [], talentOfferGenerated: false, talentClaimedId: '', talentClaimCost: 6, talentOfferExpired: false });
   }
 
   sideQuestJournal() {
     const state = this.sideQuestState();
     const route = this.sideQuestRoute(state.routeId);
-    return { state, route, choices: Array.isArray(state.choices) ? state.choices.slice() : [] };
+    const ids = Array.isArray(state.talentOfferIds) ? state.talentOfferIds : [];
+    return { state, route, choices: Array.isArray(state.choices) ? state.choices.slice() : [], talentOffer: ids.map(id => this.cfg.talentById.get(id)).filter(Boolean) };
   }
 
   async beginSideQuest(cell) {
@@ -1982,8 +1983,49 @@ export class Game {
     state.choices.push(choice);
     if (!opts.suppressReward) this.applySideQuestEffect(option.effect || {});
     state.stage = actIndex === 0 ? 'decision' : 'climax';
+    if (actIndex === 1) await this.openSideQuestTalentOffer({ immediate: true });
     this.push(`支线「${route.name}」·${act.title}：${option.label || option.id}`);
     this.ui.onState(this.s);
+    this.onForceSave?.();
+    return true;
+  }
+
+  sideQuestTalentOfferIds(state = this.sideQuestState()) {
+    if (state.talentOfferGenerated) return Array.isArray(state.talentOfferIds) ? state.talentOfferIds.slice() : [];
+    const routeId = state.routeId;
+    const offer = ((this.cfg['sidequest-talents'] || {}).offers || {})[routeId] || {};
+    const axes = (state.choices || []).map(x => x && x.axis).filter(Boolean);
+    const [a, b] = axes;
+    let ids = a && b && a === b ? [offer[a], offer.common, offer.active] : [offer[a], offer[b], offer.active];
+    ids = ids.filter((id, i, list) => id && list.indexOf(id) === i && this.cfg.talentById.has(id));
+    state.talentOfferIds = ids;
+    state.talentOfferGenerated = true;
+    state.talentClaimCost = 6;
+    return ids.slice();
+  }
+
+  async openSideQuestTalentOffer({ immediate = false, final = false } = {}) {
+    const state = this.sideQuestState();
+    if (!state.routeId || state.talentClaimedId || state.talentOfferExpired) return false;
+    const ids = this.sideQuestTalentOfferIds(state);
+    const candidates = ids.map(id => this.cfg.talentById.get(id)).filter(Boolean);
+    if (!candidates.length) return false;
+    const cost = Math.max(0, Number(state.talentClaimCost) || 6);
+    const pick = await this.ui.chooseScenicTalent(candidates, {
+      title: final ? '终局前·行路凝心' : '行路凝心', cost,
+      intro: final ? '进入终战后，这份候选将散入行卷。现在可选一枚凝成文心。' : '第二幕取舍已定。三枚限定文心不会重掷，可现在领取，也可留待下一处名胜。',
+      cancelText: final ? '带着空卷赴问' : '暂不凝心'
+    });
+    const index = Number(pick);
+    if (!Number.isInteger(index) || index < 0 || index >= candidates.length) return false;
+    if (this.s.inspiration < cost) { this.ui.toast('灵感不足，候选已保留'); return false; }
+    const talent = candidates[index];
+    this.addInspiration(-cost, '支线·行路凝心');
+    let granted = false;
+    try { granted = await this.grantTalent(talent); } catch (_) { granted = false; }
+    if (!granted) { this.addInspiration(cost, '支线·凝心回退'); this.ui.toast('未能收入文心，灵感已返还'); return false; }
+    state.talentClaimedId = talent.id;
+    this.push(`支线「${this.sideQuestRoute()?.name || ''}」凝心：灵感 -${cost}，得「${talent.name}」`);
     this.onForceSave?.();
     return true;
   }
@@ -2048,6 +2090,11 @@ export class Game {
       state.stage = 'complete';
     }
     if (state.stage !== 'complete') return null;
+    if (state.talentOfferGenerated && !state.talentClaimedId && !state.talentOfferExpired) {
+      await this.openSideQuestTalentOffer({ final: true });
+      state.talentOfferExpired = true;
+      this.onForceSave?.();
+    }
     const final = this.sideQuestConfig().final || {};
     const cost = Math.max(0, Number(final.carryCost) || 2);
     const canCarry = !state.lateNoCarry && this.s.inspiration > cost;
@@ -2096,6 +2143,7 @@ export class Game {
       if (typeof this.ui.showSideQuestJournal === 'function') await this.ui.showSideQuestJournal(this.sideQuestJournal());
       return;
     }
+    if (action === 'talent') { await this.openSideQuestTalentOffer(); return; }
     if (!go) { this.ui.toast(`${cell.name}——览胜片刻，继续前行`); return; }
     if (this.s.inspiration < cost) { this.ui.toast('灵感不足，无缘访胜抽签'); return; }
 
@@ -2311,6 +2359,7 @@ export class Game {
       // 布局谋篇属于地图回合移动骰，不进入论战主动文心栏；其余主动文心保留在本场快照。
       activeTalents: s.active.filter(t => (t.effect || {}).type !== 'planned_dice').map(t => ({ ...t, effect: t.effect ? JSON.parse(JSON.stringify(t.effect)) : t.effect })),
       usedActive: [],
+      paidExtraDice: 0,
       plannedDice: null,       // 「布局谋篇」预先指定的下一枚灵感骰点数
       plannedDiceCost: 0,
       plannedDiceTalentId: null,
@@ -2437,6 +2486,7 @@ export class Game {
       },
       spendExtraDice(n) {
         if (!this.spendInspiration(n, '追加灵感骰')) return false;
+        this.paidExtraDice = (Number(this.paidExtraDice) || 0) + 1;
         const a = g.ensureAbilityState();
         if (!this.usedPolish && a.manuscript.polish > 0) this.usedPolish = true;
         return true;
@@ -2501,6 +2551,17 @@ export class Game {
           const before = dicePips[index];
           dicePips[index] = target;
           diceTransformNotes.push(`文心·${t.name} ${before}→${target}`);
+        }
+      } else if (ef.mode === 'polarize' && dicePips.length >= Math.max(2, Number(ef.minDice) || 2)) {
+        let low = 0, high = 0;
+        for (let i = 1; i < dicePips.length; i++) {
+          if (dicePips[i] < dicePips[low]) low = i;
+          if (dicePips[i] >= dicePips[high]) high = i;
+        }
+        if (low !== high) {
+          const beforeLow = dicePips[low], beforeHigh = dicePips[high];
+          dicePips[low] = 1; dicePips[high] = 6;
+          diceTransformNotes.push(`文心·${t.name} ${beforeLow}→1，${beforeHigh}→6`);
         }
       }
     }
@@ -2622,7 +2683,34 @@ export class Game {
         pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
       }
       if (ef.type === 'lucky_six' && hasSix) critMult = Math.max(critMult, Number(ef.mult) || 1);
+      if (ef.type === 'dice_transform' && Number(ef.value)) pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
+      if (ef.type === 'seal_signature' && Number(ef.penalty)) pct.push({ source: 'talent', label: `文心·${t.name}·自损`, value: Number(ef.penalty) || 0 });
     }
+
+    // 支线限定的历史、承诺与克制型加成均在同一普通乘区结算；同 stackGroup 只留最高值。
+    const historyGroups = new Map();
+    for (const t of battleTalents) {
+      const ef = t.effect || {};
+      if (ef.type === 'battle_history_pct') {
+        const lastStyle = s.battle && s.battle.lastStyle;
+        const lastResult = s.battle && s.battle.lastResult;
+        let value = 0;
+        if (ef.condition === 'repeat_style' && lastStyle && style === lastStyle) value = (Number(ef.value) || 0) + (lastResult === 'win' ? Number(ef.previousWinBonus) || 0 : 0);
+        else if (ef.condition === 'switch_style' && lastStyle && style !== lastStyle) value = (Number(ef.value) || 0) + (lastResult !== 'win' ? Number(ef.previousNonWinBonus) || 0 : 0);
+        else if (ef.condition === 'previous_nonwin' && ['draw', 'loss', 'lose'].includes(lastResult)) value = Number(ef.value) || 0;
+        if (value > 0) {
+          const group = ef.stackGroup || t.id;
+          const old = historyGroups.get(group);
+          if (!old || value > old.value) historyGroups.set(group, { t, value });
+        }
+      } else if (ef.type === 'dice_commitment') {
+        const paid = Number(session.paidExtraDice) || 0;
+        if ((ef.condition === 'none_paid' && paid === 0) || (ef.condition === 'exactly_one_paid' && paid === 1)) pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
+      } else if (ef.type === 'restraint_pct' && !(session.usedActive || []).length) {
+        pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
+      }
+    }
+    for (const { t, value } of historyGroups.values()) pct.push({ source: 'talent', label: `文心·${t.name}`, value });
 
     // 新版灵感骰文心：围绕骰组形态触发，不再覆盖整场骰倍率。
     // occurrence 同时驱动得分和战后资源，单骰/多骰、同点/异点、稳健/豪赌由此分出流派。
@@ -2642,6 +2730,8 @@ export class Game {
           // 「急智」读的是落笔时的低开与追笔，而非之后被点铁成金改写的最终骰面。
           occurrence = rawDicePips.length >= 2 && rawDicePips[0] <= (Number(ef.lowMax) || 2) && rawDicePips[1] >= (Number(ef.nextHighMin) || 5) ? 1 : 0;
         }
+        else if (ef.pattern === 'first_last_equal') occurrence = dicePips.length >= Math.max(2, Number(ef.minDice) || 2) && dicePips[0] === dicePips[dicePips.length - 1] ? 1 : 0;
+        else if (ef.pattern === 'low_and_high') occurrence = dicePips.some(v => v <= (Number(ef.lowMax) || 2)) && dicePips.some(v => v >= (Number(ef.highMin) || 5)) ? 1 : 0;
         else if (ef.pattern === 'ascending') {
           const minDice = Math.max(2, Number(ef.minDice) || 2);
           let rising = 0;
@@ -2792,12 +2882,14 @@ export class Game {
         palaceAdapt, zeitgeist: s.zeitgeist, intentStance: session.intentLocked && session.intentLocked.stance
       });
       // 招牌（后）
-      const tri = R.signatureTriggered({
+      const signatureSealed = (session.usedActive || []).some(t => (t.effect || {}).type === 'seal_signature');
+      session._signatureSealed = signatureSealed;
+      const tri = signatureSealed ? null : R.signatureTriggered({
         mech: npcMech, npcStyle, npcManner,
         playerMove: pm, playerHistory, templates: tplLib,
         zeitgeist: s.zeitgeist, intentStance: session.intentLocked && session.intentLocked.stance
       });
-      mechOut = { tri, wea, mods: R.signatureScoreMods(tri, wea, npcMech.signature, { extraDice, npcSi: npcAttrs.si || 0, npcExpected }) };
+      mechOut = { tri, wea, mods: R.signatureScoreMods(tri, wea, signatureSealed ? null : npcMech.signature, { extraDice, npcSi: npcAttrs.si || 0, npcExpected }) };
       session._mechOut = mechOut;
     }
 
@@ -2852,6 +2944,13 @@ export class Game {
     if (session.isPalace && s.sideQuest && s.sideQuest.finalBonusPct) {
       pct.push({ source: 'sideQuestFinal', label: '携道赴问', value: s.sideQuest.finalBonusPct });
       s.sideQuest.finalBonusPct = 0;
+    }
+
+    if (mechOut && mechOut.wea && mechOut.wea.hit) for (const t of battleTalents) {
+      const ef = t.effect || {};
+      if (ef.type !== 'weakness_reward') continue;
+      if (Number(ef.value)) pct.push({ source: 'talent', label: `文心·${t.name}`, value: Number(ef.value) || 0 });
+      talentTriggers.push({ id: t.id, name: t.name, pattern: 'weakness', occurrence: 1, reward: ef.reward || null });
     }
 
     // 破绽带给玩家的加分
@@ -2921,7 +3020,7 @@ export class Game {
         result, relativeMargin: relMarg, strategyChanged,
         palaceAdapt, zeitgeist: s.zeitgeist, intentStance: session.intentLocked && session.intentLocked.stance
       });
-      const mods2 = R.signatureScoreMods(mechOut.tri, wea2, npcMech.signature, { extraDice, npcSi: npcAttrs.si || 0, npcExpected });
+      const mods2 = R.signatureScoreMods(mechOut.tri, wea2, session._signatureSealed ? null : npcMech.signature, { extraDice, npcSi: npcAttrs.si || 0, npcExpected });
       if (mods2 !== mechOut.mods) {
         oppPct = npcAff !== 0 ? [{ source: 'affinity', label: `相性·${af.mannerNames[npcManner]}`, value: npcAff }] : [];
         oppFlat = [];
@@ -3170,6 +3269,8 @@ export class Game {
       this.push(`不敌「${session.npc.fullName || session.npc.name}」`);
     }
     if (abilityOn) this.applyAbilityBattleGrowth(session, out);
+    s.battle.lastStyle = out.style;
+    s.battle.lastResult = out.result;
     this.applyAlbumOutcomeEffects('battle', out);
     this.recordAlbumBattle(out);
     if (session.isPalace) s.palaceDone++;

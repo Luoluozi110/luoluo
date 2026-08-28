@@ -539,6 +539,7 @@ export class Modals {
       const canDraw = curInsp >= cost;
       const journal = sideQuestMeta && sideQuestMeta.sideQuest;
       const activeRoute = journal && journal.route;
+      const offerPending = !!(journal && journal.state && journal.state.talentOfferGenerated && !journal.state.talentClaimedId && !journal.state.talentOfferExpired);
       const canStartSideQuest = !!(sideQuestMeta && sideQuestMeta.canStartSideQuest);
       const name = String(cell && cell.name || '');
       const artKey = /玉门|边关|关/.test(name) ? 'biansai'
@@ -557,6 +558,7 @@ export class Modals {
             <button class="btn btn-primary" data-go="draw" ${canDraw ? '' : 'disabled style="opacity:.45;cursor:not-allowed"'}>访胜问心</button>
             ${canStartSideQuest ? '<button class="btn btn-ink" data-go="sidequest">入世另行</button>' : ''}
             ${activeRoute ? '<button class="btn btn-ink" data-go="journal">查看行卷</button>' : ''}
+            ${offerPending ? '<button class="btn btn-primary" data-go="talent">行路凝心</button>' : ''}
             <button class="btn btn-ink" data-go="leave">览胜离开</button>
           </div>
         </div>`);
@@ -616,8 +618,10 @@ export class Modals {
     const route = journal.route || {};
     const state = journal.state || {};
     const rows = (journal.choices || []).map(choice => `<div class="dianggu" style="margin-top:8px;text-align:left">${esc(choice.actId || '行路')}：${esc(choice.axis || choice.optionId || '未定')}</div>`).join('') || '<div class="dianggu">尚未落笔。</div>';
+    const offer = Array.isArray(journal.talentOffer) ? journal.talentOffer : [];
+    const offerText = offer.length ? `<div class="dianggu" style="margin-top:10px;text-align:left"><b>行路凝心候选</b>：${offer.map(t => esc(t.name)).join('、')}<br/>${state.talentClaimedId ? '已收入一枚限定文心。' : (state.talentOfferExpired ? '候选已随终战散去。' : `可于任一名胜支付 ${Number(state.talentClaimCost) || 6} 灵感领取一枚。`)}</div>` : '';
     return new Promise(resolve => {
-      const ov = this.open(`<div class="modal scroll-frame paper" style="width:min(560px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center"><div class="kind">行 卷</div><div class="title-ink" style="font-size:34px">${esc(route.name || '未入支线')}</div><hr class="hr-ink"/><div style="color:var(--mo-2)">当前幕次：${esc(state.stage || 'none')}　功业：${Number(state.merit) || 0}</div>${rows}<div class="btn-row"><button class="btn btn-primary" data-ok>合卷</button></div></div>`, 'sidequest-journal');
+      const ov = this.open(`<div class="modal scroll-frame paper" style="width:min(560px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center"><div class="kind">行 卷</div><div class="title-ink" style="font-size:34px">${esc(route.name || '未入支线')}</div><hr class="hr-ink"/><div style="color:var(--mo-2)">当前幕次：${esc(state.stage || 'none')}　功业：${Number(state.merit) || 0}</div>${rows}${offerText}<div class="btn-row"><button class="btn btn-primary" data-ok>合卷</button></div></div>`, 'sidequest-journal');
       ov.querySelector('[data-ok]').addEventListener('click', () => { this.close(ov); resolve(); });
     });
   }
@@ -995,7 +999,8 @@ export function talentEffectText(t) {
     }
     case 'extra_dice_chain': return `支付首枚续掷后自动续得第二枚骰；若自动骰不低于首枚续骰，得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'dice_transform':
-      if (e.mode === 'first_floor') return `本场首枚灵感骰最低视为 ${e.floor || 4} 点`;
+      if (e.mode === 'first_floor') return `本场首枚灵感骰最低视为 ${e.floor || 4} 点，并禁止追加骰${e.value ? `；得分 +${Math.round(e.value * 100)}%` : ''}`;
+      if (e.mode === 'polarize') return `至少两枚骰时，将最左最低骰化为 1、最右最高骰化为 6${e.value ? `；得分 +${Math.round(e.value * 100)}%` : ''}`;
       if (e.mode === 'lowest_to') return `将最低且不高于 ${e.maxPip || 3} 点的一骰化为 ${e.target || 6} 点`;
       return `将 ${e.count || 1} 枚不高于 ${e.threshold || 2} 点的最低骰抬高 ${e.value || 1} 点`;
     case 'dice_pattern': {
@@ -1005,6 +1010,8 @@ export function talentEffectText(t) {
         : e.pattern === 'all_distinct' ? `${e.minDice || 3} 枚骰点各不相同，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚续掷少耗 ${e.firstCostDiscount} 灵感` : ''}`
         : e.pattern === 'low_then_high' ? `首骰 ≤${e.lowMax || 2} 后续骰 ≥${e.nextHighMin || 5}，得分 +${pct(e.value)}；低开时首枚续掷少耗 ${e.conditionalFirstCostDiscount || 0} 灵感`
         : e.pattern === 'ascending' ? `续骰逐枚递升，每次 +${pct(e.perStepValue)}；${e.fullDice || 3} 骰连升另 +${pct(e.fullValue)}`
+        : e.pattern === 'first_last_equal' ? `至少两枚骰且首尾同点，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚追加少耗 ${e.firstCostDiscount} 灵感` : ''}`
+        : e.pattern === 'low_and_high' ? `骰组同时有 ≤${e.lowMax || 2} 与 ≥${e.highMin || 5} 点，得分 +${pct(e.value)}`
         : e.pattern === 'single' ? `仅以一枚骰结算，得分 +${pct(e.value)}`
         : e.pattern === 'all_high' ? `全部骰不低于 ${e.minPip || 4} 点，得分 +${pct(e.value)}`
         : e.pattern === 'pair' ? `骰组出现同点，得分 +${pct(e.value)}`
@@ -1018,6 +1025,11 @@ export function talentEffectText(t) {
       }
       return s;
     }
+    case 'battle_history_pct': return e.condition === 'repeat_style' ? `沿用上一场文体，得分 +${Math.round((e.value || 0) * 100)}%${e.previousWinBonus ? `；上场获胜再 +${Math.round(e.previousWinBonus * 100)}%` : ''}` : e.condition === 'switch_style' ? `换用上一场不同文体，得分 +${Math.round((e.value || 0) * 100)}%${e.previousNonWinBonus ? `；上场未胜再 +${Math.round(e.previousNonWinBonus * 100)}%` : ''}` : `上一场平或负，得分 +${Math.round((e.value || 0) * 100)}%`;
+    case 'weakness_reward': return `首次命中对手公开破绽：${e.reward && e.reward.value ? `灵感 +${e.reward.value}` : ''}${e.value ? `；得分 +${Math.round(e.value * 100)}%` : ''}`;
+    case 'seal_signature': return `支付灵感封住对手本场招牌；自身得分 ${Math.round((e.penalty || 0) * 100)}%`;
+    case 'dice_commitment': return e.condition === 'none_paid' ? `本场不购买追加骰，得分 +${Math.round((e.value || 0) * 100)}%` : `本场恰购买一枚追加骰，得分 +${Math.round((e.value || 0) * 100)}%${e.firstCostDiscount ? `；首枚追加少耗 ${e.firstCostDiscount} 灵感` : ''}`;
+    case 'restraint_pct': return `本场未发动主动文心，得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'style_switch_pct': return `换用不同于上一场的文体：得分 +${Math.round((e.value || 0) * 100)}%，心得 +${e.insight || 0}`;
     case 'manuscript_pct': return `每持有 ${e.step || 2} 页稿本，得分 +${Math.round((e.value || 0) * 100)}%（上限 ${Math.round((e.cap || 0) * 100)}%）`;
     case 'copy_affinity': {

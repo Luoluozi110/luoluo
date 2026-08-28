@@ -7,7 +7,7 @@ import { deserializeRun, serializeRun } from '../js/engine/save.js';
 const read = name => JSON.parse(readFileSync(new URL(`../config/${name}.json`, import.meta.url), 'utf8'));
 const cfg = normalizeConfig(Object.fromEntries([
   'attrs', 'inspiration', 'board', 'questions', 'events', 'talents', 'schools', 'affinity', 'npcs', 'sky', 'grades',
-  'album', 'synergies', 'npc-mechanics', 'talent-upgrade', 'narrative', 'sidequests'
+  'album', 'synergies', 'npc-mechanics', 'talent-upgrade', 'narrative', 'sidequests', 'sidequest-talents'
 ].map(name => [name, read(name)])));
 
 const ui = {
@@ -34,6 +34,14 @@ await game.doEvent({ id: 99, name: '测试奇遇' });
 assert.equal(game.s.sideQuest.stage, 'climax', '下一次事件被第二幕替换');
 assert.equal(game.s.sideQuest.pendingBattlePct, 0, '稳健选项不残留战斗加成');
 assert.deepEqual(game.s.sideQuest.choices.map(x => x.axis), ['守义', '权变']);
+assert.deepEqual(game.s.sideQuest.talentOfferIds, ['T041', 'T042', 'TA09'], '混合立场生成两张立场限定卡与固定主动卡');
+assert.equal(game.s.sideQuest.talentOfferGenerated, true, '候选在第二幕后即写入局内状态');
+ui.chooseScenicTalent = async () => 0;
+const inspirationBeforeTalent = game.s.inspiration;
+await game.openSideQuestTalentOffer();
+assert.equal(game.s.sideQuest.talentClaimedId, 'T041', '限定候选可领取其中一枚');
+assert.equal(game.s.inspiration, inspirationBeforeTalent - 6, '领取成功后才扣除 6 灵感');
+assert.equal(game.randomTalent()?.source === 'sidequest', false, '普通随机池不会产出支线限定文心');
 
 let climax;
 game.doBattle = async opts => { climax = opts; return { result: 'win' }; };
