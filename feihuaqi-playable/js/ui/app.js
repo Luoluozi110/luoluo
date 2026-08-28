@@ -738,6 +738,32 @@ async function waitForCloudBeforeGame() {
 }
 
 /* ------------------------------------------------------ 载入自定义配置（编辑器导出 → 本机生效） */
+/**
+ * 旧编辑器导出的工程会把“当时的官方文心”一并写入 localStorage，进而遮住后来部署的
+ * 官方规则。仅识别明确的旧版灵感骰签名并迁移；真正改写过效果的自定义文心保持原样。
+ */
+function migrateLegacyOfficialDiceTalents(project) {
+  if (!project || !Array.isArray(project.talents) || !cloudBaseCfg) return { project, migrated: [] };
+  const legacy = {
+    T005: e => e && e.type === 'dice_transform' && e.mode === 'low_lift',
+    T010: e => e && e.type === 'dice_pattern' && e.pattern === 'distinct',
+    T016: e => e && e.type === 'extra_dice_pct',
+    TA01: e => e && e.type === 'dice_transform' && e.mode === 'first_floor',
+    TA05: e => e && e.type === 'extra_dice_pct',
+    TA06: e => e && (e.type === 'fixed_dice' || (e.type === 'dice_pattern' && e.pattern === 'total'))
+  };
+  const official = new Map((cloudBaseCfg.talents || []).map(t => [t.id, t]));
+  const migrated = project.talents.filter(t => legacy[t.id] && legacy[t.id](t.effect)).map(t => t.id);
+  if (!migrated.length) return { project, migrated };
+  const next = JSON.parse(JSON.stringify(project));
+  next.talents = next.talents.map(t => migrated.includes(t.id) ? JSON.parse(JSON.stringify(official.get(t.id))) : t);
+  if (next['talent-upgrade']) {
+    const current = cloudBaseCfg['talent-upgrade'] || {};
+    for (const id of migrated) if (current[id]) next['talent-upgrade'][id] = JSON.parse(JSON.stringify(current[id]));
+  }
+  return { project: next, migrated };
+}
+
 function openCustomConfig() {
   const cur = localStorage.getItem('feihua_custom_config');
   const html = `
@@ -798,13 +824,15 @@ function openCustomConfig() {
       setMsg('地图配置缺少三圈阶段门或路线映射，已拒绝载入；请从最新版内容编辑器重新导出。', true);
       return;
     }
-    try { customProject = proj; cfg = composeProjects(); }
+    const migrated = migrateLegacyOfficialDiceTalents(proj);
+    try { customProject = migrated.project; cfg = composeProjects(); }
     catch (err) { setMsg('合并失败：' + err.message, true); return; }
     refreshConfigBoundUi();
-    localStorage.setItem('feihua_custom_config', JSON.stringify(proj));
+    localStorage.setItem('feihua_custom_config', JSON.stringify(migrated.project));
     customConfigActive = true;
     modals.close(ov);
-    hud.toast(`已载入自定义配置（${keys.join('/')}），下一局起生效`);
+    const notice = migrated.migrated.length ? `；已迁移旧版官方文心：${migrated.migrated.join('、')}` : '';
+    hud.toast(`已载入自定义配置（${keys.join('/')}），下一局起生效${notice}`);
   });
   // 云端同步地址：保存即拉取一次，持久化到本机
   ov.querySelector('#cloudSave').addEventListener('click', async () => {
@@ -1006,7 +1034,13 @@ async function showResult(sum) {
       const raw = localStorage.getItem('feihua_custom_config');
       if (raw) {
         const project = JSON.parse(raw);
-        if (isRingProject(project)) { customProject = project; cfg = composeProjects(); customConfigActive = true; }
+        if (isRingProject(project)) {
+          const migrated = migrateLegacyOfficialDiceTalents(project);
+          customProject = migrated.project;
+          cfg = composeProjects();
+          customConfigActive = true;
+          if (migrated.migrated.length) localStorage.setItem('feihua_custom_config', JSON.stringify(migrated.project));
+        }
         else localStorage.removeItem('feihua_custom_config');
       }
     } catch (_) { localStorage.removeItem('feihua_custom_config'); }
