@@ -283,6 +283,28 @@ export function affinityValue(matrix, manner, theme) {
   return Number(matrix[`${manner}.${theme}`]) || 0;
 }
 
+export function experimentalMannerId(af = {}) {
+  return String((af.experimentalManner && af.experimentalManner.id) || 'experimental');
+}
+
+export function isExperimentalManner(af = {}, manner) {
+  return manner === experimentalMannerId(af);
+}
+
+export function rollExperimentalMannerPct(af = {}, rand = Math.random) {
+  const spec = af.experimentalManner || {};
+  const min = Math.round((Number(spec.minPct) || -0.12) * 100);
+  const max = Math.round((Number(spec.maxPct) || 0.20) * 100);
+  const low = Math.min(min, max), high = Math.max(min, max);
+  const r = Math.max(0, Math.min(0.999999, Number(rand()) || 0));
+  return (low + Math.floor(r * (high - low + 1))) / 100;
+}
+
+export function npcManners(af = {}, manners = af.manners) {
+  const id = experimentalMannerId(af);
+  return (manners || []).filter(m => m !== id);
+}
+
 /** 相性星级：3=★★★(+10%) 2=★★ 1=★ 0=相冲 */
 export function affinityStars(v) {
   if (v >= 0.10) return 3;
@@ -319,11 +341,11 @@ export function bestMannerForTheme(matrix, manners, theme) {
  * @param {string|null} schoolHome  学派 homeManner，可为 'adaptive' 或具体风格或 null
  * @param {object|null} zeitgeist   { theme, manner } 本局风潮
  */
-export function effectiveAffinity(af, manner, theme, schoolHome, zeitgeist) {
-  let v = affinityValue(af.matrix, manner, theme);
+export function effectiveAffinity(af, manner, theme, schoolHome, zeitgeist, experimentalPct = 0) {
+  let v = isExperimentalManner(af, manner) ? Number(experimentalPct) || 0 : affinityValue(af.matrix, manner, theme);
   if (schoolHome) {
     if (schoolHome === 'adaptive') {
-      const best = bestMannerForTheme(af.matrix, af.manners, theme);
+      const best = bestMannerForTheme(af.matrix, npcManners(af), theme);
       if (manner === best) v += Number(af.homeAdaptiveBonus ?? 0.04);
     } else if (manner === schoolHome) {
       v += Number(af.homeMannerBonus ?? 0.05);

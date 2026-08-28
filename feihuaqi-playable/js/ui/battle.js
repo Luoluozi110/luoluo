@@ -192,20 +192,23 @@ export class BattleStage {
   pickManner(panel, session) {
     return new Promise(resolve => {
       let done = false, stop = () => {};
-      const finish = m => { if (done) return; done = true; stop(); resolve(m); };
-      const cards = session.manners.map(m => {
-        const isHome = session.homeResolved && m === session.homeResolved;
-        const mom = session.momentumPre(m);
-        const momTxt = mom > 0 ? `<div class="mom">气势连捷 +${Math.round(mom * 100)}%</div>` : '';
-        const homeTxt = isHome && session.homeBonus > 0 ? `<div class="home">本门 +${Math.round(session.homeBonus * 100)}%</div>` : '';
-        return `<button class="pick" data-m="${m}">
-          <div class="pn">${session.mannerNames[m]}</div>
-          ${homeTxt}${momTxt}
-        </button>`;
-      }).join('');
+        const finish = m => { if (done) return; done = true; stop(); resolve(m); };
+        const cards = session.manners.map(m => {
+          const isHome = session.homeResolved && m === session.homeResolved;
+          const isExperimental = m === session.experimentalManner;
+          const mom = session.momentumPre(m);
+          const momTxt = mom > 0 ? `<div class="mom">气势连捷 +${Math.round(mom * 100)}%</div>` : '';
+          const homeTxt = isHome && session.homeBonus > 0 ? `<div class="home">本门 +${Math.round(session.homeBonus * 100)}%</div>` : '';
+          const experimentPct = Math.round((Number(session.experimentalMannerPct) || 0) * 100);
+          const experimentTxt = isExperimental ? `<div class="home">本场实验 ${experimentPct >= 0 ? '+' : ''}${experimentPct}%</div>` : '';
+          return `<button class="pick" data-m="${m}">
+            <div class="pn">${session.mannerNames[m]}</div>
+            ${experimentTxt}${homeTxt}${momTxt}
+          </button>`;
+        }).join('');
       panel.innerHTML = `<div class="ph">④ 选风格　<span style="font-size:12px;color:var(--mo-3)">限时 ${this.seconds} 秒</span></div>
         <div class="pick-row">${cards}</div>
-        <div style="font-size:12px;color:var(--mo-3);margin:6px 2px 0">文风会影响题材相性、当朝风潮和连续取胜的气势连捷；当前题材与风潮加成已在上方审题阶段标出。</div>
+          <div style="font-size:12px;color:var(--mo-3);margin:6px 2px 0">文风会影响题材相性、当朝风潮和连续取胜的气势连捷；「实验」的本场波动已锁定并标在按钮上。</div>
         ${this.weaknessTip(session)}
         ${this.activeRow(session)}`;
       this.bindActive(panel, session);

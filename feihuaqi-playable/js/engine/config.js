@@ -210,6 +210,17 @@ export function normalizeConfig(cfg) {
   af.themeNames = af.themeNames || { yongwu: '咏物', songbie: '送别', shanshui: '山水', biansai: '边塞', huaigu: '怀古', jieling: '节令' };
   af.mannerNames = af.mannerNames || { wanyue: '婉约', haofang: '豪放', zheli: '哲理' };
   af.matrix = af.matrix || {};
+  // 「实验」是玩家可选的公开风险文风；旧云端工程缺字段时也保持可用。
+  af.experimentalManner = Object.assign({ id: 'experimental', minPct: -0.12, maxPct: 0.20 }, af.experimentalManner || {});
+  const experimentalId = String(af.experimentalManner.id || 'experimental');
+  af.experimentalManner.id = experimentalId;
+  af.manners = Array.isArray(af.manners) ? af.manners.slice() : ['wanyue', 'haofang', 'zheli'];
+  if (!af.manners.includes(experimentalId)) af.manners.push(experimentalId);
+  af.mannerNames[experimentalId] = af.mannerNames[experimentalId] || '实验';
+  for (const theme of (af.themes || [])) {
+    const key = `${experimentalId}.${theme}`;
+    if (!Number.isFinite(Number(af.matrix[key]))) af.matrix[key] = 0;
+  }
 
   cfg.talentById = new Map((cfg.talents || []).map(t => [t.id, t]));
 

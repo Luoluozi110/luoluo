@@ -309,6 +309,14 @@ const INK_TAGS = new Set(INK_AXES.flat());
         else if (Array.isArray(a.themes) && Array.isArray(a.manners)) {
           for (const m of a.manners) for (const t of a.themes) if (!finite(a.matrix[`${m}.${t}`])) add(`affinity.matrix.${m}.${t}`, '缺少有限数值');
         }
+        if (a.experimentalManner !== undefined) {
+          const e = a.experimentalManner;
+          if (!isObj(e) || !text(e.id) || !finite(e.minPct) || !finite(e.maxPct) || Number(e.minPct) > Number(e.maxPct)) {
+            add('affinity.experimentalManner', '必须包含有效 id，且 minPct 不得大于 maxPct');
+          } else if (!Array.isArray(a.manners) || !a.manners.includes(e.id)) {
+            add('affinity.experimentalManner.id', '必须列入 affinity.manners');
+          }
+        }
       }
     }
 

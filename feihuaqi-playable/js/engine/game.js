@@ -1910,12 +1910,18 @@ export class Game {
       return true;
     })();
     const npcMech = mechOk ? (npc && npc.mech) : null;
+    const playerManners = af.manners || ['wanyue', 'haofang', 'zheli'];
+    const npcMannerPool = R.npcManners(af, playerManners);
+    const experimentalManner = R.experimentalMannerId(af);
+    // 实验的结果在开战时锁定并公开，选中后不会因结算/重试重新掷出。
+    const experimentalMannerPct = R.rollExperimentalMannerPct(af, this.rand);
     let npcIntent = null;
     if (npcMech) {
       npcIntent = R.rollIntention({
         mech: npcMech,
         npcAttrs: (npc && npc.attrs) || {},
         af,
+        manners: npcMannerPool,
         theme,
         zeitgeist: s.zeitgeist,
         templates: tplLib
@@ -1948,14 +1954,17 @@ export class Game {
       playerName: s.playerName || '',
       topic: opts.topic || pickTopic(theme, af, this.rand),
       intentLocked,               // NPC 三机制：本场锁定意图（E0）
-      manners: af.manners || ['wanyue', 'haofang', 'zheli'],
+      manners: playerManners,
+      npcManners: npcMannerPool,
+      experimentalManner,
+      experimentalMannerPct,
       mannerNames: af.mannerNames,
       themeNames: af.themeNames,
       schoolHome: (this.s.school && this.s.school.homeManner) || null,
       homeResolved: (() => {
         const hm = this.s.school && this.s.school.homeManner;
         if (!hm) return null;
-        if (hm === 'adaptive') return R.bestMannerForTheme(af.matrix, af.manners, theme);
+        if (hm === 'adaptive') return R.bestMannerForTheme(af.matrix, npcMannerPool, theme);
         return hm;
       })(),
       schoolHomeName: af.mannerNames && this.s.school && this.s.school.homeManner
@@ -2020,7 +2029,7 @@ export class Game {
 
       // 综合相性（基矩阵 + 门派文风 + 当朝风潮），供玩家抉择/UI 展示；不含气势连捷。
       affinityOf(manner) {
-        return R.effectiveAffinity(af, manner, theme, this.schoolHome, this.zeitgeist);
+        return R.effectiveAffinity(af, manner, theme, this.schoolHome, this.zeitgeist, this.experimentalMannerPct);
       },
       starsOf(manner) { return R.affinityStars(this.affinityOf(manner)); },
       tierOf(manner) { return R.affinityTierLabel(this.affinityOf(manner)); },
@@ -2210,15 +2219,20 @@ export class Game {
       : [];
 
     // 相性 2.0：四层叠加（基矩阵 / 门派文风 / 当朝风潮 / 气势连捷）
-    const base = R.affinityValue(af.matrix, manner, session.theme);
-    if (base !== 0) pct.push({ source: 'affinity', label: `相性·${af.mannerNames[manner]}×${session.themeName}`, value: base });
+    const experimental = R.isExperimentalManner(af, manner);
+    const base = experimental ? Number(session.experimentalMannerPct) || 0 : R.affinityValue(af.matrix, manner, session.theme);
+    if (base !== 0) pct.push({
+      source: experimental ? 'experimental' : 'affinity',
+      label: experimental ? '实验·本场波动' : `相性·${af.mannerNames[manner]}×${session.themeName}`,
+      value: base
+    });
 
     // 门派文风（本门功底 / 通儒临题自化）：玩家专属身份层
     let home = 0;
     if (s.school && s.school.homeManner) {
       const hm = s.school.homeManner;
       if (hm === 'adaptive') {
-        const best = R.bestMannerForTheme(af.matrix, session.manners, session.theme);
+        const best = R.bestMannerForTheme(af.matrix, session.npcManners, session.theme);
         if (manner === best) home = Number(af.homeAdaptiveBonus ?? 0.04);
       } else if (manner === hm) {
         home = Number(af.homeMannerBonus ?? 0.05);
@@ -2428,7 +2442,7 @@ export class Game {
     const npcStyle = (session.intentLocked && session.intentLocked.style)
       ? session.intentLocked.style : R.pickNpcStyle(npcAttrs, npcAttrs.lian >= 8, battleCoef);
     const npcManner = (session.intentLocked && session.intentLocked.manner)
-      ? session.intentLocked.manner : R.pickNpcManner(af.matrix, session.manners, session.theme);
+      ? session.intentLocked.manner : R.pickNpcManner(af.matrix, session.npcManners, session.theme);
     const npcAff = R.affinityValue(af.matrix, npcManner, session.theme);
     const npcDice = this.d6();
     // NPC 最佳文体期望分（阶段 E：供 sig_steady_pressure 的 floorPct / sig_dice_response
