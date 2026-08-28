@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "node scripts/serve-playable.mjs",
     "editor:bridge": "node scripts/serve-editor-bridge.mjs",
+    "editor:open": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-editor-bridge.ps1",
     "sync:question-seed": "node scripts/sync-editor-question-seed.mjs",
     "validate:config": "node scripts/validate-config.mjs",
     "test": "npm run test:playable && npm run test:editors && npm run test:workspace && npm run test:multiplayer",
