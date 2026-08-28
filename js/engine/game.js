@@ -5,11 +5,11 @@
 import * as R from './rules.js';
 import * as Album from './album.js';
 import * as Codex from './codex.js';
-import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260824reincarnate2';
+import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260828full1';
 import * as NpcSelection from './npc-selection.js';
 import { stableFoeId } from './npc-selection.js';
 
-export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260824reincarnate2';
+export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260828full1';
 
 export const PASSIVE_MAX = 8;
 export const ACTIVE_MAX = 4;

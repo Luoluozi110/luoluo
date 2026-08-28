@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>文心棋 · 内容编辑器（题库 & 奇遇 & 文心 & NPC & 相性 & 羁绊 & 地图 & 天象 & 传世名篇 & 叙事文案）</title>
-<link rel="stylesheet" href="assets/css/styles.css?v=20260827fixload3" />
+<link rel="stylesheet" href="assets/css/styles.css?v=20260828full1" />
 </head>
 <body>
 <header class="bar">
@@ -33,7 +33,7 @@
 </header>
 
 <div class="sync-banner">
-  <b>改动默认仅存于本机浏览器</b>。想让<b>所有玩家自动同步、无需手动载入</b>：在「数据管理 → 云端同步」填好 GitHub 仓库 / Gist 与 Token，点「发布到云端」即可——
+  <b>改动默认仅存于本机浏览器</b>。想让<b>所有玩家自动同步、无需手动载入</b>：用 <code>npm run editor:bridge</code> 启动后，在「数据管理 → 云端同步」填好 GitHub 仓库 / Gist，点「发布到云端」即可（使用本机 <code>gh</code> 登录，无需 Token）——
   游戏端读取该地址后会在启动时自动拉取最新配置。也可走手动通道：导出 <code>feihua-content.json</code> 后在游戏菜单「载入自定义配置」粘贴。
 </div>
 
@@ -729,8 +729,8 @@
         <select id="npc-focus-attr"><option value="">自动（按战斗文体）</option></select>
       </div>
       <div class="field" style="margin:0;max-width:200px">
-        <label>稳定ID（机制对手用，如 fan_jieyuan）</label>
-        <input type="text" id="npc-id" placeholder="留空则自动生成" />
+          <label>稳定 ID（自动生成，可手动指定）</label>
+          <input type="text" id="npc-id" placeholder="如 npc_juren_1" title="每位 NPC 必须有全局唯一的稳定 ID，用于游戏遭遇、存档与机制追踪。留空时保存会自动生成。" />
       </div>
       <div class="field" style="margin:0;max-width:160px">
         <label>出战权重（本档出场权重）</label>
@@ -1046,34 +1046,34 @@
 </datalist>
 
 <!-- 游戏原始数据（作为编辑器默认种子；首次打开或仍为示例时自动载入） -->
-<script src="assets/js/seed-questions.js?v=20260827fixload3"></script>
-<script src="assets/js/seed-events.js?v=20260827fixload3"></script>
-<script src="assets/js/seed-talents.js?v=20260827fixload3"></script>
-<script src="assets/js/seed-talent-upgrade.js?v=20260827fixload3"></script>
-<script src="assets/js/seed-npcs.js?v=20260827fixload3"></script>
-<script src="assets/js/seed-affinity.js?v=20260827fixload3"></script>
-<script src="assets/js/seed-synergies.js?v=20260827fixload3"></script>
-<script src="assets/js/seed-board.js?v=20260827fixload3"></script>
-<script src="assets/js/seed-sky.js?v=20260827fixload3"></script>
-<script src="assets/js/seed-album.js?v=20260827fixload3"></script>
-<script src="assets/js/seed-copy.js?v=20260827fixload3"></script>
-<script src="assets/js/icon-library.js?v=20260827fixload3"></script>
+<script src="assets/js/seed-questions.js?v=20260828full1"></script>
+<script src="assets/js/seed-events.js?v=20260828full1"></script>
+<script src="assets/js/seed-talents.js?v=20260828full1"></script>
+<script src="assets/js/seed-talent-upgrade.js?v=20260828full1"></script>
+<script src="assets/js/seed-npcs.js?v=20260828full1"></script>
+<script src="assets/js/seed-affinity.js?v=20260828full1"></script>
+<script src="assets/js/seed-synergies.js?v=20260828full1"></script>
+<script src="assets/js/seed-board.js?v=20260828full1"></script>
+<script src="assets/js/seed-sky.js?v=20260828full1"></script>
+<script src="assets/js/seed-album.js?v=20260828full1"></script>
+<script src="assets/js/seed-copy.js?v=20260828full1"></script>
+<script src="assets/js/icon-library.js?v=20260828full1"></script>
 <!-- 契约本地化：编辑器自包含，file:// / 本地 http / GitHub Pages 子目录部署均无跨目录 404，
      不再依赖 document.write 回退（该路径仅线上扁平布局触发、无头测试无法复现）。 -->
-<script src="assets/js/feihua-contract.js?v=20260827fixload3"></script>
-<script src="assets/js/common.js?v=20260827fixload3"></script>
-<script src="assets/js/richedit.js?v=20260827fixload3"></script>
-<script src="assets/js/qbank.js?v=20260827fixload3"></script>
-<script src="assets/js/adventure.js?v=20260827fixload3"></script>
-<script src="assets/js/talent.js?v=20260827fixload3"></script>
-<script src="assets/js/npc.js?v=20260827fixload3"></script>
-<script src="assets/js/affinity.js?v=20260827fixload3"></script>
-<script src="assets/js/synergy.js?v=20260827fixload3"></script>
-<script src="assets/js/board.js?v=20260827fixload3"></script>
-<script src="assets/js/sky.js?v=20260827fixload3"></script>
-<script src="assets/js/album.js?v=20260827fixload3"></script>
-<script src="assets/js/copy.js?v=20260827fixload3"></script>
-<script src="assets/js/cloud.js?v=20260827fixload3"></script>
+<script src="assets/js/feihua-contract.js?v=20260828full1"></script>
+<script src="assets/js/common.js?v=20260828full1"></script>
+<script src="assets/js/richedit.js?v=20260828full1"></script>
+<script src="assets/js/qbank.js?v=20260828full1"></script>
+<script src="assets/js/adventure.js?v=20260828full1"></script>
+<script src="assets/js/talent.js?v=20260828full1"></script>
+<script src="assets/js/npc.js?v=20260828full1"></script>
+<script src="assets/js/affinity.js?v=20260828full1"></script>
+<script src="assets/js/synergy.js?v=20260828full1"></script>
+<script src="assets/js/board.js?v=20260828full1"></script>
+<script src="assets/js/sky.js?v=20260828full1"></script>
+<script src="assets/js/album.js?v=20260828full1"></script>
+<script src="assets/js/copy.js?v=20260828full1"></script>
+<script src="assets/js/cloud.js?v=20260828full1"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   Common.init();

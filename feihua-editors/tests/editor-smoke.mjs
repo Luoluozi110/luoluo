@@ -39,6 +39,12 @@ delete oldBoard.hiddenFinalRing;
 localStorage.setItem('feihua_editors_v1_board', JSON.stringify(oldBoard));
 const oldNpcs = (window.GAME_NPCS || []).filter(t => !t.isHiddenFinal);
 localStorage.setItem('feihua_editors_v1_npcs', JSON.stringify(oldNpcs));
+// 模拟用户当前遇到的历史题库缓存：第 70 题第三项在同一双向轴上同时保存了两个端点。
+const oldQuestions = JSON.parse(JSON.stringify(window.GAME_QUESTIONS || []));
+if (oldQuestions[69]?.type === 'choice' && oldQuestions[69].options?.[2]) {
+  oldQuestions[69].options[2].inkTags = ['逐名', '求真'];
+}
+localStorage.setItem('feihua_editors_v1_qbank', JSON.stringify(oldQuestions));
 const oldNarrative = JSON.parse(JSON.stringify(window.GAME_NARRATIVE || {}));
 delete oldNarrative.hiddenFinal;
 localStorage.setItem('feihua_editors_v1_copy_narrative', JSON.stringify(oldNarrative));
@@ -97,6 +103,21 @@ console.log('[1.2] 旧 NPC 缓存回填新增对手与 v2 三机制');
   window.NPC.importData(window.GAME_NPCS, true);
 }
 
+console.log('[1.25] 启动时修复旧题库同轴墨痕，并立即持久化为可发布数据');
+{
+  const repaired = window.QB.get()[69]?.options?.[2]?.inkTags || [];
+  const axes = repaired.map(tag => [['逐名', '求真'], ['守法', '出新'], ['与人', '独行'], ['惜身', '燃笔']]
+    .findIndex(axis => axis.includes(tag)));
+  ok(repaired.length === 2 && new Set(axes).size === 2, '启动时自动修复 questions[69].options[2] 的同轴墨痕', repaired.join('、'));
+  const cached = JSON.parse(localStorage.getItem('feihua_editors_v1_qbank') || '[]');
+  const cachedTags = cached[69]?.options?.[2]?.inkTags || [];
+  ok(cachedTags.length === 2 && new Set(cachedTags.map(tag => [['逐名', '求真'], ['守法', '出新'], ['与人', '独行'], ['惜身', '燃笔']]
+    .findIndex(axis => axis.includes(tag)))).size === 2, '修复后的墨痕立即写回 localStorage', cachedTags.join('、'));
+  let project = null;
+  try { project = window.Common.buildProject(); } catch (_) { /* 由断言给出明确失败 */ }
+  ok(!!project, '启动迁移后工程配置契约通过，可直接发布');
+}
+
 console.log('[1.5] 题库：柔性知识题读取 → 编辑 → 动态增删选项 → 保存往返');
 {
   const original = window.GAME_QUESTIONS[0];
@@ -151,6 +172,22 @@ console.log('[1.6] 创作抉择：墨痕字段迁移 → 编辑 → 保存往返
   ok(savedChoice.studyTarget === 'si' && savedChoice.inkTags.join(',') === '求真,出新' && savedChoice.resultText.includes('追问缘由'), '创作抉择的修习与墨痕字段写入 state');
   const savedChoices = JSON.parse(localStorage.getItem('feihua_editors_v1_qbank') || '[]');
   ok(savedChoices[choiceIndex].options[0].resultText.includes('追问缘由'), '创作抉择字段持久化 localStorage');
+  window.QB.importData(window.GAME_QUESTIONS, true);
+}
+
+console.log('[1.65] 创作抉择：同轴旧墨痕自动补齐为两条不同轴，允许发布');
+{
+  const broken = JSON.parse(JSON.stringify(window.GAME_QUESTIONS));
+  const q = broken[69];
+  q.options[2].inkTags = ['逐名', '求真']; // 同一双向轴的两个端点，模拟旧缓存
+  window.QB.importData(broken, true);
+  const repaired = window.QB.get()[69].options[2].inkTags;
+  const axes = repaired.map(tag => [['逐名', '求真'], ['守法', '出新'], ['与人', '独行'], ['惜身', '燃笔']]
+    .findIndex(axis => axis.includes(tag)));
+  ok(repaired.length === 2 && new Set(axes).size === 2, '同轴旧墨痕补齐为两条不同双向轴的有效端点', repaired.join('、'));
+  let project = null;
+  try { project = window.Common.buildProject(); } catch (_) { /* 由断言给出明确失败 */ }
+  ok(!!project, '修复后的旧题库可通过工程配置契约并发布');
   window.QB.importData(window.GAME_QUESTIONS, true);
 }
 
@@ -436,6 +473,33 @@ console.log('[7.5] NPC：出战权重字段编辑往返 + 0 校验');
   } else {
     ok(false, 'NPC 列表渲染（未找到编辑按钮，跳过权重用例）');
   }
+}
+
+console.log('[7.55] NPC：新增/旧缓存自动补齐稳定 ID，确保可被游戏唯一追踪');
+{
+  const legacy = window.NPC.exportRaw();
+  const oldKang = legacy.flatMap(tier => tier.npcs).find(npc => npc.name === '康尔玉');
+  if (oldKang) oldKang.id = '';
+  window.NPC.importData(legacy, true);
+  const repairedKang = window.NPC.exportRaw().flatMap(tier => tier.npcs).find(npc => npc.name === '康尔玉');
+  ok(repairedKang?.id === 'kang_er_yu', '旧缓存的康尔玉按名称恢复官方稳定 ID', repairedKang?.id);
+
+  const add = document.querySelector('#npclist [data-add-npc="0"]');
+  ok(!!add, '新增对手入口存在');
+  if (add) {
+    click(add);
+    const id = document.getElementById('npc-id');
+    const name = document.getElementById('npc-name');
+    ok(/^npc_[a-z0-9_-]+_\d+$/.test(id.value), '新增对手预填自动稳定 ID', id.value);
+    name.value = 'ID 回归对手'; fire(name, 'input');
+    id.value = ''; fire(id, 'input'); // 验证手动清空仍会在保存时补齐
+    click(document.getElementById('npcSave'));
+    const created = window.NPC.exportRaw()[0].npcs.find(npc => npc.name === 'ID 回归对手');
+    ok(!!created?.id && /^npc_[a-z0-9_-]+_\d+$/.test(created.id), '清空 ID 后保存仍自动生成稳定 ID', created?.id);
+    const ids = window.NPC.exportRaw().flatMap(tier => tier.npcs).map(npc => npc.id);
+    ok(new Set(ids).size === ids.length, '编辑器内 NPC ID 保持全局唯一');
+  }
+  window.NPC.importData(window.GAME_NPCS, true);
 }
 
 console.log('[7.6] NPC：本阶段必遇条件可视化编辑 + 保存往返');
