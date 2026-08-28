@@ -110,6 +110,7 @@ export class Hud {
       </button>
       <div id="actionDock">
       <div id="logBox" class="panel paper"></div>
+      <button id="sideQuestSeal" type="button" hidden title="查看名胜支线行卷" style="margin:6px auto 0;border:1px solid rgba(139,94,60,.45);border-radius:999px;background:rgba(255,250,232,.88);color:var(--mo);font-family:var(--font-kai);font-size:12px;line-height:1.5;padding:4px 10px;cursor:pointer">行卷</button>
       <div id="toastZone"></div>
       <div id="rollZone">
         <button class="btn btn-ink" id="abilityBtn">修习</button>
@@ -124,6 +125,7 @@ export class Hud {
     this._feedback = [];
     this._feedbackSeq = 0;
     this.onTalent = null;   // 点击已拥有文心时回调（由 app.js 注入，打开详情）
+    this.onSideQuest = null;
     this._pas = [];
     this._act = [];
     this.el = {
@@ -140,6 +142,7 @@ export class Hud {
       talCount: root.querySelector('#talCount'),
       synList: root.querySelector('#synList'),
       log: root.querySelector('#logBox'),
+      sideQuest: root.querySelector('#sideQuestSeal'),
       turn: root.querySelector('#turnNum'),
       phase: root.querySelector('#phaseTag'),
       pname: root.querySelector('#pnameTag'),
@@ -164,6 +167,7 @@ export class Hud {
     this.el.attrToggle.addEventListener('click', () => this.togglePanel('attr'));
     this.el.talentToggle.addEventListener('click', () => this.togglePanel('talent'));
     this.el.inspToggle.addEventListener('click', () => this.togglePanel('insp'));
+    this.el.sideQuest.addEventListener('click', () => { if (this.onSideQuest) this.onSideQuest(); });
     this._collapse = this._loadCollapse();
     this._bp = !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
     this._rollOn = true;        // 当前是否处于「可掷骰」的空闲回合
@@ -240,10 +244,18 @@ export class Hud {
     this.el.inspInk.style.width = Math.round(100 * s.inspiration / s.inspirationMax) + '%';
     this.el.inspBar.classList.toggle('low', s.inspiration < (this.lowWarning ?? 5));
 
-    // 天象
-    const skyBadges = s.sky.map(sk => `
-      <div class="sky-badge"><svg class="st" viewBox="0 0 24 24"><path d="M12 3l2.4 5.4 5.8.6-4.3 4 1.2 5.7L12 15.8 6.9 18.7l1.2-5.7-4.3-4 5.8-.6z" fill="#ffe08a"/></svg>
-      <span>${sk.card.name}</span><span class="left">剩 ${sk.left} 回合</span></div>`).join('');
+    // 天象（配置了应势选项的卡，角标追加待应势 / 已应势状态）
+    const skyBadges = s.sky.map(sk => {
+      const choices = Array.isArray(sk.card.choices) ? sk.card.choices.filter(c => c && c.id) : [];
+      const picked = choices.find(c => c.id === sk.choiceId);
+      const status = !choices.length ? ''
+        : picked ? (sk.choiceUsed ? `已应势·${picked.name}` : `待应势·${picked.name}`)
+        : '顺其自然';
+      const cls = picked ? (sk.choiceUsed ? ' used' : ' pending') : '';
+      return `
+      <div class="sky-badge${cls}"><svg class="st" viewBox="0 0 24 24"><path d="M12 3l2.4 5.4 5.8.6-4.3 4 1.2 5.7L12 15.8 6.9 18.7l1.2-5.7-4.3-4 5.8-.6z" fill="#ffe08a"/></svg>
+      <span>${sk.card.name}</span>${status ? `<span class="sky-status">${status}</span>` : ''}<span class="left">剩 ${sk.left} 回合</span></div>`;
+    }).join('');
     const nbBadge = s.nextBattlePct
       ? `<div class="sky-badge nb"><svg class="st" viewBox="0 0 24 24"><path d="M12 3l2.4 5.4 5.8.6-4.3 4 1.2 5.7L12 15.8 6.9 18.7l1.2-5.7-4.3-4 5.8-.6z" fill="#ffd24a"/></svg>
       <span>金榜题名时</span><span class="left">下一场论战 +${Math.round(s.nextBattlePct * 100)}%</span></div>`
@@ -291,6 +303,10 @@ export class Hud {
     const phaseNames = { child: '童生', xiucai: '秀才', juren: '举人', jinshi: '进士', palace: '殿试', lap1: '乡试圈', lap2: '会试圈' };
     this.el.phase.textContent = phaseNames[s.phase] || '童生';
     if (this.el.pname) this.el.pname.textContent = s.playerName ? `　「${s.playerName}」` : '';
+    const sq = s.sideQuest || {};
+    const route = game && typeof game.sideQuestRoute === 'function' ? game.sideQuestRoute(sq.routeId) : null;
+    this.el.sideQuest.hidden = !route;
+    this.el.sideQuest.textContent = route ? `◈ 行卷·${route.name} · ${sq.stage === 'complete' ? `功业 ${sq.merit || 1}` : (sq.stage === 'climax' ? '待应验' : '待取舍')}` : '行卷';
   }
 
   /** 点击已拥有的文心格 → 打开详情（只读） */

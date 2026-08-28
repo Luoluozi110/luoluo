@@ -12,9 +12,10 @@ const inspiration = load('inspiration');
 const attrsCfg = load('attrs');
 const tiers = load('npcs');
 
-assert.equal(inspiration.initial, 48, '初始灵感由 60 收紧到 48');
-assert.equal(inspiration.max, 68, '基础灵感上限由 80 收紧到 68');
-assert.ok(inspiration.initial < inspiration.max && inspiration.initial >= 40, '首局仍保留可学习的资源空间');
+// 与 dcfcfde（rebalance-inspiration-regen）后的 config/inspiration.json 对齐
+assert.equal(inspiration.initial, 36, '初始灵感由 48 进一步收紧到 36');
+assert.equal(inspiration.max, 54, '基础灵感上限由 68 收紧到 54');
+assert.ok(inspiration.initial < inspiration.max && inspiration.initial >= 30, '首局仍保留可学习的资源空间');
 
 const expected = {
   '童生级': { allAttrs: 1, wisdomExtra: 1, scoreDelta: 26 },
@@ -47,4 +48,4 @@ assert.ok(hidden && hidden.npcs.length === 1, '隐藏终圈对手独立于常规
 assert.equal(Object.values(hidden.npcs[0].attrs).reduce((sum, n) => sum + Number(n || 0), 0), 300, '桃花仙人六维总和为 300');
 
 const npcCount = tiers.filter(t => !t.isHiddenFinal).reduce((sum, tier) => sum + (tier.npcs || []).length, 0);
-console.log(`Roguelike 难度 v2：灵感 48/68，${npcCount} 名 NPC 全六维与思力分档增强 ✓`);
+console.log(`Roguelike 难度 v2：灵感 36/54，${npcCount} 名 NPC 全六维与思力分档增强 ✓`);

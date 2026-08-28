@@ -1745,26 +1745,26 @@ window.GAME_TALENT_UPGRADE = {
     "levels": [
       {
         "effect": {
-          "type": "start_insp",
-          "value": 3
+          "type": "insp_turn_regen",
+          "value": 1
         }
       },
       {
         "effect": {
-          "type": "start_insp",
-          "value": 4
+          "type": "insp_turn_regen",
+          "value": 1
         }
       },
       {
         "effect": {
-          "type": "start_insp",
-          "value": 5
+          "type": "insp_turn_regen",
+          "value": 2
         }
       },
       {
         "effect": {
-          "type": "start_insp",
-          "value": 6
+          "type": "insp_turn_regen",
+          "value": 2
         }
       }
     ]

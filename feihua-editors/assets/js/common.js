@@ -414,7 +414,7 @@
         <h4>云端同步（所有玩家自动同步）</h4>
         <p style="font-size:12.5px;color:var(--mo-3);line-height:1.7;margin:4px 0 10px">
           填好下方并点「发布到云端」，配置会被推送到你的 GitHub 仓库 / Gist；<br/>
-          游戏端读取该地址后，<b>所有玩家启动时自动同步，无需手动载入</b>。访问令牌只用于本次发布，不会保存到浏览器。
+          游戏端读取该地址后，<b>所有玩家启动时自动同步，无需手动载入</b>。发布使用本机 <code>gh</code> 登录；请用 <code>npm run editor:bridge</code> 启动编辑器。
         </p>
         <div class="cloud-form">
           <label>方式
@@ -433,8 +433,9 @@
             <label>Gist ID <span class="hint">留空则新建</span>
               <input id="cloudGist" placeholder="（可选）已有 Gist 的 ID" /></label>
           </div>
-          <label>GitHub Token <span class="hint">需 repo 权限；仅用于本次发布</span>
-            <input id="cloudToken" type="password" placeholder="GitHub 访问令牌" autocomplete="off" /></label>
+          <div id="cloudBridgeStatus" style="font-size:12px;line-height:1.6;color:var(--mo-3)">
+            正在检查本机 gh 发布桥接…
+          </div>
           <div class="modal-actions" style="justify-content:flex-start;margin-top:8px">
             <button class="btn primary" id="cloudPublish">发布到云端</button>
             <button class="btn" id="cloudPull">从云端拉取</button>
@@ -484,7 +485,7 @@
     return { owner: "", repo: "" };
   }
 
-  /* 云端同步：填充已存设置、切换方式、发布、复制地址 */
+  /* 云端同步：填充已存设置、检查本机 gh 桥接、发布、复制地址 */
   function wireCloudSync() {
     const $ = id => document.getElementById(id);
     const saved = global.CloudSync ? global.CloudSync.loadSettings("cloud", {}) : {};
@@ -511,6 +512,22 @@
     if ($("cloudGist")) $("cloudGist").value = saved.gistId || "";
 
     const setMsg = (t, bad) => { const m = $("cloudMsg"); if (m) { m.textContent = t; m.style.color = bad ? "var(--bad)" : "var(--mo-2)"; } };
+    const bridgeStatus = $("cloudBridgeStatus");
+    const checkBridge = async () => {
+      if (!global.CloudSync || typeof global.CloudSync.status !== "function") {
+        if (bridgeStatus) bridgeStatus.textContent = "本机 gh 发布桥接未加载；请刷新页面。";
+        return false;
+      }
+      try {
+        const result = await global.CloudSync.status();
+        if (bridgeStatus) bridgeStatus.textContent = `本机 gh 已登录：${result.login}。发布不会使用浏览器 Token。`;
+        return true;
+      } catch (error) {
+        if (bridgeStatus) bridgeStatus.textContent = "本机 gh 发布桥接不可用；请运行 npm run editor:bridge 后从该地址打开编辑器。";
+        return false;
+      }
+    };
+    checkBridge();
 
     if ($("cloudPublish")) $("cloudPublish").addEventListener("click", async () => {
       const repoRaw = $("cloudRepo").value.trim();
@@ -522,16 +539,16 @@
         repoRaw: repoRaw,
         branch: $("cloudBranch").value.trim() || "main",
         path: $("cloudPath").value.trim() || "feihua-content.json",
-        gistId: $("cloudGist").value.trim(),
-        token: $("cloudToken").value.trim()
+        gistId: $("cloudGist").value.trim()
       };
-      if (!s.token) { setMsg("请填写 GitHub Token。", true); return; }
       if (s.mode === "repo" && (!s.owner || !s.repo)) { setMsg("请填写 仓库（owner/repo）。", true); return; }
-      // 只记住发布目标，绝不在浏览器存储访问令牌。
+      if (!(await checkBridge())) {
+        setMsg("发布失败：本机 gh 发布桥接不可用。请使用 npm run editor:bridge。", true);
+        return;
+      }
+      // 只记住非敏感发布目标；凭据始终由本机 gh 管理。
       if (global.CloudSync) {
-        const safeSettings = { ...s };
-        delete safeSettings.token;
-        global.CloudSync.saveSettings("cloud", safeSettings);
+        global.CloudSync.saveSettings("cloud", s);
       }
       setMsg("发布中…");
       try {

@@ -24,6 +24,28 @@ function walk(dir, base = '') {
   return out;
 }
 
+function assertSourceUnchanged(files, snapshot) {
+  const currentFiles = walk(ROOT).sort();
+  const allFiles = new Set([...files, ...currentFiles]);
+  const changed = [];
+  for (const rel of allFiles) {
+    const before = snapshot.get(rel);
+    const full = join(ROOT, rel);
+    if (!before || !existsSync(full)) {
+      changed.push(rel);
+      continue;
+    }
+    try {
+      if (!readFileSync(full).equals(before)) changed.push(rel);
+    } catch {
+      changed.push(rel);
+    }
+  }
+  if (changed.length) {
+    throw new Error(`部署期间源文件发生变化，请重新执行发布：${changed.slice(0, 8).join(', ')}${changed.length > 8 ? '…' : ''}`);
+  }
+}
+
 async function api(method, path, body) {
   let lastErr;
   for (let attempt = 1; attempt <= 4; attempt++) {
@@ -61,18 +83,21 @@ async function main() {
   const ref = await api('GET', `/repos/${OWNER}/${REPO}/git/refs/heads/main`);
   const parentSha = ref.object.sha;
   const cm = await api('GET', `/repos/${OWNER}/${REPO}/git/commits/${parentSha}`);
-  const tr = await api('GET', `/repos/${OWNER}/${REPO}/git/trees/${cm.tree.sha}`);
-  const contentEntry = (tr.tree || []).find((e) => e.path === 'feihua-content.json');
+  const baseFull = await api('GET', `/repos/${OWNER}/${REPO}/git/trees/${cm.tree.sha}?recursive=1`);
+  const contentEntry = (baseFull.tree || []).find((e) => e.path === 'feihua-content.json');
   console.log('当前 main:', parentSha, '| 保留 feihua-content.json:', contentEntry ? contentEntry.sha : '(未找到)');
   // 排行榜数据文件 leaderboard.json：玩家提交创建，部署时需保留，否则会被整树替换清空玩家成绩
-  const lbEntry = (tr.tree || []).find((e) => e.path === 'leaderboard.json');
+  const lbEntry = (baseFull.tree || []).find((e) => e.path === 'leaderboard.json');
 
   // 2) 上传全部静态文件
   const files = walk(ROOT).sort();
+  // 上传可能持续数十分钟。先冻结一份内存快照，并在更新 main 前复核，
+  // 避免同一轮部署混入修改前后的文件（例如旧 index/CSS 覆盖刚完成的字体修复）。
+  const sourceSnapshot = new Map(files.map((rel) => [rel, readFileSync(join(ROOT, rel))]));
   console.log('待上传文件:', files.length);
   const blobs = {};
   for (const rel of files) {
-    const buf = readFileSync(join(ROOT, rel));
+    const buf = sourceSnapshot.get(rel);
     const ext = rel.slice(rel.lastIndexOf('.'));
     const isText = TEXT.has(ext);
     const content = isText ? buf.toString('utf-8') : buf.toString('base64');
@@ -121,15 +146,29 @@ async function main() {
     tree.push({ path: 'leaderboard.json', mode: '100644', type: 'blob', sha: empty.sha });
     console.log('已新建空 leaderboard.json');
   }
+  // 保留 feihua-editors/ 子树：编辑器与游戏同仓部署在 main，游戏拍平部署若不保留会误删线上编辑器页面。
+  // 仅当 base 树含该子树且当前游戏树未覆盖时才补回，绝不覆盖游戏文件。
+  for (const e of (baseFull.tree || [])) {
+    if (e.path.startsWith('feihua-editors/') && !tree.find((t) => t.path === e.path)) {
+      tree.push({ path: e.path, mode: e.mode, type: e.type, sha: e.sha });
+    }
+  }
+  console.log('已保留 feihua-editors/ 子树（', (baseFull.tree || []).filter((e) => e.path.startsWith('feihua-editors/')).length, '个文件）');
+
   const treeRes = await api('POST', `/repos/${OWNER}/${REPO}/git/trees`, { tree });
   console.log('tree:', treeRes.sha);
 
   const commit = await api('POST', `/repos/${OWNER}/${REPO}/git/commits`, {
-    message: 'feihuaqi playable: 桃花岛·飞花棋 完整部署（含字体 + 保留云端同步文件）',
+    message: process.env.COMMIT_MESSAGE || 'feihuaqi playable: 桃花岛·飞花棋 完整部署（含字体 + 保留云端同步文件）',
     tree: treeRes.sha, parents: [parentSha],
   });
   console.log('commit:', commit.sha);
 
+  assertSourceUnchanged(files, sourceSnapshot);
+  const latestRef = await api('GET', `/repos/${OWNER}/${REPO}/git/refs/heads/main`);
+  if (latestRef.object.sha !== parentSha) {
+    throw new Error(`main 在部署期间已更新（${parentSha.slice(0, 8)} -> ${latestRef.object.sha.slice(0, 8)}），请重新执行发布`);
+  }
   await api('PATCH', `/repos/${OWNER}/${REPO}/git/refs/heads/main`, { sha: commit.sha });
   console.log('main 已更新为完整部署');
 }

@@ -26,7 +26,7 @@ assert.ok(app.indexOf('readCloudCache(cloudConfigUrl)') > -1 && app.indexOf('app
   'prepareCloudConfig 先采用本机缓存、再后台限时刷新');
 assert.ok(app.includes("const requestUrl = `${url}${sep}_wb=${Date.now()}`"),
   '云端配置请求带时间戳，绕过 GitHub Raw/CDN 旧响应');
-assert.ok(app.includes("const res = await fetch(requestUrl, {\n      cache: 'no-store'"),
+assert.ok(/const res = await fetch\(requestUrl,[\s\S]{0,120}cache:\s*'no-store'/.test(app),
   '云端配置请求使用 no-store，确保发布后的内容可见');
 
 // 3) 棋盘/HUD/Battle 延迟构建；确保进局前等待云端收尾。

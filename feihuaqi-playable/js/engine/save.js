@@ -17,7 +17,7 @@
 
 export const RUN_SAVE_KEY = 'feihua_run_save';               // 自动存档槽（每回合结束）
 export const RUN_SAVE_MANUAL_KEY = 'feihua_run_save_manual'; // 手动存档槽（菜单「保存当前进度」）
-export const RUN_SAVE_VERSION = 8;
+export const RUN_SAVE_VERSION = 9;
 export const SAVE_WARN_BYTES = 3 * 1024 * 1024;              // 体积预警阈值 3MB
 
 const LOG_MAX = 200;   // 超过则截断
@@ -38,7 +38,8 @@ const STATE_KEYS = [
   'school', 'playerName', 'attrs', 'inspiration', 'inspirationMax',
   'passive', 'active', 'track', 'pos', 'branchId', 'branchIndex',
   'lap', 'routeIndex', 'ringId', 'phaseGateSeen', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
-  'quiz', 'choiceHistory', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
+  'quiz', 'choiceHistory', 'narrativeState', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
+  'sideQuest',
   'zeitgeist', 'prologueSeen', 'tutorialState', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
   'talentLevels', 'schoolState', 'abilityState', 'albumState', 'secretFinal', 'over', 'reachedEnd', 'endReason', 'log'
 ];
@@ -136,6 +137,40 @@ function normalizeAlbumState(raw) {
   };
 }
 
+function normalizeSideQuestState(raw, cfg) {
+  const src = raw && typeof raw === 'object' ? raw : {};
+  const routes = (((cfg || {}).sidequests || {}).routes || []);
+  const routeIds = new Set(routes.map(route => route && route.id).filter(Boolean));
+  const routeId = routeIds.has(src.routeId) ? src.routeId : '';
+  const stage = routeId && ['none', 'decision', 'climax', 'complete'].includes(src.stage) ? src.stage : 'none';
+  const choices = (Array.isArray(src.choices) ? src.choices : []).map(choice => {
+    const item = choice && typeof choice === 'object' ? choice : {};
+    return {
+      actId: typeof item.actId === 'string' ? item.actId.slice(0, 32) : '',
+      optionId: typeof item.optionId === 'string' ? item.optionId.slice(0, 32) : '',
+      axis: typeof item.axis === 'string' ? item.axis.slice(0, 16) : ''
+    };
+  }).filter(choice => choice.actId && choice.optionId).slice(-2);
+  return {
+    routeId,
+    stage,
+    startedAtCell: Number.isInteger(Number(src.startedAtCell)) ? Number(src.startedAtCell) : null,
+    choices,
+    merit: stage === 'complete' ? Math.max(1, Math.min(2, Number(src.merit) || 1)) : 0,
+    climaxResult: ['win', 'draw', 'loss', 'late'].includes(src.climaxResult) ? src.climaxResult : '',
+    pendingBattlePct: Math.max(0, Math.min(0.5, Number(src.pendingBattlePct) || 0)),
+    finalChoice: ['carry', 'release'].includes(src.finalChoice) ? src.finalChoice : '',
+    finalBonusPct: Math.max(0, Math.min(0.5, Number(src.finalBonusPct) || 0)),
+    rewardClaimed: !!src.rewardClaimed,
+    lateNoCarry: !!src.lateNoCarry,
+    talentOfferIds: (Array.isArray(src.talentOfferIds) ? src.talentOfferIds : []).filter(id => typeof id === 'string').slice(0, 3),
+    talentOfferGenerated: !!src.talentOfferGenerated,
+    talentClaimedId: typeof src.talentClaimedId === 'string' ? src.talentClaimedId.slice(0, 32) : '',
+    talentClaimCost: Math.max(0, Math.min(99, Number(src.talentClaimCost) || 6)),
+    talentOfferExpired: !!src.talentOfferExpired
+  };
+}
+
 /* ------------------------------------------------ 序列化 */
 
 /** 把一局运行状态序列化为可存储对象 */
@@ -155,9 +190,17 @@ export function serializeRun(game) {
         state[k] = idsOf(v);
         break;
       case 'sky':
+        // v9：天象应势字段随档保存（choiceId / choiceUsed / choiceTriggeredAt），
+        // 一次性应势兑现后立即存档，刷新页面不会重复获得。
         state.sky = (Array.isArray(v) ? v : [])
           .filter(sk => sk && sk.card && sk.card.id)
-          .map(sk => ({ id: sk.card.id, left: Number(sk.left) || 1 }));
+          .map(sk => ({
+            id: sk.card.id,
+            left: Number(sk.left) || 1,
+            choiceId: sk.choiceId || null,
+            choiceUsed: !!sk.choiceUsed,
+            choiceTriggeredAt: Number(sk.choiceTriggeredAt) || null
+          }));
         break;
       case 'loadout':
         state.loadout = idsOf(v);
@@ -317,12 +360,22 @@ export function deserializeRun(rawObj, cfg) {
   out.talentLevels = levels;
   if (lostTalents.length) warnings.push(`有 ${lostTalents.length} 枚文心在当前配置中已失效，已移除（${lostTalents.join('、')}）`);
 
-  // 天象：按 ID 重新关联 cfg.sky
+  // 天象：按 ID 重新关联 cfg.sky；应势字段缺省回退（v9 前旧档视为「顺其自然」）。
+  // choiceId 必须能在当前配置卡里找到，配置变更后失效的选择回退为未选择。
   const skyPool = new Map((cfg.sky || []).map(c => [c.id, c]));
   out.sky = (Array.isArray(st.sky) ? st.sky : [])
     .map(sk => {
       const card = skyPool.get(sk.id);
-      return card ? { card, left: Math.max(1, Number(sk.left) || 1) } : null;
+      if (!card) return null;
+      const cfgChoices = Array.isArray(card.choices) ? card.choices : [];
+      const choiceId = cfgChoices.some(c => c && c.id === sk.choiceId) ? sk.choiceId : null;
+      return {
+        card,
+        left: Math.max(1, Number(sk.left) || 1),
+        choiceId,
+        choiceUsed: choiceId ? !!sk.choiceUsed : false,
+        choiceTriggeredAt: choiceId ? (Number(sk.choiceTriggeredAt) || null) : null
+      };
     })
     .filter(Boolean);
 
@@ -377,6 +430,22 @@ export function deserializeRun(rawObj, cfg) {
       turn: Math.max(0, Number(src.turn) || 0)
     };
   }).slice(-24);
+  out.narrativeState = (out.narrativeState && typeof out.narrativeState === 'object') ? out.narrativeState : {};
+  out.narrativeState.eventChoices = (Array.isArray(out.narrativeState.eventChoices) ? out.narrativeState.eventChoices : []).map(item => {
+    const src = item && typeof item === 'object' ? item : {};
+    return {
+      eventId: typeof src.eventId === 'string' ? src.eventId.slice(0, 40) : '',
+      eventName: typeof src.eventName === 'string' ? src.eventName.slice(0, 40) : '',
+      choiceText: typeof src.choiceText === 'string' ? src.choiceText.slice(0, 120) : '',
+      resultText: typeof src.resultText === 'string' ? src.resultText.slice(0, 180) : '',
+      turn: Math.max(0, Number(src.turn) || 0)
+    };
+  }).filter(item => item.eventId).slice(-24);
+  out.narrativeState.echoesShown = (out.narrativeState.echoesShown && typeof out.narrativeState.echoesShown === 'object') ? out.narrativeState.echoesShown : {};
+  out.narrativeState.relationEncounters = (out.narrativeState.relationEncounters && typeof out.narrativeState.relationEncounters === 'object') ? out.narrativeState.relationEncounters : {};
+  out.narrativeState.relationIntroduced = (out.narrativeState.relationIntroduced && typeof out.narrativeState.relationIntroduced === 'object') ? out.narrativeState.relationIntroduced : {};
+  // 名胜支线为纯局内状态；旧档只补空行卷，不追溯奖励或终局加成。
+  out.sideQuest = normalizeSideQuestState(out.sideQuest, cfg);
   out.log = Array.isArray(out.log) ? out.log.slice(-LOG_KEEP) : [];
   out.titles = Array.isArray(out.titles) ? out.titles : [];
   out.synergies = Array.isArray(out.synergies) ? out.synergies : [];

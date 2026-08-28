@@ -16979,6 +16979,30 @@
         "attr": "si",
         "value": 0.2
       },
+      "choices": [
+        {
+          "id": "nourish",
+          "name": "借月养思",
+          "desc": "本阶段首次答题成功时，构思 +1。",
+          "effect": {
+            "type": "sky_strategy",
+            "key": "strategy_on_quiz",
+            "value": 1,
+            "plan": "guard"
+          }
+        },
+        {
+          "id": "advance",
+          "name": "趁月趋行",
+          "desc": "下一次落到仄韵格或奇遇格时，消耗 1 构思，额外前行 1 格。",
+          "effect": {
+            "type": "sky_strategy",
+            "key": "strategy_move_plus",
+            "value": 1,
+            "cost": 1
+          }
+        }
+      ],
       "icon": "🌕"
     },
     {
@@ -17010,6 +17034,29 @@
         "type": "battle_reward_mult",
         "value": 2
       },
+      "choices": [
+        {
+          "id": "attack",
+          "name": "迎风入场",
+          "desc": "下一场论战开始时，消耗 1 构思，得分额外 +8%。",
+          "effect": {
+            "type": "sky_strategy",
+            "key": "battle_attack_pct",
+            "value": 0.08,
+            "cost": 1
+          }
+        },
+        {
+          "id": "guard",
+          "name": "避风收笔",
+          "desc": "放弃本卡的战斗奖惩翻倍；本阶段首次败北少损失 2 点灵感。",
+          "effect": {
+            "type": "sky_strategy",
+            "key": "battle_guard",
+            "value": 2
+          }
+        }
+      ],
       "icon": "🌪️"
     },
     {
@@ -17036,6 +17083,29 @@
         "type": "no_ping_recover",
         "value": 0
       },
+      "choices": [
+        {
+          "id": "change_rhyme",
+          "name": "避雨改韵",
+          "desc": "下一次落到平韵格时，可消耗 1 构思，改按仄韵格结算。",
+          "effect": {
+            "type": "sky_strategy",
+            "key": "ping_to_ze",
+            "value": 1,
+            "cost": 1
+          }
+        },
+        {
+          "id": "ink_in_rain",
+          "name": "雨中磨墨",
+          "desc": "接受平韵格不恢复灵感；下一次平韵格结算时，额外获得 1 残页。",
+          "effect": {
+            "type": "sky_strategy",
+            "key": "ping_fragment",
+            "value": 1
+          }
+        }
+      ],
       "icon": "🌧️"
     },
     {
