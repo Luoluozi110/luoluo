@@ -156,9 +156,8 @@
     C.setStatus("tal", "已自动保存 " + t.toLocaleTimeString("zh-CN", { hour12: false }));
   }
   /**
-   * 已使用过编辑器的浏览器会优先读取 localStorage；新增官方种子文心时，
-   * 不能因旧数组非空而永久缺卡。此处仅补入明确指定的官方条目：
-   * 不覆盖同 ID 的本地修改，也不触碰用户自建文心。
+   * 已使用过编辑器的浏览器会优先读取 localStorage；默认仅补齐缺失的官方条目，
+   * 不覆盖同 ID 的本地修改。需要更新官方机制时，由「同步官方文心」显式覆盖。
    */
   function upgradeSeedById() {
     const raw = window.GAME_TALENT_UPGRADE;
@@ -180,12 +179,68 @@
     const seed = (window.GAME_TALENTS || []);
     const byId = new Set(state.talents.map(t => t.id));
     let added = 0;
-    ["T034", "T035", "T036", "T037", "T038", "T039", "T040", "TA08"].forEach(id => {
-      if (byId.has(id)) return;
-      const src = seed.find(t => t && t.id === id);
-      if (src) { state.talents.push(normalize(src)); added++; }
-    });
+    for (const src of seed) {
+      if (!src || !src.id || byId.has(src.id)) continue;
+      state.talents.push(normalize(src));
+      added++;
+    }
     return added;
+  }
+
+  /**
+   * 显式同步官方文心：替换官方种子中已有 ID 的本地副本，保留用户自建 ID。
+   * 同步基础效果和升级表，避免“文心已新、升级仍旧”的配置分裂。
+   */
+  function syncOfficialTalents() {
+    const seed = Array.isArray(window.GAME_TALENTS) ? window.GAME_TALENTS : [];
+    if (!seed.length) { C.toast("官方文心种子尚未载入，请刷新后重试"); return; }
+    const message = "将以当前线上官方文心覆盖同 ID 的本地副本，并同步升级表。\n自建文心不会删除；本地修改过的官方文心会被替换。\n\n建议先用“导出 talents.json”备份。是否继续？";
+    if (!window.confirm(message)) return;
+    const official = new Map(seed.filter(t => t && t.id).map(t => [t.id, t]));
+    let updated = 0, added = 0;
+    const next = [];
+    for (const t of state.talents) {
+      const src = official.get(t.id);
+      if (!src) { next.push(t); continue; }
+      next.push(normalize(src));
+      updated++;
+      official.delete(t.id);
+    }
+    for (const src of official.values()) { next.push(normalize(src)); added++; }
+    state.talents = next;
+    const upgrades = upgradeSeedById();
+    for (const t of state.talents) {
+      if (!upgrades[t.id]) continue;
+      t.upgrade = normalizeUpgrade(upgrades[t.id], t);
+    }
+    C.store("talents", state.talents);
+    C.store("talentOfficialSyncAt", new Date().toISOString());
+    C.setStatus("tal", `已同步官方文心：更新 ${updated}，补齐 ${added}`);
+    const dl = document.getElementById("talentList");
+    if (dl) dl.innerHTML = state.talents.map(t => `<option value="${t.id}">${C.esc(t.name)}</option>`).join("");
+    renderList();
+    C.toast(`已同步官方文心：更新 ${updated}，新增 ${added}；自建文心已保留`);
+  }
+
+  // 这两枚官方文心曾使用一次性灵感效果。仅迁移精确的旧效果类型，
+  // 因而不会覆盖用户后来手工改出的其他文心方案。
+  function migrateOfficialInspirationTalents() {
+    const seed = window.GAME_TALENTS || [];
+    const legacyTypes = { T019: "insp_on_talent", T029: "start_insp" };
+    let changed = 0;
+    for (const [id, legacyType] of Object.entries(legacyTypes)) {
+      const current = state.talents.find(t => t.id === id);
+      const official = seed.find(t => t && t.id === id);
+      if (!current || !official || !current.effect || current.effect.type !== legacyType) continue;
+      current.text = official.text;
+      current.effect = normalizeEffect(official.effect);
+      if (id === "T029" && current.upgrade) {
+        const officialUpgrade = upgradeSeedById()[id];
+        if (officialUpgrade) current.upgrade = normalizeUpgrade(officialUpgrade, official);
+      }
+      changed++;
+    }
+    return changed;
   }
 
   function loadData() {
@@ -1258,6 +1313,7 @@
   /* ---------------- 事件绑定 ---------------- */
   function bind() {
     document.getElementById("talBtnAdd").addEventListener("click", () => openEditor(-1));
+    document.getElementById("talBtnSyncOfficial").addEventListener("click", syncOfficialTalents);
     document.getElementById("talBtnExport").addEventListener("click", exportData);
     document.getElementById("talBtnExportUpgrade").addEventListener("click", exportUpgrade);
     document.getElementById("talBtnStats").addEventListener("click", showStats);
@@ -1405,5 +1461,5 @@
     global.TALENT._ready = true;
   }
 
-  global.TALENT = { init, get: () => state.talents, exportRaw, exportUpgradeRaw, exportUpgrade, validateAll, importData, importUpgrade, renderList, effectText: talentEffectText, _ready: false };
+  global.TALENT = { init, get: () => state.talents, exportRaw, exportUpgradeRaw, exportUpgrade, validateAll, importData, importUpgrade, syncOfficialTalents, renderList, effectText: talentEffectText, _ready: false };
 })(window);
