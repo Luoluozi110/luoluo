@@ -114,6 +114,7 @@ async function ensureGameUi() {
     hud = new Hud($('#hud'));
     if (cfg.inspiration && cfg.inspiration.lowWarning) hud.lowWarning = cfg.inspiration.lowWarning;
     hud.onTalent = t => modals.showTalentDetail(t);
+    hud.onSideQuest = () => { if (game && typeof game.sideQuestJournal === 'function') modals.showSideQuestJournal(game.sideQuestJournal()); };
     hud.onRoll(onRoll);
     hud.onPlan(onPlan);
     hud.onAbility(onAbility);
@@ -419,8 +420,13 @@ function makeUi() {
       if (modals.showStageChange) await modals.showStageChange(gate, state);
     },
     showZeitgeist: z => modals.showZeitgeist(z),
-    askScenic: (cell, cost, curInsp) => modals.askScenic(cell, cost, curInsp),
+    askScenic: (cell, cost, curInsp, sideQuestMeta) => modals.askScenic(cell, cost, curInsp, sideQuestMeta),
     chooseScenicTalent: (candidates, meta) => modals.chooseScenicTalent(candidates, meta),
+    chooseSideQuest: (routes, cell) => modals.chooseSideQuest(routes, cell),
+    showSideQuestAct: (route, act, meta) => modals.showSideQuestAct(route, act, meta),
+    showSideQuestComplete: (route, state) => modals.showSideQuestComplete(route, state),
+    showSideQuestJournal: journal => modals.showSideQuestJournal(journal),
+    askSideQuestFinal: meta => modals.askSideQuestFinal(meta),
     runBattle: async sess => {
       setScene('battle');     // 挥毫论战：切 combat 配乐
       setTension(0.7);
@@ -430,7 +436,7 @@ function makeUi() {
       setStage(stageFromProgress(game.progress())); // 战后阶段可能已进阶，重新移调
       return out;
     },
-    showPalaceIntro: (themes, names, inkSummary, questions, echoes) => modals.showPalaceIntro(themes, names, inkSummary, questions, echoes),
+    showPalaceIntro: (themes, names, inkSummary, questions, echoes, sideQuestFinal) => modals.showPalaceIntro(themes, names, inkSummary, questions, echoes, sideQuestFinal),
     askHiddenFinal: meta => modals.askHiddenFinal(meta),
     showHiddenFinalRing: async () => {
       setScene('board');

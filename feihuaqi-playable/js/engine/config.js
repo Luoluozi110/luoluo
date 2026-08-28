@@ -12,9 +12,9 @@ const FILES = [
   'talents', 'schools', 'affinity', 'npcs', 'sky', 'grades'
 ];
 /** 可选配置：缺失时降级为空数组/空对象，不阻断启动 */
-const OPTIONAL_FILES = ['album', 'synergies', 'npc-mechanics', 'talent-upgrade', 'narrative'];
+const OPTIONAL_FILES = ['album', 'synergies', 'npc-mechanics', 'talent-upgrade', 'narrative', 'sidequests'];
 const OPTIONAL_DEFAULTS = {
-  album: [], synergies: [], 'npc-mechanics': {}, 'talent-upgrade': {}, narrative: {}
+  album: [], synergies: [], 'npc-mechanics': {}, 'talent-upgrade': {}, narrative: {}, sidequests: { version: 1, routes: [], final: {} }
 };
 const NPC_ID_RE = /^[a-z][a-z0-9_-]*$/;
 
@@ -126,7 +126,7 @@ export function applyProjectOverride(baseCfg, project, options = {}) {
   // 引擎内部与测试可直接传配置补丁（无工程包装层）；外部编辑器发布仍由 assertProject 默认严格校验 _type。
   CONTRACT.assertProject(project, { requireComplete: false, requireType: !!options.requireType });
   const next = Object.assign({}, baseCfg);
-  for (const key of ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics', 'sky', 'album', 'schools', 'grades', 'narrative']) {
+  for (const key of ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics', 'sky', 'album', 'schools', 'grades', 'narrative', 'sidequests']) {
     if (project[key] !== undefined && project[key] !== null) next[key] = project[key];
   }
   // 内容编辑器的棋盘工程只描述主路线；隐藏终圈属于玩法契约，旧工程未携带时不得把本地配置抹掉。
@@ -212,6 +212,14 @@ export function normalizeConfig(cfg) {
   af.matrix = af.matrix || {};
 
   cfg.talentById = new Map((cfg.talents || []).map(t => [t.id, t]));
+
+  // 名胜支线：内容缺失时退化为空，不影响旧工程与旧存档继续开局。
+  const sidequests = (cfg.sidequests && typeof cfg.sidequests === 'object') ? cfg.sidequests : {};
+  sidequests.version = Math.max(1, Number(sidequests.version) || 1);
+  sidequests.routes = Array.isArray(sidequests.routes) ? sidequests.routes : [];
+  sidequests.routeById = new Map(sidequests.routes.filter(r => r && r.id).map(r => [r.id, r]));
+  sidequests.final = Object.assign({ carryCost: 2, scorePctByMerit: { 1: 0.06, 2: 0.10 }, releaseInspirationByMerit: { 1: 2, 2: 4 } }, sidequests.final || {});
+  cfg.sidequests = sidequests;
 
   // 文心升级系统：id → { quality, maxLevel, upCost[], levels:[{effect,cost?}] }
   cfg.talentUpgradeById = new Map(Object.entries(cfg['talent-upgrade'] || {}));
