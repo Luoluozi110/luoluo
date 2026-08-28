@@ -24,6 +24,7 @@ export class BattleStage {
   /** 驱动一场战斗；session 由 engine 提供。返回 resolve 结果 */
   async run(session) {
     const el = this.el;
+    const step = index => (Array.isArray(session.stepLabels) && session.stepLabels[index]) || ['遭遇', '审题', '选文体', '选风格', '掷灵感骰', '算分对决'][index];
     const focusKey = session.npc && (session.npc.focusAttr || (!STYLE_NAMES[session.npc.style] && session.npc.style));
     const opponentFocus = focusKey ? `重${ATTR_NAMES[focusKey] || focusKey}` : `偏${STYLE_NAMES[session.npc.style] || ''}`;
     el.classList.add('on');
@@ -55,7 +56,7 @@ export class BattleStage {
           <div class="score-total" id="oppTotal"><span>作品得分</span><b>—</b></div>
         </div>
       </div>
-      <div class="bt-panel" id="btPanel"><div class="ph">① 遭遇</div></div>`;
+      <div class="bt-panel" id="btPanel"><div class="ph">① ${esc(step(0))}</div></div>`;
 
     const panel = el.querySelector('#btPanel');
 
@@ -72,7 +73,7 @@ export class BattleStage {
     }
 
     /* ① 遭遇：介绍弹窗，等待玩家「开始对决」确认后再推进（不再自动快跳） */
-    panel.innerHTML = `<div class="ph">① 遭遇</div>
+    panel.innerHTML = `<div class="ph">① ${esc(step(0))}</div>
        <div style="font-size:17px;line-height:1.8">「${esc(session.npc.fullName || session.npc.name)}」${esc(session.npc.title || '')}拦路请教，愿以文会友。${session.npc.style ? `<span style="color:var(--zhu)">（此人${esc(opponentFocus)}）</span>` : ''}</div>`;
 
     /* ①½ 研判卡：机制 NPC 的意图行藏 + 长短可读提示（阶段 B），一并展示后统一确认 */
@@ -115,11 +116,14 @@ export class BattleStage {
     if (syn.length) {
       info += `<div style="margin-top:4px;font-size:13px;color:var(--jin)">文心羁绊 · ${syn.map(sy => esc(sy.name)).join('、')}</div>`;
     }
-    panel.innerHTML = `<div class="ph">② 审题</div>
+    panel.innerHTML = `<div class="ph">② ${esc(step(1))}</div>
       <div style="font-size:17px;line-height:1.8">题目「<b>${esc(session.topic)}</b>」，题材为<b style="color:var(--zhu)">${session.themeName}</b>。</div>${info}`;
     await sleep(950);
 
     /* ③ 选文体（联力 <8 禁选联） */
+    session._stepStyleLabel = step(2);
+    session._stepMannerLabel = step(3);
+    session._stepDiceLabel = step(4);
     const style = await this.pickStyle(panel, session);
     el.querySelector('#selfPick').textContent = `文体：${STYLE_NAMES[style]}`;
 
@@ -135,7 +139,7 @@ export class BattleStage {
     const slot = el.querySelector('#btTimerSlot');
     if (slot) slot.innerHTML = '';
     const out = session.resolve(style, manner, dice);
-    panel.innerHTML = `<div class="ph">⑥ 算分对决　<span style="font-size:12px;color:var(--mo-3)">
+    panel.innerHTML = `<div class="ph">⑥ ${esc(step(5))}　<span style="font-size:12px;color:var(--mo-3)">
       ${session.tutorialFirstBattle ? '先看五项来源，再看最终作品得分　·　' : ''}
       对手以「${STYLE_NAMES[out.npcStyle]}·${esc(out.npcMannerName)}」应战，掷出 ${out.npcDice} 点</span></div>
       <div style="font-size:14px;color:var(--mo-2);line-height:1.8" id="btNarrate">正在逐项计分……</div>`;
@@ -174,7 +178,7 @@ export class BattleStage {
           ${hint ? `<div class="pv">${hint}</div>` : ''}
         </button>`;
       }).join('');
-      panel.innerHTML = `<div class="ph">③ 选文体　<span style="font-size:12px;color:var(--mo-3)">三体共通 ×7 ＋ 本体专精 ×3　·　限时 ${this.seconds} 秒</span></div>
+      panel.innerHTML = `<div class="ph">③ ${esc(session._stepStyleLabel || '选文体')}　<span style="font-size:12px;color:var(--mo-3)">三体共通 ×7 ＋ 本体专精 ×3　·　限时 ${this.seconds} 秒</span></div>
         <div style="font-size:12px;line-height:1.7;color:var(--mo-3);margin:4px 2px 7px">三体共通是诗力、词力、联力的平均功底；本体专精是你本场选择的文体属性。属性最高不一定永远是答案，还要看风潮、文风、对手和灵感。</div>
         <div class="pick-row">${cards}</div>${this.weaknessTip(session)}${this.activeRow(session)}`;
       this.bindActive(panel, session);
@@ -203,7 +207,7 @@ export class BattleStage {
           ${homeTxt}${momTxt}
         </button>`;
       }).join('');
-      panel.innerHTML = `<div class="ph">④ 选风格　<span style="font-size:12px;color:var(--mo-3)">限时 ${this.seconds} 秒</span></div>
+      panel.innerHTML = `<div class="ph">④ ${esc(session._stepMannerLabel || '选风格')}　<span style="font-size:12px;color:var(--mo-3)">限时 ${this.seconds} 秒</span></div>
         <div class="pick-row">${cards}</div>
         <div style="font-size:12px;color:var(--mo-3);margin:6px 2px 0">文风会影响题材相性、当朝风潮和连续取胜的气势连捷；当前题材与风潮加成已在上方审题阶段标出。</div>
         ${this.weaknessTip(session)}
@@ -227,6 +231,7 @@ export class BattleStage {
       const dicePct = Number(this.cfg?.inspiration?.dicePct) || BATTLE_COEF.dicePct;
       const pips = [];                                  // 已掷出的灵感骰点数（可叠加）
       const hasFixed = () => session.usedActive.some(t => (t.effect || {}).type === 'fixed_dice');
+      const blocksExtra = () => session.usedActive.some(t => (t.effect || {}).type === 'dice_transform' && (t.effect || {}).mode === 'first_floor');
       const stopTimer = () => { if (timerStop) { timerStop(); timerStop = null; } };
       const armTimer = (onExpire) => { stopTimer(); timerStop = this.startTimer(panel, onExpire, this.seconds); };
 
@@ -241,7 +246,7 @@ export class BattleStage {
         play('dice', { value: n });
         const planned = session.plannedDice != null;
         session.plannedDice = null;
-        panel.innerHTML = `<div class="ph">⑤ 掷灵感骰${auto ? '　<span style="font-size:12px;color:var(--mo-3)">时限已到，代掷</span>' : ''}</div>
+        panel.innerHTML = `<div class="ph">⑤ ${esc(session._stepDiceLabel || '掷灵感骰')}${auto ? '　<span style="font-size:12px;color:var(--mo-3)">时限已到，代掷</span>' : ''}</div>
           <div style="text-align:center"><div style="display:inline-block;font-size:62px;letter-spacing:.1em;color:var(--zhu)" class="pop-in">${'一二三四五六'[n - 1]}</div>
           <div style="font-size:14px;color:var(--mo-3)">${planned ? '布局谋篇定策，' : ''}掷出 ${n} 点</div></div>`;
         await sleep(760);
@@ -263,25 +268,30 @@ export class BattleStage {
           ? session.extraDicePct(extraCount)
           : extraCount * (Number(this.cfg?.inspiration?.extraDicePct) || 0);
         const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length, pips) : (Number(this.cfg?.inspiration?.extraDiceCost) || 5);
-        const canExtra = !hasFixed() && session.inspiration >= extraCost && extraCount < extraCap;
+        const canExtra = !hasFixed() && !blocksExtra() && session.inspiration >= extraCost && extraCount < extraCap;
+        const polarize = (session.activeTalents || []).find(t => (t.effect || {}).type === 'dice_transform' && (t.effect || {}).mode === 'polarize' && !session.usedActive.some(x => x.id === t.id));
+        const polarizeCost = polarize && typeof session.activeCost === 'function' ? session.activeCost(polarize.id) : (polarize && polarize.cost);
+        const canPolarize = polarize && pips.length >= Math.max(2, Number((polarize.effect || {}).minDice) || 2) && session.inspiration >= polarizeCost;
         const pipHtml = pips.map(n => `<span class="dice-pip">${'①②③④⑤⑥'[n - 1]}</span>`).join('');
         const extraHint = extraPct > 0 ? ` · 作品乘区 +${Math.round(extraPct * 100)}%` : '';
-        panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → ${pctLabel}${extraHint}${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
+        panel.innerHTML = `<div class="ph">⑤ ${esc(session._stepDiceLabel || '掷灵感骰')}　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → ${pctLabel}${extraHint}${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
           <div style="font-size:12px;line-height:1.7;color:var(--mo-3);margin:4px 2px 7px">当前骰点已经转为作品乘区；继续追加会消耗灵感，收笔则以当前骰数结算。${session._extraDiceChainNote ? `<br><span style="color:var(--zhu)">${session._extraDiceChainNote}</span>` : ''}${preview.pctDetail ? `<br><span style="color:var(--zhu)">${preview.pctDetail}</span>` : ''}</div>
           <div class="dice-pips">${pipHtml}</div>
           <div class="pick-row">
             ${canExtra
               ? `<button class="pick" id="btExtra" data-sfx="none"><div class="pn">多掷一枚</div><div class="pv">消耗灵感 ${extraCost} · 增加一段临场发挥</div></button>`
               : `<button class="pick" disabled><div class="pn">${hasFixed() ? '固定骰·不可叠' : '灵感不足'}</div></button>`}
+            ${canPolarize ? `<button class="pick" id="btPolarize"><div class="pn">${esc(polarize.name)}</div><div class="pv">灵感 -${polarizeCost} · 化一最低骰与一最高骰</div></button>` : ''}
             <button class="pick" id="btConfirm"><div class="pn">收笔结算</div><div class="pv">以当前 ${pips.length} 枚骰子完成作品</div></button>
           </div>`;
         if (canExtra) panel.querySelector('#btExtra').addEventListener('click', () => addExtra());
+        if (canPolarize) panel.querySelector('#btPolarize').addEventListener('click', () => { if (session.useActive(polarize.id)) { play('talent'); renderExtra(); } });
         panel.querySelector('#btConfirm').addEventListener('click', () => finish());
       };
 
       const addExtra = () => {
         const extraCost = typeof session.extraDiceCost === 'function' ? session.extraDiceCost(style, pips.length, pips) : (Number(this.cfg?.inspiration?.extraDiceCost) || 5);
-        if (done || session.inspiration < extraCost || hasFixed() || pips.length - 1 >= extraCap) return;
+        if (done || session.inspiration < extraCost || hasFixed() || blocksExtra() || pips.length - 1 >= extraCap) return;
         if (typeof session.spendExtraDice === 'function') session.spendExtraDice(extraCost);
         else session.spendInspiration(extraCost, '追加灵感骰');
         const n = 1 + Math.floor(Math.random() * 6);
@@ -305,7 +315,7 @@ export class BattleStage {
       const extraPctPerDie = typeof session.extraDicePct === 'function'
         ? session.extraDicePct(1)
         : (Number(this.cfg?.inspiration?.extraDicePct) || 0);
-      panel.innerHTML = `<div class="ph">⑤ 掷灵感骰　<span style="font-size:12px;color:var(--mo-3)">普通骰每点进入作品乘区 +${Math.round(dicePct * 100)}%；首次追加耗 ${firstCost} 灵感，额外作品乘区 +${Math.round(extraPctPerDie * 100)}%，最多可追加 ${extraCap} 枚　·　限时 ${this.seconds} 秒</span></div>
+      panel.innerHTML = `<div class="ph">⑤ ${esc(session._stepDiceLabel || '掷灵感骰')}　<span style="font-size:12px;color:var(--mo-3)">普通骰每点进入作品乘区 +${Math.round(dicePct * 100)}%；首次追加耗 ${firstCost} 灵感，额外作品乘区 +${Math.round(extraPctPerDie * 100)}%，最多可追加 ${extraCap} 枚　·　限时 ${this.seconds} 秒</span></div>
         <div class="pick-row"><button class="pick battle-roll" id="btRoll" data-sfx="none"><div class="pn">掷 骰</div>
         <div class="pv">听天由命，也听人事</div></button></div>`;
       panel.querySelector('#btRoll').addEventListener('click', () => doRoll(false));
@@ -315,7 +325,7 @@ export class BattleStage {
 
   activeRow(session) {
     if (!session.activeTalents.length) return '';
-    const btns = session.activeTalents.filter(t => (t.effect || {}).type !== 'planned_dice').map(t => {
+    const btns = session.activeTalents.filter(t => (t.effect || {}).type !== 'planned_dice' && !((t.effect || {}).type === 'dice_transform' && (t.effect || {}).mode === 'polarize')).map(t => {
       const used = session.usedActive.some(x => x.id === t.id);
       const repeatable = (t.effect || {}).type === 'planned_dice';
       const cost = typeof session.activeCost === 'function' ? session.activeCost(t.id) : (t.cost || 1);

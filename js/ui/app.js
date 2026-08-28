@@ -3,27 +3,27 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260828full1';
-import { Game } from '../engine/game.js?v=20260828full1';
-import { BoardView } from './board.js?v=20260828full1';
-import { Hud, radarSVG } from './hud.js?v=20260828full1';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260825secretfinalfix1';
+import { Game } from '../engine/game.js?v=20260825secretfinalfix1';
+import { BoardView } from './board.js?v=20260824audio1';
+import { Hud, radarSVG } from './hud.js?v=20260824tutorial1';
 // 奇遇属性收益在 20260823eventattrs1 起于选择前完整展示；独立版本键避免旧模块缓存继续省略属性。
-import { Modals } from './modals.js?v=20260828full1';
-import { BattleStage } from './battle.js?v=20260828full1';
-import { AlbumUI } from './album.js?v=20260828full1';
-import { CodexUI } from './codex.js?v=20260828full1';
-import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260828full1';
-import { initQuality, getTier, setTier } from './quality.js?v=20260828full1';
-import { ATTR_NAMES } from '../engine/rules.js?v=20260828full1';
-import * as Album from '../engine/album.js?v=20260828full1';
-import * as Codex from '../engine/codex.js?v=20260828full1';
+import { Modals } from './modals.js?v=20260824tutorial1';
+import { BattleStage } from './battle.js?v=20260824tutorial1';
+import { AlbumUI } from './album.js?v=20260824audio1';
+import { CodexUI } from './codex.js?v=20260824wenxindice1';
+import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260822secretfinal1';
+import { initQuality, getTier, setTier } from './quality.js?v=20260822secretfinal1';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260822secretfinal1';
+import * as Album from '../engine/album.js?v=20260824brand1';
+import * as Codex from '../engine/codex.js?v=20260822secretfinal1';
 // 音频模块统一使用同一 URL，确保静音、SFX 与配乐共享一个 AudioContext / Master 总线。
 import { initAudio, play } from './audio.js';
-import { setScene, setTension, setStage } from './music.js?v=20260828full1';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260828full1';
-import { Leaderboard } from './leaderboard.js?v=20260828full1';
-import { personalize } from './namefmt.js?v=20260828full1';
-import { ContentTestUI } from './contentTest.js?v=20260828full1';
+import { setScene, setTension, setStage } from './music.js?v=20260824audio1';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260824tutorial1';
+import { Leaderboard } from './leaderboard.js?v=20260822secretfinal1';
+import { personalize } from './namefmt.js?v=20260822secretfinal1';
+import { ContentTestUI } from './contentTest.js?v=20260822contenttest1';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -114,6 +114,7 @@ async function ensureGameUi() {
     hud = new Hud($('#hud'));
     if (cfg.inspiration && cfg.inspiration.lowWarning) hud.lowWarning = cfg.inspiration.lowWarning;
     hud.onTalent = t => modals.showTalentDetail(t);
+    hud.onSideQuest = () => { if (game && typeof game.sideQuestJournal === 'function') modals.showSideQuestJournal(game.sideQuestJournal()); };
     hud.onRoll(onRoll);
     hud.onPlan(onPlan);
     hud.onAbility(onAbility);
@@ -419,8 +420,13 @@ function makeUi() {
       if (modals.showStageChange) await modals.showStageChange(gate, state);
     },
     showZeitgeist: z => modals.showZeitgeist(z),
-    askScenic: (cell, cost, curInsp) => modals.askScenic(cell, cost, curInsp),
+    askScenic: (cell, cost, curInsp, sideQuestMeta) => modals.askScenic(cell, cost, curInsp, sideQuestMeta),
     chooseScenicTalent: (candidates, meta) => modals.chooseScenicTalent(candidates, meta),
+    chooseSideQuest: (routes, cell) => modals.chooseSideQuest(routes, cell),
+    showSideQuestAct: (route, act, meta) => modals.showSideQuestAct(route, act, meta),
+    showSideQuestComplete: (route, state) => modals.showSideQuestComplete(route, state),
+    showSideQuestJournal: journal => modals.showSideQuestJournal(journal),
+    askSideQuestFinal: meta => modals.askSideQuestFinal(meta),
     runBattle: async sess => {
       setScene('battle');     // 挥毫论战：切 combat 配乐
       setTension(0.7);
@@ -430,7 +436,7 @@ function makeUi() {
       setStage(stageFromProgress(game.progress())); // 战后阶段可能已进阶，重新移调
       return out;
     },
-    showPalaceIntro: (themes, names, inkSummary, questions, echoes) => modals.showPalaceIntro(themes, names, inkSummary, questions, echoes),
+    showPalaceIntro: (themes, names, inkSummary, questions, echoes, sideQuestFinal) => modals.showPalaceIntro(themes, names, inkSummary, questions, echoes, sideQuestFinal),
     askHiddenFinal: meta => modals.askHiddenFinal(meta),
     showHiddenFinalRing: async () => {
       setScene('board');

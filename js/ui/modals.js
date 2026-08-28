@@ -534,9 +534,13 @@ export class Modals {
   }
 
   /* ---------------------------------------------------- 名胜格·访胜抽签 */
-  askScenic(cell, cost = 8, curInsp = Infinity) {
+  askScenic(cell, cost = 8, curInsp = Infinity, sideQuestMeta = {}) {
     return new Promise(resolve => {
       const canDraw = curInsp >= cost;
+      const journal = sideQuestMeta && sideQuestMeta.sideQuest;
+      const activeRoute = journal && journal.route;
+      const offerPending = !!(journal && journal.state && journal.state.talentOfferGenerated && !journal.state.talentClaimedId && !journal.state.talentOfferExpired);
+      const canStartSideQuest = !!(sideQuestMeta && sideQuestMeta.canStartSideQuest);
       const name = String(cell && cell.name || '');
       const artKey = /玉门|边关|关/.test(name) ? 'biansai'
         : (/桃花|山水|源/.test(name) ? 'shanshui'
@@ -546,18 +550,90 @@ export class Modals {
           <div class="mtitle" style="justify-content:center"><h2>${esc(cell.name)}</h2></div>
           <hr class="hr-ink"/>
           <div class="bimg" aria-hidden="true">${LANDMARK_ART[artKey] || LANDMARK_ART.yuyuan}</div>
-          <div style="font-size:17px;line-height:1.9">驻足名胜，可焚香祈愿、抽签问文心。</div>
-          <div class="rewards">消耗灵感 ${cost} 点，随机抽取一枚尚未拥有的文心</div>
+          <div style="font-size:17px;line-height:1.9">驻足名胜，可焚香祈愿、抽签问文心，也可由此另启一段行路。</div>
+          <div class="rewards">访胜问心：消耗灵感 ${cost} 点，随机抽取一枚尚未拥有的文心</div>
           <div class="warn" style="color:#b23a2e">${canDraw ? '抽签后灵感将减少，请斟酌' : '当前灵感不足，无法抽签'}</div>
+          ${activeRoute ? `<div class="dianggu" style="margin-top:10px;text-align:left"><b>行卷 · ${esc(activeRoute.name)}</b><br/>当前：${esc((journal.state || {}).stage || '进行中')}。名胜不会更换你的路线。</div>` : ''}
           <div class="btn-row">
-            <button class="btn btn-primary" data-go="1" ${canDraw ? '' : 'disabled style="opacity:.45;cursor:not-allowed"'}>抽签访胜</button>
-            <button class="btn btn-ink" data-go="0">径直离开</button>
+            <button class="btn btn-primary" data-go="draw" ${canDraw ? '' : 'disabled style="opacity:.45;cursor:not-allowed"'}>访胜问心</button>
+            ${canStartSideQuest ? '<button class="btn btn-ink" data-go="sidequest">入世另行</button>' : ''}
+            ${activeRoute ? '<button class="btn btn-ink" data-go="journal">查看行卷</button>' : ''}
+            ${offerPending ? '<button class="btn btn-primary" data-go="talent">行路凝心</button>' : ''}
+            <button class="btn btn-ink" data-go="leave">览胜离开</button>
           </div>
         </div>`);
       ov.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => {
         if (b.disabled) return;
-        this.close(ov); resolve(b.dataset.go === '1');
+        this.close(ov); resolve(b.dataset.go);
       }));
+    });
+  }
+
+  chooseSideQuest(routes, cell) {
+    const list = Array.isArray(routes) ? routes.filter(Boolean) : [];
+    return new Promise(resolve => {
+      if (!list.length) { resolve(''); return; }
+      const ov = this.open(`
+        <div class="modal scroll-frame paper scenic-pick-modal">
+          <div class="mtitle" style="justify-content:center"><h2>入 世 另 行</h2></div><hr class="hr-ink"/>
+          <div class="scenic-pick-intro">此行将锁定一条支线，并放弃本次文心抽取。不是另开地图，而是让之后的一次取舍与一场论战照见你的来路。</div>
+          <div class="scenic-pick-list">${list.map(route => `<button class="scenic-pick-card talent-card paper" data-route="${esc(route.id)}" type="button"><h3>${esc(route.name)}</h3><span class="efx">${esc((route.axis || []).join(' ↔ '))}</span><span class="dianggu">${esc(route.intro || '')}</span><span class="scenic-pick-keep">以此道启程</span></button>`).join('')}</div>
+          <div class="btn-row"><button class="btn btn-ink" data-cancel type="button">暂不承诺</button></div>
+        </div>`, 'sidequest-route');
+      const finish = value => { this.close(ov); resolve(value); };
+      ov.querySelectorAll('[data-route]').forEach(btn => btn.addEventListener('click', () => finish(btn.dataset.route)));
+      ov.querySelector('[data-cancel]')?.addEventListener('click', () => finish(''));
+    });
+  }
+
+  showSideQuestAct(route, act, opts = {}) {
+    const choices = Array.isArray(act && act.options) ? act.options : [];
+    return new Promise(resolve => {
+      if (!choices.length) { resolve(-1); return; }
+      const ov = this.open(`
+        <div class="modal scroll-frame paper" style="width:min(620px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center">
+          <div class="kind">${esc(route && route.name || '行卷')}</div><div class="title-ink" style="font-size:34px">${esc(act.title || '行路抉择')}</div><hr class="hr-ink"/>
+          <div style="font-size:16px;line-height:2;text-align:left;white-space:pre-line">${esc(act.text || '')}</div>
+          ${opts.late ? '<div class="warn" style="margin-top:10px">终局将近：此选择只留下立场，不再补发即时收益。</div>' : ''}
+          <div class="pick-row" style="margin-top:16px">${choices.map((option, i) => `<button class="pick" data-choice="${i}" type="button"><div class="pn">${esc(option.label || option.id)}</div><div class="pv">${esc(option.axis || '')}</div></button>`).join('')}</div>
+        </div>`, 'sidequest-act');
+      const finish = value => { this.close(ov); resolve(value); };
+      ov.querySelectorAll('[data-choice]').forEach(btn => btn.addEventListener('click', () => finish(Number(btn.dataset.choice))));
+    });
+  }
+
+  async showSideQuestComplete(route, state) {
+    const won = state && state.climaxResult === 'win';
+    const ov = this.open(`
+      <div class="modal scroll-frame paper" style="width:min(560px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center">
+        <div class="kind">行 卷 已 成</div><div class="title-ink" style="font-size:36px">${esc(route && route.name || '支线')}</div><hr class="hr-ink"/>
+        <div style="font-size:17px;line-height:2">${won ? '此道已应验，得路线功业 2。' : '此道虽未竟，仍得路线功业 1。'}<br/>终局前，你可选择携此道赴问，或放下此道换回从容。</div>
+        <div class="btn-row"><button class="btn btn-primary" data-ok>收进行卷</button></div>
+      </div>`, 'sidequest-complete');
+    await new Promise(resolve => ov.querySelector('[data-ok]').addEventListener('click', resolve));
+    this.close(ov);
+  }
+
+  showSideQuestJournal(journal = {}) {
+    const route = journal.route || {};
+    const state = journal.state || {};
+    const rows = (journal.choices || []).map(choice => `<div class="dianggu" style="margin-top:8px;text-align:left">${esc(choice.actId || '行路')}：${esc(choice.axis || choice.optionId || '未定')}</div>`).join('') || '<div class="dianggu">尚未落笔。</div>';
+    const offer = Array.isArray(journal.talentOffer) ? journal.talentOffer : [];
+    const offerText = offer.length ? `<div class="dianggu" style="margin-top:10px;text-align:left"><b>行路凝心候选</b>：${offer.map(t => esc(t.name)).join('、')}<br/>${state.talentClaimedId ? '已收入一枚限定文心。' : (state.talentOfferExpired ? '候选已随终战散去。' : `可于任一名胜支付 ${Number(state.talentClaimCost) || 6} 灵感领取一枚。`)}</div>` : '';
+    return new Promise(resolve => {
+      const ov = this.open(`<div class="modal scroll-frame paper" style="width:min(560px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center"><div class="kind">行 卷</div><div class="title-ink" style="font-size:34px">${esc(route.name || '未入支线')}</div><hr class="hr-ink"/><div style="color:var(--mo-2)">当前幕次：${esc(state.stage || 'none')}　功业：${Number(state.merit) || 0}</div>${rows}${offerText}<div class="btn-row"><button class="btn btn-primary" data-ok>合卷</button></div></div>`, 'sidequest-journal');
+      ov.querySelector('[data-ok]').addEventListener('click', () => { this.close(ov); resolve(); });
+    });
+  }
+
+  askSideQuestFinal(meta = {}) {
+    const route = meta.route || {};
+    const merit = Math.max(1, Number(meta.merit) || 1);
+    return new Promise(resolve => {
+      const carryText = meta.canCarry ? `灵感 -${meta.cost}，本场最终作品得分 +${merit === 2 ? 10 : 6}%` : (meta.lateNoCarry ? '此行来得太晚，只能留下回声' : `灵感需保留至少 ${Number(meta.cost) + 1} 点`);
+      const ov = this.open(`<div class="modal scroll-frame paper" style="width:min(620px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center"><div class="kind">终 局 问 心</div><div class="title-ink" style="font-size:36px">${esc(route.finalLabel || route.name || '终问')}</div><hr class="hr-ink"/><div style="font-size:16px;line-height:1.95">你此前走过的路，要成为此刻的锋芒，还是成为放下锋芒后的余裕？</div><div class="pick-row" style="margin-top:16px"><button class="pick" data-final="carry" ${meta.canCarry ? '' : 'disabled style="opacity:.45"'}><div class="pn">携道赴问</div><div class="pv">${esc(carryText)}</div></button><button class="pick" data-final="release"><div class="pn">放下此道</div><div class="pv">恢复灵感 ${merit === 2 ? 4 : 2}，不获终战得分加成</div></button></div></div>`, 'sidequest-final');
+      const finish = value => { this.close(ov); resolve(value); };
+      ov.querySelectorAll('[data-final]').forEach(btn => btn.addEventListener('click', () => { if (!btn.disabled) finish(btn.dataset.final); }));
     });
   }
 
@@ -722,7 +798,7 @@ export class Modals {
   }
 
   /* ---------------------------------------------------- 殿试开场 */
-  async showPalaceIntro(themes, names, inkSummary = '', questions = [], echoes = []) {
+  async showPalaceIntro(themes, names, inkSummary = '', questions = [], echoes = [], sideQuestFinal = null) {
     // 圈数、殿试场次、金榜奖励分全部从配置读取；殿试题材由主考官配置决定
     const boardCfg = this.cfg.board || {};
     const isSpiral = boardCfg.layout === 'concentric_spiral';
@@ -742,11 +818,12 @@ export class Modals {
     const echoCards = (Array.isArray(echoes) ? echoes : []).map(item => `<div class="dianggu" style="margin-top:8px;text-align:left"><b>${esc(item.title || '旧选回声')}</b><div style="margin-top:3px;line-height:1.7">${esc(item.text || '')}</div></div>`).join('');
     const ov = this.open(`
       <div class="modal scroll-frame paper" style="text-align:center;width:min(600px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
-        <div class="title-ink" style="font-size:46px">金 殿 對 策</div>
+        <div class="title-ink" style="font-size:46px">${esc(sideQuestFinal && sideQuestFinal.route && sideQuestFinal.route.finalLabel || '金 殿 對 策')}</div>
         <hr class="hr-ink"/>
         <div style="font-size:17px;line-height:2">${laps} 圈科举路已尽，今登金殿。<br/>
           主考官出题 ${sweepN} 道：<b>${themeLabels.join('</b>、<b>')}</b>${isSpiral ? '，一场定榜。' : '，须连场应对。'}<br/>
           <span style="color:var(--zhu)">${isSpiral ? '此场取胜' : `${sweepN} 场全胜`}，可得「${esc((jb || {}).name || '金榜题名')}」圆满分 +${sweepScore}。</span></div>
+        ${sideQuestFinal ? `<div class="dianggu" style="margin-top:12px;text-align:left"><b>行卷 · ${esc(sideQuestFinal.route.name)}</b><br/>${sideQuestFinal.state.finalChoice === 'carry' ? `携道赴问：本场作品得分将获得路线功业加成。` : '放下此道：你以从容进入终问。'}</div>` : ''}
         ${String(inkSummary || '').trim() ? `<div class="dianggu" style="margin-top:12px;text-align:left">${esc(String(inkSummary).trim())}</div>` : ''}
         ${questionCards ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">殿 试 三 问</div>${questionCards}` : ''}
         ${echoCards ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">旧 选 回 声</div>${echoCards}` : ''}
@@ -922,7 +999,8 @@ export function talentEffectText(t) {
     }
     case 'extra_dice_chain': return `支付首枚续掷后自动续得第二枚骰；若自动骰不低于首枚续骰，得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'dice_transform':
-      if (e.mode === 'first_floor') return `本场首枚灵感骰最低视为 ${e.floor || 4} 点`;
+      if (e.mode === 'first_floor') return `本场首枚灵感骰最低视为 ${e.floor || 4} 点，并禁止追加骰${e.value ? `；得分 +${Math.round(e.value * 100)}%` : ''}`;
+      if (e.mode === 'polarize') return `至少两枚骰时，将最左最低骰化为 1、最右最高骰化为 6${e.value ? `；得分 +${Math.round(e.value * 100)}%` : ''}`;
       if (e.mode === 'lowest_to') return `将最低且不高于 ${e.maxPip || 3} 点的一骰化为 ${e.target || 6} 点`;
       return `将 ${e.count || 1} 枚不高于 ${e.threshold || 2} 点的最低骰抬高 ${e.value || 1} 点`;
     case 'dice_pattern': {
@@ -932,6 +1010,8 @@ export function talentEffectText(t) {
         : e.pattern === 'all_distinct' ? `${e.minDice || 3} 枚骰点各不相同，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚续掷少耗 ${e.firstCostDiscount} 灵感` : ''}`
         : e.pattern === 'low_then_high' ? `首骰 ≤${e.lowMax || 2} 后续骰 ≥${e.nextHighMin || 5}，得分 +${pct(e.value)}；低开时首枚续掷少耗 ${e.conditionalFirstCostDiscount || 0} 灵感`
         : e.pattern === 'ascending' ? `续骰逐枚递升，每次 +${pct(e.perStepValue)}；${e.fullDice || 3} 骰连升另 +${pct(e.fullValue)}`
+        : e.pattern === 'first_last_equal' ? `至少两枚骰且首尾同点，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚追加少耗 ${e.firstCostDiscount} 灵感` : ''}`
+        : e.pattern === 'low_and_high' ? `骰组同时有 ≤${e.lowMax || 2} 与 ≥${e.highMin || 5} 点，得分 +${pct(e.value)}`
         : e.pattern === 'single' ? `仅以一枚骰结算，得分 +${pct(e.value)}`
         : e.pattern === 'all_high' ? `全部骰不低于 ${e.minPip || 4} 点，得分 +${pct(e.value)}`
         : e.pattern === 'pair' ? `骰组出现同点，得分 +${pct(e.value)}`
@@ -945,6 +1025,11 @@ export function talentEffectText(t) {
       }
       return s;
     }
+    case 'battle_history_pct': return e.condition === 'repeat_style' ? `沿用上一场文体，得分 +${Math.round((e.value || 0) * 100)}%${e.previousWinBonus ? `；上场获胜再 +${Math.round(e.previousWinBonus * 100)}%` : ''}` : e.condition === 'switch_style' ? `换用上一场不同文体，得分 +${Math.round((e.value || 0) * 100)}%${e.previousNonWinBonus ? `；上场未胜再 +${Math.round(e.previousNonWinBonus * 100)}%` : ''}` : `上一场平或负，得分 +${Math.round((e.value || 0) * 100)}%`;
+    case 'weakness_reward': return `首次命中对手公开破绽：${e.reward && e.reward.value ? `灵感 +${e.reward.value}` : ''}${e.value ? `；得分 +${Math.round(e.value * 100)}%` : ''}`;
+    case 'seal_signature': return `支付灵感封住对手本场招牌；自身得分 ${Math.round((e.penalty || 0) * 100)}%`;
+    case 'dice_commitment': return e.condition === 'none_paid' ? `本场不购买追加骰，得分 +${Math.round((e.value || 0) * 100)}%` : `本场恰购买一枚追加骰，得分 +${Math.round((e.value || 0) * 100)}%${e.firstCostDiscount ? `；首枚追加少耗 ${e.firstCostDiscount} 灵感` : ''}`;
+    case 'restraint_pct': return `本场未发动主动文心，得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'style_switch_pct': return `换用不同于上一场的文体：得分 +${Math.round((e.value || 0) * 100)}%，心得 +${e.insight || 0}`;
     case 'manuscript_pct': return `每持有 ${e.step || 2} 页稿本，得分 +${Math.round((e.value || 0) * 100)}%（上限 ${Math.round((e.cap || 0) * 100)}%）`;
     case 'copy_affinity': {
@@ -975,6 +1060,7 @@ export function talentEffectText(t) {
     case 'study_bonus': return `败/平研习补偿属性额外 +${e.value || 0}`;
     case 'palace_insp': return `殿试每场开场，灵感 +${e.value || 0}`;
     case 'start_insp': return `获得时，灵感一次性 +${e.value || 0}`;
+    case 'insp_turn_regen': return `持有时，每回合开始恢复灵感 +${e.value || 0}`;
     case 'insp_on_quiz': return `答对/完成抉择额外 +${e.value || 0} 灵感（每局最多 ${e.maxTriggers || 0} 次）`;
     case 'insp_battle_recover': return `战后灵感 ≤${e.threshold || 0} 时恢复 ${e.value || 0}（每局最多 ${e.maxTriggers || 0} 次）`;
     case 'insp_max': return `获得时，本局灵感上限永久 +${e.value || 0}（同类扩容互斥）`;

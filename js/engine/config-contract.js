@@ -387,11 +387,42 @@ const INK_TAGS = new Set(INK_AXES.flat());
         }
       }
     });
+    if ('sidequests' in cfg) {
+      const sq = cfg.sidequests;
+      if (!isObj(sq)) add('sidequests', '必须是对象');
+      else {
+        if (!Number.isInteger(Number(sq.version)) || Number(sq.version) < 1) add('sidequests.version', '必须是正整数');
+        const routes = sq.routes;
+        if (!Array.isArray(routes)) add('sidequests.routes', '必须是数组');
+        else {
+          const ids = new Set();
+          routes.forEach((route, i) => {
+            const p = `sidequests.routes[${i}]`;
+            if (!isObj(route) || !text(route.id) || !text(route.name)) { add(p, '路线必须包含 id 与名称'); return; }
+            if (ids.has(route.id)) add(`${p}.id`, `路线 ID 重复：${route.id}`, 'duplicate_id'); else ids.add(route.id);
+            if (!Array.isArray(route.axis) || route.axis.length !== 2 || route.axis.some(x => !text(x))) add(`${p}.axis`, '必须包含两个立场标签');
+            if (!Array.isArray(route.battleThemePool) || !route.battleThemePool.length) add(`${p}.battleThemePool`, '高潮题材池不能为空');
+            if (!Array.isArray(route.acts) || route.acts.length !== 2) add(`${p}.acts`, '必须恰好包含缘起与取舍两幕');
+            else route.acts.forEach((act, j) => {
+              if (!isObj(act) || !text(act.id) || !Array.isArray(act.options) || act.options.length !== 2) add(`${p}.acts[${j}]`, '每幕必须包含 id 与两个选项');
+              else act.options.forEach((option, k) => {
+                if (!isObj(option) || !text(option.id) || !text(option.axis) || !isObj(option.effect)) add(`${p}.acts[${j}].options[${k}]`, '选项必须包含 id、立场和效果');
+              });
+            });
+            if (!isObj(route.npc) || !text(route.npc.name) || !isObj(route.npc.attrs)) add(`${p}.npc`, '高潮必须配置对手与六维');
+          });
+        }
+        const final = sq.final;
+        if (!isObj(final) || !finite(final.carryCost) || Number(final.carryCost) < 0 || !isObj(final.scorePctByMerit) || !isObj(final.releaseInspirationByMerit)) {
+          add('sidequests.final', '必须包含终局兑现数值');
+        }
+      }
+    }
     if ('grades' in cfg && !isObj(cfg.grades)) add('grades', '必须是对象');
     if ('narrative' in cfg && !isObj(cfg.narrative)) add('narrative', '必须是对象');
     if ('npc-mechanics' in cfg && !isObj(cfg['npc-mechanics'])) add('npc-mechanics', '必须是对象');
 
-    const known = new Set([...REQUIRED_CONFIG_KEYS, ...PROJECT_KEYS, 'album', 'synergies', 'npc-mechanics']);
+    const known = new Set([...REQUIRED_CONFIG_KEYS, ...PROJECT_KEYS, 'album', 'synergies', 'npc-mechanics', 'sidequests']);
     if (!partial) for (const key of Object.keys(cfg)) if (!known.has(key)) warn(key, '未知配置块，将按原样保留', 'unknown_key');
     return { ok: errors.length === 0, errors, warnings };
   }
