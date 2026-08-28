@@ -21,7 +21,7 @@
     "dice_transform", "dice_pattern", "extra_dice_chain", "style_switch_pct", "manuscript_pct",
     // —— 以下为「创意文心」新增效果类型 ——
     "style_pct", "theme_pct", "streak_mult", "insp_floor", "lucky_six",
-    "comeback", "armory_pct", "study_bonus", "palace_insp", "start_insp",
+    "comeback", "armory_pct", "study_bonus", "palace_insp", "start_insp", "insp_turn_regen",
     "insp_on_quiz", "insp_battle_recover", "insp_max", "reincarnate"];
   const TALENT_TYPE_LABELS = {
     on_win_bonus: "获胜加成（以某体出战获胜时 +属性）",
@@ -53,6 +53,7 @@
     study_bonus: "转益多师（败/平补偿属性额外 +value）",
     palace_insp: "金殿对策（殿试每场开场灵感 +value）",
     start_insp: "胸有成竹（获得时灵感一次性 +value）",
+    insp_turn_regen: "持有回灵（每回合开始恢复 +value 灵感）",
     insp_on_quiz: "活水源头（答对/抉择额外恢复，限次）",
     insp_battle_recover: "枯木逢春（低灵感战后恢复，限次）",
     insp_max: "灵感扩容（获得时永久提高本局上限，互斥）",
@@ -81,6 +82,7 @@
     if (type === "study_bonus") return { type, value: 1 };
     if (type === "palace_insp") return { type, value: 3 };
     if (type === "start_insp") return { type, value: 6 };
+    if (type === "insp_turn_regen") return { type, value: 1 };
     if (type === "insp_on_quiz") return { type, value: 1, maxTriggers: 4 };
     if (type === "insp_battle_recover") return { type, value: 2, threshold: 14, maxTriggers: 3 };
     if (type === "insp_max") return { type, value: 6, group: "inspiration_capacity" };
@@ -111,7 +113,7 @@
     else if (type === "insp_on_win" || type === "draw_bonus" || type === "insp_on_talent") { out.value = Number(eff.value) || 0; }
     else if (type === "style_pct") { out.style = ["shi", "ci", "lian", "any"].includes(eff.style) ? eff.style : "shi"; out.value = Number(eff.value) || 0; }
     else if (type === "theme_pct") { out.theme = THEMES.includes(eff.theme) ? eff.theme : "yongwu"; out.value = Number(eff.value) || 0; }
-    else if (type === "streak_mult" || type === "insp_floor" || type === "study_bonus" || type === "palace_insp" || type === "start_insp") { out.value = Number(eff.value) || 0; }
+    else if (type === "streak_mult" || type === "insp_floor" || type === "study_bonus" || type === "palace_insp" || type === "start_insp" || type === "insp_turn_regen") { out.value = Number(eff.value) || 0; }
     else if (type === "insp_on_quiz") { out.value = Number(eff.value) || 0; out.maxTriggers = Math.max(1, Number(eff.maxTriggers) || 1); }
     else if (type === "insp_battle_recover") { out.value = Number(eff.value) || 0; out.threshold = Math.max(0, Number(eff.threshold) || 0); out.maxTriggers = Math.max(1, Number(eff.maxTriggers) || 1); }
     else if (type === "insp_max") { out.value = Number(eff.value) || 0; out.group = String(eff.group || "inspiration_capacity"); }
@@ -188,12 +190,33 @@
     return added;
   }
 
+  // 这两枚官方文心曾使用一次性灵感效果。仅迁移精确的旧效果类型，
+  // 因而不会覆盖用户后来手工改出的其他文心方案。
+  function migrateOfficialInspirationTalents() {
+    const seed = window.GAME_TALENTS || [];
+    const legacyTypes = { T019: "insp_on_talent", T029: "start_insp" };
+    let changed = 0;
+    for (const [id, legacyType] of Object.entries(legacyTypes)) {
+      const current = state.talents.find(t => t.id === id);
+      const official = seed.find(t => t && t.id === id);
+      if (!current || !official || !current.effect || current.effect.type !== legacyType) continue;
+      current.text = official.text;
+      current.effect = normalizeEffect(official.effect);
+      if (id === "T029" && current.upgrade) {
+        const officialUpgrade = upgradeSeedById()[id];
+        if (officialUpgrade) current.upgrade = normalizeUpgrade(officialUpgrade, official);
+      }
+      changed++;
+    }
+    return changed;
+  }
+
   function loadData() {
     const raw = C.load("talents", null);
     if (raw && raw.length) {
       state.talents = raw.map(normalize);
       // 旧 localStorage 非破坏式补齐新发布的官方文心及升级配置，避免种子更新被永久遮蔽。
-      const changed = backfillOfficialTalents() + backfillOfficialUpgrades();
+      const changed = backfillOfficialTalents() + backfillOfficialUpgrades() + migrateOfficialInspirationTalents();
       if (changed) C.store("talents", state.talents);
     } else {
       state.talents = (window.GAME_TALENTS || []).map(normalize);
@@ -321,7 +344,7 @@
     else if (["insp_on_win", "draw_bonus", "insp_on_talent"].includes(t.effect.type)) {
       if (!(Number(t.effect.value) > 0)) errors.push(t.effect.type + " 的 value 须 > 0");
     }
-    else if (["style_pct", "theme_pct", "streak_mult", "insp_floor", "study_bonus", "palace_insp", "start_insp", "insp_on_quiz", "insp_battle_recover", "insp_max"].includes(t.effect.type)) {
+    else if (["style_pct", "theme_pct", "streak_mult", "insp_floor", "study_bonus", "palace_insp", "start_insp", "insp_turn_regen", "insp_on_quiz", "insp_battle_recover", "insp_max"].includes(t.effect.type)) {
       if (!(Number(t.effect.value) > 0)) errors.push(t.effect.type + " 的 value 须 > 0");
       if (["insp_on_quiz", "insp_battle_recover"].includes(t.effect.type) && !(Number(t.effect.maxTriggers) >= 1)) errors.push(t.effect.type + " 的 maxTriggers 须 ≥ 1");
       if (t.effect.type === "insp_battle_recover" && !(Number(t.effect.threshold) >= 0)) errors.push("insp_battle_recover 的 threshold 须 ≥ 0");
@@ -444,6 +467,7 @@
       case "study_bonus": return "「败中有得」「平分秋色」补偿属性额外 +" + (eff.value || 0);
       case "palace_insp": return "殿试每场开场，灵感 +" + (eff.value || 0);
       case "start_insp": return "获得此文心时，灵感一次性 +" + (eff.value || 0);
+      case "insp_turn_regen": return "持有时，每回合开始恢复灵感 +" + (eff.value || 0);
       case "insp_on_quiz": return "答对/完成抉择额外 +" + (eff.value || 0) + " 灵感（每局最多 " + (eff.maxTriggers || 0) + " 次）";
       case "insp_battle_recover": return "战后灵感 ≤" + (eff.threshold || 0) + " 时恢复 " + (eff.value || 0) + "（每局最多 " + (eff.maxTriggers || 0) + " 次）";
       case "insp_max": return "获得时，本局灵感上限永久 +" + (eff.value || 0) + "（同类扩容互斥）";
@@ -648,8 +672,8 @@
           <input type="number" class="tal-value" value="${pct}" step="1" min="0"/></div>
       </div>`;
     }
-    if (type === "study_bonus" || type === "palace_insp" || type === "start_insp" || type === "insp_max") {
-      const lbl = type === "study_bonus" ? "败/平补偿属性额外 +" : type === "palace_insp" ? "殿试每场开场灵感 +" : type === "start_insp" ? "获得时灵感一次性 +" : "本局灵感上限永久 +";
+    if (type === "study_bonus" || type === "palace_insp" || type === "start_insp" || type === "insp_turn_regen" || type === "insp_max") {
+      const lbl = type === "study_bonus" ? "败/平补偿属性额外 +" : type === "palace_insp" ? "殿试每场开场灵感 +" : type === "start_insp" ? "获得时灵感一次性 +" : type === "insp_turn_regen" ? "持有时每回合开始恢复 +" : "本局灵感上限永久 +";
       return `<div class="field" style="margin:6px 0"><label>${lbl}</label>
         <input type="number" class="tal-value" value="${eff.value || 0}" step="1" min="0"/></div>`;
     }

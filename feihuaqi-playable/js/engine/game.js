@@ -1489,6 +1489,17 @@ export class Game {
     return real > 0;
   }
 
+  /** 持有型回灵：每个有效回合开始时结算；灵感耗尽后的封笔判定仍优先。 */
+  applyTurnInspirationRegen() {
+    let total = 0;
+    for (const t of [...(this.s.passive || []), ...(this.s.active || [])]) {
+      const ef = t && t.effect || {};
+      if (ef.type !== 'insp_turn_regen') continue;
+      total += this.addInspiration(Math.max(0, Number(ef.value) || 0), `文心·${t.name}·回合回复`);
+    }
+    return total;
+  }
+
   /** 布局谋篇：当前棋局下一枚移动骰的发动成本；递增次数只属于本局，不影响下一局新开局。 */
   plannedMoveCost() {
     const t = this.s.active.find(x => x.id === 'TA08');
@@ -1547,6 +1558,7 @@ export class Game {
     s.turn++;
     if (s.turn > TURN_LIMIT) return this.endGame('turnlimit');
 
+    this.applyTurnInspirationRegen();
     this.tickSky();
     const previousPhase = s.phase;
     s.phase = this.cfg.board.layout === 'concentric_spiral' ? this.phaseForRoute() : (s.lap >= 2 ? 'lap2' : 'lap1');

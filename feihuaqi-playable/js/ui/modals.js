@@ -1048,6 +1048,7 @@ export function talentEffectText(t) {
     case 'study_bonus': return `败/平研习补偿属性额外 +${e.value || 0}`;
     case 'palace_insp': return `殿试每场开场，灵感 +${e.value || 0}`;
     case 'start_insp': return `获得时，灵感一次性 +${e.value || 0}`;
+    case 'insp_turn_regen': return `持有时，每回合开始恢复灵感 +${e.value || 0}`;
     case 'insp_on_quiz': return `答对/完成抉择额外 +${e.value || 0} 灵感（每局最多 ${e.maxTriggers || 0} 次）`;
     case 'insp_battle_recover': return `战后灵感 ≤${e.threshold || 0} 时恢复 ${e.value || 0}（每局最多 ${e.maxTriggers || 0} 次）`;
     case 'insp_max': return `获得时，本局灵感上限永久 +${e.value || 0}（同类扩容互斥）`;

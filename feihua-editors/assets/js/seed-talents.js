@@ -363,10 +363,10 @@ window.GAME_TALENTS = [
     "id": "T019",
     "name": "洛阳纸贵",
     "kind": "passive",
-    "text": "《晋书·左思传》：洛阳为之纸贵。一篇既出，士林争传——每获得一枚新文心，灵感 +2。",
+    "text": "《晋书·左思传》：洛阳为之纸贵。一篇既出，士林争传，声名回响不断——持有时，每个回合开始恢复 1 点灵感。",
     "effect": {
-      "type": "insp_on_talent",
-      "value": 2
+      "type": "insp_turn_regen",
+      "value": 1
     }
   },
   {
@@ -467,10 +467,10 @@ window.GAME_TALENTS = [
     "id": "T029",
     "name": "胸有成竹",
     "kind": "passive",
-    "text": "苏轼《文与可画筼筜谷偃竹记》：故画竹必先得成竹于胸中。谋定后动，临阵不慌——获得此文心时，灵感 +6。",
+    "text": "苏轼《文与可画筼筜谷偃竹记》：故画竹必先得成竹于胸中。谋定后动，临阵不慌——持有时，每个回合开始恢复 1 点灵感。",
     "effect": {
-      "type": "start_insp",
-      "value": 12
+      "type": "insp_turn_regen",
+      "value": 1
     }
   },
   {
