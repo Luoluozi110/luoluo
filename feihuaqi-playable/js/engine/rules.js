@@ -129,7 +129,7 @@ export function styleDiceScore(style, pips, styleCfg, diceMult = BATTLE_COEF.dic
  *  - diceMult   旧版固定骰系数，默认 5；仅在未传 dicePct 时使用
  *  - dicePct    本场普通骰的有效乘区（由 styleDiceScore.pct 传入；如 0.30 = +30%），传入后不再产生固定骰分
  *  - dicePlus   骰点加值（「急智」+1），作用于点数而非分数
- *  - diceFixed  固定灵感骰分值（「七步成诗」= 15），设置后忽略 dice
+ *  - diceFixed  固定灵感骰分值（旧版固定骰效果），设置后忽略 dice
  *  - pctMods    百分比修正 [{source,label,value}]，value 如 0.10
  *  - flatMods   固定值修正 [{source,label,value}]
  *  - critMult   暴击倍率（默认 1）

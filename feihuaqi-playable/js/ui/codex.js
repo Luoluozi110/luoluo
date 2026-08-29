@@ -233,7 +233,7 @@ export class CodexUI {
       case "dice_plus": return "灵感骰 +" + (ef.value || 0);
       case "extra_dice_pct": return "每枚追加骰得分 +" + Math.round((ef.value || 0) * 100) + "%";
       case "dice_transform": return ef.mode === "first_floor" ? "首骰最低视为 " + (ef.floor || 4) + " 点" : ef.mode === "lowest_to" ? "最低骰化为 " + (ef.target || 6) + " 点" : "低点骰抬高 " + (ef.value || 1) + " 点";
-      case "dice_pattern": return ef.pattern === "six" ? "最终六点骰形成联动" : ef.pattern === "distinct" ? "不同点数组形成联动" : ef.pattern === "single" ? "单骰收笔形成联动" : ef.pattern === "all_high" ? "全骰高点形成联动" : ef.pattern === "pair" ? "同点骰形成联动" : "骰组条件形成联动";
+      case "dice_pattern": return ef.pattern === "six" ? "最终六点骰形成联动" : ef.pattern === "distinct" ? "不同点数组形成联动" : ef.pattern === "single" ? "单骰收笔形成联动" : ef.pattern === "all_high" ? "全骰高点形成联动" : ef.pattern === "pair" ? "同点骰形成联动" : ef.pattern === "total_multiple" ? "总点数为倍数形成联动" : "骰组条件形成联动";
       case "style_switch_pct": return "换用不同文体，得分与心得增加";
       case "manuscript_pct": return "稿本越厚，论战得分越高";
       case "crit": return Math.round((ef.chance || 0) * 100) + "% 概率得分 ×" + (ef.mult || 0);

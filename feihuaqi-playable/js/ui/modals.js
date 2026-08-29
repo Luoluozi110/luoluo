@@ -1024,7 +1024,7 @@ export function talentEffectText(t) {
       return `将 ${e.count || 1} 枚不高于 ${e.threshold || 2} 点的最低骰抬高 ${e.value || 1} 点`;
     case 'dice_pattern': {
       const pct = n => `${Math.round((Number(n) || 0) * 100)}%`;
-      let s = e.pattern === 'six' ? `每枚最终六点骰，得分 +${pct(e.value)}`
+      let s = e.pattern === 'six' ? `${e.reward && e.reward.perMatch === false ? '本场首次出现最终六点骰时' : '每枚最终六点骰'}，得分 +${pct(e.value)}`
         : e.pattern === 'distinct' ? `每多一种不同点数，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚追加少耗 ${e.firstCostDiscount} 灵感` : ''}`
         : e.pattern === 'all_distinct' ? `${e.minDice || 3} 枚骰点各不相同，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚续掷少耗 ${e.firstCostDiscount} 灵感` : ''}`
         : e.pattern === 'low_then_high' ? `首骰 ≤${e.lowMax || 2} 后续骰 ≥${e.nextHighMin || 5}，得分 +${pct(e.value)}；低开时首枚续掷少耗 ${e.conditionalFirstCostDiscount || 0} 灵感`
@@ -1036,6 +1036,7 @@ export function talentEffectText(t) {
         : e.pattern === 'pair' ? `骰组出现同点，得分 +${pct(e.value)}`
         : e.pattern === 'total' ? `骰组总点不少于 ${e.threshold || 12}，得分 +${pct(e.value)}`
         : e.pattern === 'exact_total' ? `前 ${e.diceCount || 2} 骰合计恰为 ${e.total || 7} 点，得分 +${pct(e.value)}${e.firstExtraFree ? '；首枚续掷免费' : ''}`
+        : e.pattern === 'total_multiple' ? `骰组总点数为 ${e.multiple || 7} 的倍数，得分 +${pct(e.value)}（不限制骰子枚数）`
         : e.pattern === 'total_tiers' ? (e.tiers || []).map(x => `总点 ≥${x.threshold}：+${pct(x.value)}`).join('；')
         : `每枚 ≥${e.highMin || 5} 点骰 +${pct(e.highValue)}；每枚 ≤${e.lowMax || 2} 点骰 ${pct(e.lowValue)}`;
       if (e.reward && Number(e.reward.value) > 0) {

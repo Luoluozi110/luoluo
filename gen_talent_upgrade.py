@@ -68,7 +68,7 @@ SPEC = {
     "T027": ("rare", 4, [("top","value",1,2,True)]),
     "T029": ("rare", 4, [("top","value",3,6,True)]),
     "T030": ("rare", 4, [("top","value",1,2,True),("top","maxTriggers",2,4,True)]),
-    "TA01": ("rare", 4, [("top","value",13,17,True)], (3,3)),
+    "TA01": ("rare", 4, [("top","value",0.18,0.30,False)]),
     "TA02": ("rare", 4, [("top","ratio",0.70,1.15,False)], (3,3)),
     "TA05": ("rare", 4, [("top","value",3,6,True)], (2,2)),
     "TA07": ("rare", 4, [("top","value",6,7,True)], (3,3)),

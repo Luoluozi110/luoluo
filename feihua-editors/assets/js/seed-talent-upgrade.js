@@ -752,66 +752,54 @@ window.GAME_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "dice_pattern",
-          "pattern": "exact_total",
-          "diceCount": 2,
-          "total": 7,
+          "pattern": "total_multiple",
+          "multiple": 7,
           "value": 0.18,
-          "firstExtraFree": true,
           "reward": {
             "type": "insight",
             "value": 1,
             "perMatch": false
           }
-        },
-        "cost": 3
+        }
       },
       {
         "effect": {
           "type": "dice_pattern",
-          "pattern": "exact_total",
-          "diceCount": 2,
-          "total": 7,
+          "pattern": "total_multiple",
+          "multiple": 7,
           "value": 0.22,
-          "firstExtraFree": true,
           "reward": {
             "type": "insight",
             "value": 1,
             "perMatch": false
           }
-        },
-        "cost": 3
+        }
       },
       {
         "effect": {
           "type": "dice_pattern",
-          "pattern": "exact_total",
-          "diceCount": 2,
-          "total": 7,
+          "pattern": "total_multiple",
+          "multiple": 7,
           "value": 0.26,
-          "firstExtraFree": true,
           "reward": {
             "type": "insight",
             "value": 2,
             "perMatch": false
           }
-        },
-        "cost": 2
+        }
       },
       {
         "effect": {
           "type": "dice_pattern",
-          "pattern": "exact_total",
-          "diceCount": 2,
-          "total": 7,
+          "pattern": "total_multiple",
+          "multiple": 7,
           "value": 0.3,
-          "firstExtraFree": true,
           "reward": {
             "type": "insight",
             "value": 2,
             "perMatch": false
           }
-        },
-        "cost": 2
+        }
       }
     ]
   },
@@ -2242,7 +2230,8 @@ window.GAME_TALENT_UPGRADE = {
           "value": 0,
           "reward": {
             "type": "fragment",
-            "value": 0.5
+            "value": 1,
+            "perMatch": false
           }
         }
       },
@@ -2253,7 +2242,8 @@ window.GAME_TALENT_UPGRADE = {
           "value": 0,
           "reward": {
             "type": "fragment",
-            "value": 0.6
+            "value": 1.25,
+            "perMatch": false
           }
         }
       },
@@ -2264,7 +2254,8 @@ window.GAME_TALENT_UPGRADE = {
           "value": 0,
           "reward": {
             "type": "fragment",
-            "value": 0.75
+            "value": 1.5,
+            "perMatch": false
           }
         }
       },
@@ -2275,7 +2266,8 @@ window.GAME_TALENT_UPGRADE = {
           "value": 0,
           "reward": {
             "type": "fragment",
-            "value": 1
+            "value": 1.75,
+            "perMatch": false
           }
         }
       },
@@ -2286,7 +2278,8 @@ window.GAME_TALENT_UPGRADE = {
           "value": 0,
           "reward": {
             "type": "fragment",
-            "value": 1.25
+            "value": 2,
+            "perMatch": false
           }
         }
       }

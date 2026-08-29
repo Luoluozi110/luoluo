@@ -2564,7 +2564,7 @@ export class Game {
       extraDiceCost(style, extraIndex = 1, pips = []) {
         const base = Number((g.cfg.inspiration || {}).extraDiceCost) || 5;
         const activeEffects = this.usedActive.map(t => t.effect || {});
-        // 七步成诗把「第一笔续写」变成真正的免费选择；其余减费仍至少保留 1 灵感成本。
+        // 兼容仍配置 firstExtraFree 的主动骰组文心；被动文心不改变续掷成本。
         if (extraIndex === 1 && activeEffects.some(ef => ef.type === 'dice_pattern' && ef.firstExtraFree)) return 0;
         let discount = 0;
         if (style === 'ci' && extraIndex === 1) discount += Number((this.styleSystem.ci || {}).firstExtraDiscount) || 0;
@@ -2894,6 +2894,10 @@ export class Game {
         else if (ef.pattern === 'exact_total') {
           const diceCount = Math.max(2, Number(ef.diceCount) || 2);
           occurrence = dicePips.length === diceCount && totalPips === (Number(ef.total) || 7) ? 1 : 0;
+        }
+        else if (ef.pattern === 'total_multiple') {
+          const multiple = Math.max(1, Number(ef.multiple) || 7);
+          occurrence = totalPips > 0 && totalPips % multiple === 0 ? 1 : 0;
         }
         else if (ef.pattern === 'total_tiers') {
           const tiers = Array.isArray(ef.tiers) ? ef.tiers.slice().sort((a, b) => (Number(b.threshold) || 0) - (Number(a.threshold) || 0)) : [];

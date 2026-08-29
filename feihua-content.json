@@ -4213,22 +4213,19 @@
     {
       "id": "TA01",
       "name": "七步成诗",
-      "kind": "active",
-      "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」本场首枚续掷免费；前两骰合计恰为 7 点，作品得分 +18%，并得 1 心得。",
+      "kind": "passive",
+      "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」被动生效；不论骰子枚数，只要本场灵感骰点数总和为 7 的倍数，作品得分 +18%，并得 1 心得（每场一次）。",
       "effect": {
         "type": "dice_pattern",
-        "pattern": "exact_total",
-        "diceCount": 2,
-        "total": 7,
+        "pattern": "total_multiple",
+        "multiple": 7,
         "value": 0.18,
-        "firstExtraFree": true,
         "reward": {
           "type": "insight",
           "value": 1,
           "perMatch": false
         }
-      },
-      "cost": 3
+      }
     },
     {
       "id": "TA02",
@@ -6639,15 +6636,15 @@
       "id": "T040",
       "name": "妙手偶得",
       "kind": "passive",
-      "text": "陆游诗云：文章本天成，妙手偶得之。每枚最终为 6 点的灵感骰额外沉淀 0.5 份残页。",
+      "text": "陆游诗云：文章本天成，妙手偶得之。本场首次出现最终为 6 点的灵感骰时，额外沉淀 1 份残页（每场一次）。",
       "effect": {
         "type": "dice_pattern",
         "pattern": "six",
         "value": 0,
         "reward": {
           "type": "fragment",
-          "value": 0.5,
-          "perMatch": true
+          "value": 1,
+          "perMatch": false
         }
       },
       "upgrade": {
@@ -6667,44 +6664,44 @@
               "value": 0,
               "reward": {
                 "type": "fragment",
-                "value": 0.5,
-                "perMatch": true
-              }
-            }
-          },
-          {
-            "effect": {
-              "type": "dice_pattern",
-              "pattern": "six",
-              "value": 0,
-              "reward": {
-                "type": "fragment",
-                "value": 0.6,
-                "perMatch": true
-              }
-            }
-          },
-          {
-            "effect": {
-              "type": "dice_pattern",
-              "pattern": "six",
-              "value": 0,
-              "reward": {
-                "type": "fragment",
-                "value": 0.75,
-                "perMatch": true
-              }
-            }
-          },
-          {
-            "effect": {
-              "type": "dice_pattern",
-              "pattern": "six",
-              "value": 0,
-              "reward": {
-                "type": "fragment",
                 "value": 1,
-                "perMatch": true
+                "perMatch": false
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "dice_pattern",
+              "pattern": "six",
+              "value": 0,
+              "reward": {
+                "type": "fragment",
+                "value": 1.25,
+                "perMatch": false
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "dice_pattern",
+              "pattern": "six",
+              "value": 0,
+              "reward": {
+                "type": "fragment",
+                "value": 1.5,
+                "perMatch": false
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "dice_pattern",
+              "pattern": "six",
+              "value": 0,
+              "reward": {
+                "type": "fragment",
+                "value": 1.75,
+                "perMatch": false
               }
             }
           }
@@ -8019,66 +8016,54 @@
         {
           "effect": {
             "type": "dice_pattern",
-            "pattern": "exact_total",
-            "diceCount": 2,
-            "total": 7,
+            "pattern": "total_multiple",
+            "multiple": 7,
             "value": 0.18,
-            "firstExtraFree": true,
             "reward": {
               "type": "insight",
               "value": 1,
               "perMatch": false
             }
-          },
-          "cost": 3
+          }
         },
         {
           "effect": {
             "type": "dice_pattern",
-            "pattern": "exact_total",
-            "diceCount": 2,
-            "total": 7,
+            "pattern": "total_multiple",
+            "multiple": 7,
             "value": 0.22,
-            "firstExtraFree": true,
             "reward": {
               "type": "insight",
               "value": 1,
               "perMatch": false
             }
-          },
-          "cost": 3
+          }
         },
         {
           "effect": {
             "type": "dice_pattern",
-            "pattern": "exact_total",
-            "diceCount": 2,
-            "total": 7,
+            "pattern": "total_multiple",
+            "multiple": 7,
             "value": 0.26,
-            "firstExtraFree": true,
             "reward": {
               "type": "insight",
               "value": 2,
               "perMatch": false
             }
-          },
-          "cost": 2
+          }
         },
         {
           "effect": {
             "type": "dice_pattern",
-            "pattern": "exact_total",
-            "diceCount": 2,
-            "total": 7,
+            "pattern": "total_multiple",
+            "multiple": 7,
             "value": 0.3,
-            "firstExtraFree": true,
             "reward": {
               "type": "insight",
               "value": 2,
               "perMatch": false
             }
-          },
-          "cost": 2
+          }
         }
       ]
     },
@@ -10578,92 +10563,92 @@
             "value": 0,
             "reward": {
               "type": "fragment",
-              "value": 0.5,
-              "perMatch": true
-            }
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        },
-        {
-          "effect": {
-            "type": "dice_pattern",
-            "pattern": "six",
-            "value": 0,
-            "reward": {
-              "type": "fragment",
-              "value": 0.5,
-              "perMatch": true
-            }
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        },
-        {
-          "effect": {
-            "type": "dice_pattern",
-            "pattern": "six",
-            "value": 0,
-            "reward": {
-              "type": "fragment",
-              "value": 0.6,
-              "perMatch": true
-            }
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        },
-        {
-          "effect": {
-            "type": "dice_pattern",
-            "pattern": "six",
-            "value": 0,
-            "reward": {
-              "type": "fragment",
-              "value": 0.75,
-              "perMatch": true
-            }
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        },
-        {
-          "effect": {
-            "type": "dice_pattern",
-            "pattern": "six",
-            "value": 0,
-            "reward": {
-              "type": "fragment",
               "value": 1,
-              "perMatch": true
+              "perMatch": false
+            }
+          },
+          "style": {
+            "fontFamily": "",
+            "fontSize": 0,
+            "color": "",
+            "lineHeight": 0,
+            "textAlign": "",
+            "textIndent": 0,
+            "marginBottom": 0
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0,
+            "reward": {
+              "type": "fragment",
+              "value": 1.25,
+              "perMatch": false
+            }
+          },
+          "style": {
+            "fontFamily": "",
+            "fontSize": 0,
+            "color": "",
+            "lineHeight": 0,
+            "textAlign": "",
+            "textIndent": 0,
+            "marginBottom": 0
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0,
+            "reward": {
+              "type": "fragment",
+              "value": 1.5,
+              "perMatch": false
+            }
+          },
+          "style": {
+            "fontFamily": "",
+            "fontSize": 0,
+            "color": "",
+            "lineHeight": 0,
+            "textAlign": "",
+            "textIndent": 0,
+            "marginBottom": 0
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0,
+            "reward": {
+              "type": "fragment",
+              "value": 1.75,
+              "perMatch": false
+            }
+          },
+          "style": {
+            "fontFamily": "",
+            "fontSize": 0,
+            "color": "",
+            "lineHeight": 0,
+            "textAlign": "",
+            "textIndent": 0,
+            "marginBottom": 0
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "six",
+            "value": 0,
+            "reward": {
+              "type": "fragment",
+              "value": 2,
+              "perMatch": false
             }
           },
           "style": {
@@ -12462,7 +12447,7 @@
         "TA01",
         "T036"
       ],
-      "desc": "七步落笔，字字珠玑——首骰有底，满组争高，论战得分 +3%。",
+      "desc": "七步落笔，字字珠玑——总点为 7 的倍数，满组争高，论战得分 +3%。",
       "effects": [
         {
           "type": "syn_pct",

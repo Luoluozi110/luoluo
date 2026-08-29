@@ -62,6 +62,18 @@ console.log('== 多骰分出异点与同点两套构筑 ==');
   assert.ok(!paired.talentTriggers.some(t => t.id === 'T010'), '只有一种点数不触发天马行空');
 }
 
+console.log('== 妙手偶得：六点残页改为每场一次的里程碑 ==');
+{
+  const g = game();
+  g.s.passive = [get('T040')];
+  const session = g.createSession({ npc: foe, label: '妙手偶得限次回响' });
+  const out = g.resolveBattle(session, 'ci', 'zheli', [6, 6, 6]);
+  const trigger = out.talentTriggers.find(t => t.id === 'T040');
+  assert.equal(trigger.occurrence, 3, '妙手偶得仍能识别多枚最终六点骰');
+  assert.equal(trigger.reward.value, 1, '妙手偶得基础残页收益为 1');
+  assert.equal(trigger.reward.perMatch, false, '妙手偶得残页收益改为每场一次，避免随骰数膨胀');
+}
+
 console.log('== 稳健、换体、稿本与高点章法均有独立反馈 ==');
 {
   const g = game();
