@@ -24,6 +24,8 @@ assert.ok(common.includes('markCurrentDataVersion(remoteProject._version);'),
   '发布成功后记录最新云端修订号，保证连续发布不会被旧版本护栏误拦截');
 assert.ok(common.includes('const applied = buildProject(incoming._version);'),
   '云端拉取回读必须保留远端修订号，避免版本字段不同导致必然回滚');
+assert.ok(common.includes('markCurrentDataVersion(applied._version);'),
+  '云端工程应用成功后必须推进本地版本游标，保证拉取后继续编辑可发布');
 assert.ok(common.includes('const result = applyCloudProject(data);'),
   '云端拉取使用可回滚的完整替换入口');
 assert.equal(common.includes('拉取模式：'), false, '云端同步不再提供容易造成跨入口分叉的合并模式');

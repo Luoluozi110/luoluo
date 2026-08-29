@@ -60,9 +60,14 @@ const newerRemote = clone(window.Common.buildProject());
 newerRemote._version += 3;
 const newerResult = window.Common.applyCloudProject(newerRemote);
 assert.equal(newerResult.project._version, newerRemote._version);
-window.Common.markCurrentDataVersion(newerRemote._version);
+assert.equal(window.Common.localDataVersion(), newerRemote._version,
+  '云端工程应用成功后必须立即推进本地版本游标');
 assert.equal(window.Common.buildProject()._version, newerRemote._version,
   '成功拉取/发布后的下一次工程构造必须沿用最新云端修订号');
+// 拉取后继续编辑时，发布快照必须从云端版本继续递增，不能卡在旧页面种子版本。
+const editedAfterPull = clone(window.Common.buildProject());editedAfterPull.questions[0].scenario += '（拉取后编辑）';
+assert.equal(Math.max(window.Common.localDataVersion(), editedAfterPull._version) + 1, newerRemote._version + 1,
+  '拉取后编辑的下一次发布应从云端版本继续递增');
 
 const changedSidequest = clone(newerRemote);
 changedSidequest.sidequests.routes[0].name += '（不同步）';

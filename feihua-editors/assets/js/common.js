@@ -72,6 +72,9 @@
     try { localStorage.setItem(PREFIX + DATA_VERSION_KEY, String(Math.max(CONTENT_VERSION, Number(version) || CONTENT_VERSION))); } catch (_) {}
     legacyStorageDetected = false;
   }
+  function currentProjectVersion() {
+    return Math.max(CONTENT_VERSION, localDataVersion());
+  }
   function effectiveProjectVersion(version) {
     return Math.max(CONTENT_VERSION, localDataVersion(), Number(version) || 0);
   }
@@ -430,7 +433,7 @@
       <div class="mgmt-section">
         <h4>统一操作</h4>
         <p style="font-size:12.5px;color:${hasStaleStorage() ? "var(--bad)" : "var(--mo-3)"};line-height:1.7;margin:4px 0 10px">
-          ${hasStaleStorage() ? `检测到本机数据版本 ${localDataVersion() || "未知"} 低于当前种子版本 ${CONTENT_VERSION}。发布前请先从云端拉取，或在各模块使用“重置默认”后再编辑；系统会阻止旧版本覆盖新云端。` : `当前编辑器数据版本：${CONTENT_VERSION}。`}
+          ${hasStaleStorage() ? `检测到本机数据版本 ${localDataVersion() || "未知"} 低于当前种子版本 ${CONTENT_VERSION}。发布前请先从云端拉取，或在各模块使用“重置默认”后再编辑；系统会阻止旧版本覆盖新云端。` : `当前编辑器数据版本：${currentProjectVersion()}（页面种子 ${CONTENT_VERSION}）。`}
         </p>
         <p style="font-size:13px;color:var(--ink2);margin:4px 0 10px">
           合并导出会把题库、奇遇、文心、传世名篇、叙事文案（流派 / 段位 / 评分）等内容打包成一个工程文件（<code>feihua-content.json</code>），便于整体备份与迁移；
@@ -727,7 +730,6 @@
         let data; try { data = JSON.parse(text); } catch (e) { throw new Error("云端文件不是合法 JSON：" + e.message); }
         if (!data || data._type !== "feihua-content") throw new Error("云端文件不是 feihua-content 工程文件（_type 不符）");
         const result = applyCloudProject(data);
-        markCurrentDataVersion(data._version);
         s.url = rawUrl;
         s.fingerprint = result.fingerprint;
         global.CloudSync.saveSettings("cloud", s);
@@ -910,6 +912,8 @@
       if (diff.length) {
         throw new Error("当前编辑器版本会改写这些云端模块：" + diff.map(key => PROJECT_FIELD_LABELS[key] || key).join("、"));
       }
+      // 云端工程已完整应用后再推进本地版本游标；失败时不会污染版本状态。
+      markCurrentDataVersion(applied._version);
       return { project: applied, fingerprint: projectFingerprint(applied), routed };
     } catch (error) {
       if (mutationStarted) {
