@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { normalizeConfig } from '../js/engine/config.js';
+import { applyProjectOverride, normalizeConfig } from '../js/engine/config.js';
 import { Game } from '../js/engine/game.js';
 import { sideQuestBattleCopy, sideQuestPresentation, sideQuestTransition } from '../js/engine/sidequest-presentation.js';
 
@@ -22,6 +22,12 @@ for (const route of routes) {
   names.add(decision.stageName); names.add(climax.stageName);
 }
 assert.equal(names.size, routes.length * 2, '各路线与幕次必须使用独立阶段名');
+
+const legacyCloudSidequests = JSON.parse(JSON.stringify(cfg.sidequests));
+delete legacyCloudSidequests.routeById;
+for (const route of legacyCloudSidequests.routes) delete route.presentation;
+const mergedLegacyCloud = applyProjectOverride(cfg, { sidequests: legacyCloudSidequests });
+assert.ok(mergedLegacyCloud.sidequests.routes.every(route => route.presentation), '旧云端覆盖时按 routeId 保留本地展示文案');
 
 const jianghu = routes.find(route => route.id === 'jianghu');
 const completed = sideQuestPresentation(jianghu, { routeId: 'jianghu', stage: 'complete' }, 'jinshi');

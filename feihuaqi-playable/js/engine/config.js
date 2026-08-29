@@ -129,6 +129,18 @@ export function applyProjectOverride(baseCfg, project, options = {}) {
   for (const key of ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics', 'sky', 'album', 'schools', 'grades', 'narrative', 'sidequests']) {
     if (project[key] !== undefined && project[key] !== null) next[key] = project[key];
   }
+  // 旧云端工程可能已有支线路线、却尚未携带 presentation。展示文案属于运行时玩法契约，
+  // 按 routeId 从本地配置补回；云端已显式提供的新文案仍优先，且不同路线绝不互相借用。
+  if (project.sidequests && Array.isArray(project.sidequests.routes) && baseCfg.sidequests && Array.isArray(baseCfg.sidequests.routes)) {
+    const localRoutes = new Map(baseCfg.sidequests.routes.filter(route => route && route.id).map(route => [route.id, route]));
+    next.sidequests = {
+      ...project.sidequests,
+      routes: project.sidequests.routes.map(route => {
+        const local = route && localRoutes.get(route.id);
+        return route && !route.presentation && local && local.presentation ? { ...route, presentation: local.presentation } : route;
+      })
+    };
+  }
   // 内容编辑器的棋盘工程只描述主路线；隐藏终圈属于玩法契约，旧工程未携带时不得把本地配置抹掉。
   if (project.board && !project.board.hiddenFinalRing && baseCfg.board && baseCfg.board.hiddenFinalRing) {
     next.board = { ...next.board, hiddenFinalRing: baseCfg.board.hiddenFinalRing };
