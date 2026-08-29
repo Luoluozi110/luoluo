@@ -12,6 +12,7 @@ const npcIds = npcRoutes.flatMap(route => [route.guides[0], route.climax, ...Obj
 assert.equal(new Set(npcIds).size, 9, '编辑器需同步剩余 9 名支线专属 NPC');
 const common = readFileSync(new URL('../assets/js/common.js', import.meta.url), 'utf8');
 const npcEditor = readFileSync(new URL('../assets/js/npc.js', import.meta.url), 'utf8');
+const copyEditor = readFileSync(new URL('../assets/js/copy.js', import.meta.url), 'utf8');
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 assert.match(common, /project\.sidequests = global\.GAME_SIDEQUESTS/, '导出工程必须携带支线 NPC 与路线');
 assert.match(common, /NPC\.exportSideQuestRaw/, '工程导出必须读取编辑器当前的支线 NPC 数据');
@@ -20,5 +21,10 @@ assert.match(npcEditor, /function renderSideQuestNpcList\(/, 'NPC 编辑器必�
 assert.match(npcEditor, /exportSideQuestRaw, importSideQuestNpcs/, 'NPC 编辑器必须公开专属角色的导入导出接口');
 assert.match(html, /id="sidequestNpcList"/, 'NPC 页面必须存在支线专属 NPC 可见列表');
 assert.match(npcEditor, /class="sidequest-npc-attr"/, '支线 NPC 的六维必须在列表中直接可编辑');
+assert.match(npcEditor, /class="sidequest-npc-meta"/, '支线 NPC 的姓名和介绍必须在 NPC 页面直接可编辑');
+assert.match(npcEditor, /getSideQuestNpcCopy, updateSideQuestNpcCopy/, 'NPC 编辑器必须公开支线角色文案同步接口');
+assert.match(copyEditor, /sideQuestNpcCopyEntries/, '文案编辑器必须读取支线 NPC 文案');
+assert.match(copyEditor, /data-sidequest-npc-id/, '文案编辑器必须能回写支线 NPC 文案');
+assert.match(common, /"sidequest-npcs"/, '内容版本更新必须清理旧的支线 NPC 本地缓存');
 assert.match(html, /id="sidequestNpcSave"/, 'NPC 页面必须提供支线数值保存入口');
 console.log('sidequest-content-sync.test.mjs: 编辑器支线内容同步 ✓');

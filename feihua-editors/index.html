@@ -133,8 +133,8 @@
   <div class="qlist" id="npclist"></div>
 
   <div class="tier-card" style="margin-top:18px">
-    <div class="tier-head"><div class="meta"><span class="q-id">支线专属 NPC</span><span class="badge k-active">9 名角色 · 不进入随机池</span></div><div class="tier-actions"><button class="btn sm primary" id="sidequestNpcSave" type="button">保存支线数值</button></div></div>
-    <div class="tier-desc">引路人没有战斗属性；第三幕与终局副考的六维可直接修改。副考会按两幕选择使用对应的机制包，因此三个分支数值均独立保存。</div>
+    <div class="tier-head"><div class="meta"><span class="q-id">支线专属 NPC</span><span class="badge k-active">9 名角色 · 不进入随机池</span></div><div class="tier-actions"><button class="btn sm primary" id="sidequestNpcSave" type="button">保存支线 NPC 内容</button></div></div>
+    <div class="tier-desc">姓名、身份／称号、角色介绍与六维均可编辑；角色文案会同步到文案编辑器。引路人没有战斗属性，终局副考的三个分支数值则独立保存。</div>
     <div class="npc-list" id="sidequestNpcList"></div>
     <div class="msg" id="sidequestNpcMsg"></div>
   </div>
@@ -1057,7 +1057,7 @@
 </datalist>
 
 <!-- 游戏原始数据（作为编辑器默认种子；首次打开或仍为示例时自动载入） -->
-<script>window.GAME_CONTENT_VERSION = 5;</script>
+<script>window.GAME_CONTENT_VERSION = 6;</script>
 <script src="assets/js/seed-questions.js?v=20260829merge2"></script>
 <script src="assets/js/seed-events.js?v=20260829merge2"></script>
 <script src="assets/js/seed-talents.js?v=20260829merge2"></script>
@@ -1079,13 +1079,13 @@
 <script src="assets/js/qbank.js?v=20260829merge2"></script>
 <script src="assets/js/adventure.js?v=20260829merge2"></script>
 <script src="assets/js/talent.js?v=20260829merge2"></script>
-<script src="assets/js/npc.js?v=20260829sidequestnpcvalues2"></script>
+<script src="assets/js/npc.js?v=20260829sidequestnpccopy1"></script>
 <script src="assets/js/affinity.js?v=20260829merge2"></script>
 <script src="assets/js/synergy.js?v=20260829merge2"></script>
 <script src="assets/js/board.js?v=20260829merge2"></script>
 <script src="assets/js/sky.js?v=20260829merge2"></script>
 <script src="assets/js/album.js?v=20260829merge2"></script>
-<script src="assets/js/copy.js?v=20260829merge2"></script>
+<script src="assets/js/copy.js?v=20260829sidequestnpccopy1"></script>
 <script src="assets/js/cloud.js?v=20260829merge2"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {

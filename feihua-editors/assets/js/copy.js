@@ -139,16 +139,26 @@
     const v = value == null ? "" : String(value);
     return `<textarea class="copy-field" data-path="${C.esc(path)}" rows="${rows || 2}" placeholder="${C.esc(placeholder || "")}">${C.esc(v)}</textarea>`;
   }
+  function sideQuestNpcCopyField(npcId, fieldName, value, rows, placeholder) {
+    const v = value == null ? "" : String(value);
+    return `<textarea class="copy-field sidequest-npc-copy-field" data-sidequest-npc-id="${C.esc(npcId)}" data-sidequest-field="${C.esc(fieldName)}" rows="${rows || 1}" placeholder="${C.esc(placeholder || "")}">${C.esc(v)}</textarea>`;
+  }
+  function sideQuestNpcCopyEntries() {
+    if (!global.NPC || typeof global.NPC.getSideQuestNpcCopy !== "function") return [];
+    return global.NPC.getSideQuestNpcCopy();
+  }
 
   function renderStats() {
     const el = document.getElementById("copyStatStrip");
     if (!el) return;
     const issues = validateAll().length;
+    const sideQuestNpcs = sideQuestNpcCopyEntries();
     el.innerHTML =
       `<div class="stat"><b>${state.schools.length}</b><span>流派文案</span></div>` +
       `<div class="stat"><b>${(state.grades.grades || []).length}</b><span>段位档</span></div>` +
       `<div class="stat"><b>${Object.keys(state.grades.comments || {}).length}</b><span>维度评语</span></div>` +
       `<div class="stat"><b>5</b><span>叙事弹窗组</span></div>` +
+      `<div class="stat"><b>${sideQuestNpcs.length}</b><span>支线 NPC 文案</span></div>` +
       `<div class="stat"><b>${issues}</b><span>校验问题</span></div>`;
   }
 
@@ -289,6 +299,20 @@
         + prologueCard + zeitgeistCard + stageCard + lap2Card + hiddenCard);
     }
 
+    /* —— 支线 NPC 文案（与 NPC 编辑器共享 sidequest-npcs 数据源） —— */
+    const sideQuestNpcs = sideQuestNpcCopyEntries();
+    const sideQuestMatch = !q || "支线NPC角色文案姓名称号介绍".includes(q)
+      || sideQuestNpcs.some(npc => [npc.id, npc.name, npc.title, npc.text].join(" ").toLowerCase().includes(q));
+    if (sideQuestMatch) {
+      const cards = sideQuestNpcs.map(npc => `
+        <div class="q-card"><div class="meta"><span class="q-id">${C.esc(npc.id)}</span><span class="badge r-common">支线 NPC</span></div><div class="q-main">
+          <label class="copy-lbl">姓名</label>${sideQuestNpcCopyField(npc.id, "name", npc.name, 1, "角色姓名")}
+          <label class="copy-lbl">身份／称号</label>${sideQuestNpcCopyField(npc.id, "title", npc.title, 1, "如：江湖名士")}
+          <label class="copy-lbl">角色介绍（同步至 NPC 编辑器与支线配置）</label>${sideQuestNpcCopyField(npc.id, "text", npc.text, 3, "玩家可见的角色介绍")}
+        </div></div>`).join("");
+      html.push(`<h4 class="copy-group">支线 NPC 文案（sidequest-npcs.json · 与 NPC 编辑器实时同步）</h4>` + (cards || `<div class="empty">支线 NPC 配置尚未载入</div>`));
+    }
+
     list.innerHTML = html.join("");
   }
 
@@ -384,6 +408,12 @@
     const list = document.getElementById("copylist");
     if (list) list.addEventListener("input", e => {
       const t = e.target;
+      if (t && t.dataset && t.dataset.sidequestNpcId) {
+        if (global.NPC && typeof global.NPC.updateSideQuestNpcCopy === "function") {
+          global.NPC.updateSideQuestNpcCopy(t.dataset.sidequestNpcId, t.dataset.sidequestField, t.value, true);
+        }
+        return;
+      }
       if (t && t.dataset && t.dataset.path) {
         setByPath(state, t.dataset.path, t.value);
         clearTimeout(saveTimer);

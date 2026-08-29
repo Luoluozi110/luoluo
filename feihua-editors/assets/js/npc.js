@@ -122,11 +122,44 @@
     if (!npc || !npc.attrs) return '<span class="npc-title">非战斗角色</span>';
     return ATTR_KEYS.map(attr => `<label style="display:inline-flex;align-items:center;gap:3px;margin-right:7px;font-size:12px">${C.esc(ATTR[attr])}<input class="sidequest-npc-attr" data-route="${routeId}" data-slot="${key}" data-attr="${attr}" type="number" min="0" step="1" value="${Math.max(0, Number(npc.attrs[attr]) || 0)}" style="width:54px"></label>`).join("");
   }
+  function sideQuestProfile(npc) {
+    const id = C.esc(npc.id || "");
+    return `<div class="sidequest-npc-profile" style="display:grid;grid-template-columns:minmax(110px,1fr) minmax(110px,1fr);gap:7px 10px;width:100%;margin:8px 0">
+      <label style="font-size:12px">姓名<input class="sidequest-npc-meta" data-npc-id="${id}" data-field="name" type="text" value="${C.esc(npc.name || "")}" style="width:100%"></label>
+      <label style="font-size:12px">身份／称号<input class="sidequest-npc-meta" data-npc-id="${id}" data-field="title" type="text" value="${C.esc(npc.title || "")}" style="width:100%"></label>
+      <label style="font-size:12px;grid-column:1 / -1">角色介绍<textarea class="sidequest-npc-meta" data-npc-id="${id}" data-field="text" rows="2" placeholder="玩家可见的角色介绍；会同步到文案编辑器" style="width:100%;resize:vertical">${C.esc(npc.text || "")}</textarea></label>
+    </div>`;
+  }
+  function sideQuestSlotsByNpcId(npcId) {
+    return sideQuestSlots().filter(slot => slot.npc && slot.npc.id === npcId);
+  }
+  function getSideQuestNpcCopy() {
+    const seen = new Set();
+    return sideQuestSlots().flatMap(slot => {
+      const npc = slot.npc;
+      if (!npc || !npc.id || seen.has(npc.id)) return [];
+      seen.add(npc.id);
+      return [{ id: npc.id, name: String(npc.name || ""), title: String(npc.title || ""), text: String(npc.text || ""), routeId: slot.routeId }];
+    });
+  }
+  function updateSideQuestNpcCopy(npcId, field, value, persist) {
+    if (!["name", "title", "text"].includes(field)) return false;
+    const targets = sideQuestSlotsByNpcId(npcId);
+    if (!targets.length) return false;
+    const text = String(value == null ? "" : value);
+    targets.forEach(slot => { slot.npc[field] = text; });
+    if (persist) {
+      C.store("sidequest-npcs", state.sideQuestNpcs);
+      global.GAME_SIDEQUEST_NPCS = cloneData(state.sideQuestNpcs);
+      C.setStatus("npc", "已同步支线 NPC 文案");
+    }
+    return true;
+  }
   function renderSideQuestNpcList() {
     const list = document.getElementById("sidequestNpcList");
     if (!list) return;
     const slots = sideQuestSlots();
-    list.innerHTML = slots.map(slot => `<div class="npc-row"><div class="npc-id"><b>${C.esc(slot.npc.name || "（未命名）")}</b><span class="badge src">${C.esc(slot.label)}</span><span class="npc-title">${C.esc(slot.npc.title || "")}</span><span class="npc-title" style="opacity:.6">${C.esc(slot.npc.id || "")}</span></div><div class="npc-attrs">${sideQuestAttrs(slot.npc, slot.routeId, slot.key)}</div></div>`).join("") || '<div class="npc-empty">未读取到支线 NPC 配置。</div>';
+    list.innerHTML = slots.map(slot => `<div class="npc-row"><div class="npc-id"><b>${C.esc(slot.npc.name || "（未命名）")}</b><span class="badge src">${C.esc(slot.label)}</span><span class="npc-title">${C.esc(slot.npc.title || "")}</span><span class="npc-title" style="opacity:.6">${C.esc(slot.npc.id || "")}</span></div>${sideQuestProfile(slot.npc)}<div class="npc-attrs">${sideQuestAttrs(slot.npc, slot.routeId, slot.key)}</div></div>`).join("") || '<div class="npc-empty">未读取到支线 NPC 配置。</div>';
   }
   function saveSideQuestNpcs() {
     const slots = sideQuestSlots();
@@ -135,8 +168,8 @@
     if (ids.size !== 9) { msg.className = "msg error"; msg.textContent = "支线配置不完整：需要 9 名唯一 NPC。"; return false; }
     C.store("sidequest-npcs", state.sideQuestNpcs);
     global.GAME_SIDEQUEST_NPCS = cloneData(state.sideQuestNpcs);
-    msg.className = "msg ok"; msg.textContent = "支线 NPC 数值已保存，会随工程导出和云端发布。";
-    C.setStatus("npc", "已保存支线 NPC 数值");
+    msg.className = "msg ok"; msg.textContent = "支线 NPC 姓名、介绍与数值已保存，会随工程导出和云端发布。";
+    C.setStatus("npc", "已保存支线 NPC 内容");
     return true;
   }
   function importSideQuestNpcs(raw) {
@@ -927,13 +960,19 @@
     document.getElementById("sidequestNpcSave").addEventListener("click", saveSideQuestNpcs);
     document.getElementById("sidequestNpcList").addEventListener("input", e => {
       const input = e.target;
+      if (input.classList.contains("sidequest-npc-meta")) {
+        if (!updateSideQuestNpcCopy(input.dataset.npcId, input.dataset.field, input.value, false)) return;
+        const msg = document.getElementById("sidequestNpcMsg");
+        msg.className = "msg"; msg.textContent = "姓名或介绍已修改，点击“保存支线 NPC 内容”后写入本机与导出工程；文案编辑器会同步显示。";
+        return;
+      }
       if (!input.classList.contains("sidequest-npc-attr")) return;
       const npc = npcAtSideQuestSlot(input.dataset.route, input.dataset.slot);
       if (!npc) return;
       npc.attrs = npc.attrs || {};
       npc.attrs[input.dataset.attr] = Math.max(0, Math.floor(Number(input.value) || 0));
       const msg = document.getElementById("sidequestNpcMsg");
-      msg.className = "msg"; msg.textContent = "数值已修改，点击“保存支线数值”后写入本机与导出工程。";
+      msg.className = "msg"; msg.textContent = "数值已修改，点击“保存支线 NPC 内容”后写入本机与导出工程。";
     });
 
     document.getElementById("npcTierCancel").addEventListener("click", closeTierEditor);
@@ -1042,5 +1081,5 @@
     global.NPC._ready = true;
   }
 
-  global.NPC = { init, get: () => state.tiers, exportRaw, exportSideQuestRaw, importSideQuestNpcs, validateAll, importData, renderList, _ready: false };
+  global.NPC = { init, get: () => state.tiers, exportRaw, exportSideQuestRaw, importSideQuestNpcs, getSideQuestNpcCopy, updateSideQuestNpcCopy, validateAll, importData, renderList, _ready: false };
 })(window);

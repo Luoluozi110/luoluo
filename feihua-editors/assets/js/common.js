@@ -10,7 +10,7 @@
   const PREFIX = "feihua_editors_v1_";
   // 由 index.html 注入并随 config -> seed -> 云端基准同步递增；旧编辑器页面会因此被桥接层识别为过期。
   const CONTENT_VERSION = Math.max(1, Number(global.GAME_CONTENT_VERSION) || 1);
-  const DATA_STORAGE_KEYS = ["qbank", "events", "talents", "npcs", "affinity", "synergies", "board", "sky", "album", "copy_schools", "copy_grades", "copy_narrative"];
+  const DATA_STORAGE_KEYS = ["qbank", "events", "talents", "npcs", "sidequest-npcs", "affinity", "synergies", "board", "sky", "album", "copy_schools", "copy_grades", "copy_narrative"];
   const DATA_VERSION_KEY = "contentVersion";
   let legacyStorageDetected = false;
   const MODULES = [
