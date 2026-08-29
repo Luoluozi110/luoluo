@@ -1,34 +1,521 @@
 /* 支线限定内容种子：路线 NPC 与文心统一由游戏配置同步。 */
 // 专属 NPC 不进入普通 NPC 池；这是第三幕/终局的独立配置块。
 window.GAME_SIDEQUEST_NPCS = {
-  version: 1,
-  routes: {
-    jianghu: {
-      guides: [{ id: 'jh_liu_zhaoying', name: '柳照影', title: '负剑书客', role: '引路人', text: '负剑而来，只问你此诺为何。' }],
-      climax: { id: 'jh_gu_changfeng', name: '顾长风', title: '群英盟主', style: 'bi', attrs: { shi: 25, ci: 25, lian: 51, bi: 25, xue: 25, si: 30 }, mech: { version: 2, complexity: 'advanced', signature: { name: '盟约先声', template: 'sig_declared_stance', pct: .08 }, weakness: { name: '对策破锋', template: 'wea_stance_counter', counter: { oath: 'change_style' }, retention: .2, playerBonus: .04 }, intent: { template: 'int_declared_stance', stance: 'oath', style: 'lian', bias: 1.25, bottom: .76, description: '先明盟约，再以联体聚众声' } } },
-      final: { primaryId: 'jh_gu_changfeng', secondary: {
-        same_first: { id: 'jh_wen_suxin', name: '闻素心', title: '盟誓录事', style: 'shi', attrs: { shi: 25, ci: 25, lian: 51, bi: 25, xue: 25, si: 30 }, mech: { version: 2, complexity: 'advanced', signature: { name: '盟誓先声', template: 'sig_declared_stance', pct: .1 }, weakness: { name: '换式辨义', template: 'wea_stance_counter', counter: { oath: 'change_style' }, retention: .2, playerBonus: .04 }, intent: { template: 'int_declared_stance', stance: 'oath', style: 'shi', bias: 1.25, bottom: .76, description: '守义之诺，须以异体辨其真伪' } } },
-        same_second: { id: 'jh_wen_suxin', name: '闻素心', title: '盟誓录事', style: 'ci', attrs: { shi: 25, ci: 51, lian: 25, bi: 25, xue: 30, si: 25 }, mech: { version: 2, complexity: 'advanced', signature: { name: '权衡先声', template: 'sig_declared_stance', pct: .1 }, weakness: { name: '藏锋守拙', template: 'wea_hold_active_talent', retention: .2, playerBonus: .04 }, intent: { template: 'int_declared_stance', stance: 'expedience', style: 'ci', bias: 1.25, bottom: .76, description: '权变之策，留意你是否借文心取巧' } } },
-        mixed: { id: 'jh_wen_suxin', name: '闻素心', title: '盟誓录事', style: 'lian', attrs: { shi: 25, ci: 25, lian: 51, bi: 25, xue: 25, si: 30 }, mech: { version: 2, complexity: 'advanced', signature: { name: '两难先声', template: 'sig_declared_stance', pct: .08 }, weakness: { name: '一骰破锋', template: 'wea_stance_counter', counter: { balance: 'one_extra' }, retention: .2, playerBonus: .04 }, intent: { template: 'int_declared_stance', stance: 'balance', style: 'lian', bias: 1.25, bottom: .76, description: '两难并陈，恰以一枚追加骰破其势' } } }
-      } }
+  "version": 1,
+  "routes": {
+    "jianghu": {
+      "guides": [
+        {
+          "id": "jh_liu_zhaoying",
+          "name": "柳照影",
+          "title": "负剑书客",
+          "role": "引路人",
+          "text": "负剑而来，只问你此诺为何。"
+        }
+      ],
+      "climax": {
+        "id": "jh_gu_changfeng",
+        "name": "顾长风",
+        "title": "群英盟主",
+        "style": "bi",
+        "attrs": {
+          "shi": 25,
+          "ci": 25,
+          "lian": 51,
+          "bi": 25,
+          "xue": 25,
+          "si": 30
+        },
+        "mech": {
+          "version": 2,
+          "complexity": "advanced",
+          "signature": {
+            "name": "盟约先声",
+            "template": "sig_declared_stance",
+            "pct": 0.08
+          },
+          "weakness": {
+            "name": "对策破锋",
+            "template": "wea_stance_counter",
+            "counter": {
+              "oath": "change_style"
+            },
+            "retention": 0.2,
+            "playerBonus": 0.04
+          },
+          "intent": {
+            "template": "int_declared_stance",
+            "stance": "oath",
+            "style": "lian",
+            "bias": 1.25,
+            "bottom": 0.76,
+            "description": "先明盟约，再以联体聚众声"
+          }
+        }
+      },
+      "final": {
+        "primaryId": "jh_gu_changfeng",
+        "secondary": {
+          "same_first": {
+            "id": "jh_wen_suxin",
+            "name": "闻素心",
+            "title": "盟誓录事",
+            "style": "shi",
+            "attrs": {
+              "shi": 25,
+              "ci": 25,
+              "lian": 51,
+              "bi": 25,
+              "xue": 25,
+              "si": 30
+            },
+            "mech": {
+              "version": 2,
+              "complexity": "advanced",
+              "signature": {
+                "name": "盟誓先声",
+                "template": "sig_declared_stance",
+                "pct": 0.1
+              },
+              "weakness": {
+                "name": "换式辨义",
+                "template": "wea_stance_counter",
+                "counter": {
+                  "oath": "change_style"
+                },
+                "retention": 0.2,
+                "playerBonus": 0.04
+              },
+              "intent": {
+                "template": "int_declared_stance",
+                "stance": "oath",
+                "style": "shi",
+                "bias": 1.25,
+                "bottom": 0.76,
+                "description": "守义之诺，须以异体辨其真伪"
+              }
+            }
+          },
+          "same_second": {
+            "id": "jh_wen_suxin",
+            "name": "闻素心",
+            "title": "盟誓录事",
+            "style": "ci",
+            "attrs": {
+              "shi": 25,
+              "ci": 51,
+              "lian": 25,
+              "bi": 25,
+              "xue": 30,
+              "si": 25
+            },
+            "mech": {
+              "version": 2,
+              "complexity": "advanced",
+              "signature": {
+                "name": "权衡先声",
+                "template": "sig_declared_stance",
+                "pct": 0.1
+              },
+              "weakness": {
+                "name": "藏锋守拙",
+                "template": "wea_hold_active_talent",
+                "retention": 0.2,
+                "playerBonus": 0.04
+              },
+              "intent": {
+                "template": "int_declared_stance",
+                "stance": "expedience",
+                "style": "ci",
+                "bias": 1.25,
+                "bottom": 0.76,
+                "description": "权变之策，留意你是否借文心取巧"
+              }
+            }
+          },
+          "mixed": {
+            "id": "jh_wen_suxin",
+            "name": "闻素心",
+            "title": "盟誓录事",
+            "style": "lian",
+            "attrs": {
+              "shi": 25,
+              "ci": 25,
+              "lian": 51,
+              "bi": 25,
+              "xue": 25,
+              "si": 30
+            },
+            "mech": {
+              "version": 2,
+              "complexity": "advanced",
+              "signature": {
+                "name": "两难先声",
+                "template": "sig_declared_stance",
+                "pct": 0.08
+              },
+              "weakness": {
+                "name": "一骰破锋",
+                "template": "wea_stance_counter",
+                "counter": {
+                  "balance": "one_extra"
+                },
+                "retention": 0.2,
+                "playerBonus": 0.04
+              },
+              "intent": {
+                "template": "int_declared_stance",
+                "stance": "balance",
+                "style": "lian",
+                "bias": 1.25,
+                "bottom": 0.76,
+                "description": "两难并陈，恰以一枚追加骰破其势"
+              }
+            }
+          }
+        }
+      }
     },
-    biansai: {
-      guides: [{ id: 'bs_qi_yanhui', name: '戚雁回', title: '关驿校书', role: '引路人', text: '残报难全，仍有人要替万里关山落字。' }],
-      climax: { id: 'bs_pei_zhenyue', name: '裴镇岳', title: '安边都护', style: 'bi', attrs: { shi: 25, ci: 25, lian: 25, bi: 51, xue: 30, si: 25 }, mech: { version: 2, complexity: 'advanced', signature: { name: '军令如山', template: 'sig_steady_pressure', floor: 4, ceiling: 4 }, weakness: { name: '压卷破阵', template: 'wea_crushing_win', threshold: .18, refund: 1 }, intent: { template: 'int_preferred_style', style: 'bi', bias: 1.3, bottom: .75, description: '以笔力稳守军令' } } },
-      final: { primaryId: 'bs_pei_zhenyue', secondary: {
-        same_first: { id: 'bs_han_zhaoshuang', name: '韩照霜', title: '军司录事', style: 'bi', attrs: { shi: 25, ci: 25, lian: 25, bi: 51, xue: 30, si: 25 }, mech: { version: 2, complexity: 'advanced', signature: { name: '守土成卷', template: 'sig_steady_pressure', floor: 4, ceiling: 4 }, weakness: { name: '一骰破锋', template: 'wea_limited_extra_dice', maxExtraDice: 1, retention: .2, playerBonus: .04 }, intent: { template: 'int_steady', style: 'bi', bias: 1.25, bottom: .76, description: '守土之策，稳守待破' } } },
-        same_second: { id: 'bs_han_zhaoshuang', name: '韩照霜', title: '军司录事', style: 'lian', attrs: { shi: 25, ci: 25, lian: 51, bi: 25, xue: 25, si: 30 }, mech: { version: 2, complexity: 'advanced', signature: { name: '奇兵应势', template: 'sig_dice_response', steps: [5, 2], cap: 7 }, weakness: { name: '收束成篇', template: 'wea_base_dice_only', flat: 7 }, intent: { template: 'int_pattern_hunt', pattern: 'pair', style: 'lian', bias: 1.25, bottom: .76, description: '出奇之策，候你追加骰露出破绽' } } },
-        mixed: { id: 'bs_han_zhaoshuang', name: '韩照霜', title: '军司录事', style: 'shi', attrs: { shi: 51, ci: 25, lian: 25, bi: 25, xue: 30, si: 25 }, mech: { version: 2, complexity: 'advanced', signature: { name: '并陈先声', template: 'sig_declared_stance', pct: .08 }, weakness: { name: '一骰破锋', template: 'wea_stance_counter', counter: { balance: 'one_extra' }, retention: .2, playerBonus: .04 }, intent: { template: 'int_declared_stance', stance: 'balance', style: 'shi', bias: 1.25, bottom: .76, description: '守土与出奇并陈，明示你以一骰破势' } } }
-      } }
+    "biansai": {
+      "guides": [
+        {
+          "id": "bs_qi_yanhui",
+          "name": "戚雁回",
+          "title": "关驿校书",
+          "role": "引路人",
+          "text": "残报难全，仍有人要替万里关山落字。"
+        }
+      ],
+      "climax": {
+        "id": "bs_pei_zhenyue",
+        "name": "裴镇岳",
+        "title": "安边都护",
+        "style": "bi",
+        "attrs": {
+          "shi": 25,
+          "ci": 25,
+          "lian": 25,
+          "bi": 51,
+          "xue": 30,
+          "si": 25
+        },
+        "mech": {
+          "version": 2,
+          "complexity": "advanced",
+          "signature": {
+            "name": "军令如山",
+            "template": "sig_steady_pressure",
+            "floor": 4,
+            "ceiling": 4
+          },
+          "weakness": {
+            "name": "压卷破阵",
+            "template": "wea_crushing_win",
+            "threshold": 0.18,
+            "refund": 1
+          },
+          "intent": {
+            "template": "int_preferred_style",
+            "style": "bi",
+            "bias": 1.3,
+            "bottom": 0.75,
+            "description": "以笔力稳守军令"
+          }
+        }
+      },
+      "final": {
+        "primaryId": "bs_pei_zhenyue",
+        "secondary": {
+          "same_first": {
+            "id": "bs_han_zhaoshuang",
+            "name": "韩照霜",
+            "title": "军司录事",
+            "style": "bi",
+            "attrs": {
+              "shi": 25,
+              "ci": 25,
+              "lian": 25,
+              "bi": 51,
+              "xue": 30,
+              "si": 25
+            },
+            "mech": {
+              "version": 2,
+              "complexity": "advanced",
+              "signature": {
+                "name": "守土成卷",
+                "template": "sig_steady_pressure",
+                "floor": 4,
+                "ceiling": 4
+              },
+              "weakness": {
+                "name": "一骰破锋",
+                "template": "wea_limited_extra_dice",
+                "maxExtraDice": 1,
+                "retention": 0.2,
+                "playerBonus": 0.04
+              },
+              "intent": {
+                "template": "int_steady",
+                "style": "bi",
+                "bias": 1.25,
+                "bottom": 0.76,
+                "description": "守土之策，稳守待破"
+              }
+            }
+          },
+          "same_second": {
+            "id": "bs_han_zhaoshuang",
+            "name": "韩照霜",
+            "title": "军司录事",
+            "style": "lian",
+            "attrs": {
+              "shi": 25,
+              "ci": 25,
+              "lian": 51,
+              "bi": 25,
+              "xue": 25,
+              "si": 30
+            },
+            "mech": {
+              "version": 2,
+              "complexity": "advanced",
+              "signature": {
+                "name": "奇兵应势",
+                "template": "sig_dice_response",
+                "steps": [
+                  5,
+                  2
+                ],
+                "cap": 7
+              },
+              "weakness": {
+                "name": "收束成篇",
+                "template": "wea_base_dice_only",
+                "flat": 7
+              },
+              "intent": {
+                "template": "int_pattern_hunt",
+                "pattern": "pair",
+                "style": "lian",
+                "bias": 1.25,
+                "bottom": 0.76,
+                "description": "出奇之策，候你追加骰露出破绽"
+              }
+            }
+          },
+          "mixed": {
+            "id": "bs_han_zhaoshuang",
+            "name": "韩照霜",
+            "title": "军司录事",
+            "style": "shi",
+            "attrs": {
+              "shi": 51,
+              "ci": 25,
+              "lian": 25,
+              "bi": 25,
+              "xue": 30,
+              "si": 25
+            },
+            "mech": {
+              "version": 2,
+              "complexity": "advanced",
+              "signature": {
+                "name": "并陈先声",
+                "template": "sig_declared_stance",
+                "pct": 0.08
+              },
+              "weakness": {
+                "name": "一骰破锋",
+                "template": "wea_stance_counter",
+                "counter": {
+                  "balance": "one_extra"
+                },
+                "retention": 0.2,
+                "playerBonus": 0.04
+              },
+              "intent": {
+                "template": "int_declared_stance",
+                "stance": "balance",
+                "style": "shi",
+                "bias": 1.25,
+                "bottom": 0.76,
+                "description": "守土与出奇并陈，明示你以一骰破势"
+              }
+            }
+          }
+        }
+      }
     },
-    qiuxian: {
-      guides: [{ id: 'qx_gu_shouyi', name: '谷守一', title: '采药客', role: '引路人', text: '药篓里有尘世的苦，也有空山的清。' }],
-      climax: { id: 'qx_xuanweizi', name: '玄微子', title: '天门守问人', style: 'si', attrs: { shi: 25, ci: 25, lian: 25, bi: 25, xue: 30, si: 51 }, mech: { version: 2, complexity: 'advanced', signature: { name: '天门一问', template: 'sig_declared_stance', pct: .08 }, weakness: { name: '藏锋守拙', template: 'wea_hold_active_talent', retention: .2, playerBonus: .04 }, intent: { template: 'int_declared_stance', stance: 'ask', style: 'ci', bias: 1.25, bottom: .76, description: '天门只问一字，先看你如何藏锋' } } },
-      final: { primaryId: 'qx_xuanweizi', secondary: {
-        same_first: { id: 'qx_wuxiang', name: '无相', title: '镜中之我', style: 'si', attrs: { shi: 25, ci: 25, lian: 25, bi: 25, xue: 30, si: 51 }, mech: { version: 2, complexity: 'advanced', signature: { name: '尘念加税', template: 'sig_active_talent_tax', pct: .1 }, weakness: { name: '藏锋守拙', template: 'wea_hold_active_talent', retention: .2, playerBonus: .04 }, intent: { template: 'int_preferred_style', style: 'ci', bias: 1.25, bottom: .76, description: '留世之念最易借文心起势' } } },
-        same_second: { id: 'qx_wuxiang', name: '无相', title: '镜中之我', style: 'si', attrs: { shi: 25, ci: 25, lian: 25, bi: 25, xue: 30, si: 51 }, mech: { version: 2, complexity: 'advanced', signature: { name: '审律见妄', template: 'sig_dice_pattern_hunt', pattern: 'pair', pct: .1 }, weakness: { name: '异骰忘机', template: 'wea_stance_counter', counter: { forget: 'different_dice' }, retention: .2, playerBonus: .04 }, intent: { template: 'int_declared_stance', stance: 'forget', style: 'ci', bias: 1.25, bottom: .76, description: '忘机之境，以至少两枚不同骰面破其审律' } } },
-        mixed: { id: 'qx_wuxiang', name: '无相', title: '镜中之我', style: 'shi', attrs: { shi: 51, ci: 25, lian: 25, bi: 25, xue: 30, si: 25 }, mech: { version: 2, complexity: 'advanced', signature: { name: '镜中先声', template: 'sig_declared_stance', pct: .08 }, weakness: { name: '两端照见', template: 'wea_stance_counter', counter: { mirror: 'low_and_high' }, retention: .2, playerBonus: .04 }, intent: { template: 'int_declared_stance', stance: 'mirror', style: 'shi', bias: 1.25, bottom: .76, description: '镜中留与忘并现，以低高两端骰照破其问' } } }
-      } }
+    "qiuxian": {
+      "guides": [
+        {
+          "id": "qx_gu_shouyi",
+          "name": "谷守一",
+          "title": "采药客",
+          "role": "引路人",
+          "text": "药篓里有尘世的苦，也有空山的清。"
+        }
+      ],
+      "climax": {
+        "id": "qx_xuanweizi",
+        "name": "玄微子",
+        "title": "天门守问人",
+        "style": "si",
+        "attrs": {
+          "shi": 25,
+          "ci": 25,
+          "lian": 25,
+          "bi": 25,
+          "xue": 30,
+          "si": 51
+        },
+        "mech": {
+          "version": 2,
+          "complexity": "advanced",
+          "signature": {
+            "name": "天门一问",
+            "template": "sig_declared_stance",
+            "pct": 0.08
+          },
+          "weakness": {
+            "name": "藏锋守拙",
+            "template": "wea_hold_active_talent",
+            "retention": 0.2,
+            "playerBonus": 0.04
+          },
+          "intent": {
+            "template": "int_declared_stance",
+            "stance": "ask",
+            "style": "ci",
+            "bias": 1.25,
+            "bottom": 0.76,
+            "description": "天门只问一字，先看你如何藏锋"
+          }
+        }
+      },
+      "final": {
+        "primaryId": "qx_xuanweizi",
+        "secondary": {
+          "same_first": {
+            "id": "qx_wuxiang",
+            "name": "无相",
+            "title": "镜中之我",
+            "style": "si",
+            "attrs": {
+              "shi": 25,
+              "ci": 25,
+              "lian": 25,
+              "bi": 25,
+              "xue": 30,
+              "si": 51
+            },
+            "mech": {
+              "version": 2,
+              "complexity": "advanced",
+              "signature": {
+                "name": "尘念加税",
+                "template": "sig_active_talent_tax",
+                "pct": 0.1
+              },
+              "weakness": {
+                "name": "藏锋守拙",
+                "template": "wea_hold_active_talent",
+                "retention": 0.2,
+                "playerBonus": 0.04
+              },
+              "intent": {
+                "template": "int_preferred_style",
+                "style": "ci",
+                "bias": 1.25,
+                "bottom": 0.76,
+                "description": "留世之念最易借文心起势"
+              }
+            }
+          },
+          "same_second": {
+            "id": "qx_wuxiang",
+            "name": "无相",
+            "title": "镜中之我",
+            "style": "si",
+            "attrs": {
+              "shi": 25,
+              "ci": 25,
+              "lian": 25,
+              "bi": 25,
+              "xue": 30,
+              "si": 51
+            },
+            "mech": {
+              "version": 2,
+              "complexity": "advanced",
+              "signature": {
+                "name": "审律见妄",
+                "template": "sig_dice_pattern_hunt",
+                "pattern": "pair",
+                "pct": 0.1
+              },
+              "weakness": {
+                "name": "异骰忘机",
+                "template": "wea_stance_counter",
+                "counter": {
+                  "forget": "different_dice"
+                },
+                "retention": 0.2,
+                "playerBonus": 0.04
+              },
+              "intent": {
+                "template": "int_declared_stance",
+                "stance": "forget",
+                "style": "ci",
+                "bias": 1.25,
+                "bottom": 0.76,
+                "description": "忘机之境，以至少两枚不同骰面破其审律"
+              }
+            }
+          },
+          "mixed": {
+            "id": "qx_wuxiang",
+            "name": "无相",
+            "title": "镜中之我",
+            "style": "shi",
+            "attrs": {
+              "shi": 51,
+              "ci": 25,
+              "lian": 25,
+              "bi": 25,
+              "xue": 30,
+              "si": 25
+            },
+            "mech": {
+              "version": 2,
+              "complexity": "advanced",
+              "signature": {
+                "name": "镜中先声",
+                "template": "sig_declared_stance",
+                "pct": 0.08
+              },
+              "weakness": {
+                "name": "两端照见",
+                "template": "wea_stance_counter",
+                "counter": {
+                  "mirror": "low_and_high"
+                },
+                "retention": 0.2,
+                "playerBonus": 0.04
+              },
+              "intent": {
+                "template": "int_declared_stance",
+                "stance": "mirror",
+                "style": "shi",
+                "bias": 1.25,
+                "bottom": 0.76,
+                "description": "镜中留与忘并现，以低高两端骰照破其问"
+              }
+            }
+          }
+        }
+      }
     }
   }
 };
@@ -341,7 +828,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "jianghu",
     "axis": "守义",
     "quality": "rare",
-    "text": "一诺既出，风雨不改。",
+    "text": "一诺既出，风雨不改。连续沿用上一场文体时作品得分提高；若上一场已经获胜，守诺之势更盛。",
     "effect": {
       "type": "battle_history_pct",
       "condition": "repeat_style",
@@ -358,7 +845,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "jianghu",
     "axis": "权变",
     "quality": "rare",
-    "text": "旧招已尽，便还彼此一片江湖。",
+    "text": "旧招已尽，便还彼此一片江湖。换用不同文体时得分提高；上一场未胜，转身之力更强。",
     "effect": {
       "type": "battle_history_pct",
       "condition": "switch_style",
@@ -375,7 +862,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "jianghu",
     "axis": "common",
     "quality": "epic",
-    "text": "风尘满面，仍有人一眼认出你未说出口的招数。",
+    "text": "风尘满面，仍有人一眼认出你未说出口的招数。每场首次命中对手破绽时，恢复灵感并获得少量得分。",
     "effect": {
       "type": "weakness_reward",
       "value": 0,
@@ -395,7 +882,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "axis": "active",
     "quality": "epic",
     "cost": 3,
-    "text": "且把兵刃挂在楼外。",
+    "text": "且把兵刃挂在楼外。支付灵感，封住对手本场招牌；你也要放下几分锋芒。",
     "effect": {
       "type": "seal_signature",
       "penalty": -0.08
@@ -409,7 +896,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "biansai",
     "axis": "守土",
     "quality": "rare",
-    "text": "城中每一粒粮，都要留到真正需要的时候。",
+    "text": "城中每一粒粮，都要留到真正需要的时候。本场不购买追加灵感骰，作品得分提高。",
     "effect": {
       "type": "dice_commitment",
       "condition": "none_paid",
@@ -424,7 +911,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "biansai",
     "axis": "出奇",
     "quality": "rare",
-    "text": "轻骑只争一线，不与大军纠缠。",
+    "text": "轻骑只争一线，不与大军纠缠。首枚追加骰少耗灵感；本场恰好购买一枚追加骰，得分提高。",
     "effect": {
       "type": "dice_commitment",
       "condition": "exactly_one_paid",
@@ -440,7 +927,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "biansai",
     "axis": "common",
     "quality": "epic",
-    "text": "城外没有援军，远处却还有一座烽燧未灭。",
+    "text": "城外没有援军，远处却还有一座烽燧未灭。上一场平或负时，下一场作品得分提高。",
     "effect": {
       "type": "battle_history_pct",
       "condition": "previous_nonwin",
@@ -457,7 +944,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "axis": "active",
     "quality": "epic",
     "cost": 3,
-    "text": "身后只有一水，再无回旋余地。",
+    "text": "身后只有一水，再无回旋余地。首骰获得保底与得分加成，但本场不能追加灵感骰。",
     "effect": {
       "type": "dice_transform",
       "mode": "first_floor",
@@ -474,7 +961,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "qiuxian",
     "axis": "忘机",
     "quality": "rare",
-    "text": "堕肢体，黜聪明，离形去知。",
+    "text": "堕肢体，黜聪明，离形去知。本场不发动主动文心，作品得分提高。",
     "effect": {
       "type": "restraint_pct",
       "value": 0.07
@@ -488,7 +975,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "qiuxian",
     "axis": "留世",
     "quality": "rare",
-    "text": "不知周之梦为蝴蝶，还是蝴蝶之梦为周。",
+    "text": "不知周之梦为蝴蝶，还是蝴蝶之梦为周。骰组首尾同点时，作品得分提高。",
     "effect": {
       "type": "dice_pattern",
       "pattern": "first_last_equal",
@@ -505,7 +992,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "qiuxian",
     "axis": "common",
     "quality": "epic",
-    "text": "知其白，守其黑，为天下式。",
+    "text": "知其白，守其黑，为天下式。骰组同时留下低点与高点时，得分提高并恢复灵感。",
     "effect": {
       "type": "dice_pattern",
       "pattern": "low_and_high",
@@ -528,7 +1015,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "axis": "active",
     "quality": "epic",
     "cost": 3,
-    "text": "妄念不在幽暗处，恰藏在似是而非之间。",
+    "text": "妄念不在幽暗处，恰藏在似是而非之间。将最低骰化为一、最高骰化为六，并获得少量得分。",
     "effect": {
       "type": "dice_transform",
       "mode": "polarize",

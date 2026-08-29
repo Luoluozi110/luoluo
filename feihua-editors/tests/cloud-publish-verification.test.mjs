@@ -8,6 +8,12 @@ const common = readFileSync(join(editorRoot, 'assets/js/common.js'), 'utf8');
 
 assert.ok(common.includes('const expectedProject = global.CloudSync.buildProject();'),
   '发布前固定完整工程快照，保证回读比较的是本次编辑内容');
+assert.ok(common.includes('if (hasStaleStorage())'),
+  '检测到旧 localStorage 时必须阻止直接发布');
+assert.ok(common.includes('global.CloudSync.fetchProject'),
+  '发布前必须读取云端当前版本');
+assert.ok(common.includes('低于云端版本'),
+  '本地工程版本低于云端时给出明确阻止提示');
 assert.ok(common.includes('const verifyUrl = cacheBust(published.verifyUrl || url);'),
   '发布后优先从不可变 revision 地址回读，并绕过缓存');
 assert.ok(common.includes('const verifyRes = await fetch(verifyUrl, { cache: "no-store" });'),

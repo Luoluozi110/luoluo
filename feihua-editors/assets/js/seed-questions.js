@@ -1,5 +1,4 @@
-/* 飞花棋游戏原始题库（config/questions.json）。作为编辑器默认种子数据。由游戏配置同步生成，请勿手工改动。 */
-window.GAME_QUESTIONS = [
+/* 飞花棋游戏原始题库（config/questions.json）。作为编辑器默认种子数据。由游戏配置同步生成，请勿手工改动。 */window.GAME_QUESTIONS = [
   {
     "id": "Q0001",
     "type": "knowledge",

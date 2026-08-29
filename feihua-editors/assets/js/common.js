@@ -8,6 +8,11 @@
   "use strict";
 
   const PREFIX = "feihua_editors_v1_";
+  // 由 index.html 注入并随 config -> seed -> 云端基准同步递增；旧编辑器页面会因此被桥接层识别为过期。
+  const CONTENT_VERSION = Math.max(1, Number(global.GAME_CONTENT_VERSION) || 1);
+  const DATA_STORAGE_KEYS = ["qbank", "events", "talents", "npcs", "affinity", "synergies", "board", "sky", "album", "copy_schools", "copy_grades", "copy_narrative"];
+  const DATA_VERSION_KEY = "contentVersion";
+  let legacyStorageDetected = false;
   const MODULES = [
     { tab: "qbank", label: "题库", api: "QB" },
     { tab: "adv", label: "奇遇", api: "ADV" },
@@ -36,7 +41,14 @@
 
   /* ---------------- 存储 ---------------- */
   function store(key, val) {
-    try { localStorage.setItem(PREFIX + key, JSON.stringify(val)); return true; }
+    try {
+      localStorage.setItem(PREFIX + key, JSON.stringify(val));
+      // 旧缓存迁移期间不抬高来源版本；必须先从云端拉取或显式确认后才解除发布护栏。
+      if (DATA_STORAGE_KEYS.includes(key) && !legacyStorageDetected && !localStorage.getItem(PREFIX + DATA_VERSION_KEY)) {
+        localStorage.setItem(PREFIX + DATA_VERSION_KEY, String(CONTENT_VERSION));
+      }
+      return true;
+    }
     catch (e) { return false; }
   }
   function load(key, fallback) {
@@ -45,6 +57,22 @@
       return r ? JSON.parse(r) : fallback;
     } catch (e) { return fallback; }
   }
+  function detectLegacyStorage() {
+    let version = 0;
+    try { version = Number(localStorage.getItem(PREFIX + DATA_VERSION_KEY)) || 0; } catch (_) {}
+    let hasData = false;
+    try { hasData = DATA_STORAGE_KEYS.some(key => !!localStorage.getItem(PREFIX + key)); } catch (_) {}
+    legacyStorageDetected = hasData && version < CONTENT_VERSION;
+    return legacyStorageDetected;
+  }
+  function localDataVersion() {
+    try { return Number(localStorage.getItem(PREFIX + DATA_VERSION_KEY)) || 0; } catch (_) { return 0; }
+  }
+  function markCurrentDataVersion(version = CONTENT_VERSION) {
+    try { localStorage.setItem(PREFIX + DATA_VERSION_KEY, String(Math.max(CONTENT_VERSION, Number(version) || CONTENT_VERSION))); } catch (_) {}
+    legacyStorageDetected = false;
+  }
+  function hasStaleStorage() { return legacyStorageDetected || localDataVersion() < CONTENT_VERSION; }
   /* 旧版题库单机文件迁移：若新版 key 为空且旧 key 存在，则搬过来 */
   function migrateQbankIfNeeded() {
     const NEWK = PREFIX + "qbank";
@@ -406,6 +434,9 @@
       </div>
       <div class="mgmt-section">
         <h4>统一操作</h4>
+        <p style="font-size:12.5px;color:${hasStaleStorage() ? "var(--bad)" : "var(--mo-3)"};line-height:1.7;margin:4px 0 10px">
+          ${hasStaleStorage() ? `检测到本机数据版本 ${localDataVersion() || "未知"} 低于当前种子版本 ${CONTENT_VERSION}。发布前请先从云端拉取，或在各模块使用“重置默认”后再编辑；系统会阻止旧版本覆盖新云端。` : `当前编辑器数据版本：${CONTENT_VERSION}。`}
+        </p>
         <p style="font-size:13px;color:var(--ink2);margin:4px 0 10px">
           合并导出会把题库、奇遇、文心、传世名篇、叙事文案（流派 / 段位 / 评分）等内容打包成一个工程文件（<code>feihua-content.json</code>），便于整体备份与迁移；
           合并导入会自动识别题库 / 奇遇 / 文心 / 传世名篇 / 叙事文案 / 工程文件并分别路由。
@@ -415,6 +446,7 @@
           再到游戏菜单的 <b>「载入自定义配置（高级）」</b> 粘贴/上传该文件，<b>当前浏览器立即生效，无需重新部署</b>。
         </p>
         <div class="modal-actions" style="justify-content:flex-start">
+          <button class="btn" id="mgmtMarkCurrent" title="仅在你已确认当前数据就是要发布的版本时使用">确认本机版本</button>
           <button class="btn primary" id="mgmtExport">合并导出工程文件</button>
           <button class="btn" id="mgmtImport">合并导入…</button>
           <input type="file" id="mgmtFile" accept=".json,application/json" style="display:none" />
@@ -460,6 +492,12 @@
         </div>
       </div>`;
 
+    document.getElementById("mgmtMarkCurrent").addEventListener("click", () => {
+      if (!confirm(`确认当前编辑器内容就是要发布的版本 ${CONTENT_VERSION}？\n\n确认后才允许覆盖同版本或更旧的云端工程。`)) return;
+      markCurrentDataVersion();
+      showManagement();
+      toast(`已确认本机版本 ${CONTENT_VERSION}`);
+    });
     document.getElementById("mgmtExport").addEventListener("click", exportProject);
     document.getElementById("mgmtImport").addEventListener("click", () =>
       document.getElementById("mgmtFile").click());
@@ -617,7 +655,17 @@
       try {
         // 发布前固定完整工程快照；发布后从不可变 revision 回读并逐模块核对。
         const expectedProject = global.CloudSync.buildProject();
-        const published = await global.CloudSync.publish(s);
+        if (hasStaleStorage()) {
+          throw new Error(`本机数据版本 ${localDataVersion() || "未知"} 尚未确认，已阻止发布旧缓存；请先“从云端拉取”、重置默认，或点击“确认本机版本”。`);
+        }
+        const remoteBefore = global.CloudSync.fetchProject ? await global.CloudSync.fetchProject(s) : null;
+        if (remoteBefore && Number(remoteBefore._version) > Number(expectedProject._version)) {
+          throw new Error(`当前编辑器工程版本 ${expectedProject._version} 低于云端版本 ${remoteBefore._version}，已阻止旧缓存覆盖；请先“从云端拉取”或硬刷新编辑器。`);
+        }
+        if (remoteBefore && Number(remoteBefore._version) >= Number(expectedProject._version)) {
+          expectedProject._version = Number(remoteBefore._version) + 1;
+        }
+        const published = await global.CloudSync.publish(s, expectedProject);
         const url = published.url;
         const verifyUrl = cacheBust(published.verifyUrl || url);
         const verifyRes = await fetch(verifyUrl, { cache: "no-store" });
@@ -672,6 +720,7 @@
         let data; try { data = JSON.parse(text); } catch (e) { throw new Error("云端文件不是合法 JSON：" + e.message); }
         if (!data || data._type !== "feihua-content") throw new Error("云端文件不是 feihua-content 工程文件（_type 不符）");
         const result = applyCloudProject(data);
+        markCurrentDataVersion();
         s.url = rawUrl;
         s.fingerprint = result.fingerprint;
         global.CloudSync.saveSettings("cloud", s);
@@ -696,7 +745,7 @@
     }
     const project = {
       _type: "feihua-content",
-      _version: 1,
+      _version: CONTENT_VERSION,
       questions: global.QB ? global.QB.exportObj() : [],
       events: global.ADV ? global.ADV.exportRaw() : [],
       talents: global.TALENT ? global.TALENT.exportRaw() : [],
@@ -961,6 +1010,8 @@
 
   /* ---------------- 初始化（导航 + 数据管理按钮 + 全局快捷键） ---------------- */
   function init() {
+    // 必须在各模块首次写回规范化数据前探测旧缓存，否则迁移写回会掩盖“来源版本过旧”。
+    detectLegacyStorage();
     migrateQbankIfNeeded();
     // 导航
     document.querySelectorAll(".nav button").forEach(b =>
@@ -1025,6 +1076,7 @@
     init, switchTab, setStatus, showManagement, buildProject, applyCloudProject, projectDiffKeys, projectFingerprint,
     classify, talentIds, talentById, nextSeqId,
     getWorkspaceHealth, reviewWorkspace, refreshWorkspaceUI, openCommandPalette,
+    contentVersion: CONTENT_VERSION, localDataVersion, hasStaleStorage, markCurrentDataVersion,
     ATTR, ATTR_KEYS, CATEGORY, RARITY, QUALITY, QUALITY_MAX, QUALITY_UPCOST, KIND, TALENTS, TALENT_IDS,
     effectBrief, effectDetail
   };

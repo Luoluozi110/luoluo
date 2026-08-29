@@ -8,6 +8,11 @@
 
   const PREFIX = "feihua_editors_v1_";
   const BRIDGE_API = "/api/github";
+  const cacheBust = raw => {
+    const target = new URL(String(raw), global.location.href);
+    target.searchParams.set("_wb", String(Date.now()));
+    return target.href;
+  };
   const DEPLOYMENT_CONFIG_PATHS = ["../config/cloud.json", "../feihuaqi-playable/config/cloud.json"];
   function store(key, val) {
     try { localStorage.setItem(PREFIX + key, JSON.stringify(val)); return true; } catch (e) { return false; }
@@ -86,30 +91,40 @@
     return bridgeRequest("/status", { method: "GET", headers: {} });
   }
 
+  /** 读取当前云端完整工程；发布前用于拦截旧编辑器覆盖新版本。 */
+  async function fetchProject(s) {
+    const response = await fetch(cacheBust(rawUrl(s)), { cache: "no-store" });
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error("发布前读取云端失败 HTTP " + response.status);
+    const project = await response.json();
+    if (!project || project._type !== "feihua-content") throw new Error("发布前读取到的云端文件不是有效工程");
+    return project;
+  }
+
   /** 发布到仓库文件；由本机 bridge 调用 gh，返回 raw 地址。 */
-  async function publishRepo(s) {
+  async function publishRepo(s, project) {
     return await bridgeRequest("/publish", {
       method: "POST",
       body: JSON.stringify({
         mode: "repo", owner: s.owner, repo: s.repo,
         branch: s.branch || "main", path: s.path || "feihua-content.json",
-        project: buildProject()
+        project: project || buildProject()
       })
     });
   }
 
   /** 发布到 Gist；由本机 bridge 调用 gh，返回 raw 地址。 */
-  async function publishGist(s) {
+  async function publishGist(s, project) {
     return await bridgeRequest("/publish", {
       method: "POST",
-      body: JSON.stringify({ mode: "gist", gistId: s.gistId || "", project: buildProject() })
+      body: JSON.stringify({ mode: "gist", gistId: s.gistId || "", project: project || buildProject() })
     });
   }
 
   /** 发布入口：根据 settings.mode 分发，返回 raw 地址 */
-  async function publish(settings) {
-    if (settings.mode === "gist") return await publishGist(settings);
-    return await publishRepo(settings);
+  async function publish(settings, project) {
+    if (settings.mode === "gist") return await publishGist(settings, project);
+    return await publishRepo(settings, project);
   }
 
   /** 由设置反算云端 raw 地址（仅读，无需登录）；供「从云端拉取」使用 */
@@ -127,7 +142,7 @@
   }
 
   global.CloudSync = {
-    publish, rawUrl, status, buildProject, settingsFromUrl, discoverSettings,
+    publish, rawUrl, fetchProject, status, buildProject, settingsFromUrl, discoverSettings,
     saveSettings: store, loadSettings: load
   };
 })(window);
