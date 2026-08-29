@@ -1,0 +1,17 @@
+{
+  "name": "feihuaqi-workspace",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/serve-playable.mjs",
+    "editor:bridge": "node scripts/serve-editor-bridge.mjs",
+    "editor:open": "node scripts/start-editor-bridge.mjs",
+    "sync:question-seed": "node scripts/sync-editor-question-seed.mjs",
+    "validate:config": "node scripts/validate-config.mjs",
+    "test": "npm run test:playable && npm run test:editors && npm run test:workspace && npm run test:multiplayer",
+    "test:playable": "node scripts/run-test-suite.mjs feihuaqi-playable tests/*.test.mjs",
+    "test:editors": "node scripts/run-test-suite.mjs feihua-editors tests/*.mjs",
+    "test:workspace": "node scripts/run-test-suite.mjs . tests/*.test.mjs",
+    "test:multiplayer": "node scripts/run-test-suite.mjs feihuaqi-multiplayer server/test-smoke.mjs"
+  }
+}

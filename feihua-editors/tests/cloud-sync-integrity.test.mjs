@@ -25,6 +25,9 @@ await new Promise(resolve => {
 const clone = value => JSON.parse(JSON.stringify(value));
 const baseline = window.Common.buildProject();
 
+assert.equal(window.CloudSync.bridgeApi, 'http://127.0.0.1:8787/api/github',
+  'GitHub Pages 正式编辑器必须连接本机回环桥接，不能把 API 请求误发到 Pages 同源');
+
 // 不同网页入口 localStorage 互不相通，必须能从部署的 raw 地址恢复同一发布目标。
 assert.deepEqual(
   JSON.parse(JSON.stringify(window.CloudSync.settingsFromUrl('https://raw.githubusercontent.com/Luoluozi110/luoluo/main/feihua-content.json'))),
@@ -51,6 +54,20 @@ assert.equal(window.QB.get().some(question => question.id === 'Q_LOCAL_ONLY'), f
 assert.equal(window.QB.get()[0].scenario, remote.questions[0].scenario);
 assert.equal(window.Common.projectDiffKeys(remote, result.project).length, 0);
 assert.equal(result.fingerprint, window.Common.projectFingerprint(remote));
+
+// 云端发布修订号可以高于页面种子版本；拉取后应保持该版本，而不是被 buildProject 固定写回。
+const newerRemote = clone(window.Common.buildProject());
+newerRemote._version += 3;
+const newerResult = window.Common.applyCloudProject(newerRemote);
+assert.equal(newerResult.project._version, newerRemote._version);
+window.Common.markCurrentDataVersion(newerRemote._version);
+assert.equal(window.Common.buildProject()._version, newerRemote._version,
+  '成功拉取/发布后的下一次工程构造必须沿用最新云端修订号');
+
+const changedSidequest = clone(newerRemote);
+changedSidequest.sidequests.routes[0].name += '（不同步）';
+assert.ok(window.Common.projectDiffKeys(newerRemote, changedSidequest).includes('sidequests'),
+  '完整工程核验必须覆盖支线路线，不能静默漏检游戏端配置块');
 
 // 模拟某模块在导入时被当前页面版本二次改写：同步必须失败，并恢复同步前快照。
 const beforeFailure = window.Common.buildProject();

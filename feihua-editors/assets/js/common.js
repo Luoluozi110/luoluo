@@ -72,6 +72,9 @@
     try { localStorage.setItem(PREFIX + DATA_VERSION_KEY, String(Math.max(CONTENT_VERSION, Number(version) || CONTENT_VERSION))); } catch (_) {}
     legacyStorageDetected = false;
   }
+  function effectiveProjectVersion(version) {
+    return Math.max(CONTENT_VERSION, localDataVersion(), Number(version) || 0);
+  }
   function hasStaleStorage() { return legacyStorageDetected || localDataVersion() < CONTENT_VERSION; }
   /* 旧版题库单机文件迁移：若新版 key 为空且旧 key 存在，则搬过来 */
   function migrateQbankIfNeeded() {
@@ -536,12 +539,14 @@
 
   const PROJECT_FIELDS = [
     "_type", "_version", "questions", "events", "talents", "talent-upgrade", "npcs",
-    "affinity", "synergies", "board", "sky", "album", "schools", "grades", "narrative"
+    "affinity", "synergies", "board", "sky", "album", "schools", "grades", "narrative",
+    "sidequests", "sidequest-npcs"
   ];
   const PROJECT_FIELD_LABELS = {
     questions: "题库", events: "奇遇", talents: "文心", "talent-upgrade": "文心升级",
     npcs: "NPC", affinity: "相性", synergies: "羁绊", board: "地图", sky: "天象",
-    album: "传世名篇", schools: "流派文案", grades: "段位文案", narrative: "叙事文案"
+    album: "传世名篇", schools: "流派文案", grades: "段位文案", narrative: "叙事文案",
+    sidequests: "支线路线", "sidequest-npcs": "支线 NPC"
   };
 
   function sortedJsonValue(value) {
@@ -623,16 +628,17 @@
       }
       try {
         const result = await global.CloudSync.status();
-        if (bridgeStatus) bridgeStatus.textContent = `本机 gh 已登录：${result.login}。发布不会使用浏览器 Token。`;
+        if (bridgeStatus) bridgeStatus.textContent = `本机 gh 已登录：${result.login}。正式编辑器已连接发布桥接，发布不会使用浏览器 Token。`;
         return true;
       } catch (error) {
-        if (bridgeStatus) bridgeStatus.textContent = "本机 gh 发布桥接不可用；请运行 npm run editor:bridge 后从该地址打开编辑器。";
+        if (bridgeStatus) bridgeStatus.textContent = `本机 gh 发布桥接不可用：${error.message || error}`;
         return false;
       }
     };
     checkBridge();
 
     if ($("cloudPublish")) $("cloudPublish").addEventListener("click", async () => {
+      const publishButton = $("cloudPublish");
       const repoRaw = $("cloudRepo").value.trim();
       const parsed = parseRepo(repoRaw);
       const s = {
@@ -652,6 +658,8 @@
       // 先记住非敏感发布目标；Gist 新建成功后会再补回 GitHub 返回的稳定 ID。
       if (global.CloudSync) global.CloudSync.saveSettings("cloud", s);
       setMsg("发布中…");
+      publishButton.disabled = true;
+      publishButton.setAttribute("aria-busy", "true");
       try {
         // 发布前固定完整工程快照；发布后从不可变 revision 回读并逐模块核对。
         const expectedProject = global.CloudSync.buildProject();
@@ -684,6 +692,7 @@
         s.url = url;
         s.revision = published.revision || "";
         s.fingerprint = projectFingerprint(remoteProject);
+        markCurrentDataVersion(remoteProject._version);
         global.CloudSync.saveSettings("cloud", s);
         const box = $("cloudUrlBox"), u = $("cloudUrl"), copy = $("cloudCopy");
         if (box) box.style.display = "";
@@ -693,10 +702,14 @@
         toast("已发布到云端");
       } catch (err) {
         setMsg("发布失败：" + err.message, true);
+      } finally {
+        publishButton.disabled = false;
+        publishButton.removeAttribute("aria-busy");
       }
     });
 
     if ($("cloudPull")) $("cloudPull").addEventListener("click", async () => {
+      const pullButton = $("cloudPull");
       const p = parseRepo($("cloudRepo").value.trim());
       const s = {
         mode: mode ? mode.value : "repo",
@@ -709,6 +722,8 @@
       if (s.mode === "repo" && (!s.owner || !s.repo)) { setMsg("请先填写仓库（owner/repo）。", true); return; }
       if (s.mode === "gist" && !s.gistId) { setMsg("请先填写 Gist ID（或先用『发布到云端』创建）。", true); return; }
       setMsg("从云端拉取中…");
+      pullButton.disabled = true;
+      pullButton.setAttribute("aria-busy", "true");
       try {
         const rawUrl = global.CloudSync.rawUrl(s);
         // GitHub Raw / Gist CDN 可能继续返回旧版本；cache: no-store 只约束浏览器，
@@ -720,7 +735,7 @@
         let data; try { data = JSON.parse(text); } catch (e) { throw new Error("云端文件不是合法 JSON：" + e.message); }
         if (!data || data._type !== "feihua-content") throw new Error("云端文件不是 feihua-content 工程文件（_type 不符）");
         const result = applyCloudProject(data);
-        markCurrentDataVersion();
+        markCurrentDataVersion(data._version);
         s.url = rawUrl;
         s.fingerprint = result.fingerprint;
         global.CloudSync.saveSettings("cloud", s);
@@ -730,6 +745,9 @@
         toast("云端 → 本地 同步完成");
       } catch (err) {
         setMsg("拉取失败：" + err.message, true);
+      } finally {
+        pullButton.disabled = false;
+        pullButton.removeAttribute("aria-busy");
       }
     });
   }
@@ -738,14 +756,14 @@
    * 构造游戏可直接消费的完整工程对象。
    * 手动导出与云端发布必须共用此函数，避免两条交付路径的字段契约漂移。
    */
-  function buildProject() {
+  function buildProject(version) {
     const missing = MODULES.filter(module => !(global[module.api] && global[module.api]._ready));
     if (missing.length) {
       throw new Error("以下编辑模块尚未完成载入，已阻止导出/发布残缺工程：" + missing.map(module => module.label).join("、"));
     }
     const project = {
       _type: "feihua-content",
-      _version: CONTENT_VERSION,
+      _version: effectiveProjectVersion(version),
       questions: global.QB ? global.QB.exportObj() : [],
       events: global.ADV ? global.ADV.exportRaw() : [],
       talents: global.TALENT ? global.TALENT.exportRaw() : [],
@@ -893,7 +911,7 @@
       mutationStarted = true;
       const routed = routeImport(incoming, true);
       if (!routed) throw new Error("云端数据未被任何已初始化的编辑器接收");
-      const applied = buildProject();
+      const applied = buildProject(incoming._version);
       const diff = projectDiffKeys(incoming, applied);
       if (diff.length) {
         throw new Error("当前编辑器版本会改写这些云端模块：" + diff.map(key => PROJECT_FIELD_LABELS[key] || key).join("、"));
@@ -903,7 +921,7 @@
       if (mutationStarted) {
         try {
           routeImport(before, true);
-          const restored = buildProject();
+          const restored = buildProject(before._version);
           const restoreDiff = projectDiffKeys(before, restored);
           if (restoreDiff.length) throw new Error("回滚后仍不一致：" + restoreDiff.join("、"));
         } catch (rollbackError) {

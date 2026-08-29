@@ -7,7 +7,13 @@
   "use strict";
 
   const PREFIX = "feihua_editors_v1_";
-  const BRIDGE_API = "/api/github";
+  const DEFAULT_LOCAL_BRIDGE_ORIGIN = "http://127.0.0.1:8787";
+  const isLoopbackHost = host => /^(localhost|127(?:\.\d{1,3}){3}|\[::1\])$/i.test(String(host || ""));
+  // 本机启动页继续走同源；GitHub Pages 正式页则连接仅监听回环地址的本机桥接。
+  // 这样正式编辑器不会再把 /api/github 误发给 GitHub Pages 并得到固定 404。
+  const BRIDGE_API = isLoopbackHost(global.location.hostname)
+    ? "/api/github"
+    : DEFAULT_LOCAL_BRIDGE_ORIGIN + "/api/github";
   const cacheBust = raw => {
     const target = new URL(String(raw), global.location.href);
     target.searchParams.set("_wb", String(Date.now()));
@@ -30,18 +36,30 @@
   }
 
   async function bridgeRequest(path, options) {
+    const requestOptions = Object.assign({ cache: "no-store" }, options || {});
+    const timeoutMs = Number(requestOptions.timeoutMs) || (requestOptions.method === "POST" ? 90_000 : 12_000);
+    delete requestOptions.timeoutMs;
+    requestOptions.headers = Object.assign({}, requestOptions.body ? { "Content-Type": "application/json" } : {}, requestOptions.headers || {});
+    const controller = typeof AbortController === "function" ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+    if (controller) requestOptions.signal = controller.signal;
     let response;
     try {
-      response = await fetch(BRIDGE_API + path, Object.assign({
-        headers: { "Content-Type": "application/json" },
-        cache: "no-store"
-      }, options || {}));
+      response = await fetch(BRIDGE_API + path, requestOptions);
     } catch (error) {
-      throw new Error("本机 gh 发布桥接不可用。请用 npm run editor:bridge 打开编辑器后重试。");
+      if (error && error.name === "AbortError") {
+        throw new Error(`本机 gh 发布桥接在 ${Math.ceil(timeoutMs / 1000)} 秒内未响应；请检查桥接窗口和网络后重试。`);
+      }
+      throw new Error("无法连接本机 gh 发布桥接。请在项目目录运行 npm run editor:bridge，保持窗口开启，再回到正式编辑器重试。");
+    } finally {
+      if (timer) clearTimeout(timer);
     }
-    const result = await response.json().catch(() => ({}));
+    const responseText = await response.text().catch(() => "");
+    let result = {};
+    try { result = responseText ? JSON.parse(responseText) : {}; } catch (_) {}
     if (!response.ok || !result.ok) {
-      throw new Error(result.error || ("桥接服务请求失败 HTTP " + response.status));
+      const detail = result.error || (responseText && responseText.length < 240 ? responseText.trim() : "");
+      throw new Error(detail || ("桥接服务请求失败 HTTP " + response.status));
     }
     return result;
   }
@@ -143,6 +161,6 @@
 
   global.CloudSync = {
     publish, rawUrl, fetchProject, status, buildProject, settingsFromUrl, discoverSettings,
-    saveSettings: store, loadSettings: load
+    bridgeApi: BRIDGE_API, saveSettings: store, loadSettings: load
   };
 })(window);

@@ -20,6 +20,10 @@ assert.ok(common.includes('const verifyRes = await fetch(verifyUrl, { cache: "no
   '发布后回读使用 no-store');
 assert.ok(common.includes('const diff = projectDiffKeys(expectedProject, remoteProject);'),
   '发布后逐模块校验完整工程，而非只检查传世名篇');
+assert.ok(common.includes('markCurrentDataVersion(remoteProject._version);'),
+  '发布成功后记录最新云端修订号，保证连续发布不会被旧版本护栏误拦截');
+assert.ok(common.includes('const applied = buildProject(incoming._version);'),
+  '云端拉取回读必须保留远端修订号，避免版本字段不同导致必然回滚');
 assert.ok(common.includes('const result = applyCloudProject(data);'),
   '云端拉取使用可回滚的完整替换入口');
 assert.equal(common.includes('拉取模式：'), false, '云端同步不再提供容易造成跨入口分叉的合并模式');

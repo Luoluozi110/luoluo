@@ -11,7 +11,7 @@
   ];
   const PROJECT_KEYS = [
     'questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity',
-    'synergies', 'board', 'sky', 'album', 'schools', 'grades', 'narrative'
+    'synergies', 'board', 'sky', 'album', 'schools', 'grades', 'narrative', 'sidequests', 'sidequest-npcs'
   ];
 const ATTR_KEYS = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
 const INK_AXES = [['逐名', '求真'], ['守法', '出新'], ['与人', '独行'], ['惜身', '燃笔']];
@@ -30,6 +30,7 @@ const INK_TAGS = new Set(INK_AXES.flat());
   const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
   const finite = v => Number.isFinite(Number(v));
   const text = v => typeof v === 'string' && v.trim().length > 0;
+  const NPC_ID_RE = /^[a-z][a-z0-9_-]*$/;
 
   function validateConfig(config, options = {}) {
     const errors = [];
@@ -308,6 +309,14 @@ const INK_TAGS = new Set(INK_AXES.flat());
         else if (Array.isArray(a.themes) && Array.isArray(a.manners)) {
           for (const m of a.manners) for (const t of a.themes) if (!finite(a.matrix[`${m}.${t}`])) add(`affinity.matrix.${m}.${t}`, '缺少有限数值');
         }
+        if (a.experimentalManner !== undefined) {
+          const e = a.experimentalManner;
+          if (!isObj(e) || !text(e.id) || !finite(e.minPct) || !finite(e.maxPct) || Number(e.minPct) > Number(e.maxPct)) {
+            add('affinity.experimentalManner', '必须包含有效 id，且 minPct 不得大于 maxPct');
+          } else if (!Array.isArray(a.manners) || !a.manners.includes(e.id)) {
+            add('affinity.experimentalManner.id', '必须列入 affinity.manners');
+          }
+        }
       }
     }
 
@@ -315,6 +324,7 @@ const INK_TAGS = new Set(INK_AXES.flat());
       uniqueIds(cfg.npcs, 'npcs');
       if (Array.isArray(cfg.npcs)) {
         if (cfg.npcs.filter(tier => tier && tier.isHiddenFinal).length !== 1) add('npcs', '必须且只能提供一个隐藏终圈对手档');
+        const npcIds = new Set();
         cfg.npcs.forEach((tier, i) => {
         if (!isObj(tier)) return;
         if (!Array.isArray(tier.npcs) || !tier.npcs.length) add(`npcs[${i}].npcs`, '档位必须包含对手数组');
@@ -322,10 +332,10 @@ const INK_TAGS = new Set(INK_AXES.flat());
           const seen = new Set();
           tier.npcs.forEach((npc, j) => {
             if (!isObj(npc) || !text(npc.name)) add(`npcs[${i}].npcs[${j}].name`, '对手名称不能为空');
-            if (npc && text(npc.id)) {
-              if (seen.has(npc.id)) add(`npcs[${i}].npcs[${j}].id`, `档位内 ID 重复：${npc.id}`);
-              seen.add(npc.id);
-            }
+            if (!npc || !text(npc.id)) add(`npcs[${i}].npcs[${j}].id`, '必须是非空稳定 ID', 'id');
+            else if (!NPC_ID_RE.test(npc.id)) add(`npcs[${i}].npcs[${j}].id`, '必须以小写字母开头，且只能含小写字母、数字、下划线和连字符', 'id');
+            else if (npcIds.has(npc.id)) add(`npcs[${i}].npcs[${j}].id`, `NPC ID 全局重复：${npc.id}`, 'duplicate_id');
+            else { seen.add(npc.id); npcIds.add(npc.id); }
           });
           if (tier.isHiddenFinal) {
             if (tier.npcs.length !== 1) add(`npcs[${i}].npcs`, '隐藏终圈必须且只能配置一名对手');
@@ -385,11 +395,47 @@ const INK_TAGS = new Set(INK_AXES.flat());
         }
       }
     });
+    if ('sidequests' in cfg) {
+      const sq = cfg.sidequests;
+      if (!isObj(sq)) add('sidequests', '必须是对象');
+      else {
+        if (!Number.isInteger(Number(sq.version)) || Number(sq.version) < 1) add('sidequests.version', '必须是正整数');
+        const routes = sq.routes;
+        if (!Array.isArray(routes)) add('sidequests.routes', '必须是数组');
+        else {
+          const ids = new Set();
+          routes.forEach((route, i) => {
+            const p = `sidequests.routes[${i}]`;
+            if (!isObj(route) || !text(route.id) || !text(route.name)) { add(p, '路线必须包含 id 与名称'); return; }
+            if (ids.has(route.id)) add(`${p}.id`, `路线 ID 重复：${route.id}`, 'duplicate_id'); else ids.add(route.id);
+            if (!Array.isArray(route.axis) || route.axis.length !== 2 || route.axis.some(x => !text(x))) add(`${p}.axis`, '必须包含两个立场标签');
+            if (!Array.isArray(route.battleThemePool) || !route.battleThemePool.length) add(`${p}.battleThemePool`, '高潮题材池不能为空');
+            if (!Array.isArray(route.acts) || route.acts.length !== 2) add(`${p}.acts`, '必须恰好包含缘起与取舍两幕');
+            else route.acts.forEach((act, j) => {
+              if (!isObj(act) || !text(act.id) || !Array.isArray(act.options) || act.options.length !== 2) add(`${p}.acts[${j}]`, '每幕必须包含 id 与两个选项');
+              else act.options.forEach((option, k) => {
+                if (!isObj(option) || !text(option.id) || !text(option.axis) || !isObj(option.effect)) add(`${p}.acts[${j}].options[${k}]`, '选项必须包含 id、立场和效果');
+              });
+            });
+            if (!isObj(route.npc) || !text(route.npc.name) || !isObj(route.npc.attrs)) add(`${p}.npc`, '高潮必须配置对手与六维');
+          });
+        }
+        const final = sq.final;
+        if (!isObj(final) || !finite(final.carryCost) || Number(final.carryCost) < 0 || !isObj(final.scorePctByMerit) || !isObj(final.releaseInspirationByMerit)) {
+          add('sidequests.final', '必须包含终局兑现数值');
+        }
+      }
+    }
+    if ('sidequest-npcs' in cfg) {
+      const sn = cfg['sidequest-npcs'];
+      if (!isObj(sn)) add('sidequest-npcs', '必须是对象');
+      else if (!isObj(sn.routes)) add('sidequest-npcs.routes', '必须是按路线组织的对象');
+    }
     if ('grades' in cfg && !isObj(cfg.grades)) add('grades', '必须是对象');
     if ('narrative' in cfg && !isObj(cfg.narrative)) add('narrative', '必须是对象');
     if ('npc-mechanics' in cfg && !isObj(cfg['npc-mechanics'])) add('npc-mechanics', '必须是对象');
 
-    const known = new Set([...REQUIRED_CONFIG_KEYS, ...PROJECT_KEYS, 'album', 'synergies', 'npc-mechanics']);
+    const known = new Set([...REQUIRED_CONFIG_KEYS, ...PROJECT_KEYS, 'album', 'synergies', 'npc-mechanics', 'sidequests', 'sidequest-npcs']);
     if (!partial) for (const key of Object.keys(cfg)) if (!known.has(key)) warn(key, '未知配置块，将按原样保留', 'unknown_key');
     return { ok: errors.length === 0, errors, warnings };
   }
