@@ -301,7 +301,11 @@ export class Hud {
 
     this.el.turn.textContent = s.turn;
     const phaseNames = { child: '童生', xiucai: '秀才', juren: '举人', jinshi: '进士', palace: '殿试', lap1: '乡试圈', lap2: '会试圈' };
-    this.el.phase.textContent = phaseNames[s.phase] || '童生';
+    const stagePresentation = game && typeof game.currentStagePresentation === 'function' ? game.currentStagePresentation() : null;
+    this.el.phase.textContent = stagePresentation && stagePresentation.active ? stagePresentation.stageName : (phaseNames[s.phase] || '童生');
+    this.el.phase.title = stagePresentation && stagePresentation.active
+      ? `支线行卷进行中；主线规则阶段：${stagePresentation.mainStageName}`
+      : '当前主线阶段';
     if (this.el.pname) this.el.pname.textContent = s.playerName ? `　「${s.playerName}」` : '';
     const sq = s.sideQuest || {};
     const route = game && typeof game.sideQuestRoute === 'function' ? game.sideQuestRoute(sq.routeId) : null;
