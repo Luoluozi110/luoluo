@@ -199,15 +199,13 @@ export class BattleStage {
       const finish = m => { if (done) return; done = true; stop(); resolve(m); };
       const cards = session.manners.map(m => {
         const isHome = session.homeResolved && m === session.homeResolved;
-        const isExperimental = m === session.experimentalManner;
+        const isExperimental = m === 'experimental' || m === session.experimentalManner;
         const mom = session.momentumPre(m);
-        const momTxt = mom > 0 ? `<div class="mom">气势连捷 +${Math.round(mom * 100)}%</div>` : '';
-        const homeTxt = isHome && session.homeBonus > 0 ? `<div class="home">本门 +${Math.round(session.homeBonus * 100)}%</div>` : '';
-        const experimentPct = Math.round((Number(session.experimentalMannerPct) || 0) * 100);
-        const experimentTxt = isExperimental ? `<div class="home">本场实验 ${experimentPct >= 0 ? '+' : ''}${experimentPct}%</div>` : '';
+        const momTxt = !isExperimental && mom > 0 ? `<div class="mom">气势连捷 +${Math.round(mom * 100)}%</div>` : '';
+        const homeTxt = !isExperimental && isHome && session.homeBonus > 0 ? `<div class="home">本门 +${Math.round(session.homeBonus * 100)}%</div>` : '';
         return `<button class="pick" data-m="${m}">
           <div class="pn">${session.mannerNames[m]}</div>
-          ${experimentTxt}${homeTxt}${momTxt}
+          ${isExperimental ? '<div class="home">结果将在结算时揭示</div>' : `${homeTxt}${momTxt}`}
         </button>`;
       }).join('');
       panel.innerHTML = `<div class="ph">④ ${esc(session._stepMannerLabel || '选风格')}　<span style="font-size:12px;color:var(--mo-3)">限时 ${this.seconds} 秒</span></div>

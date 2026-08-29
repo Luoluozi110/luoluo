@@ -235,6 +235,8 @@
       total: modules.reduce((sum, module) => sum + module.count, 0),
       issues: modules.reduce((sum, module) => sum + module.issues, 0)
     };
+    if (global.GAME_SIDEQUESTS) project.sidequests = global.GAME_SIDEQUESTS;
+    if (global.NPC && global.NPC.exportSideQuestRaw) project['sidequest-npcs'] = global.NPC.exportSideQuestRaw();
   }
 
   function reviewWorkspace() {
@@ -769,7 +771,8 @@
       narrative: global.COPY ? global.COPY.exportNarrativeRaw() : {}
     };
     if (global.GAME_SIDEQUESTS) project.sidequests = global.GAME_SIDEQUESTS;
-    if (global.GAME_SIDEQUEST_NPCS) project['sidequest-npcs'] = global.GAME_SIDEQUEST_NPCS;
+    if (global.NPC && global.NPC.exportSideQuestRaw) project['sidequest-npcs'] = global.NPC.exportSideQuestRaw();
+    else if (global.GAME_SIDEQUEST_NPCS) project['sidequest-npcs'] = global.GAME_SIDEQUEST_NPCS;
     if (!global.FeihuaConfigContract) throw new Error("配置契约校验器未加载");
     global.FeihuaConfigContract.assertProject(project);
     // 返回快照而不是模块内部 state 的引用，防止异步发布期间后续编辑改写本次内容。
@@ -872,6 +875,7 @@
       if (Array.isArray(data.talents) && global.TALENT) { global.TALENT.importData(data.talents, mode); routed++; }
       if (data["talent-upgrade"] && typeof data["talent-upgrade"] === "object" && global.TALENT && global.TALENT.importUpgrade) { global.TALENT.importUpgrade(data["talent-upgrade"], mode); routed++; }
       if (Array.isArray(data.npcs) && global.NPC) { global.NPC.importData(data.npcs, mode); routed++; }
+      if (data['sidequest-npcs'] && global.NPC && global.NPC.importSideQuestNpcs) { global.NPC.importSideQuestNpcs(data['sidequest-npcs']); routed++; }
       if (Array.isArray(data.synergies) && global.SYNERGY) { global.SYNERGY.importData(data.synergies, mode); routed++; }
       if (Array.isArray(data.sky) && global.SKY) { global.SKY.importData(data.sky, mode); routed++; }
       if (Array.isArray(data.album) && global.ALBUM) { global.ALBUM.importData(data.album, mode); routed++; }

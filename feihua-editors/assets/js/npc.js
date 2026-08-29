@@ -13,7 +13,7 @@
   const THEME_LABELS = { yongwu: "咏物", songbie: "送别", shanshui: "山水", biansai: "边塞", huaigu: "怀古", jieling: "节令" };
   const NPC_ID_RE = /^[a-z][a-z0-9_-]*$/;
 
-  const state = { tiers: [], editTier: -1, tierForm: null, npcForm: null, _ready: false };
+  const state = { tiers: [], sideQuestNpcs: {}, editTier: -1, tierForm: null, npcForm: null, _ready: false };
 
   /* ---------------- 持久化 ---------------- */
   function save() {
@@ -31,6 +31,8 @@
       state.tiers = ensureStableNpcIds(ensureHiddenFinalTier(ensureOfficialNpcSeed((window.GAME_NPCS || []).map(normalizeTier))));
       C.store("npcs", state.tiers);
     }
+    state.sideQuestNpcs = cloneData(C.load("sidequest-npcs", global.GAME_SIDEQUEST_NPCS || { version: 1, routes: {} }));
+    C.store("sidequest-npcs", state.sideQuestNpcs);
   }
 
   /* ---------------- 规范化 ---------------- */
@@ -95,6 +97,56 @@
     }
     return out;
   }
+
+  /* ---------------- 支线专属 NPC：独立数据，不写入普通随机对手档 ---------------- */
+  function sideQuestSlots() {
+    const routes = state.sideQuestNpcs.routes || {};
+    return ["jianghu", "biansai", "qiuxian"].flatMap(routeId => {
+      const route = routes[routeId] || {};
+      const guide = Array.isArray(route.guides) ? route.guides[0] : null;
+      const secondary = route.final && route.final.secondary || {};
+      return [
+        guide && { routeId, key: "guide", label: "行路引导", npc: guide, editable: false },
+        route.climax && { routeId, key: "climax", label: "第三幕论战 / 终局主考", npc: route.climax, editable: true },
+        ...["same_first", "same_second", "mixed"].map(key => secondary[key] && ({ routeId, key, label: `终局副考 · ${key === "same_first" ? "同一路径 A" : key === "same_second" ? "同一路径 B" : "混合路径"}`, npc: secondary[key], editable: true })).filter(Boolean)
+      ].filter(Boolean);
+    });
+  }
+  function npcAtSideQuestSlot(routeId, key) {
+    const route = (state.sideQuestNpcs.routes || {})[routeId] || {};
+    if (key === "guide") return Array.isArray(route.guides) ? route.guides[0] : null;
+    if (key === "climax") return route.climax || null;
+    return route.final && route.final.secondary && route.final.secondary[key] || null;
+  }
+  function sideQuestAttrs(npc, routeId, key) {
+    if (!npc || !npc.attrs) return '<span class="npc-title">非战斗角色</span>';
+    return ATTR_KEYS.map(attr => `<label style="display:inline-flex;align-items:center;gap:3px;margin-right:7px;font-size:12px">${C.esc(ATTR[attr])}<input class="sidequest-npc-attr" data-route="${routeId}" data-slot="${key}" data-attr="${attr}" type="number" min="0" step="1" value="${Math.max(0, Number(npc.attrs[attr]) || 0)}" style="width:54px"></label>`).join("");
+  }
+  function renderSideQuestNpcList() {
+    const list = document.getElementById("sidequestNpcList");
+    if (!list) return;
+    const slots = sideQuestSlots();
+    list.innerHTML = slots.map(slot => `<div class="npc-row"><div class="npc-id"><b>${C.esc(slot.npc.name || "（未命名）")}</b><span class="badge src">${C.esc(slot.label)}</span><span class="npc-title">${C.esc(slot.npc.title || "")}</span><span class="npc-title" style="opacity:.6">${C.esc(slot.npc.id || "")}</span></div><div class="npc-attrs">${sideQuestAttrs(slot.npc, slot.routeId, slot.key)}</div></div>`).join("") || '<div class="npc-empty">未读取到支线 NPC 配置。</div>';
+  }
+  function saveSideQuestNpcs() {
+    const slots = sideQuestSlots();
+    const ids = new Set(slots.map(slot => slot.npc && slot.npc.id).filter(Boolean));
+    const msg = document.getElementById("sidequestNpcMsg");
+    if (ids.size !== 9) { msg.className = "msg error"; msg.textContent = "支线配置不完整：需要 9 名唯一 NPC。"; return false; }
+    C.store("sidequest-npcs", state.sideQuestNpcs);
+    global.GAME_SIDEQUEST_NPCS = cloneData(state.sideQuestNpcs);
+    msg.className = "msg ok"; msg.textContent = "支线 NPC 数值已保存，会随工程导出和云端发布。";
+    C.setStatus("npc", "已保存支线 NPC 数值");
+    return true;
+  }
+  function importSideQuestNpcs(raw) {
+    if (!raw || typeof raw !== "object" || !raw.routes) throw new Error("sidequest-npcs 配置格式无效");
+    state.sideQuestNpcs = cloneData(raw);
+    global.GAME_SIDEQUEST_NPCS = cloneData(state.sideQuestNpcs);
+    C.store("sidequest-npcs", state.sideQuestNpcs);
+    renderSideQuestNpcList();
+  }
+  function exportSideQuestRaw() { return cloneData(state.sideQuestNpcs); }
 
   /** 隐藏终圈属于系统必需档：旧 localStorage / 旧工程缺失时从官方种子回填。 */
   function ensureHiddenFinalTier(tiers) {
@@ -327,6 +379,7 @@
   }
   function renderList() {
     renderStats();
+    renderSideQuestNpcList();
     const list = document.getElementById("npclist");
     const q = getFilter();
     const tiers = state.tiers.filter(t => {
@@ -871,6 +924,17 @@
     document.getElementById("npcBtnStats").addEventListener("click", showStats);
     document.getElementById("npcBtnImport").addEventListener("click", () => document.getElementById("npcFileInput").click());
     document.getElementById("npcFileInput").addEventListener("change", e => { if (e.target.files[0]) importFile(e.target.files[0]); e.target.value = ""; });
+    document.getElementById("sidequestNpcSave").addEventListener("click", saveSideQuestNpcs);
+    document.getElementById("sidequestNpcList").addEventListener("input", e => {
+      const input = e.target;
+      if (!input.classList.contains("sidequest-npc-attr")) return;
+      const npc = npcAtSideQuestSlot(input.dataset.route, input.dataset.slot);
+      if (!npc) return;
+      npc.attrs = npc.attrs || {};
+      npc.attrs[input.dataset.attr] = Math.max(0, Math.floor(Number(input.value) || 0));
+      const msg = document.getElementById("sidequestNpcMsg");
+      msg.className = "msg"; msg.textContent = "数值已修改，点击“保存支线数值”后写入本机与导出工程。";
+    });
 
     document.getElementById("npcTierCancel").addEventListener("click", closeTierEditor);
     document.getElementById("npcTierSave").addEventListener("click", saveTierEditor);
@@ -978,5 +1042,5 @@
     global.NPC._ready = true;
   }
 
-  global.NPC = { init, get: () => state.tiers, exportRaw, validateAll, importData, renderList, _ready: false };
+  global.NPC = { init, get: () => state.tiers, exportRaw, exportSideQuestRaw, importSideQuestNpcs, validateAll, importData, renderList, _ready: false };
 })(window);
