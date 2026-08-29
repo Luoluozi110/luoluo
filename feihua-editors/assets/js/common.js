@@ -641,6 +641,7 @@
       grades: global.COPY ? global.COPY.exportGradesRaw() : {},
       narrative: global.COPY ? global.COPY.exportNarrativeRaw() : {}
     };
+    if (global.GAME_SIDEQUESTS) project.sidequests = global.GAME_SIDEQUESTS;
     if (!global.FeihuaConfigContract) throw new Error("配置契约校验器未加载");
     global.FeihuaConfigContract.assertProject(project);
     return project;

@@ -22,7 +22,8 @@
     // —— 以下为「创意文心」新增效果类型 ——
     "style_pct", "theme_pct", "streak_mult", "insp_floor", "lucky_six",
     "comeback", "armory_pct", "study_bonus", "palace_insp", "start_insp",
-    "insp_on_quiz", "insp_battle_recover", "insp_max", "reincarnate"];
+    "insp_on_quiz", "insp_battle_recover", "insp_max", "reincarnate",
+    "battle_history_pct", "weakness_reward", "seal_signature", "dice_commitment", "restraint_pct"];
   const TALENT_TYPE_LABELS = {
     on_win_bonus: "获胜加成（以某体出战获胜时 +属性）",
     attr_flat: "属性常驻（直接 +属性）",
@@ -56,7 +57,12 @@
     insp_on_quiz: "活水源头（答对/抉择额外恢复，限次）",
     insp_battle_recover: "枯木逢春（低灵感战后恢复，限次）",
     insp_max: "灵感扩容（获得时永久提高本局上限，互斥）",
-    reincarnate: "跨局传承（殿试余灵达标，下局继承本局属性、此文心与当前等级）"
+    reincarnate: "跨局传承（殿试余灵达标，下局继承本局属性、此文心与当前等级）",
+    battle_history_pct: "战局历史（依据上一场文体或胜负获得得分）",
+    weakness_reward: "破绽回响（首次命中公开破绽获得资源/得分）",
+    seal_signature: "封招（压制对手招牌并承受自身折损）",
+    dice_commitment: "掷骰承诺（按付费追加骰数量结算）",
+    restraint_pct: "坐忘（未发动主动文心时得分）"
   };
   const SCHOOLS = { bowen: "博闻", qishi: "奇士", cizong_bi: "辞宗", shixian: "旧诗仙流", cizong: "旧词宗流", liansheng: "旧联圣流", tongru: "旧通儒流" };
   const STYLE_NAME = { shi: "诗", ci: "词", lian: "联", any: "任意体" };
@@ -64,6 +70,7 @@
   const PCT_VALUE_TYPES = ["style_pct", "theme_pct", "streak_mult", "comeback", "armory_pct"];
 
   const state = { talents: [], editIndex: -1, form: null, _ready: false };
+  const officialTalentSeed = () => [...(window.GAME_TALENTS || []), ...(window.GAME_SIDEQUEST_TALENTS || [])];
 
   /* ---------------- 效果（默认 / 归一化） ---------------- */
   function defaultEffect(type) {
@@ -161,7 +168,7 @@
    */
   function upgradeSeedById() {
     const raw = window.GAME_TALENT_UPGRADE;
-    return raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    return { ...(raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {}), ...(window.GAME_SIDEQUEST_TALENT_UPGRADE || {}) };
   }
   // 将游戏独立 talent-upgrade.json 合并进编辑器文心数据。
   // 只补缺失 upgrade，已有本地升级配置一律保留，避免覆盖用户编辑。
@@ -176,7 +183,7 @@
     return changed;
   }
   function backfillOfficialTalents() {
-    const seed = (window.GAME_TALENTS || []);
+    const seed = officialTalentSeed();
     const byId = new Set(state.talents.map(t => t.id));
     let added = 0;
     for (const src of seed) {
@@ -192,7 +199,7 @@
    * 同步基础效果和升级表，避免“文心已新、升级仍旧”的配置分裂。
    */
   function syncOfficialTalents() {
-    const seed = Array.isArray(window.GAME_TALENTS) ? window.GAME_TALENTS : [];
+    const seed = officialTalentSeed();
     if (!seed.length) { C.toast("官方文心种子尚未载入，请刷新后重试"); return; }
     const message = "将以当前线上官方文心覆盖同 ID 的本地副本，并同步升级表。\n自建文心不会删除；本地修改过的官方文心会被替换。\n\n建议先用“导出 talents.json”备份。是否继续？";
     if (!window.confirm(message)) return;
@@ -225,7 +232,7 @@
   // 这两枚官方文心曾使用一次性灵感效果。仅迁移精确的旧效果类型，
   // 因而不会覆盖用户后来手工改出的其他文心方案。
   function migrateOfficialInspirationTalents() {
-    const seed = window.GAME_TALENTS || [];
+    const seed = officialTalentSeed();
     const legacyTypes = { T019: "insp_on_talent", T029: "start_insp" };
     let changed = 0;
     for (const [id, legacyType] of Object.entries(legacyTypes)) {
@@ -251,7 +258,7 @@
       const changed = backfillOfficialTalents() + backfillOfficialUpgrades();
       if (changed) C.store("talents", state.talents);
     } else {
-      state.talents = (window.GAME_TALENTS || []).map(normalize);
+      state.talents = officialTalentSeed().map(normalize);
       backfillOfficialUpgrades();
       C.store("talents", state.talents);
     }

@@ -1,0 +1,1133 @@
+/* 支线限定内容种子：路线 NPC 与文心统一由游戏配置同步。 */
+window.GAME_SIDEQUESTS = {
+  "version": 1,
+  "routes": [
+    {
+      "id": "jianghu",
+      "name": "江湖·一诺千金",
+      "axis": [
+        "守义",
+        "权变"
+      ],
+      "intro": "名胜之外，一封染雨的求援书递到你手中。此去江湖，先要决定自己为何应诺。",
+      "battleThemePool": [
+        "songbie",
+        "huaigu",
+        "shanshui"
+      ],
+      "battleLabel": "江湖较艺·辨义",
+      "finalLabel": "群英会盟·问义",
+      "steps": [
+        "逢客",
+        "观招",
+        "定式",
+        "运意",
+        "振笔",
+        "辨义定胜"
+      ],
+      "acts": [
+        {
+          "id": "origin",
+          "title": "第一幕·缘起",
+          "text": "雨书只写着一句：‘若你还认得这份旧交，便请来。’",
+          "options": [
+            {
+              "id": "keep",
+              "label": "应下此诺",
+              "resultText": "你先接过那封雨书：承诺一旦出口，便该有人肯担。",
+              "axis": "守义",
+              "effect": {
+                "attrs": {
+                  "bi": 1
+                }
+              }
+            },
+            {
+              "id": "ask",
+              "label": "先问原委",
+              "resultText": "你没有急着许诺，先要辨明这份旧交究竟要你承担什么。",
+              "axis": "权变",
+              "effect": {
+                "attrs": {
+                  "xue": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "decision",
+          "title": "第二幕·取舍",
+          "text": "故友与无辜者被同一桩旧怨牵连。你只能先替一方说话。",
+          "options": [
+            {
+              "id": "shoulder",
+              "label": "替故友担名",
+              "resultText": "你替故友受下众目，也把这一笔代价留给了自己。",
+              "axis": "守义",
+              "effect": {
+                "inspiration": -2,
+                "nextBattlePct": 0.1
+              }
+            },
+            {
+              "id": "reveal",
+              "label": "公开来龙去脉",
+              "resultText": "你让义字之外的是非也见了光。",
+              "axis": "权变",
+              "effect": {
+                "inspiration": 2
+              }
+            }
+          ]
+        }
+      ],
+      "npc": {
+        "id": "sidequest_shen_tingbei",
+        "name": "沈停杯",
+        "title": "江湖名士",
+        "style": "shi",
+        "attrs": {
+          "shi": 26,
+          "ci": 22,
+          "lian": 20,
+          "bi": 22,
+          "xue": 24,
+          "si": 23
+        }
+      }
+    },
+    {
+      "id": "biansai",
+      "name": "边塞·孤城万里",
+      "axis": [
+        "守土",
+        "出奇"
+      ],
+      "intro": "玉门烽燧送来一封缺了半角的军报。烽火未近，取舍已先到了眼前。",
+      "battleThemePool": [
+        "biansai",
+        "huaigu"
+      ],
+      "battleLabel": "军帐筹策·定势",
+      "finalLabel": "帅府策试·问国",
+      "steps": [
+        "对阵",
+        "察势",
+        "择体",
+        "定调",
+        "落檄",
+        "策议定势"
+      ],
+      "acts": [
+        {
+          "id": "origin",
+          "title": "第一幕·缘起",
+          "text": "军报残缺，只知前线与城中都在等一个先后。",
+          "options": [
+            {
+              "id": "fortify",
+              "label": "先固关城",
+              "resultText": "你先替城中人守住了可依之处。",
+              "axis": "守土",
+              "effect": {
+                "attrs": {
+                  "xue": 1
+                }
+              }
+            },
+            {
+              "id": "scout",
+              "label": "亲赴前哨",
+              "resultText": "你先去争那一线看得见也可能回不来的时机。",
+              "axis": "出奇",
+              "effect": {
+                "attrs": {
+                  "bi": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "decision",
+          "title": "第二幕·取舍",
+          "text": "粮道只能先顾城中或先援孤军。两边都有人在等。",
+          "options": [
+            {
+              "id": "ration",
+              "label": "分粮守城",
+              "resultText": "你把粮留在城中，也把这个决定的重量留在心里。",
+              "axis": "守土",
+              "effect": {
+                "inspiration": 2
+              }
+            },
+            {
+              "id": "riders",
+              "label": "轻骑送粮",
+              "resultText": "你让轻骑越过夜色，把希望押在速度与胆识上。",
+              "axis": "出奇",
+              "effect": {
+                "inspiration": -2,
+                "nextBattlePct": 0.1
+              }
+            }
+          ]
+        }
+      ],
+      "npc": {
+        "id": "sidequest_huo_congjian",
+        "name": "霍从简",
+        "title": "行营判官",
+        "style": "lian",
+        "attrs": {
+          "shi": 23,
+          "ci": 20,
+          "lian": 27,
+          "bi": 24,
+          "xue": 25,
+          "si": 25
+        }
+      }
+    },
+    {
+      "id": "qiuxian",
+      "name": "求仙·山海问心",
+      "axis": [
+        "留世",
+        "忘机"
+      ],
+      "intro": "无字碑映出一个仍在尘世等候的人。山门未开，先要问你想带着什么进去。",
+      "battleThemePool": [
+        "shanshui",
+        "jieling",
+        "huaigu"
+      ],
+      "battleLabel": "问道试心·破妄",
+      "finalLabel": "天门问心·问真",
+      "steps": [
+        "入境",
+        "观心",
+        "立法",
+        "守念",
+        "叩问",
+        "照见破妄"
+      ],
+      "acts": [
+        {
+          "id": "origin",
+          "title": "第一幕·缘起",
+          "text": "无字碑中，那个人的名字像一粒未落的尘。",
+          "options": [
+            {
+              "id": "remember",
+              "label": "记住此人",
+              "resultText": "你把名字留在心里，不肯以忘却换取轻快。",
+              "axis": "留世",
+              "effect": {
+                "attrs": {
+                  "bi": 1
+                }
+              }
+            },
+            {
+              "id": "erase",
+              "label": "抹去姓名",
+              "resultText": "你暂将名字放下，想先听清空山里真正的声音。",
+              "axis": "忘机",
+              "effect": {
+                "attrs": {
+                  "si": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "decision",
+          "title": "第二幕·取舍",
+          "text": "仙人许诺替你删去一段最痛的记忆，只问你是否愿意。",
+          "options": [
+            {
+              "id": "carry",
+              "label": "带痛而行",
+              "resultText": "你没有把痛苦当作污点，而把它带进了下一段路。",
+              "axis": "留世",
+              "effect": {
+                "inspiration": -2,
+                "nextBattlePct": 0.1
+              }
+            },
+            {
+              "id": "forget",
+              "label": "暂借忘忧",
+              "resultText": "你借来片刻空明，也承认这不是最后的回答。",
+              "axis": "忘机",
+              "effect": {
+                "inspiration": 2
+              }
+            }
+          ]
+        }
+      ],
+      "npc": {
+        "id": "sidequest_wuming_daoren",
+        "name": "无名道人",
+        "title": "镜中客",
+        "style": "ci",
+        "attrs": {
+          "shi": 21,
+          "ci": 27,
+          "lian": 21,
+          "bi": 24,
+          "xue": 23,
+          "si": 27
+        }
+      }
+    }
+  ],
+  "final": {
+    "carryCost": 2,
+    "scorePctByMerit": {
+      "1": 0.06,
+      "2": 0.1
+    },
+    "releaseInspirationByMerit": {
+      "1": 2,
+      "2": 4
+    }
+  }
+};
+window.GAME_SIDEQUEST_TALENTS = [
+  {
+    "id": "T041",
+    "name": "抱柱之信",
+    "kind": "passive",
+    "source": "sidequest",
+    "routeId": "jianghu",
+    "axis": "守义",
+    "quality": "rare",
+    "text": "一诺既出，风雨不改。",
+    "effect": {
+      "type": "battle_history_pct",
+      "condition": "repeat_style",
+      "value": 0.05,
+      "previousWinBonus": 0.03,
+      "stackGroup": "style_history"
+    }
+  },
+  {
+    "id": "T042",
+    "name": "相忘江湖",
+    "kind": "passive",
+    "source": "sidequest",
+    "routeId": "jianghu",
+    "axis": "权变",
+    "quality": "rare",
+    "text": "旧招已尽，便还彼此一片江湖。",
+    "effect": {
+      "type": "battle_history_pct",
+      "condition": "switch_style",
+      "value": 0.05,
+      "previousNonWinBonus": 0.03,
+      "stackGroup": "style_history"
+    }
+  },
+  {
+    "id": "T043",
+    "name": "风尘知己",
+    "kind": "passive",
+    "source": "sidequest",
+    "routeId": "jianghu",
+    "axis": "common",
+    "quality": "epic",
+    "text": "风尘满面，仍有人一眼认出你未说出口的招数。",
+    "effect": {
+      "type": "weakness_reward",
+      "value": 0,
+      "reward": {
+        "type": "inspiration",
+        "value": 1,
+        "perMatch": false
+      }
+    }
+  },
+  {
+    "id": "TA09",
+    "name": "杯酒解剑",
+    "kind": "active",
+    "source": "sidequest",
+    "routeId": "jianghu",
+    "axis": "active",
+    "quality": "epic",
+    "cost": 3,
+    "text": "且把兵刃挂在楼外。",
+    "effect": {
+      "type": "seal_signature",
+      "penalty": -0.08
+    }
+  },
+  {
+    "id": "T044",
+    "name": "坚壁清野",
+    "kind": "passive",
+    "source": "sidequest",
+    "routeId": "biansai",
+    "axis": "守土",
+    "quality": "rare",
+    "text": "城中每一粒粮，都要留到真正需要的时候。",
+    "effect": {
+      "type": "dice_commitment",
+      "condition": "none_paid",
+      "value": 0.07
+    }
+  },
+  {
+    "id": "T045",
+    "name": "轻骑出塞",
+    "kind": "passive",
+    "source": "sidequest",
+    "routeId": "biansai",
+    "axis": "出奇",
+    "quality": "rare",
+    "text": "轻骑只争一线，不与大军纠缠。",
+    "effect": {
+      "type": "dice_commitment",
+      "condition": "exactly_one_paid",
+      "firstCostDiscount": 1,
+      "value": 0.07
+    }
+  },
+  {
+    "id": "T046",
+    "name": "孤烽照夜",
+    "kind": "passive",
+    "source": "sidequest",
+    "routeId": "biansai",
+    "axis": "common",
+    "quality": "epic",
+    "text": "城外没有援军，远处却还有一座烽燧未灭。",
+    "effect": {
+      "type": "battle_history_pct",
+      "condition": "previous_nonwin",
+      "value": 0.08,
+      "stackGroup": "result_history"
+    }
+  },
+  {
+    "id": "TA10",
+    "name": "背水列阵",
+    "kind": "active",
+    "source": "sidequest",
+    "routeId": "biansai",
+    "axis": "active",
+    "quality": "epic",
+    "cost": 3,
+    "text": "身后只有一水，再无回旋余地。",
+    "effect": {
+      "type": "dice_transform",
+      "mode": "first_floor",
+      "floor": 4,
+      "value": 0.03,
+      "noExtraDice": true
+    }
+  },
+  {
+    "id": "T047",
+    "name": "坐忘",
+    "kind": "passive",
+    "source": "sidequest",
+    "routeId": "qiuxian",
+    "axis": "忘机",
+    "quality": "rare",
+    "text": "堕肢体，黜聪明，离形去知。",
+    "effect": {
+      "type": "restraint_pct",
+      "value": 0.07
+    }
+  },
+  {
+    "id": "T048",
+    "name": "庄周梦蝶",
+    "kind": "passive",
+    "source": "sidequest",
+    "routeId": "qiuxian",
+    "axis": "留世",
+    "quality": "rare",
+    "text": "不知周之梦为蝴蝶，还是蝴蝶之梦为周。",
+    "effect": {
+      "type": "dice_pattern",
+      "pattern": "first_last_equal",
+      "minDice": 2,
+      "firstCostDiscount": 1,
+      "value": 0.12
+    }
+  },
+  {
+    "id": "T049",
+    "name": "知白守黑",
+    "kind": "passive",
+    "source": "sidequest",
+    "routeId": "qiuxian",
+    "axis": "common",
+    "quality": "epic",
+    "text": "知其白，守其黑，为天下式。",
+    "effect": {
+      "type": "dice_pattern",
+      "pattern": "low_and_high",
+      "lowMax": 2,
+      "highMin": 5,
+      "value": 0.12,
+      "reward": {
+        "type": "inspiration",
+        "value": 1,
+        "perMatch": false
+      }
+    }
+  },
+  {
+    "id": "TA11",
+    "name": "斩妄见真",
+    "kind": "active",
+    "source": "sidequest",
+    "routeId": "qiuxian",
+    "axis": "active",
+    "quality": "epic",
+    "cost": 3,
+    "text": "妄念不在幽暗处，恰藏在似是而非之间。",
+    "effect": {
+      "type": "dice_transform",
+      "mode": "polarize",
+      "minDice": 2,
+      "value": 0
+    }
+  }
+];
+window.GAME_SIDEQUEST_TALENT_UPGRADE = {
+  "T041": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      7,
+      11,
+      16
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "battle_history_pct",
+          "condition": "repeat_style",
+          "value": 0.05,
+          "previousWinBonus": 0.03,
+          "stackGroup": "style_history"
+        }
+      },
+      {
+        "effect": {
+          "type": "battle_history_pct",
+          "condition": "repeat_style",
+          "value": 0.06,
+          "previousWinBonus": 0.04,
+          "stackGroup": "style_history"
+        }
+      },
+      {
+        "effect": {
+          "type": "battle_history_pct",
+          "condition": "repeat_style",
+          "value": 0.07,
+          "previousWinBonus": 0.05,
+          "stackGroup": "style_history"
+        }
+      },
+      {
+        "effect": {
+          "type": "battle_history_pct",
+          "condition": "repeat_style",
+          "value": 0.08,
+          "previousWinBonus": 0.06,
+          "stackGroup": "style_history"
+        }
+      }
+    ]
+  },
+  "T042": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      7,
+      11,
+      16
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "battle_history_pct",
+          "condition": "switch_style",
+          "value": 0.05,
+          "previousNonWinBonus": 0.03,
+          "stackGroup": "style_history"
+        }
+      },
+      {
+        "effect": {
+          "type": "battle_history_pct",
+          "condition": "switch_style",
+          "value": 0.06,
+          "previousNonWinBonus": 0.04,
+          "stackGroup": "style_history"
+        }
+      },
+      {
+        "effect": {
+          "type": "battle_history_pct",
+          "condition": "switch_style",
+          "value": 0.07,
+          "previousNonWinBonus": 0.05,
+          "stackGroup": "style_history"
+        }
+      },
+      {
+        "effect": {
+          "type": "battle_history_pct",
+          "condition": "switch_style",
+          "value": 0.08,
+          "previousNonWinBonus": 0.06,
+          "stackGroup": "style_history"
+        }
+      }
+    ]
+  },
+  "T043": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      8,
+      12,
+      17,
+      23
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "weakness_reward",
+          "value": 0,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "weakness_reward",
+          "value": 0.02,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "weakness_reward",
+          "value": 0.04,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "weakness_reward",
+          "value": 0.04,
+          "reward": {
+            "type": "inspiration",
+            "value": 2,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "weakness_reward",
+          "value": 0.06,
+          "reward": {
+            "type": "inspiration",
+            "value": 2,
+            "perMatch": false
+          }
+        }
+      }
+    ]
+  },
+  "TA09": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      8,
+      12,
+      17,
+      23
+    ],
+    "levels": [
+      {
+        "cost": 3,
+        "effect": {
+          "type": "seal_signature",
+          "penalty": -0.08
+        }
+      },
+      {
+        "cost": 3,
+        "effect": {
+          "type": "seal_signature",
+          "penalty": -0.06
+        }
+      },
+      {
+        "cost": 3,
+        "effect": {
+          "type": "seal_signature",
+          "penalty": -0.04
+        }
+      },
+      {
+        "cost": 3,
+        "effect": {
+          "type": "seal_signature",
+          "penalty": -0.02
+        }
+      },
+      {
+        "cost": 2,
+        "effect": {
+          "type": "seal_signature",
+          "penalty": 0
+        }
+      }
+    ]
+  },
+  "T044": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      7,
+      11,
+      16
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_commitment",
+          "condition": "none_paid",
+          "value": 0.07
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_commitment",
+          "condition": "none_paid",
+          "value": 0.09
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_commitment",
+          "condition": "none_paid",
+          "value": 0.11
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_commitment",
+          "condition": "none_paid",
+          "value": 0.13
+        }
+      }
+    ]
+  },
+  "T045": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      7,
+      11,
+      16
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_commitment",
+          "condition": "exactly_one_paid",
+          "firstCostDiscount": 1,
+          "value": 0.07
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_commitment",
+          "condition": "exactly_one_paid",
+          "firstCostDiscount": 1,
+          "value": 0.09
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_commitment",
+          "condition": "exactly_one_paid",
+          "firstCostDiscount": 2,
+          "value": 0.11
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_commitment",
+          "condition": "exactly_one_paid",
+          "firstCostDiscount": 2,
+          "value": 0.13
+        }
+      }
+    ]
+  },
+  "T046": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      8,
+      12,
+      17,
+      23
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "battle_history_pct",
+          "condition": "previous_nonwin",
+          "value": 0.08,
+          "stackGroup": "result_history"
+        }
+      },
+      {
+        "effect": {
+          "type": "battle_history_pct",
+          "condition": "previous_nonwin",
+          "value": 0.1,
+          "stackGroup": "result_history"
+        }
+      },
+      {
+        "effect": {
+          "type": "battle_history_pct",
+          "condition": "previous_nonwin",
+          "value": 0.12,
+          "stackGroup": "result_history"
+        }
+      },
+      {
+        "effect": {
+          "type": "battle_history_pct",
+          "condition": "previous_nonwin",
+          "value": 0.14,
+          "stackGroup": "result_history"
+        }
+      },
+      {
+        "effect": {
+          "type": "battle_history_pct",
+          "condition": "previous_nonwin",
+          "value": 0.16,
+          "stackGroup": "result_history"
+        }
+      }
+    ]
+  },
+  "TA10": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      8,
+      12,
+      17,
+      23
+    ],
+    "levels": [
+      {
+        "cost": 3,
+        "effect": {
+          "type": "dice_transform",
+          "mode": "first_floor",
+          "floor": 4,
+          "value": 0.03,
+          "noExtraDice": true
+        }
+      },
+      {
+        "cost": 3,
+        "effect": {
+          "type": "dice_transform",
+          "mode": "first_floor",
+          "floor": 4,
+          "value": 0.05,
+          "noExtraDice": true
+        }
+      },
+      {
+        "cost": 3,
+        "effect": {
+          "type": "dice_transform",
+          "mode": "first_floor",
+          "floor": 4,
+          "value": 0.07,
+          "noExtraDice": true
+        }
+      },
+      {
+        "cost": 3,
+        "effect": {
+          "type": "dice_transform",
+          "mode": "first_floor",
+          "floor": 5,
+          "value": 0.09,
+          "noExtraDice": true
+        }
+      },
+      {
+        "cost": 2,
+        "effect": {
+          "type": "dice_transform",
+          "mode": "first_floor",
+          "floor": 5,
+          "value": 0.11,
+          "noExtraDice": true
+        }
+      }
+    ]
+  },
+  "T047": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      7,
+      11,
+      16
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "restraint_pct",
+          "value": 0.07
+        }
+      },
+      {
+        "effect": {
+          "type": "restraint_pct",
+          "value": 0.09
+        }
+      },
+      {
+        "effect": {
+          "type": "restraint_pct",
+          "value": 0.11
+        }
+      },
+      {
+        "effect": {
+          "type": "restraint_pct",
+          "value": 0.13
+        }
+      }
+    ]
+  },
+  "T048": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      7,
+      11,
+      16
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "first_last_equal",
+          "minDice": 2,
+          "firstCostDiscount": 1,
+          "value": 0.12
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "first_last_equal",
+          "minDice": 2,
+          "firstCostDiscount": 1,
+          "value": 0.15
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "first_last_equal",
+          "minDice": 2,
+          "firstCostDiscount": 2,
+          "value": 0.18
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "first_last_equal",
+          "minDice": 2,
+          "firstCostDiscount": 2,
+          "value": 0.21
+        }
+      }
+    ]
+  },
+  "T049": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      8,
+      12,
+      17,
+      23
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "low_and_high",
+          "lowMax": 2,
+          "highMin": 5,
+          "value": 0.12,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "low_and_high",
+          "lowMax": 2,
+          "highMin": 5,
+          "value": 0.15,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "low_and_high",
+          "lowMax": 2,
+          "highMin": 5,
+          "value": 0.18,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "low_and_high",
+          "lowMax": 2,
+          "highMin": 5,
+          "value": 0.21,
+          "reward": {
+            "type": "inspiration",
+            "value": 2,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "low_and_high",
+          "lowMax": 2,
+          "highMin": 5,
+          "value": 0.24,
+          "reward": {
+            "type": "inspiration",
+            "value": 2,
+            "perMatch": false
+          }
+        }
+      }
+    ]
+  },
+  "TA11": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      8,
+      12,
+      17,
+      23
+    ],
+    "levels": [
+      {
+        "cost": 3,
+        "effect": {
+          "type": "dice_transform",
+          "mode": "polarize",
+          "minDice": 2,
+          "value": 0
+        }
+      },
+      {
+        "cost": 3,
+        "effect": {
+          "type": "dice_transform",
+          "mode": "polarize",
+          "minDice": 2,
+          "value": 0.03
+        }
+      },
+      {
+        "cost": 3,
+        "effect": {
+          "type": "dice_transform",
+          "mode": "polarize",
+          "minDice": 2,
+          "value": 0.06
+        }
+      },
+      {
+        "cost": 3,
+        "effect": {
+          "type": "dice_transform",
+          "mode": "polarize",
+          "minDice": 2,
+          "value": 0.09
+        }
+      },
+      {
+        "cost": 2,
+        "effect": {
+          "type": "dice_transform",
+          "mode": "polarize",
+          "minDice": 2,
+          "value": 0.12
+        }
+      }
+    ]
+  }
+};
