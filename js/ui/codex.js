@@ -192,10 +192,12 @@ export class CodexUI {
       const got = c.talents.includes(t.id);
       if (got) {
         const up = (this.cfg['talent-upgrade'] || {})[t.id];
+        const lvMax = Math.max(1, Number(up && up.maxLevel) || (up && up.levels ? up.levels.length : 1));
+        const historyLevel = Math.min(lvMax, Math.max(1, Number((c.talentLevels || {})[t.id]) || 1));
+        const historyHtml = `<div class="cx-history-lv">历史最高 Lv${historyLevel}${historyLevel > 1 ? ' · 再获即继承此等级' : ' · 再获从 Lv1 起'}</div>`;
         let upHtml = '';
         if (up) {
           const q = QUALITY_NAMES[up.quality] || up.quality || '未知';
-          const lvMax = Number(up.maxLevel) || (up.levels ? up.levels.length : 1);
           const badge = `<span class="rarity-tag r-${up.quality}">${esc(q)}</span>`;
           const head = `<div class="cx-up-head">${badge}<span class="cx-up-lv">可升至 Lv${lvMax}</span></div>`;
           const levels = (up.levels || []).slice(1); // 跳过 Lv1（= 基础效果）
@@ -211,6 +213,7 @@ export class CodexUI {
         return `<div class="album-card unlocked">
           <div class="ac-name">${esc(t.name)} <span class="ac-badge">${t.kind === 'active' ? '主动' : '被动'}</span></div>
           <div class="efx cx-efx">${talentEffectText(t)}</div>
+          ${historyHtml}
           ${upHtml}
           <div class="ac-text">${esc(firstSentence(t.text))}</div>
         </div>`;

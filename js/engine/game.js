@@ -2,14 +2,14 @@
  * game.js —— 单人对局引擎（无 DOM）。所有表现通过注入的 ui 适配器完成。
  * 规则依据：全案 3.1–3.8。战斗与评分公式一律调用 rules.js。
  */
-import * as R from './rules.js';
+import * as R from './rules.js?v=20260829merge2';
 import * as Album from './album.js';
 import * as Codex from './codex.js';
-import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260828sky1';
+import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260829merge2';
 import * as NpcSelection from './npc-selection.js';
 import { stableFoeId } from './npc-selection.js';
 
-export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260828sky1';
+export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260829merge2';
 
 export const PASSIVE_MAX = 8;
 export const ACTIVE_MAX = 4;
@@ -783,6 +783,9 @@ export class Game {
   start(schoolId, opts = {}) {
     const cfg = this.cfg;
     this._inheritApplied = null;
+    // 结算页只应报告“本局新写入”的跨局进度；开局先留快照，
+    // 避免把此前已经拥有的文心等级误报为本局所得。
+    this._crossRunCodexBefore = Codex.loadCodex();
     const school = cfg.schools.find(s => s.id === schoolId) || cfg.schools[0];
     const attrs = { ...cfg.attrs.initial };
     attrs[school.attr] = (attrs[school.attr] || 0) + (cfg.attrs.schoolBonus ?? 3);
@@ -823,7 +826,7 @@ export class Game {
       track: 'main', pos: 0, routeIndex: 0, ringId: cfg.board.routeCells?.[0]?.ring || 'outer', branchId: null, branchIndex: -1,
       lap: 1, turn: 0, phase: cfg.board.layout === 'concentric_spiral' ? 'child' : 'lap1', phaseGateSeen: {},
       sky: [], nextBattlePct: 0,
-      sideQuest: { routeId: '', stage: 'none', startedAtCell: null, choices: [], merit: 0, climaxResult: '', pendingBattlePct: 0, finalChoice: '', finalBonusPct: 0, rewardClaimed: false, lateNoCarry: false, talentOfferIds: [], talentOfferGenerated: false, talentClaimedId: '', talentClaimCost: 6, talentOfferExpired: false },
+      sideQuest: { routeId: '', stage: 'none', startedAtCell: null, choices: [], merit: 0, climaxResult: '', pendingBattlePct: 0, finalChoice: '', finalBonusPct: 0, rewardClaimed: false, lateNoCarry: false, talentOfferIds: [], talentOfferGenerated: false, talentClaimedId: '', talentClaimCost: 6, talentOfferExpired: false, climaxNpcId: '', finalPrimaryNpcId: '', finalSecondaryNpcId: '', finalPackageId: '' },
       battle: { win: 0, draw: 0, loss: 0, streak: 0, maxStreak: 0, upsets: 0, winsByStyle: { shi: 0, ci: 0, lian: 0 }, lastStyle: null, lastResult: null },
       events: { total: 0, rare: 0, legend: 0, talents: 0, items: 0 },
       quiz: { asked: 0, right: 0 },
@@ -2073,6 +2076,35 @@ export class Game {
   /* ------------------------------------------------------ 名胜支线 */
   sideQuestConfig() { return (this.cfg && this.cfg.sidequests) || { routes: [], final: {} }; }
 
+  sideQuestNpcPlan(routeId = this.s && this.s.sideQuest && this.s.sideQuest.routeId) {
+    const plans = this.cfg && this.cfg['sidequest-npcs'];
+    return (plans && plans.routes && plans.routes[routeId]) || null;
+  }
+
+  sideQuestFinalPackage(route, state = this.sideQuestState()) {
+    const plan = this.sideQuestNpcPlan(route && route.id);
+    const secondary = plan && plan.final && plan.final.secondary;
+    if (!secondary) return { id: '', primary: null, secondary: null };
+    const axes = (state.choices || []).map(choice => choice && choice.axis).filter(Boolean);
+    const key = axes.length > 1 && axes[0] === axes[1] ? (axes[0] === (route.axis || [])[0] ? 'same_first' : 'same_second') : 'mixed';
+    const primary = { ...(plan.climax || {}), attrs: { ...((plan.climax || {}).attrs || {}) } };
+    const deputy = { ...(secondary[key] || {}), attrs: { ...((secondary[key] || {}).attrs || {}) } };
+    return { id: key, primary: primary.id ? primary : null, secondary: deputy.id ? deputy : null };
+  }
+
+  scaleSideQuestNpc(npc, target) {
+    const src = (npc && npc.attrs) || {};
+    const base = (target && target.attrs) || {};
+    const keys = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
+    const sourceTotal = keys.reduce((sum, key) => sum + Math.max(0, Number(src[key]) || 0), 0);
+    const targetTotal = keys.reduce((sum, key) => sum + Math.max(0, Number(base[key]) || 0), 0);
+    if (!sourceTotal || !targetTotal) return { ...(npc || {}), attrs: { ...src } };
+    const attrs = Object.fromEntries(keys.map(key => [key, Math.max(1, Math.round((Number(src[key]) || 0) / sourceTotal * targetTotal))]));
+    const drift = targetTotal - keys.reduce((sum, key) => sum + attrs[key], 0);
+    attrs[npc.style || 'shi'] = Math.max(1, attrs[npc.style || 'shi'] + drift);
+    return { ...npc, attrs, scaledFromNpcId: target && target.id || '', scaledToTotal: targetTotal };
+  }
+
   sideQuestRoute(routeId = this.s && this.s.sideQuest && this.s.sideQuest.routeId) {
     const cfg = this.sideQuestConfig();
     if (cfg.routeById instanceof Map) return cfg.routeById.get(routeId) || null;
@@ -2082,14 +2114,15 @@ export class Game {
   sideQuestState() {
     const src = this.s.sideQuest;
     if (src && typeof src === 'object') return src;
-    return (this.s.sideQuest = { routeId: '', stage: 'none', startedAtCell: null, choices: [], merit: 0, climaxResult: '', pendingBattlePct: 0, finalChoice: '', finalBonusPct: 0, rewardClaimed: false, lateNoCarry: false, talentOfferIds: [], talentOfferGenerated: false, talentClaimedId: '', talentClaimCost: 6, talentOfferExpired: false });
+    return (this.s.sideQuest = { routeId: '', stage: 'none', startedAtCell: null, choices: [], merit: 0, climaxResult: '', pendingBattlePct: 0, finalChoice: '', finalBonusPct: 0, rewardClaimed: false, lateNoCarry: false, talentOfferIds: [], talentOfferGenerated: false, talentClaimedId: '', talentClaimCost: 6, talentOfferExpired: false, climaxNpcId: '', finalPrimaryNpcId: '', finalSecondaryNpcId: '', finalPackageId: '' });
   }
 
   sideQuestJournal() {
     const state = this.sideQuestState();
     const route = this.sideQuestRoute(state.routeId);
     const ids = Array.isArray(state.talentOfferIds) ? state.talentOfferIds : [];
-    return { state, route, choices: Array.isArray(state.choices) ? state.choices.slice() : [], talentOffer: ids.map(id => this.cfg.talentById.get(id)).filter(Boolean) };
+    const plan = this.sideQuestNpcPlan(state.routeId);
+    return { state, route, choices: Array.isArray(state.choices) ? state.choices.slice() : [], talentOffer: ids.map(id => this.cfg.talentById.get(id)).filter(Boolean), guides: Array.isArray(plan && plan.guides) ? plan.guides : [] };
   }
 
   async beginSideQuest(cell) {
@@ -2188,13 +2221,16 @@ export class Game {
     return done;
   }
 
-  async doSideQuestClimax(cell) {
+  async doSideQuestClimax(cell, targetNpc = null) {
     const state = this.sideQuestState();
     const route = this.sideQuestRoute();
     if (!route || state.stage !== 'climax') return false;
     const pool = route.battleThemePool || [];
     const theme = pool.length ? pool[Math.floor(this.rand() * pool.length)] : undefined;
-    const npc = { ...(route.npc || {}), attrs: { ...((route.npc || {}).attrs || {}) } };
+    const plan = this.sideQuestNpcPlan(route.id);
+    const configured = plan && plan.climax ? plan.climax : route.npc;
+    const npc = this.scaleSideQuestNpc({ ...(configured || {}), attrs: { ...((configured || {}).attrs || {}) } }, targetNpc);
+    state.climaxNpcId = npc.id || '';
     const out = await this.doBattle({ npc, theme, returnOutcome: true, label: route.battleLabel || cell.name, sideQuestRoute: route });
     const result = String(out && out.result || 'loss');
     state.climaxResult = result;
@@ -2213,7 +2249,8 @@ export class Game {
     const route = this.sideQuestRoute();
     if (!route || state.stage === 'none') return null;
     if (state.stage === 'complete' && state.finalChoice) {
-      return { route, state, merit: Math.max(1, Number(state.merit) || 1), cost: Math.max(0, Number((this.sideQuestConfig().final || {}).carryCost) || 2), canCarry: false, lateNoCarry: !!state.lateNoCarry };
+      const pack = this.sideQuestFinalPackage(route, state);
+      return { route, state, merit: Math.max(1, Number(state.merit) || 1), cost: Math.max(0, Number((this.sideQuestConfig().final || {}).carryCost) || 2), canCarry: false, lateNoCarry: !!state.lateNoCarry, primaryNpc: pack.primary, secondaryNpc: pack.secondary, packageId: pack.id };
     }
     if (state.stage === 'decision') {
       // 内圈晚入：补看第二幕但不倒灌资源；两幕皆缺时只保留故事，不开放携道加分。
@@ -2250,9 +2287,13 @@ export class Game {
       state.finalBonusPct = 0;
     }
     this.push(`支线终问「${route.name}」：${state.finalChoice === 'carry' ? '携道赴问' : '放下此道'}`);
+    const pack = this.sideQuestFinalPackage(route, state);
+    state.finalPrimaryNpcId = pack.primary && pack.primary.id || '';
+    state.finalSecondaryNpcId = pack.secondary && pack.secondary.id || '';
+    state.finalPackageId = pack.id;
     this.ui.onState(this.s);
     this.onForceSave?.();
-    return { route, state, ...meta };
+    return { route, state, ...meta, primaryNpc: pack.primary, secondaryNpc: pack.secondary, packageId: pack.id };
   }
 
   sideQuestEpilogue() {
@@ -2359,7 +2400,9 @@ export class Game {
       return;
     }
     if (this.s.sideQuest && this.s.sideQuest.stage === 'climax') {
-      await this.doSideQuestClimax(cell);
+      // 先按原规则抽取本应遭遇的对手，再以其档位总预算等比投影到支线高潮角色。
+      const target = this.pickNpc(false);
+      await this.doSideQuestClimax(cell, target);
       return;
     }
     const npc = this.pickNpc(false);
@@ -2408,12 +2451,18 @@ export class Game {
       return true;
     })();
     const npcMech = mechOk ? (npc && npc.mech) : null;
+    const playerManners = af.manners || ['wanyue', 'haofang', 'zheli'];
+    const npcMannerPool = R.npcManners(af, playerManners);
+    const experimentalManner = R.experimentalMannerId(af);
+    // 实验的结果在开战时锁定并公开，选中后不会因结算/重试重新掷出。
+    const experimentalMannerPct = R.rollExperimentalMannerPct(af, this.rand);
     let npcIntent = null;
     if (npcMech) {
       npcIntent = R.rollIntention({
         mech: npcMech,
         npcAttrs: (npc && npc.attrs) || {},
         af,
+        manners: npcMannerPool,
         theme,
         zeitgeist: s.zeitgeist,
         templates: tplLib
@@ -2447,14 +2496,17 @@ export class Game {
       playerName: s.playerName || '',
       topic: opts.topic || pickTopic(theme, af, this.rand),
       intentLocked,               // NPC 三机制：本场锁定意图（E0）
-      manners: af.manners || ['wanyue', 'haofang', 'zheli'],
+      manners: playerManners,
+      npcManners: npcMannerPool,
+      experimentalManner,
+      experimentalMannerPct,
       mannerNames: af.mannerNames,
       themeNames: af.themeNames,
       schoolHome: (this.s.school && this.s.school.homeManner) || null,
       homeResolved: (() => {
         const hm = this.s.school && this.s.school.homeManner;
         if (!hm) return null;
-        if (hm === 'adaptive') return R.bestMannerForTheme(af.matrix, af.manners, theme);
+        if (hm === 'adaptive') return R.bestMannerForTheme(af.matrix, npcMannerPool, theme);
         return hm;
       })(),
       schoolHomeName: af.mannerNames && this.s.school && this.s.school.homeManner
@@ -2520,7 +2572,7 @@ export class Game {
 
       // 综合相性（基矩阵 + 门派文风 + 当朝风潮），供玩家抉择/UI 展示；不含气势连捷。
       affinityOf(manner) {
-        return R.effectiveAffinity(af, manner, theme, this.schoolHome, this.zeitgeist);
+        return R.effectiveAffinity(af, manner, theme, this.schoolHome, this.zeitgeist, this.experimentalMannerPct);
       },
       starsOf(manner) { return R.affinityStars(this.affinityOf(manner)); },
       tierOf(manner) { return R.affinityTierLabel(this.affinityOf(manner)); },
@@ -2723,15 +2775,20 @@ export class Game {
       : [];
 
     // 相性 2.0：四层叠加（基矩阵 / 门派文风 / 当朝风潮 / 气势连捷）
-    const base = R.affinityValue(af.matrix, manner, session.theme);
-    if (base !== 0) pct.push({ source: 'affinity', label: `相性·${af.mannerNames[manner]}×${session.themeName}`, value: base });
+    const experimental = R.isExperimentalManner(af, manner);
+    const base = experimental ? Number(session.experimentalMannerPct) || 0 : R.affinityValue(af.matrix, manner, session.theme);
+    if (base !== 0) pct.push({
+      source: experimental ? 'experimental' : 'affinity',
+      label: experimental ? '实验·本场波动' : `相性·${af.mannerNames[manner]}×${session.themeName}`,
+      value: base
+    });
 
     // 门派文风（本门功底 / 通儒临题自化）：玩家专属身份层
     let home = 0;
     if (s.school && s.school.homeManner) {
       const hm = s.school.homeManner;
       if (hm === 'adaptive') {
-        const best = R.bestMannerForTheme(af.matrix, session.manners, session.theme);
+        const best = R.bestMannerForTheme(af.matrix, session.npcManners, session.theme);
         if (manner === best) home = Number(af.homeAdaptiveBonus ?? 0.04);
       } else if (manner === hm) {
         home = Number(af.homeMannerBonus ?? 0.05);
@@ -2974,7 +3031,7 @@ export class Game {
     const npcStyle = (session.intentLocked && session.intentLocked.style)
       ? session.intentLocked.style : R.pickNpcStyle(npcAttrs, npcAttrs.lian >= 8, battleCoef);
     const npcManner = (session.intentLocked && session.intentLocked.manner)
-      ? session.intentLocked.manner : R.pickNpcManner(af.matrix, session.manners, session.theme);
+      ? session.intentLocked.manner : R.pickNpcManner(af.matrix, session.npcManners, session.theme);
     const npcAff = R.affinityValue(af.matrix, npcManner, session.theme);
     const npcDice = this.d6();
     // NPC 最佳文体期望分（阶段 E：供 sig_steady_pressure 的 floorPct / sig_dice_response
@@ -3694,7 +3751,9 @@ export class Game {
     const palaceSelection = zkPool && zkPool.length
       ? this.selectPalaceFoes(zk, n)
       : { foes: Array.from({ length: n }, () => this.pickNpc(true)), forcedEntry: null };
-    const palaceFoes = palaceSelection.foes;
+    const palaceFoes = palaceSelection.foes.slice();
+    // 完整完成的支线只替换首场殿试主考；副考官仅通过开场说明和记录呈现，保证终局仍是一场战斗。
+    if (sideQuestFinal && sideQuestFinal.primaryNpc) palaceFoes[0] = sideQuestFinal.primaryNpc;
     if (palaceSelection.forcedEntry) {
       const name = palaceSelection.forcedEntry.name || '主考官';
       this.push(`联力超过 35，殿试必遇「${name}」`);
@@ -3828,12 +3887,42 @@ export class Game {
         if (mres.leveledUp) this.push(`流派造诣精进：${Album.masteryLevelName(mres.after.level)}！`);
       }
     } catch (e) { /* 熟练度累计失败不阻断结算 */ }
+    summary.crossRun = this.crossRunSummary(summary);
     // 通关（金榜题名）→ 提交分数到云端排行榜（解耦：由 app.js 注入 onVictory）
     if (['jinbang', 'taoyuan', 'secret_loss'].includes(summary.reason) && typeof this.onVictory === 'function') {
       try { this.onVictory((s.playerName || '无名氏'), summary.total); } catch (_) { /* 提交失败不阻断结算 */ }
     }
     await this.ui.showResult(summary);
     return summary;
+  }
+
+  /**
+   * 汇总本局已经落盘的跨局成长，供结算 UI 展示。
+   * 这里刻意只返回事实数据：展示层据此说明“下一局会发生什么”，
+   * 不再从瞬时对局状态猜测或重复计算历史最高等级。
+   */
+  crossRunSummary(summary) {
+    const before = this._crossRunCodexBefore || Codex.emptyCodex();
+    const after = Codex.loadCodex();
+    const beforeTalents = new Set(before.talents || []);
+    const newTalentIds = (after.talents || []).filter(id => !beforeTalents.has(id));
+    const talentLevels = Object.entries(after.talentLevels || {})
+      .map(([id, level]) => ({ id, before: Number((before.talentLevels || {})[id]) || 1, after: Number(level) || 1 }))
+      .filter(item => item.after > item.before);
+    const flame = Reincarnate.peek();
+    return {
+      mastery: summary.mastery || null,
+      newUnlocks: (summary.newUnlocks || []).map(card => card.id),
+      newTalentIds,
+      talentLevels,
+      reincarnate: flame && flame.attrs ? {
+        talentId: flame.talentId,
+        talentName: flame.talentName,
+        talentLevel: flame.talentLevel,
+        ratio: flame.ratio,
+        attrs: { ...flame.attrs }
+      } : null
+    };
   }
 
   /**

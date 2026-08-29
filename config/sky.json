@@ -124,5 +124,18 @@
       "value": 0.1
     },
     "icon": "🏆"
+  },
+  {
+    "id": "SK07",
+    "name": "彩彻区明",
+    "text": "一场雨后，「你」偶过洪都滕王阁，登阁而上后，你见到了七色的天桥，心中有骈俪的字句涌出。",
+    "duration": 6,
+    "turns": 6,
+    "scope": "all",
+    "effect": {
+      "type": "attr_pct",
+      "attr": "lian",
+      "value": 0.15
+    }
   }
 ]

@@ -167,7 +167,11 @@ function normalizeSideQuestState(raw, cfg) {
     talentOfferGenerated: !!src.talentOfferGenerated,
     talentClaimedId: typeof src.talentClaimedId === 'string' ? src.talentClaimedId.slice(0, 32) : '',
     talentClaimCost: Math.max(0, Math.min(99, Number(src.talentClaimCost) || 6)),
-    talentOfferExpired: !!src.talentOfferExpired
+    talentOfferExpired: !!src.talentOfferExpired,
+    climaxNpcId: typeof src.climaxNpcId === 'string' ? src.climaxNpcId.slice(0, 64) : '',
+    finalPrimaryNpcId: typeof src.finalPrimaryNpcId === 'string' ? src.finalPrimaryNpcId.slice(0, 64) : '',
+    finalSecondaryNpcId: typeof src.finalSecondaryNpcId === 'string' ? src.finalSecondaryNpcId.slice(0, 64) : '',
+    finalPackageId: typeof src.finalPackageId === 'string' ? src.finalPackageId.slice(0, 32) : ''
   };
 }
 
