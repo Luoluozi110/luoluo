@@ -10,7 +10,7 @@
   const PREFIX = "feihua_editors_v1_";
   // 由 index.html 注入并随 config -> seed -> 云端基准同步递增；旧编辑器页面会因此被桥接层识别为过期。
   const CONTENT_VERSION = Math.max(1, Number(global.GAME_CONTENT_VERSION) || 1);
-  const DATA_STORAGE_KEYS = ["qbank", "events", "talents", "npcs", "affinity", "synergies", "board", "sky", "album", "copy_schools", "copy_grades", "copy_narrative"];
+  const DATA_STORAGE_KEYS = ["qbank", "events", "talents", "npcs", "sidequest-npcs", "affinity", "synergies", "board", "sky", "album", "copy_schools", "copy_grades", "copy_narrative"];
   const DATA_VERSION_KEY = "contentVersion";
   let legacyStorageDetected = false;
   const MODULES = [
@@ -779,7 +779,8 @@
       narrative: global.COPY ? global.COPY.exportNarrativeRaw() : {}
     };
     if (global.GAME_SIDEQUESTS) project.sidequests = global.GAME_SIDEQUESTS;
-    if (global.GAME_SIDEQUEST_NPCS) project['sidequest-npcs'] = global.GAME_SIDEQUEST_NPCS;
+    if (global.NPC && global.NPC.exportSideQuestRaw) project['sidequest-npcs'] = global.NPC.exportSideQuestRaw();
+    else if (global.GAME_SIDEQUEST_NPCS) project['sidequest-npcs'] = global.GAME_SIDEQUEST_NPCS;
     if (!global.FeihuaConfigContract) throw new Error("配置契约校验器未加载");
     global.FeihuaConfigContract.assertProject(project);
     // 返回快照而不是模块内部 state 的引用，防止异步发布期间后续编辑改写本次内容。
@@ -882,6 +883,7 @@
       if (Array.isArray(data.talents) && global.TALENT) { global.TALENT.importData(data.talents, mode); routed++; }
       if (data["talent-upgrade"] && typeof data["talent-upgrade"] === "object" && global.TALENT && global.TALENT.importUpgrade) { global.TALENT.importUpgrade(data["talent-upgrade"], mode); routed++; }
       if (Array.isArray(data.npcs) && global.NPC) { global.NPC.importData(data.npcs, mode); routed++; }
+      if (data['sidequest-npcs'] && global.NPC && global.NPC.importSideQuestNpcs) { global.NPC.importSideQuestNpcs(data['sidequest-npcs']); routed++; }
       if (Array.isArray(data.synergies) && global.SYNERGY) { global.SYNERGY.importData(data.synergies, mode); routed++; }
       if (Array.isArray(data.sky) && global.SKY) { global.SKY.importData(data.sky, mode); routed++; }
       if (Array.isArray(data.album) && global.ALBUM) { global.ALBUM.importData(data.album, mode); routed++; }
@@ -890,7 +892,7 @@
       if (data.affinity && global.AFFINITY) { global.AFFINITY.importData(data.affinity, mode); routed++; }
       if ((data.mainRing || data.laps || data.sides) && global.BOARD) { global.BOARD.importData(data, mode); routed++; }
       if (data.board && data.board.mainRing && global.BOARD) { global.BOARD.importData(data.board, mode); routed++; }
-      if (!routed) { alert("文件不含 questions / events / talents / talent-upgrade / npcs / affinity / synergies / board / sky / album / schools / grades / narrative 字段。"); return; }
+      if (!routed) { alert("文件不含 questions / events / talents / talent-upgrade / npcs / sidequest-npcs / affinity / synergies / board / sky / album / schools / grades / narrative 字段。"); return; }
     } else { alert("未识别的 JSON 结构。"); return; }
     if (routed > 0) toast(mode ? "替换导入完成：已载入 " + routed + " 个模块" : "合并导入完成：已载入 " + routed + " 个模块");
     return routed;

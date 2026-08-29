@@ -10,6 +10,14 @@ assert.deepEqual([...sandbox.window.GAME_SIDEQUEST_TALENTS.map(t => t.id)].sort(
 const npcRoutes = Object.values(sandbox.window.GAME_SIDEQUEST_NPCS.routes);
 const npcIds = npcRoutes.flatMap(route => [route.guides[0], route.climax, ...Object.values(route.final.secondary)]).map(npc => npc.id);
 assert.equal(new Set(npcIds).size, 9, '编辑器需同步剩余 9 名支线专属 NPC');
-assert.match(readFileSync(new URL('../assets/js/common.js', import.meta.url), 'utf8'), /project\.sidequests = global\.GAME_SIDEQUESTS/, '导出工程必须携带支线 NPC 与路线');
-assert.match(readFileSync(new URL('../assets/js/common.js', import.meta.url), 'utf8'), /project\['sidequest-npcs'\] = global\.GAME_SIDEQUEST_NPCS/, '导出工程必须携带支线专属 NPC 配置');
+const common = readFileSync(new URL('../assets/js/common.js', import.meta.url), 'utf8');
+const npcEditor = readFileSync(new URL('../assets/js/npc.js', import.meta.url), 'utf8');
+const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+assert.match(common, /project\.sidequests = global\.GAME_SIDEQUESTS/, '导出工程必须携带支线 NPC 与路线');
+assert.match(common, /NPC\.exportSideQuestRaw/, '工程导出必须读取编辑器当前的支线 NPC 数据');
+assert.match(common, /NPC\.importSideQuestNpcs/, '工程/云端导入必须回写编辑器当前的支线 NPC 数据');
+assert.match(npcEditor, /function renderSideQuestNpcList\(/, 'NPC 编辑器必须渲染专属角色列表');
+assert.match(npcEditor, /exportSideQuestRaw, importSideQuestNpcs/, 'NPC 编辑器必须公开专属角色的导入导出接口');
+assert.match(html, /id="sidequestNpcList"/, 'NPC 页面必须存在支线专属 NPC 可见列表');
+assert.match(html, /id="sidequestNpcJson"/, 'NPC 页面必须提供专属角色配置编辑入口');
 console.log('sidequest-content-sync.test.mjs: 编辑器支线内容同步 ✓');

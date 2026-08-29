@@ -13,7 +13,7 @@
   const THEME_LABELS = { yongwu: "咏物", songbie: "送别", shanshui: "山水", biansai: "边塞", huaigu: "怀古", jieling: "节令" };
   const NPC_ID_RE = /^[a-z][a-z0-9_-]*$/;
 
-  const state = { tiers: [], editTier: -1, tierForm: null, npcForm: null, _ready: false };
+  const state = { tiers: [], sideQuestNpcs: {}, sideQuestSeed: {}, editTier: -1, tierForm: null, npcForm: null, _ready: false };
 
   /* ---------------- 持久化 ---------------- */
   function save() {
@@ -31,6 +31,11 @@
       state.tiers = ensureStableNpcIds(ensureHiddenFinalTier(ensureOfficialNpcSeed((window.GAME_NPCS || []).map(normalizeTier))));
       C.store("npcs", state.tiers);
     }
+    state.sideQuestSeed = cloneData(global.GAME_SIDEQUEST_NPCS || { version: 1, routes: {} });
+    const sideRaw = C.load("sidequest-npcs", null);
+    state.sideQuestNpcs = normalizeSideQuestNpcs(sideRaw || state.sideQuestSeed);
+    global.GAME_SIDEQUEST_NPCS = cloneData(state.sideQuestNpcs);
+    C.store("sidequest-npcs", state.sideQuestNpcs);
   }
 
   /* ---------------- 规范化 ---------------- */
@@ -95,6 +100,89 @@
     }
     return out;
   }
+
+  /* ---------------- 支线专属 NPC（独立于普通随机对手池） ---------------- */
+  function normalizeSideQuestNpcs(raw) {
+    const src = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    return cloneData({ version: Math.max(1, Number(src.version) || 1), routes: src.routes && typeof src.routes === "object" && !Array.isArray(src.routes) ? src.routes : {} });
+  }
+  function sideQuestNpcEntries() {
+    const routes = state.sideQuestNpcs.routes || {};
+    return Object.entries(routes).flatMap(([routeId, route]) => {
+      const guide = Array.isArray(route && route.guides) ? route.guides[0] : null;
+      const climax = route && route.climax;
+      const secondary = route && route.final && route.final.secondary;
+      const deputy = secondary && (secondary.same_first || secondary.same_second || secondary.mixed);
+      return [
+        guide && { routeId, role: "行路引导", npc: guide },
+        climax && { routeId, role: "第三幕论战 / 终局主考", npc: climax },
+        deputy && { routeId, role: "终局副考（随两幕选择切换机制）", npc: deputy }
+      ].filter(Boolean);
+    });
+  }
+  function validateSideQuestNpcs(raw) {
+    const next = normalizeSideQuestNpcs(raw);
+    const need = ["jianghu", "biansai", "qiuxian"];
+    const ids = new Set();
+    for (const routeId of need) {
+      const route = next.routes[routeId];
+      const guide = route && Array.isArray(route.guides) && route.guides[0];
+      const climax = route && route.climax;
+      const deputy = route && route.final && route.final.secondary && (route.final.secondary.same_first || route.final.secondary.same_second || route.final.secondary.mixed);
+      for (const npc of [guide, climax, deputy]) {
+        if (!npc || !NPC_ID_RE.test(String(npc.id || "")) || !String(npc.name || "").trim()) return { ok: false, message: `路线 ${routeId} 缺少具名支线 NPC（需合法 id 与名称）` };
+        ids.add(npc.id);
+      }
+    }
+    if (ids.size !== 9) return { ok: false, message: "支线 NPC 必须保留 9 名唯一角色（3 位引路、3 位论战主考、3 位终局副考）。" };
+    return { ok: true, value: next };
+  }
+  function renderSideQuestNpcList() {
+    const list = document.getElementById("sidequestNpcList");
+    const count = document.getElementById("sidequestNpcCount");
+    const json = document.getElementById("sidequestNpcJson");
+    if (!list || !count || !json) return;
+    const entries = sideQuestNpcEntries();
+    count.textContent = `${new Set(entries.map(entry => entry.npc.id)).size} 名 NPC`;
+    list.innerHTML = entries.map(entry => {
+      const npc = entry.npc || {};
+      return `<div class="npc-row"><div class="npc-id"><b>${C.esc(npc.name || "（未命名）")}</b><span class="badge src">${C.esc(entry.role)}</span><span class="npc-title">${C.esc(npc.title || "")}</span><span class="npc-title" style="opacity:.6">${C.esc(npc.id || "")}</span>${styleChip(npc.style)}</div><div class="npc-attrs">${attrsSummary(npc.attrs || {})}${npc.attrs ? `<span class="npc-sum">Σ${attrSum(npc.attrs)}</span>` : ""}</div><div class="npc-actions"><span class="npc-title">${C.esc(entry.routeId)}</span></div></div>`;
+    }).join("") || '<div class="npc-empty">尚未配置支线专属 NPC。</div>';
+    json.value = JSON.stringify(state.sideQuestNpcs, null, 2);
+  }
+  function saveSideQuestNpcsFromEditor() {
+    const json = document.getElementById("sidequestNpcJson");
+    const msg = document.getElementById("sidequestNpcMsg");
+    let raw;
+    try { raw = JSON.parse(json.value); }
+    catch (error) { msg.className = "msg error"; msg.textContent = "JSON 解析失败：" + error.message; return false; }
+    const result = validateSideQuestNpcs(raw);
+    if (!result.ok) { msg.className = "msg error"; msg.textContent = result.message; return false; }
+    state.sideQuestNpcs = result.value;
+    global.GAME_SIDEQUEST_NPCS = cloneData(state.sideQuestNpcs);
+    C.store("sidequest-npcs", state.sideQuestNpcs);
+    msg.className = "msg ok"; msg.textContent = "支线专属 NPC 已保存，并会随工程导出与云端发布。";
+    renderSideQuestNpcList();
+    C.setStatus("npc", "已保存支线 NPC");
+    return true;
+  }
+  function resetSideQuestNpcs() {
+    state.sideQuestNpcs = cloneData(state.sideQuestSeed);
+    global.GAME_SIDEQUEST_NPCS = cloneData(state.sideQuestNpcs);
+    C.store("sidequest-npcs", state.sideQuestNpcs);
+    renderSideQuestNpcList();
+    const msg = document.getElementById("sidequestNpcMsg");
+    msg.className = "msg ok"; msg.textContent = "已恢复当前版本的官方支线 NPC 配置。";
+  }
+  function importSideQuestNpcs(raw) {
+    const result = validateSideQuestNpcs(raw);
+    if (!result.ok) throw new Error(result.message);
+    state.sideQuestNpcs = result.value;
+    global.GAME_SIDEQUEST_NPCS = cloneData(state.sideQuestNpcs);
+    C.store("sidequest-npcs", state.sideQuestNpcs);
+    renderSideQuestNpcList();
+  }
+  function exportSideQuestRaw() { return cloneData(state.sideQuestNpcs); }
 
   /** 隐藏终圈属于系统必需档：旧 localStorage / 旧工程缺失时从官方种子回填。 */
   function ensureHiddenFinalTier(tiers) {
@@ -327,6 +415,7 @@
   }
   function renderList() {
     renderStats();
+    renderSideQuestNpcList();
     const list = document.getElementById("npclist");
     const q = getFilter();
     const tiers = state.tiers.filter(t => {
@@ -871,6 +960,8 @@
     document.getElementById("npcBtnStats").addEventListener("click", showStats);
     document.getElementById("npcBtnImport").addEventListener("click", () => document.getElementById("npcFileInput").click());
     document.getElementById("npcFileInput").addEventListener("change", e => { if (e.target.files[0]) importFile(e.target.files[0]); e.target.value = ""; });
+    document.getElementById("sidequestNpcSave").addEventListener("click", saveSideQuestNpcsFromEditor);
+    document.getElementById("sidequestNpcReset").addEventListener("click", resetSideQuestNpcs);
 
     document.getElementById("npcTierCancel").addEventListener("click", closeTierEditor);
     document.getElementById("npcTierSave").addEventListener("click", saveTierEditor);
@@ -978,5 +1069,5 @@
     global.NPC._ready = true;
   }
 
-  global.NPC = { init, get: () => state.tiers, exportRaw, validateAll, importData, renderList, _ready: false };
+  global.NPC = { init, get: () => state.tiers, exportRaw, exportSideQuestRaw, importSideQuestNpcs, validateAll, importData, renderList, _ready: false };
 })(window);
