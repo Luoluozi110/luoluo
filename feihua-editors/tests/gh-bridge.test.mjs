@@ -32,9 +32,13 @@ assert.equal(packageJson.scripts['editor:open'], 'node scripts/start-editor-brid
   '应提供一键启动命令');
 assert.ok(launcher.includes('bridgeReady'), '启动器应检查既有桥接状态');
 assert.ok(launcher.includes('EDITOR_BRIDGE_PORT: String(port)'), '启动器应把所选端口传给桥接进程');
-assert.ok(launcher.includes('detached: true'), '启动器应在后台启动桥接');
+assert.ok(launcher.includes("stdio: 'inherit'"), '桥接进程应由启动窗口托管并保留诊断输出');
+assert.equal(launcher.includes('child.unref()'), false, '启动器不得脱离桥接进程后提前退出');
+assert.ok(launcher.includes('await childExit'), '启动器应保持运行直到桥接进程退出');
 assert.ok(launcher.includes('openEditor()'), '启动器就绪后应自动打开编辑器');
 assert.equal(launcher.includes('powershell.exe'), false, '启动器不应调用 PowerShell');
 assert.ok(launcherCmd.includes('start-editor-bridge.mjs'), '项目根目录应提供可双击的启动文件');
+assert.equal(/[^\x00-\x7F]/.test(launcherCmd), false,
+  'Windows cmd 启动文件必须仅含 ASCII，避免系统代码页把 UTF-8 中文字节误解析为命令语法');
 
 console.log('gh-bridge.test.mjs: Token 已移除，localhost gh 桥接契约通过');
