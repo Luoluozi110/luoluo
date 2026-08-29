@@ -1,6 +1,6 @@
 {
   "_type": "feihua-content",
-  "_version": 8,
+  "_version": 9,
   "questions": [
     {
       "id": "Q0001",
@@ -3438,7 +3438,7 @@
       "effect": {
         "type": "attr_flat",
         "attrs": {
-          "xue": 2
+          "xue": 3
         }
       },
       "school": "tongru",
@@ -3454,7 +3454,7 @@
             "effect": {
               "type": "attr_flat",
               "attrs": {
-                "xue": 2
+                "xue": 4
               }
             }
           },
@@ -3462,7 +3462,7 @@
             "effect": {
               "type": "attr_flat",
               "attrs": {
-                "xue": 3
+                "xue": 5
               }
             }
           }
@@ -3779,14 +3779,6 @@
             "effect": {
               "type": "attr_flat",
               "attrs": {
-                "si": 3
-              }
-            }
-          },
-          {
-            "effect": {
-              "type": "attr_flat",
-              "attrs": {
                 "si": 4
               }
             }
@@ -3796,6 +3788,14 @@
               "type": "attr_flat",
               "attrs": {
                 "si": 5
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "attr_flat",
+              "attrs": {
+                "si": 6
               }
             }
           }
@@ -9080,41 +9080,41 @@
           "effect": {
             "type": "attr_flat",
             "attrs": {
-              "xue": 2
-            }
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        },
-        {
-          "effect": {
-            "type": "attr_flat",
-            "attrs": {
-              "xue": 2
-            }
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        },
-        {
-          "effect": {
-            "type": "attr_flat",
-            "attrs": {
               "xue": 3
+            }
+          },
+          "style": {
+            "fontFamily": "",
+            "fontSize": 0,
+            "color": "",
+            "lineHeight": 0,
+            "textAlign": "",
+            "textIndent": 0,
+            "marginBottom": 0
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "xue": 4
+            }
+          },
+          "style": {
+            "fontFamily": "",
+            "fontSize": 0,
+            "color": "",
+            "lineHeight": 0,
+            "textAlign": "",
+            "textIndent": 0,
+            "marginBottom": 0
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "xue": 5
             }
           },
           "style": {
@@ -9397,23 +9397,6 @@
           "effect": {
             "type": "attr_flat",
             "attrs": {
-              "si": 3
-            }
-          },
-          "style": {
-            "fontFamily": "",
-            "fontSize": 0,
-            "color": "",
-            "lineHeight": 0,
-            "textAlign": "",
-            "textIndent": 0,
-            "marginBottom": 0
-          }
-        },
-        {
-          "effect": {
-            "type": "attr_flat",
-            "attrs": {
               "si": 4
             }
           },
@@ -9432,6 +9415,23 @@
             "type": "attr_flat",
             "attrs": {
               "si": 5
+            }
+          },
+          "style": {
+            "fontFamily": "",
+            "fontSize": 0,
+            "color": "",
+            "lineHeight": 0,
+            "textAlign": "",
+            "textIndent": 0,
+            "marginBottom": 0
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "si": 6
             }
           },
           "style": {
