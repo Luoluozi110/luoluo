@@ -4309,85 +4309,25 @@ window.GAME_BOARD = {
     "name": "桃源终圈",
     "grid": 4,
     "startCellId": 1000,
-    "battleCellId": 1011,
+    "battleCellId": 1007,
     "requirements": {
       "allAlbums": true,
       "masteryLevel": 5,
       "palaceScoreRatio": 2
     },
     "cells": [
-      {
-        "id": 1000,
-        "ringIndex": 0,
-        "type": "secret_path",
-        "name": "桃门"
-      },
-      {
-        "id": 1001,
-        "ringIndex": 1,
-        "type": "secret_path",
-        "name": "花影"
-      },
-      {
-        "id": 1002,
-        "ringIndex": 2,
-        "type": "secret_path",
-        "name": "忘机"
-      },
-      {
-        "id": 1003,
-        "ringIndex": 3,
-        "type": "secret_path",
-        "name": "涤心"
-      },
-      {
-        "id": 1004,
-        "ringIndex": 4,
-        "type": "secret_path",
-        "name": "照水"
-      },
-      {
-        "id": 1005,
-        "ringIndex": 5,
-        "type": "secret_path",
-        "name": "听泉"
-      },
-      {
-        "id": 1006,
-        "ringIndex": 6,
-        "type": "secret_path",
-        "name": "无字"
-      },
-      {
-        "id": 1007,
-        "ringIndex": 7,
-        "type": "secret_path",
-        "name": "回梦"
-      },
-      {
-        "id": 1008,
-        "ringIndex": 8,
-        "type": "secret_path",
-        "name": "问真"
-      },
-      {
-        "id": 1009,
-        "ringIndex": 9,
-        "type": "secret_path",
-        "name": "见性"
-      },
-      {
-        "id": 1010,
-        "ringIndex": 10,
-        "type": "secret_path",
-        "name": "归一"
-      },
-      {
-        "id": 1011,
-        "ringIndex": 11,
-        "type": "battle",
-        "name": "桃源终卷"
-      }
+      { "id": 1000, "ringIndex": 0, "type": "secret_path", "name": "桃门" },
+      { "id": 1001, "ringIndex": 1, "type": "secret_path", "name": "花影" },
+      { "id": 1002, "ringIndex": 2, "type": "secret_path", "name": "忘机" },
+      { "id": 1003, "ringIndex": 3, "type": "secret_path", "name": "涤心" },
+      { "id": 1004, "ringIndex": 4, "type": "secret_path", "name": "照水" },
+      { "id": 1005, "ringIndex": 5, "type": "secret_path", "name": "听泉" },
+      { "id": 1006, "ringIndex": 6, "type": "secret_path", "name": "无字" },
+      { "id": 1007, "ringIndex": 7, "type": "secret_path", "name": "回梦" },
+      { "id": 1008, "ringIndex": 8, "type": "secret_path", "name": "问真" },
+      { "id": 1009, "ringIndex": 9, "type": "secret_path", "name": "见性" },
+      { "id": 1010, "ringIndex": 10, "type": "secret_path", "name": "归一" },
+      { "id": 1011, "ringIndex": 11, "type": "battle", "name": "桃源终卷" }
     ]
   }
 };

@@ -137,7 +137,7 @@
   /* ---------------- 渲染 ---------------- */
   function field(path, value, rows, placeholder) {
     const v = value == null ? "" : String(value);
-    return `<textarea class="copy-field" data-rich="narrative" data-path="${C.esc(path)}" rows="${rows || 2}" placeholder="${C.esc(placeholder || "")}">${C.esc(v)}</textarea>`;
+    return `<textarea class="copy-field" data-path="${C.esc(path)}" rows="${rows || 2}" placeholder="${C.esc(placeholder || "")}">${C.esc(v)}</textarea>`;
   }
 
   function renderStats() {

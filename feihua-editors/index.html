@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>文心棋 · 内容编辑器（题库 & 奇遇 & 文心 & NPC & 相性 & 羁绊 & 地图 & 天象 & 传世名篇 & 叙事文案）</title>
-<link rel="stylesheet" href="assets/css/styles.css?v=20260829merge1" />
+<link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
 <header class="bar">
@@ -91,7 +91,6 @@
   <div class="toolbar">
     <span class="lead">文心管理</span>
     <div class="spacer"></div>
-    <button class="btn" id="talBtnSyncOfficial" title="用当前线上官方文心覆盖同 ID 的本地副本；自建文心不受影响">同步官方文心</button>
     <button class="btn" id="talBtnImport">导入 JSON</button>
     <button class="btn" id="talBtnExport">导出 talents.json</button>
     <button class="btn" id="talBtnExportUpgrade">导出升级 talent-upgrade.json</button>
@@ -131,16 +130,6 @@
   </div>
 
   <div class="qlist" id="npclist"></div>
-
-  <div class="tier-card" style="margin-top:18px">
-    <div class="tier-head">
-      <div class="meta"><span class="q-id">支线专属</span><span class="badge k-active">不进入普通随机池</span><span class="npc-count" id="sidequestNpcCount">9 名 NPC</span></div>
-      <div class="tier-actions"><button class="btn sm" id="sidequestNpcReset" type="button">恢复官方配置</button><button class="btn sm primary" id="sidequestNpcSave" type="button">保存支线 NPC</button></div>
-    </div>
-    <div class="tier-desc">这里显示并编辑名胜支线专属角色：引路人、第三幕论战对手、终局副考。它们不会被写入普通对手档或加入随机遭遇池。</div>
-    <div class="npc-list" id="sidequestNpcList"></div>
-    <details style="margin-top:12px"><summary>高级编辑：支线 NPC 配置 JSON</summary><textarea id="sidequestNpcJson" rows="18" spellcheck="false" style="margin-top:8px;width:100%;font-family:ui-monospace,Consolas,monospace"></textarea><div class="msg" id="sidequestNpcMsg"></div></details>
-  </div>
 </section>
 
 <!-- ============================ 相性编辑器 ============================ -->
@@ -508,7 +497,7 @@
     </div>
     <div class="field">
       <label>奇遇文本（叙事 / 典故）</label>
-      <textarea id="ev-text" data-rich="event" placeholder="描述这个奇遇的情景与典故…"></textarea>
+      <textarea id="ev-text" placeholder="描述这个奇遇的情景与典故…"></textarea>
     </div>
 
     <!-- 直接生效：单一效果 -->
@@ -614,7 +603,7 @@
     </div>
     <div class="field">
       <label>描述 / 典故</label>
-      <textarea id="tal-text" data-rich="talent" placeholder="描述这个文心的来历与效果…"></textarea>
+      <textarea id="tal-text" placeholder="描述这个文心的来历与效果…"></textarea>
     </div>
 
     <!-- 主动文心：灵感消耗 -->
@@ -740,8 +729,8 @@
         <select id="npc-focus-attr"><option value="">自动（按战斗文体）</option></select>
       </div>
       <div class="field" style="margin:0;max-width:200px">
-        <label>稳定 ID（自动生成，可手动指定）</label>
-        <input type="text" id="npc-id" placeholder="如 npc_juren_1" title="每位 NPC 必须有全局唯一的稳定 ID，用于游戏遭遇、存档与机制追踪。留空时保存会自动生成。" />
+          <label>稳定 ID（自动生成，可手动指定）</label>
+          <input type="text" id="npc-id" placeholder="如 npc_juren_1" title="每位 NPC 必须有全局唯一的稳定 ID，用于游戏遭遇、存档与机制追踪。留空时保存会自动生成。" />
       </div>
       <div class="field" style="margin:0;max-width:160px">
         <label>出战权重（本档出场权重）</label>
@@ -965,7 +954,7 @@
     </div>
     <div class="field">
       <label>叙事文本（第二人称为「你」，游戏内会替换名号）</label>
-      <textarea id="sky-text" data-rich="sky" placeholder="描述这个天象的情景与典故…"></textarea>
+      <textarea id="sky-text" placeholder="描述这个天象的情景与典故…"></textarea>
     </div>
     <div class="row2">
       <div class="field" style="margin:0;max-width:160px">
@@ -1054,42 +1043,42 @@
   <option value="T099">三元及第</option><option value="TA01">七步成诗</option>
   <option value="TA02">夺胎换骨</option><option value="TA03">语不惊人</option><option value="TA04">笔落惊风雨</option>
   <option value="TA05">一气呵成</option><option value="TA06">倚马可待</option><option value="TA07">点铁成金</option><option value="TA08">布局谋篇</option>
-  <option value="T041">抱柱之信</option><option value="T042">相忘江湖</option><option value="T043">风尘知己</option><option value="TA09">杯酒解剑</option>
-  <option value="T044">坚壁清野</option><option value="T045">轻骑出塞</option><option value="T046">孤烽照夜</option><option value="TA10">背水列阵</option>
-  <option value="T047">坐忘</option><option value="T048">庄周梦蝶</option><option value="T049">知白守黑</option><option value="TA11">斩妄见真</option>
 </datalist>
 
 <!-- 游戏原始数据（作为编辑器默认种子；首次打开或仍为示例时自动载入） -->
-<script>window.GAME_CONTENT_VERSION = 5;</script>
-<script src="assets/js/seed-questions.js?v=20260829merge1"></script>
-<script src="assets/js/seed-events.js?v=20260829merge1"></script>
-<script src="assets/js/seed-talents.js?v=20260829merge1"></script>
-<script src="assets/js/seed-talent-upgrade.js?v=20260829merge1"></script>
-<script src="assets/js/seed-sidequests.js?v=20260829sidequestnpcpanel1"></script>
-<script src="assets/js/seed-npcs.js?v=20260829merge1"></script>
-<script src="assets/js/seed-affinity.js?v=20260829merge1"></script>
-<script src="assets/js/seed-synergies.js?v=20260829merge1"></script>
-<script src="assets/js/seed-board.js?v=20260829merge1"></script>
-<script src="assets/js/seed-sky.js?v=20260829merge1"></script>
-<script src="assets/js/seed-album.js?v=20260829merge1"></script>
-<script src="assets/js/seed-copy.js?v=20260829merge1"></script>
-<script src="assets/js/icon-library.js?v=20260829merge1"></script>
-<!-- 契约本地化：编辑器自包含，file:// / 本地 http / GitHub Pages 子目录部署均无跨目录 404，
-     不再依赖 document.write 回退（该路径仅线上扁平布局触发、无头测试无法复现）。 -->
-<script src="assets/js/feihua-contract.js?v=20260829cloudbridge2"></script>
-<script src="assets/js/common.js?v=20260829sidequestnpcpanel1"></script>
-<script src="assets/js/richedit.js?v=20260829merge1"></script>
-<script src="assets/js/qbank.js?v=20260829merge1"></script>
-<script src="assets/js/adventure.js?v=20260829merge1"></script>
-<script src="assets/js/talent.js?v=20260829merge1"></script>
-<script src="assets/js/npc.js?v=20260829sidequestnpcpanel1"></script>
-<script src="assets/js/affinity.js?v=20260829merge1"></script>
-<script src="assets/js/synergy.js?v=20260829merge1"></script>
-<script src="assets/js/board.js?v=20260829merge1"></script>
-<script src="assets/js/sky.js?v=20260829merge1"></script>
-<script src="assets/js/album.js?v=20260829merge1"></script>
-<script src="assets/js/copy.js?v=20260829merge1"></script>
-<script src="assets/js/cloud.js?v=20260829cloudbridge2"></script>
+<script src="assets/js/seed-questions.js?v=20260827-literary-quiz-10"></script>
+<script src="assets/js/seed-events.js?v=20260823eventecho1"></script>
+<script src="assets/js/seed-talents.js?v=20260825npcdice1"></script>
+<script src="assets/js/seed-talent-upgrade.js?v=20260825npcdice1"></script>
+<script src="assets/js/seed-npcs.js?v=20260824npcmech2"></script>
+<script src="assets/js/seed-affinity.js"></script>
+<script src="assets/js/seed-synergies.js?v=20260824wenxindice1"></script>
+<script src="assets/js/seed-board.js"></script>
+<script src="assets/js/seed-sky.js"></script>
+<script src="assets/js/seed-album.js?v=20260823chapter1"></script>
+<script src="assets/js/seed-copy.js"></script>
+<script src="assets/js/icon-library.js"></script>
+<!-- 源码工作区与 GitHub Pages 的游戏目录不同；回退路径必须在 common.js 前同步完成。
+     静态标签优先加载源码工作区同级目录（file:// 与本地 http 预览均命中），
+     部署到 GitHub Pages（扁平根目录）时首个 404，由下方 document.write 回退到 ../js/engine/。 -->
+<script src="../feihuaqi-playable/js/engine/config-contract.js?v=20260827contractfix1"></script>
+<script>
+if (!window.FeihuaConfigContract) {
+  document.write('<script src="../js/engine/config-contract.js?v=20260827contractfix1"><\\/script>');
+}
+</script>
+<script src="assets/js/common.js?v=20260826workspace2"></script>
+<script src="assets/js/qbank.js?v=20260828-ink-axis-repair"></script>
+<script src="assets/js/adventure.js?v=20260826workspace2"></script>
+<script src="assets/js/talent.js?v=20260826workspace2"></script>
+<script src="assets/js/npc.js?v=20260826workspace2"></script>
+<script src="assets/js/affinity.js?v=20260826workspace2"></script>
+<script src="assets/js/synergy.js?v=20260826workspace2"></script>
+<script src="assets/js/board.js?v=20260826workspace2"></script>
+<script src="assets/js/sky.js?v=20260826workspace2"></script>
+<script src="assets/js/album.js?v=20260826workspace2"></script>
+<script src="assets/js/copy.js?v=20260826workspace2"></script>
+<script src="assets/js/cloud.js?v=20260826workspace2"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   Common.init();

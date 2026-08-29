@@ -400,7 +400,19 @@ window.GAME_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 0.6
+          "ratio": 0.55
+        }
+      },
+      {
+        "effect": {
+          "type": "copy_affinity",
+          "ratio": 0.7
+        }
+      },
+      {
+        "effect": {
+          "type": "copy_affinity",
+          "ratio": 0.85
         }
       },
       {
@@ -412,36 +424,13 @@ window.GAME_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1,
-          "revealIntent": true
+          "ratio": 1.15
         }
       },
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1,
-          "revealIntent": true,
-          "synergyPct": 0.03
-        }
-      },
-      {
-        "effect": {
-          "type": "copy_affinity",
-          "ratio": 1,
-          "revealIntent": true,
-          "synergyPct": 0.03,
-          "themeFlat": 0.03
-        }
-      },
-      {
-        "effect": {
-          "type": "copy_affinity",
-          "ratio": 1,
-          "revealIntent": true,
-          "synergyPct": 0.03,
-          "themeFlat": 0.03,
-          "convertPct": 0.5,
-          "revealWeakness": true
+          "ratio": 1.3
         }
       }
     ]
@@ -825,29 +814,29 @@ window.GAME_TALENT_UPGRADE = {
     "levels": [
       {
         "effect": {
-          "type": "borrow_signature",
-          "fraction": 0.3
+          "type": "copy_affinity",
+          "ratio": 0.7
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "borrow_signature",
-          "fraction": 0.45
+          "type": "copy_affinity",
+          "ratio": 0.85
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "borrow_signature",
-          "fraction": 0.6
+          "type": "copy_affinity",
+          "ratio": 1
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "borrow_signature",
-          "fraction": 0.75
+          "type": "copy_affinity",
+          "ratio": 1.15
         },
         "cost": 3
       }

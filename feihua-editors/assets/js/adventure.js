@@ -407,9 +407,9 @@
         <div class="choice-head"><span class="ord">抉择 ${i + 1}</span>
           <button class="opt-del ev-choice-del" data-ci="${i}">× 删除选项</button></div>
         <div class="field" style="margin:4px 0"><label>选项文案</label>
-          <textarea class="ev-choice-text" data-rich="event" data-ci="${i}" placeholder="玩家的选择描述…">${C.esc(c.text)}</textarea></div>
+          <textarea class="ev-choice-text" data-ci="${i}" placeholder="玩家的选择描述…">${C.esc(c.text)}</textarea></div>
         <div class="field" style="margin:4px 0"><label>结算回声</label>
-          <textarea class="ev-choice-result" data-rich="event" data-ci="${i}" placeholder="选择后发生了什么…">${C.esc(c.resultText || "")}</textarea></div>
+          <textarea class="ev-choice-result" data-ci="${i}" placeholder="选择后发生了什么…">${C.esc(c.resultText || "")}</textarea></div>
         <div class="field" style="margin:4px 0"><label>此选项的效果</label>
           ${effectInner(c.effect, "c" + i)}</div>
       </div>`).join("");

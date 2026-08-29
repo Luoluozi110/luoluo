@@ -1,9 +1,9 @@
 /** battle.js —— 「挥毫论道」全屏对决台，六步流程 + 五项逐条弹出累加 */
-import { ATTR_NAMES, STYLE_NAMES, ATTR_KEYS, BATTLE_COEF } from '../engine/rules.js?v=20260829merge1';
+import { ATTR_NAMES, STYLE_NAMES, ATTR_KEYS, BATTLE_COEF } from '../engine/rules.js';
 import { talentEffectText, goldBurst, signed, DEFAULT_SECONDS } from './modals.js';
 import { createCountdown } from './timer.js';
 import { play } from './audio.js';
-import { intentHint, weaknessHint, settleLines } from './mechHints.js?v=20260829merge1';
+import { intentHint, weaknessHint, settleLines } from './mechHints.js';
 import { SCHOLAR_PORTRAIT } from './svg.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -199,20 +199,17 @@ export class BattleStage {
       const finish = m => { if (done) return; done = true; stop(); resolve(m); };
       const cards = session.manners.map(m => {
         const isHome = session.homeResolved && m === session.homeResolved;
-        const isExperimental = m === session.experimentalManner;
         const mom = session.momentumPre(m);
         const momTxt = mom > 0 ? `<div class="mom">气势连捷 +${Math.round(mom * 100)}%</div>` : '';
         const homeTxt = isHome && session.homeBonus > 0 ? `<div class="home">本门 +${Math.round(session.homeBonus * 100)}%</div>` : '';
-        const experimentPct = Math.round((Number(session.experimentalMannerPct) || 0) * 100);
-        const experimentTxt = isExperimental ? `<div class="home">本场实验 ${experimentPct >= 0 ? '+' : ''}${experimentPct}%</div>` : '';
         return `<button class="pick" data-m="${m}">
           <div class="pn">${session.mannerNames[m]}</div>
-          ${experimentTxt}${homeTxt}${momTxt}
+          ${homeTxt}${momTxt}
         </button>`;
       }).join('');
       panel.innerHTML = `<div class="ph">④ ${esc(session._stepMannerLabel || '选风格')}　<span style="font-size:12px;color:var(--mo-3)">限时 ${this.seconds} 秒</span></div>
         <div class="pick-row">${cards}</div>
-        <div style="font-size:12px;color:var(--mo-3);margin:6px 2px 0">文风会影响题材相性、当朝风潮和连续取胜的气势连捷；「实验」的本场波动已锁定并标在按钮上。</div>
+        <div style="font-size:12px;color:var(--mo-3);margin:6px 2px 0">文风会影响题材相性、当朝风潮和连续取胜的气势连捷；当前题材与风潮加成已在上方审题阶段标出。</div>
         ${this.weaknessTip(session)}
         ${this.activeRow(session)}`;
       this.bindActive(panel, session);

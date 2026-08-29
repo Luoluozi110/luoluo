@@ -30,9 +30,9 @@ const cfg=buildCfg();
 const assert=(c,m)=>{if(!c){console.error('  ✗ '+m);process.exitCode=1;throw new Error(m);} console.log('  ✓ '+m);};
 
 console.log('== 等级映射与阈值 ==');
-const TH=[0,12,100,200,340];
-assert(Album.masteryLevelFromXp(0)===1 && Album.masteryLevelFromXp(11)===1, '0/11 → Lv1');
-assert(Album.masteryLevelFromXp(12)===2 && Album.masteryLevelFromXp(99)===2, '12/99 → Lv2（首局结算即可突破）');
+const TH=[0,40,100,200,340];
+assert(Album.masteryLevelFromXp(0)===1 && Album.masteryLevelFromXp(39)===1, '0/39 → Lv1');
+assert(Album.masteryLevelFromXp(40)===2 && Album.masteryLevelFromXp(99)===2, '40/99 → Lv2');
 assert(Album.masteryLevelFromXp(100)===3 && Album.masteryLevelFromXp(199)===3, '100/199 → Lv3');
 assert(Album.masteryLevelFromXp(200)===4 && Album.masteryLevelFromXp(339)===4, '200/339 → Lv4');
 assert(Album.masteryLevelFromXp(340)===5 && Album.masteryLevelFromXp(9999)===5, '340+ → Lv5（封顶）');
@@ -54,10 +54,10 @@ assert(Album.applyMasteryMechanics(bowenBase,'unknown',5)===bowenBase, '未知�
 
 console.log('== xp 累加与升级 ==');
 Album.resetStore(); let store=Album.emptyStore();
-let r=Album.addMasteryXp(store,'bowen',{reachedEnd:false,wenzong:false});
-assert(r.gained===12 && r.after.level===2 && r.leveledUp, '普通首局结算 → +12 且 Lv1→Lv2');
+let r=Album.addMasteryXp(store,'bowen',{reachedEnd:true,wenzong:true});
+assert(r.gained===12+20+8 && r.after.level===2 && r.leveledUp, '通关+文宗 → +40 且 Lv1→Lv2');
 r=Album.addMasteryXp(store,'bowen',{reachedEnd:false,wenzong:false});
-assert(r.gained===12 && r.after.xp===24 && !r.leveledUp, '后续普通局 → +12，Lv2 保持');
+assert(r.gained===12 && r.after.xp===52 && !r.leveledUp, '普通局 → +12 不升级');
 assert(Album.addMasteryXp(store,'nope',{})===null, '未知门派返回 null');
 const legacy=Album.normalizeStore({v:1,stats:{},unlocked:[],loadout:[]});
 assert(legacy.mastery.bowen.xp===0 && legacy.mastery.bowen.level===1 && legacy.mastery.cizong_bi.level===1, '旧档无 mastery → 全 Lv1 默认');

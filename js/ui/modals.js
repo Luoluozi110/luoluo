@@ -1,6 +1,6 @@
 /** modals.js —— 题卡 / 奇遇卡 / 文心卡 / 支线选择 / 天象 / 名胜 */
-import { ATTR_NAMES } from '../engine/rules.js?v=20260829merge1';
-import { PASSIVE_MAX, ACTIVE_MAX } from '../engine/game.js?v=20260829merge1';
+import { ATTR_NAMES } from '../engine/rules.js';
+import { PASSIVE_MAX, ACTIVE_MAX } from '../engine/game.js';
 import { LANDMARK_ART, EVENT_VIGNETTE, QUIZ_MARK } from './svg.js';
 import { createCountdown } from './timer.js';
 import { play } from './audio.js';
@@ -618,12 +618,10 @@ export class Modals {
     const route = journal.route || {};
     const state = journal.state || {};
     const rows = (journal.choices || []).map(choice => `<div class="dianggu" style="margin-top:8px;text-align:left">${esc(choice.actId || '行路')}：${esc(choice.axis || choice.optionId || '未定')}</div>`).join('') || '<div class="dianggu">尚未落笔。</div>';
-    const guides = Array.isArray(journal.guides) ? journal.guides : [];
-    const guideText = guides.length ? `<div class="dianggu" style="margin-top:10px;text-align:left"><b>同行引路</b>：${guides.map(npc => `${esc(npc.name)}·${esc(npc.title || '')}`).join('；')}<br/>${guides.map(npc => esc(npc.text || '')).filter(Boolean).join(' ')}</div>` : '';
     const offer = Array.isArray(journal.talentOffer) ? journal.talentOffer : [];
     const offerText = offer.length ? `<div class="dianggu" style="margin-top:10px;text-align:left"><b>行路凝心候选</b>：${offer.map(t => esc(t.name)).join('、')}<br/>${state.talentClaimedId ? '已收入一枚限定文心。' : (state.talentOfferExpired ? '候选已随终战散去。' : `可于任一名胜支付 ${Number(state.talentClaimCost) || 6} 灵感领取一枚。`)}</div>` : '';
     return new Promise(resolve => {
-      const ov = this.open(`<div class="modal scroll-frame paper" style="width:min(560px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center"><div class="kind">行 卷</div><div class="title-ink" style="font-size:34px">${esc(route.name || '未入支线')}</div><hr class="hr-ink"/><div style="color:var(--mo-2)">当前幕次：${esc(state.stage || 'none')}　功业：${Number(state.merit) || 0}</div>${guideText}${rows}${offerText}<div class="btn-row"><button class="btn btn-primary" data-ok>合卷</button></div></div>`, 'sidequest-journal');
+      const ov = this.open(`<div class="modal scroll-frame paper" style="width:min(560px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center"><div class="kind">行 卷</div><div class="title-ink" style="font-size:34px">${esc(route.name || '未入支线')}</div><hr class="hr-ink"/><div style="color:var(--mo-2)">当前幕次：${esc(state.stage || 'none')}　功业：${Number(state.merit) || 0}</div>${rows}${offerText}<div class="btn-row"><button class="btn btn-primary" data-ok>合卷</button></div></div>`, 'sidequest-journal');
       ov.querySelector('[data-ok]').addEventListener('click', () => { this.close(ov); resolve(); });
     });
   }
@@ -844,7 +842,7 @@ export class Modals {
         <div style="font-size:17px;line-height:2">${laps} 圈科举路已尽，今登金殿。<br/>
           主考官出题 ${sweepN} 道：<b>${themeLabels.join('</b>、<b>')}</b>${isSpiral ? '，一场定榜。' : '，须连场应对。'}<br/>
           <span style="color:var(--zhu)">${isSpiral ? '此场取胜' : `${sweepN} 场全胜`}，可得「${esc((jb || {}).name || '金榜题名')}」圆满分 +${sweepScore}。</span></div>
-        ${sideQuestFinal ? `<div class="dianggu" style="margin-top:12px;text-align:left"><b>行卷 · ${esc(sideQuestFinal.route.name)}</b><br/>${sideQuestFinal.state.finalChoice === 'carry' ? `携道赴问：本场作品得分将获得路线功业加成。` : '放下此道：你以从容进入终问。'}${sideQuestFinal.primaryNpc ? `<br/>主考：${esc(sideQuestFinal.primaryNpc.name)} · ${esc(sideQuestFinal.primaryNpc.title || '')}` : ''}${sideQuestFinal.secondaryNpc ? `<br/>副考：${esc(sideQuestFinal.secondaryNpc.name)} · ${esc(sideQuestFinal.secondaryNpc.title || '')}` : ''}</div>` : ''}
+        ${sideQuestFinal ? `<div class="dianggu" style="margin-top:12px;text-align:left"><b>行卷 · ${esc(sideQuestFinal.route.name)}</b><br/>${sideQuestFinal.state.finalChoice === 'carry' ? `携道赴问：本场作品得分将获得路线功业加成。` : '放下此道：你以从容进入终问。'}</div>` : ''}
         ${String(inkSummary || '').trim() ? `<div class="dianggu" style="margin-top:12px;text-align:left">${esc(String(inkSummary).trim())}</div>` : ''}
         ${questionCards ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">殿 试 三 问</div>${questionCards}` : ''}
         ${echoCards ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">旧 选 回 声</div>${echoCards}` : ''}

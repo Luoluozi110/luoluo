@@ -41,26 +41,6 @@ window.Blob = class { constructor(parts) { captured = parts.join(''); } };
 console.log('[1] 文心模块就绪');
 ok(window.TALENT && window.TALENT._ready === true, 'TALENT._ready');
 
-// ---- [1.5] 官方文心显式同步：覆盖官方同 ID，保留自建文心与升级表 ----
-console.log('[1.5] 官方文心显式同步');
-{
-  window.confirm = () => true;
-  const official = JSON.parse(JSON.stringify(window.GAME_TALENTS.find(t => t.id === 'T005')));
-  const stale = JSON.parse(JSON.stringify(official));
-  stale.text = '旧工作区中的急智';
-  stale.effect = { type: 'dice_plus', value: 99 };
-  const custom = { id: 'T_LOCAL_KEEP', name: '自建保留', kind: 'passive', text: '不应被官方同步删除', effect: { type: 'attr_flat', attrs: { bi: 1 } } };
-  window.TALENT.importData([stale, custom], true);
-  ok(document.getElementById('talBtnSyncOfficial') != null, '“同步官方文心”按钮存在');
-  click(document.getElementById('talBtnSyncOfficial'));
-  const synced = window.TALENT.get().find(t => t.id === 'T005');
-  ok(synced && synced.text === official.text && synced.effect.type === official.effect.type
-     && synced.effect.pattern === official.effect.pattern && Number(synced.effect.value) === Number(official.effect.value),
-     '同步覆盖旧工作区中的官方同 ID 文心');
-  ok(window.TALENT.get().some(t => t.id === 'T_LOCAL_KEEP'), '同步保留用户自建文心');
-  ok(synced && synced.upgrade != null, '同步同时回填官方升级表');
-}
-
 // ---- [2] 注入一枚合法基础文心 ----
 console.log('[2] 注入基础文心 T_UP_TEST');
 const base = { id: 'T_UP_TEST', name: '冒烟升级文心', kind: 'passive', text: '用于升级冒烟测试',

@@ -22,8 +22,7 @@
     // —— 以下为「创意文心」新增效果类型 ——
     "style_pct", "theme_pct", "streak_mult", "insp_floor", "lucky_six",
     "comeback", "armory_pct", "study_bonus", "palace_insp", "start_insp", "insp_turn_regen",
-    "insp_on_quiz", "insp_battle_recover", "insp_max", "reincarnate",
-    "battle_history_pct", "weakness_reward", "seal_signature", "dice_commitment", "restraint_pct"];
+    "insp_on_quiz", "insp_battle_recover", "insp_max", "reincarnate"];
   const TALENT_TYPE_LABELS = {
     on_win_bonus: "获胜加成（以某体出战获胜时 +属性）",
     attr_flat: "属性常驻（直接 +属性）",
@@ -58,12 +57,7 @@
     insp_on_quiz: "活水源头（答对/抉择额外恢复，限次）",
     insp_battle_recover: "枯木逢春（低灵感战后恢复，限次）",
     insp_max: "灵感扩容（获得时永久提高本局上限，互斥）",
-    reincarnate: "跨局传承（殿试余灵达标，下局继承本局属性、此文心与当前等级）",
-    battle_history_pct: "战局历史（依据上一场文体或胜负获得得分）",
-    weakness_reward: "破绽回响（首次命中公开破绽获得资源/得分）",
-    seal_signature: "封招（压制对手招牌并承受自身折损）",
-    dice_commitment: "掷骰承诺（按付费追加骰数量结算）",
-    restraint_pct: "坐忘（未发动主动文心时得分）"
+    reincarnate: "跨局传承（殿试余灵达标，下局继承本局属性、此文心与当前等级）"
   };
   const SCHOOLS = { bowen: "博闻", qishi: "奇士", cizong_bi: "辞宗", shixian: "旧诗仙流", cizong: "旧词宗流", liansheng: "旧联圣流", tongru: "旧通儒流" };
   const STYLE_NAME = { shi: "诗", ci: "词", lian: "联", any: "任意体" };
@@ -71,7 +65,6 @@
   const PCT_VALUE_TYPES = ["style_pct", "theme_pct", "streak_mult", "comeback", "armory_pct"];
 
   const state = { talents: [], editIndex: -1, form: null, _ready: false };
-  const officialTalentSeed = () => [...(window.GAME_TALENTS || []), ...(window.GAME_SIDEQUEST_TALENTS || [])];
 
   /* ---------------- 效果（默认 / 归一化） ---------------- */
   function defaultEffect(type) {
@@ -166,12 +159,13 @@
     C.setStatus("tal", "已自动保存 " + t.toLocaleTimeString("zh-CN", { hour12: false }));
   }
   /**
-   * 已使用过编辑器的浏览器会优先读取 localStorage；默认仅补齐缺失的官方条目，
-   * 不覆盖同 ID 的本地修改。需要更新官方机制时，由「同步官方文心」显式覆盖。
+   * 已使用过编辑器的浏览器会优先读取 localStorage；新增官方种子文心时，
+   * 不能因旧数组非空而永久缺卡。此处仅补入明确指定的官方条目：
+   * 不覆盖同 ID 的本地修改，也不触碰用户自建文心。
    */
   function upgradeSeedById() {
     const raw = window.GAME_TALENT_UPGRADE;
-    return { ...(raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {}), ...(window.GAME_SIDEQUEST_TALENT_UPGRADE || {}) };
+    return raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
   }
   // 将游戏独立 talent-upgrade.json 合并进编辑器文心数据。
   // 只补缺失 upgrade，已有本地升级配置一律保留，避免覆盖用户编辑。
@@ -186,56 +180,21 @@
     return changed;
   }
   function backfillOfficialTalents() {
-    const seed = officialTalentSeed();
+    const seed = (window.GAME_TALENTS || []);
     const byId = new Set(state.talents.map(t => t.id));
     let added = 0;
-    for (const src of seed) {
-      if (!src || !src.id || byId.has(src.id)) continue;
-      state.talents.push(normalize(src));
-      added++;
-    }
+    ["T034", "T035", "T036", "T037", "T038", "T039", "T040", "TA08"].forEach(id => {
+      if (byId.has(id)) return;
+      const src = seed.find(t => t && t.id === id);
+      if (src) { state.talents.push(normalize(src)); added++; }
+    });
     return added;
-  }
-
-  /**
-   * 显式同步官方文心：替换官方种子中已有 ID 的本地副本，保留用户自建 ID。
-   * 同步基础效果和升级表，避免“文心已新、升级仍旧”的配置分裂。
-   */
-  function syncOfficialTalents() {
-    const seed = officialTalentSeed();
-    if (!seed.length) { C.toast("官方文心种子尚未载入，请刷新后重试"); return; }
-    const message = "将以当前线上官方文心覆盖同 ID 的本地副本，并同步升级表。\n自建文心不会删除；本地修改过的官方文心会被替换。\n\n建议先用“导出 talents.json”备份。是否继续？";
-    if (!window.confirm(message)) return;
-    const official = new Map(seed.filter(t => t && t.id).map(t => [t.id, t]));
-    let updated = 0, added = 0;
-    const next = [];
-    for (const t of state.talents) {
-      const src = official.get(t.id);
-      if (!src) { next.push(t); continue; }
-      next.push(normalize(src));
-      updated++;
-      official.delete(t.id);
-    }
-    for (const src of official.values()) { next.push(normalize(src)); added++; }
-    state.talents = next;
-    const upgrades = upgradeSeedById();
-    for (const t of state.talents) {
-      if (!upgrades[t.id]) continue;
-      t.upgrade = normalizeUpgrade(upgrades[t.id], t);
-    }
-    C.store("talents", state.talents);
-    C.store("talentOfficialSyncAt", new Date().toISOString());
-    C.setStatus("tal", `已同步官方文心：更新 ${updated}，补齐 ${added}`);
-    const dl = document.getElementById("talentList");
-    if (dl) dl.innerHTML = state.talents.map(t => `<option value="${t.id}">${C.esc(t.name)}</option>`).join("");
-    renderList();
-    C.toast(`已同步官方文心：更新 ${updated}，新增 ${added}；自建文心已保留`);
   }
 
   // 这两枚官方文心曾使用一次性灵感效果。仅迁移精确的旧效果类型，
   // 因而不会覆盖用户后来手工改出的其他文心方案。
   function migrateOfficialInspirationTalents() {
-    const seed = officialTalentSeed();
+    const seed = window.GAME_TALENTS || [];
     const legacyTypes = { T019: "insp_on_talent", T029: "start_insp" };
     let changed = 0;
     for (const [id, legacyType] of Object.entries(legacyTypes)) {
@@ -261,7 +220,7 @@
       const changed = backfillOfficialTalents() + backfillOfficialUpgrades() + migrateOfficialInspirationTalents();
       if (changed) C.store("talents", state.talents);
     } else {
-      state.talents = officialTalentSeed().map(normalize);
+      state.talents = (window.GAME_TALENTS || []).map(normalize);
       backfillOfficialUpgrades();
       C.store("talents", state.talents);
     }
@@ -651,7 +610,7 @@
       else if (pattern === "low_then_high") dyn = `<div class="row4"><div class="field" style="margin:0"><label>首骰不高于</label><input type="number" class="tal-low-max" value="${eff.lowMax || 2}" min="1" max="6"/></div><div class="field" style="margin:0"><label>续骰不低于</label><input type="number" class="tal-next-high-min" value="${eff.nextHighMin || 5}" min="1" max="6"/></div><div class="field" style="margin:0"><label>命中得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" step="1"/></div><div class="field" style="margin:0"><label>低开续掷减费</label><input type="number" class="tal-conditional-discount" value="${eff.conditionalFirstCostDiscount || 0}" min="0"/></div></div>`;
       else if (pattern === "ascending") dyn = `<div class="row4"><div class="field" style="margin:0"><label>每次递升 +%</label><input type="number" class="tal-step-pct" value="${Math.round((eff.perStepValue || 0) * 100)}" step="1"/></div><div class="field" style="margin:0"><label>连升骰数</label><input type="number" class="tal-full-dice" value="${eff.fullDice || 3}" min="2" max="3"/></div><div class="field" style="margin:0"><label>连升额外 +%</label><input type="number" class="tal-full-pct" value="${Math.round((eff.fullValue || 0) * 100)}" step="1"/></div><div class="field" style="margin:0"><label>首枚续掷减费</label><input type="number" class="tal-first-discount" value="${eff.firstCostDiscount || 0}" min="0"/></div></div>`;
       else if (pattern === "exact_total") dyn = `<div class="row4"><div class="field" style="margin:0"><label>骰数</label><input type="number" class="tal-dice-count" value="${eff.diceCount || 2}" min="2" max="3"/></div><div class="field" style="margin:0"><label>目标合点</label><input type="number" class="tal-exact-total" value="${eff.total || 7}" min="2" max="18"/></div><div class="field" style="margin:0"><label>命中得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" step="1"/></div><div class="field" style="margin:0"><label>首枚续掷免费</label><select class="tal-first-free"><option value="0" ${!eff.firstExtraFree ? "selected" : ""}>否</option><option value="1" ${eff.firstExtraFree ? "selected" : ""}>是</option></select></div></div>`;
-      else if (pattern === "total_multiple") dyn = `<div class="row2"><div class="field" style="margin:0"><label>倍数</label><input type="number" class="tal-total-multiple" value="${eff.multiple || 7}" min="1" step="1"/></div><div class="field" style="margin:0"><label>命中得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" step="1"/></div></div>`;
+      else if (pattern === "total_multiple") dyn = `<div class="row2"><div class="field" style="margin:0"><label>倍数</label><input type="number" class="tal-total-multiple" value="${eff.multiple || 7}" min="1"/></div><div class="field" style="margin:0"><label>命中得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" step="1"/></div></div>`;
       else if (pattern === "total_tiers") { const tiers = (eff.tiers || []).slice().sort((a,b) => (b.threshold || 0) - (a.threshold || 0)); const hi = tiers[0] || {}; const lo = tiers[1] || {}; dyn = `<div class="row4"><div class="field" style="margin:0"><label>高档阈值</label><input type="number" class="tal-tier-high-threshold" value="${hi.threshold || 16}" min="1"/></div><div class="field" style="margin:0"><label>高档得分 +%</label><input type="number" class="tal-tier-high-pct" value="${Math.round((hi.value || 0) * 100)}" step="1"/></div><div class="field" style="margin:0"><label>低档阈值</label><input type="number" class="tal-tier-low-threshold" value="${lo.threshold || 12}" min="1"/></div><div class="field" style="margin:0"><label>低档得分 +%</label><input type="number" class="tal-tier-low-pct" value="${Math.round((lo.value || 0) * 100)}" step="1"/></div></div><div class="field"><label>各档回还灵感</label><input type="number" class="tal-tier-reward" value="${hi.reward && hi.reward.value || lo.reward && lo.reward.value || 3}" min="0" step="1"/></div>`; }
       else dyn = `<div class="row2"><div class="field" style="margin:0"><label>每次命中得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" step="1"/></div>${pattern === "all_high" ? `<div class="field" style="margin:0"><label>最低骰点</label><input type="number" class="tal-min-pip" value="${eff.minPip || 4}" min="1" max="6"/></div>` : pattern === "total" ? `<div class="field" style="margin:0"><label>总点阈值</label><input type="number" class="tal-threshold" value="${eff.threshold || 12}" min="1"/></div>` : pattern === "distinct" ? `<div class="field" style="margin:0"><label>首枚追加减费</label><input type="number" class="tal-first-discount" value="${eff.firstCostDiscount || 0}" min="0"/></div>` : ""}</div>`;
       const patternReward = pattern === "ascending" ? eff.fullReward : eff.reward;
@@ -1328,7 +1287,6 @@
   /* ---------------- 事件绑定 ---------------- */
   function bind() {
     document.getElementById("talBtnAdd").addEventListener("click", () => openEditor(-1));
-    document.getElementById("talBtnSyncOfficial").addEventListener("click", syncOfficialTalents);
     document.getElementById("talBtnExport").addEventListener("click", exportData);
     document.getElementById("talBtnExportUpgrade").addEventListener("click", exportUpgrade);
     document.getElementById("talBtnStats").addEventListener("click", showStats);
@@ -1476,5 +1434,5 @@
     global.TALENT._ready = true;
   }
 
-  global.TALENT = { init, get: () => state.talents, exportRaw, exportUpgradeRaw, exportUpgrade, validateAll, importData, importUpgrade, syncOfficialTalents, renderList, effectText: talentEffectText, _ready: false };
+  global.TALENT = { init, get: () => state.talents, exportRaw, exportUpgradeRaw, exportUpgrade, validateAll, importData, importUpgrade, renderList, effectText: talentEffectText, _ready: false };
 })(window);

@@ -31,9 +31,7 @@ const STYLES = ['shi', 'ci', 'lian'];
  * 等级影响开局主属性（每级主力 +2）与流派特殊效果增强。
  */
 export const MASTERY_LEVELS = 5;
-// 首局结算固定获得 12 点熟练度，因此 Lv2 门槛同为 12：无论胜负，
-// 玩家都能在结算后带着一次可见、可用的跨局成长进入下一局。
-export const MASTERY_THRESHOLDS = [0, 12, 100, 200, 340];   // 累计需 xp
+export const MASTERY_THRESHOLDS = [0, 40, 100, 200, 340];   // 累计需 xp
 export const MASTERY_LEVEL_NAMES = ['初学乍练', '渐入佳境', '通达晓畅', '炉火纯青', '登峰造极'];
 export const MASTERY_ATTR_PER_LEVEL = 2;                    // 每级主属性额外 +2（Lv5 累计 +9）
 export const MASTERY_XP_FINISH = 12;                        // 完成一局（结算）基础 xp，胜负同等
