@@ -1,9 +1,9 @@
 /** battle.js —— 「挥毫论道」全屏对决台，六步流程 + 五项逐条弹出累加 */
-import { ATTR_NAMES, STYLE_NAMES, ATTR_KEYS, BATTLE_COEF } from '../engine/rules.js';
+import { ATTR_NAMES, STYLE_NAMES, ATTR_KEYS, BATTLE_COEF } from '../engine/rules.js?v=20260829-sidequest-npcs';
 import { talentEffectText, goldBurst, signed, DEFAULT_SECONDS } from './modals.js';
 import { createCountdown } from './timer.js';
 import { play } from './audio.js';
-import { intentHint, weaknessHint, settleLines } from './mechHints.js';
+import { intentHint, weaknessHint, settleLines } from './mechHints.js?v=20260829-sidequest-npcs';
 import { SCHOLAR_PORTRAIT } from './svg.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));

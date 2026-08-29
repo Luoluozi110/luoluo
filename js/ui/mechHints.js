@@ -207,7 +207,10 @@ function weaknessHintOne(w, ctx, styleNames, mannerNames, sigName, mech) {
         : need === 'one_extra' ? '恰追加一枚灵感骰冲破其守势'
           : need === 'change_style' ? '换用与上场不同的文体'
             : need === 'change_manner' ? '换用与上场不同的文风' : '依其公开战策变招';
-      return `临题有人言：「${weaName}」——对手已明示战策；可${action}，削弱「${sigName}」。`;
+      const preciseAction = need === 'no_active' ? '本场藏锋，不发动主动文心'
+        : need === 'different_dice' ? '至少使用两枚点数不同的骰'
+          : need === 'low_and_high' ? '让骰组同时出现低点与高点' : action;
+      return `临题有人言：「${weaName}」——对手已明示战策；可${preciseAction}，削弱「${sigName}」。`;
     }
     default:
       return `临题有人言：「${weaName}」——观其招数，有可乘之隙。`;

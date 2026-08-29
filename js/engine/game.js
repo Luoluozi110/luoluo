@@ -2,7 +2,7 @@
  * game.js —— 单人对局引擎（无 DOM）。所有表现通过注入的 ui 适配器完成。
  * 规则依据：全案 3.1–3.8。战斗与评分公式一律调用 rules.js。
  */
-import * as R from './rules.js';
+import * as R from './rules.js?v=20260829-sidequest-npcs';
 import * as Album from './album.js';
 import * as Codex from './codex.js';
 import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260828sky1';
@@ -823,7 +823,7 @@ export class Game {
       track: 'main', pos: 0, routeIndex: 0, ringId: cfg.board.routeCells?.[0]?.ring || 'outer', branchId: null, branchIndex: -1,
       lap: 1, turn: 0, phase: cfg.board.layout === 'concentric_spiral' ? 'child' : 'lap1', phaseGateSeen: {},
       sky: [], nextBattlePct: 0,
-      sideQuest: { routeId: '', stage: 'none', startedAtCell: null, choices: [], merit: 0, climaxResult: '', pendingBattlePct: 0, finalChoice: '', finalBonusPct: 0, rewardClaimed: false, lateNoCarry: false, talentOfferIds: [], talentOfferGenerated: false, talentClaimedId: '', talentClaimCost: 6, talentOfferExpired: false },
+      sideQuest: { routeId: '', stage: 'none', startedAtCell: null, choices: [], merit: 0, climaxResult: '', pendingBattlePct: 0, finalChoice: '', finalBonusPct: 0, rewardClaimed: false, lateNoCarry: false, talentOfferIds: [], talentOfferGenerated: false, talentClaimedId: '', talentClaimCost: 6, talentOfferExpired: false, climaxNpcId: '', finalPrimaryNpcId: '', finalSecondaryNpcId: '', finalPackageId: '' },
       battle: { win: 0, draw: 0, loss: 0, streak: 0, maxStreak: 0, upsets: 0, winsByStyle: { shi: 0, ci: 0, lian: 0 }, lastStyle: null, lastResult: null },
       events: { total: 0, rare: 0, legend: 0, talents: 0, items: 0 },
       quiz: { asked: 0, right: 0 },
@@ -2073,6 +2073,35 @@ export class Game {
   /* ------------------------------------------------------ 名胜支线 */
   sideQuestConfig() { return (this.cfg && this.cfg.sidequests) || { routes: [], final: {} }; }
 
+  sideQuestNpcPlan(routeId = this.s && this.s.sideQuest && this.s.sideQuest.routeId) {
+    const plans = this.cfg && this.cfg['sidequest-npcs'];
+    return (plans && plans.routes && plans.routes[routeId]) || null;
+  }
+
+  sideQuestFinalPackage(route, state = this.sideQuestState()) {
+    const plan = this.sideQuestNpcPlan(route && route.id);
+    const secondary = plan && plan.final && plan.final.secondary;
+    if (!secondary) return { id: '', primary: null, secondary: null };
+    const axes = (state.choices || []).map(choice => choice && choice.axis).filter(Boolean);
+    const key = axes.length > 1 && axes[0] === axes[1] ? (axes[0] === (route.axis || [])[0] ? 'same_first' : 'same_second') : 'mixed';
+    const primary = { ...(plan.climax || {}), attrs: { ...((plan.climax || {}).attrs || {}) } };
+    const deputy = { ...(secondary[key] || {}), attrs: { ...((secondary[key] || {}).attrs || {}) } };
+    return { id: key, primary: primary.id ? primary : null, secondary: deputy.id ? deputy : null };
+  }
+
+  scaleSideQuestNpc(npc, target) {
+    const src = (npc && npc.attrs) || {};
+    const base = (target && target.attrs) || {};
+    const keys = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
+    const sourceTotal = keys.reduce((sum, key) => sum + Math.max(0, Number(src[key]) || 0), 0);
+    const targetTotal = keys.reduce((sum, key) => sum + Math.max(0, Number(base[key]) || 0), 0);
+    if (!sourceTotal || !targetTotal) return { ...(npc || {}), attrs: { ...src } };
+    const attrs = Object.fromEntries(keys.map(key => [key, Math.max(1, Math.round((Number(src[key]) || 0) / sourceTotal * targetTotal))]));
+    const drift = targetTotal - keys.reduce((sum, key) => sum + attrs[key], 0);
+    attrs[npc.style || 'shi'] = Math.max(1, attrs[npc.style || 'shi'] + drift);
+    return { ...npc, attrs, scaledFromNpcId: target && target.id || '', scaledToTotal: targetTotal };
+  }
+
   sideQuestRoute(routeId = this.s && this.s.sideQuest && this.s.sideQuest.routeId) {
     const cfg = this.sideQuestConfig();
     if (cfg.routeById instanceof Map) return cfg.routeById.get(routeId) || null;
@@ -2082,14 +2111,15 @@ export class Game {
   sideQuestState() {
     const src = this.s.sideQuest;
     if (src && typeof src === 'object') return src;
-    return (this.s.sideQuest = { routeId: '', stage: 'none', startedAtCell: null, choices: [], merit: 0, climaxResult: '', pendingBattlePct: 0, finalChoice: '', finalBonusPct: 0, rewardClaimed: false, lateNoCarry: false, talentOfferIds: [], talentOfferGenerated: false, talentClaimedId: '', talentClaimCost: 6, talentOfferExpired: false });
+    return (this.s.sideQuest = { routeId: '', stage: 'none', startedAtCell: null, choices: [], merit: 0, climaxResult: '', pendingBattlePct: 0, finalChoice: '', finalBonusPct: 0, rewardClaimed: false, lateNoCarry: false, talentOfferIds: [], talentOfferGenerated: false, talentClaimedId: '', talentClaimCost: 6, talentOfferExpired: false, climaxNpcId: '', finalPrimaryNpcId: '', finalSecondaryNpcId: '', finalPackageId: '' });
   }
 
   sideQuestJournal() {
     const state = this.sideQuestState();
     const route = this.sideQuestRoute(state.routeId);
     const ids = Array.isArray(state.talentOfferIds) ? state.talentOfferIds : [];
-    return { state, route, choices: Array.isArray(state.choices) ? state.choices.slice() : [], talentOffer: ids.map(id => this.cfg.talentById.get(id)).filter(Boolean) };
+    const plan = this.sideQuestNpcPlan(state.routeId);
+    return { state, route, choices: Array.isArray(state.choices) ? state.choices.slice() : [], talentOffer: ids.map(id => this.cfg.talentById.get(id)).filter(Boolean), guides: Array.isArray(plan && plan.guides) ? plan.guides : [] };
   }
 
   async beginSideQuest(cell) {
@@ -2188,13 +2218,16 @@ export class Game {
     return done;
   }
 
-  async doSideQuestClimax(cell) {
+  async doSideQuestClimax(cell, targetNpc = null) {
     const state = this.sideQuestState();
     const route = this.sideQuestRoute();
     if (!route || state.stage !== 'climax') return false;
     const pool = route.battleThemePool || [];
     const theme = pool.length ? pool[Math.floor(this.rand() * pool.length)] : undefined;
-    const npc = { ...(route.npc || {}), attrs: { ...((route.npc || {}).attrs || {}) } };
+    const plan = this.sideQuestNpcPlan(route.id);
+    const configured = plan && plan.climax ? plan.climax : route.npc;
+    const npc = this.scaleSideQuestNpc({ ...(configured || {}), attrs: { ...((configured || {}).attrs || {}) } }, targetNpc);
+    state.climaxNpcId = npc.id || '';
     const out = await this.doBattle({ npc, theme, returnOutcome: true, label: route.battleLabel || cell.name, sideQuestRoute: route });
     const result = String(out && out.result || 'loss');
     state.climaxResult = result;
@@ -2213,7 +2246,8 @@ export class Game {
     const route = this.sideQuestRoute();
     if (!route || state.stage === 'none') return null;
     if (state.stage === 'complete' && state.finalChoice) {
-      return { route, state, merit: Math.max(1, Number(state.merit) || 1), cost: Math.max(0, Number((this.sideQuestConfig().final || {}).carryCost) || 2), canCarry: false, lateNoCarry: !!state.lateNoCarry };
+      const pack = this.sideQuestFinalPackage(route, state);
+      return { route, state, merit: Math.max(1, Number(state.merit) || 1), cost: Math.max(0, Number((this.sideQuestConfig().final || {}).carryCost) || 2), canCarry: false, lateNoCarry: !!state.lateNoCarry, primaryNpc: pack.primary, secondaryNpc: pack.secondary, packageId: pack.id };
     }
     if (state.stage === 'decision') {
       // 内圈晚入：补看第二幕但不倒灌资源；两幕皆缺时只保留故事，不开放携道加分。
@@ -2250,9 +2284,13 @@ export class Game {
       state.finalBonusPct = 0;
     }
     this.push(`支线终问「${route.name}」：${state.finalChoice === 'carry' ? '携道赴问' : '放下此道'}`);
+    const pack = this.sideQuestFinalPackage(route, state);
+    state.finalPrimaryNpcId = pack.primary && pack.primary.id || '';
+    state.finalSecondaryNpcId = pack.secondary && pack.secondary.id || '';
+    state.finalPackageId = pack.id;
     this.ui.onState(this.s);
     this.onForceSave?.();
-    return { route, state, ...meta };
+    return { route, state, ...meta, primaryNpc: pack.primary, secondaryNpc: pack.secondary, packageId: pack.id };
   }
 
   sideQuestEpilogue() {
@@ -2359,7 +2397,9 @@ export class Game {
       return;
     }
     if (this.s.sideQuest && this.s.sideQuest.stage === 'climax') {
-      await this.doSideQuestClimax(cell);
+      // 先按原规则抽取本应遭遇的对手，再以其档位总预算等比投影到支线高潮角色。
+      const target = this.pickNpc(false);
+      await this.doSideQuestClimax(cell, target);
       return;
     }
     const npc = this.pickNpc(false);
@@ -3690,7 +3730,9 @@ export class Game {
     const palaceSelection = zkPool && zkPool.length
       ? this.selectPalaceFoes(zk, n)
       : { foes: Array.from({ length: n }, () => this.pickNpc(true)), forcedEntry: null };
-    const palaceFoes = palaceSelection.foes;
+    const palaceFoes = palaceSelection.foes.slice();
+    // 完整完成的支线只替换首场殿试主考；副考官仅通过开场说明和记录呈现，保证终局仍是一场战斗。
+    if (sideQuestFinal && sideQuestFinal.primaryNpc) palaceFoes[0] = sideQuestFinal.primaryNpc;
     if (palaceSelection.forcedEntry) {
       const name = palaceSelection.forcedEntry.name || '主考官';
       this.push(`联力超过 35，殿试必遇「${name}」`);

@@ -770,6 +770,9 @@ function resolveSingleWeakness(ctx, wea, tmplLib, pm, hist, npcStyle) {
         : required === 'one_extra' ? (pm.extraDice || 0) === 1
           : required === 'change_style' ? !!(hist.lastStyle && pm.style && pm.style !== hist.lastStyle)
             : required === 'change_manner' ? !!(hist.lastManner && pm.manner && pm.manner !== hist.lastManner)
+              : required === 'no_active' ? !pm.activeTalentUsed
+                : required === 'different_dice' ? Array.isArray(pm.dicePips) && pm.dicePips.length >= 2 && new Set(pm.dicePips).size >= 2
+                  : required === 'low_and_high' ? Array.isArray(pm.dicePips) && pm.dicePips.some(v => v <= 2) && pm.dicePips.some(v => v >= 5)
               : false;
       if (hit) {
         const ret = fullRet();
