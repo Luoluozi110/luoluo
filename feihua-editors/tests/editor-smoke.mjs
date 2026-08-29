@@ -262,7 +262,10 @@ const diceWenxin = ['T035', 'T036', 'T037', 'T038', 'T039', 'T040'].map(id => wi
 ok(diceWenxin.every(Boolean), '旧 localStorage 自动补齐 6 枚新版文心');
 ok(diceWenxin.some(t => t.effect.type === 'dice_pattern') && diceWenxin.some(t => t.effect.type === 'manuscript_pct'), '新版骰组与稿本效果在编辑器中保持类型');
 const upgradeCount = window.TALENT.get().filter(t => t.upgrade).length;
-ok(upgradeCount === Object.keys(window.GAME_TALENT_UPGRADE || {}).length && upgradeCount >= 40, '游戏升级配置已合并到编辑器文心', upgradeCount);
+// 官方种子 = 主文心 + 支线文心，故升级配置键数须两侧相加（支线文心带自己的 upgrades）。
+const upgradeKeys = Object.keys(window.GAME_TALENT_UPGRADE || {}).length
+  + Object.keys(window.GAME_SIDEQUEST_TALENT_UPGRADE || {}).length;
+ok(upgradeCount === upgradeKeys && upgradeCount >= 40, '游戏升级配置已合并到编辑器文心（含支线文心）', upgradeCount);
 const t001 = window.TALENT.get().find(t => t.id === 'T001');
 ok(!!t001 && t001.upgrade && t001.upgrade.maxLevel === 3 && t001.upgrade.levels.length === 2, '普通文心 T001 可升级且逐级效果完整');
 const ta08Card = window.TALENT.get().find(t => t.id === 'TA08');

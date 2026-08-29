@@ -400,19 +400,7 @@ window.GAME_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 0.55
-        }
-      },
-      {
-        "effect": {
-          "type": "copy_affinity",
-          "ratio": 0.7
-        }
-      },
-      {
-        "effect": {
-          "type": "copy_affinity",
-          "ratio": 0.85
+          "ratio": 0.6
         }
       },
       {
@@ -424,13 +412,36 @@ window.GAME_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1.15
+          "ratio": 1,
+          "revealIntent": true
         }
       },
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1.3
+          "ratio": 1,
+          "revealIntent": true,
+          "synergyPct": 0.03
+        }
+      },
+      {
+        "effect": {
+          "type": "copy_affinity",
+          "ratio": 1,
+          "revealIntent": true,
+          "synergyPct": 0.03,
+          "themeFlat": 0.03
+        }
+      },
+      {
+        "effect": {
+          "type": "copy_affinity",
+          "ratio": 1,
+          "revealIntent": true,
+          "synergyPct": 0.03,
+          "themeFlat": 0.03,
+          "convertPct": 0.5,
+          "revealWeakness": true
         }
       }
     ]
@@ -752,66 +763,54 @@ window.GAME_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "dice_pattern",
-          "pattern": "exact_total",
-          "diceCount": 2,
-          "total": 7,
+          "pattern": "total_multiple",
+          "multiple": 7,
           "value": 0.18,
-          "firstExtraFree": true,
           "reward": {
             "type": "insight",
             "value": 1,
             "perMatch": false
           }
-        },
-        "cost": 3
+        }
       },
       {
         "effect": {
           "type": "dice_pattern",
-          "pattern": "exact_total",
-          "diceCount": 2,
-          "total": 7,
+          "pattern": "total_multiple",
+          "multiple": 7,
           "value": 0.22,
-          "firstExtraFree": true,
           "reward": {
             "type": "insight",
             "value": 1,
             "perMatch": false
           }
-        },
-        "cost": 3
+        }
       },
       {
         "effect": {
           "type": "dice_pattern",
-          "pattern": "exact_total",
-          "diceCount": 2,
-          "total": 7,
+          "pattern": "total_multiple",
+          "multiple": 7,
           "value": 0.26,
-          "firstExtraFree": true,
           "reward": {
             "type": "insight",
             "value": 2,
             "perMatch": false
           }
-        },
-        "cost": 2
+        }
       },
       {
         "effect": {
           "type": "dice_pattern",
-          "pattern": "exact_total",
-          "diceCount": 2,
-          "total": 7,
+          "pattern": "total_multiple",
+          "multiple": 7,
           "value": 0.3,
-          "firstExtraFree": true,
           "reward": {
             "type": "insight",
             "value": 2,
             "perMatch": false
           }
-        },
-        "cost": 2
+        }
       }
     ]
   },
@@ -826,29 +825,29 @@ window.GAME_TALENT_UPGRADE = {
     "levels": [
       {
         "effect": {
-          "type": "copy_affinity",
-          "ratio": 0.7
+          "type": "borrow_signature",
+          "fraction": 0.3
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "copy_affinity",
-          "ratio": 0.85
+          "type": "borrow_signature",
+          "fraction": 0.45
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "copy_affinity",
-          "ratio": 1
+          "type": "borrow_signature",
+          "fraction": 0.6
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "copy_affinity",
-          "ratio": 1.15
+          "type": "borrow_signature",
+          "fraction": 0.75
         },
         "cost": 3
       }
@@ -1745,26 +1744,26 @@ window.GAME_TALENT_UPGRADE = {
     "levels": [
       {
         "effect": {
-          "type": "start_insp",
-          "value": 3
+          "type": "insp_turn_regen",
+          "value": 1
         }
       },
       {
         "effect": {
-          "type": "start_insp",
-          "value": 4
+          "type": "insp_turn_regen",
+          "value": 1
         }
       },
       {
         "effect": {
-          "type": "start_insp",
-          "value": 5
+          "type": "insp_turn_regen",
+          "value": 2
         }
       },
       {
         "effect": {
-          "type": "start_insp",
-          "value": 6
+          "type": "insp_turn_regen",
+          "value": 2
         }
       }
     ]
@@ -2242,7 +2241,8 @@ window.GAME_TALENT_UPGRADE = {
           "value": 0,
           "reward": {
             "type": "fragment",
-            "value": 0.5
+            "value": 1,
+            "perMatch": false
           }
         }
       },
@@ -2253,7 +2253,8 @@ window.GAME_TALENT_UPGRADE = {
           "value": 0,
           "reward": {
             "type": "fragment",
-            "value": 0.6
+            "value": 1.25,
+            "perMatch": false
           }
         }
       },
@@ -2264,7 +2265,8 @@ window.GAME_TALENT_UPGRADE = {
           "value": 0,
           "reward": {
             "type": "fragment",
-            "value": 0.75
+            "value": 1.5,
+            "perMatch": false
           }
         }
       },
@@ -2275,7 +2277,8 @@ window.GAME_TALENT_UPGRADE = {
           "value": 0,
           "reward": {
             "type": "fragment",
-            "value": 1
+            "value": 1.75,
+            "perMatch": false
           }
         }
       },
@@ -2286,7 +2289,8 @@ window.GAME_TALENT_UPGRADE = {
           "value": 0,
           "reward": {
             "type": "fragment",
-            "value": 1.25
+            "value": 2,
+            "perMatch": false
           }
         }
       }

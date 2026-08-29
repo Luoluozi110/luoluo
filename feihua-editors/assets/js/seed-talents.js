@@ -216,30 +216,27 @@ window.GAME_TALENTS = [
   {
     "id": "TA01",
     "name": "七步成诗",
-    "kind": "active",
-    "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」本场首枚续掷免费；以两骰收笔且合计恰为 7 点时，作品得分 +18%，并得 1 心得。",
+    "kind": "passive",
+    "text": "《世说新语·文学》载曹植七步成诗：「本自同根生，相煎何太急。」被动生效；不论骰子枚数，只要本场灵感骰点数总和为 7 的倍数，作品得分 +18%，并得 1 心得（每场一次）。",
     "effect": {
       "type": "dice_pattern",
-      "pattern": "exact_total",
-      "diceCount": 2,
-      "total": 7,
+      "pattern": "total_multiple",
+      "multiple": 7,
       "value": 0.18,
-      "firstExtraFree": true,
       "reward": {
         "type": "insight",
         "value": 1,
         "perMatch": false
       }
-    },
-    "cost": 3
+    }
   },
   {
     "id": "TA02",
     "name": "夺胎换骨",
     "kind": "active",
-    "text": "惠洪《冷斋夜话》记黄庭坚论诗：不易其意而造其语，谓之换骨法；窥入其意而形容之，谓之夺胎法。本场复制对手所选风格的相性加成。",
+    "text": "惠洪《冷斋夜话》记黄庭坚论诗：不易其意而造其语，谓之换骨法；窥入其意而形容之，谓之夺胎法。本场窥敌之技，暂借对手招牌之强为我所用——敌愈强，此招愈利。",
     "effect": {
-      "type": "copy_affinity"
+      "type": "borrow_signature"
     },
     "cost": 3
   },
@@ -363,10 +360,10 @@ window.GAME_TALENTS = [
     "id": "T019",
     "name": "洛阳纸贵",
     "kind": "passive",
-    "text": "《晋书·左思传》：洛阳为之纸贵。一篇既出，士林争传——每获得一枚新文心，灵感 +2。",
+    "text": "《晋书·左思传》：洛阳为之纸贵。一篇既出，士林争传，声名回响不断——持有时，每个回合开始恢复 1 点灵感。",
     "effect": {
-      "type": "insp_on_talent",
-      "value": 2
+      "type": "insp_turn_regen",
+      "value": 1
     }
   },
   {
@@ -467,10 +464,10 @@ window.GAME_TALENTS = [
     "id": "T029",
     "name": "胸有成竹",
     "kind": "passive",
-    "text": "苏轼《文与可画筼筜谷偃竹记》：故画竹必先得成竹于胸中。谋定后动，临阵不慌——获得此文心时，灵感 +6。",
+    "text": "苏轼《文与可画筼筜谷偃竹记》：故画竹必先得成竹于胸中。谋定后动，临阵不慌——持有时，每个回合开始恢复 1 点灵感。",
     "effect": {
-      "type": "start_insp",
-      "value": 12
+      "type": "insp_turn_regen",
+      "value": 1
     }
   },
   {
@@ -615,14 +612,15 @@ window.GAME_TALENTS = [
     "id": "T040",
     "name": "妙手偶得",
     "kind": "passive",
-    "text": "陆游诗云：文章本天成，妙手偶得之。每枚最终为 6 点的灵感骰额外沉淀 0.5 份残页。",
+    "text": "陆游诗云：文章本天成，妙手偶得之。本场首次出现最终为 6 点的灵感骰时，额外沉淀 1 份残页（每场一次）。",
     "effect": {
       "type": "dice_pattern",
       "pattern": "six",
       "value": 0,
       "reward": {
         "type": "fragment",
-        "value": 0.5
+        "value": 1,
+        "perMatch": false
       }
     }
   },

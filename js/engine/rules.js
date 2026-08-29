@@ -129,7 +129,7 @@ export function styleDiceScore(style, pips, styleCfg, diceMult = BATTLE_COEF.dic
  *  - diceMult   旧版固定骰系数，默认 5；仅在未传 dicePct 时使用
  *  - dicePct    本场普通骰的有效乘区（由 styleDiceScore.pct 传入；如 0.30 = +30%），传入后不再产生固定骰分
  *  - dicePlus   骰点加值（「急智」+1），作用于点数而非分数
- *  - diceFixed  固定灵感骰分值（「七步成诗」= 15），设置后忽略 dice
+ *  - diceFixed  固定灵感骰分值（旧版固定骰效果），设置后忽略 dice
  *  - pctMods    百分比修正 [{source,label,value}]，value 如 0.10
  *  - flatMods   固定值修正 [{source,label,value}]
  *  - critMult   暴击倍率（默认 1）
@@ -283,6 +283,30 @@ export function affinityValue(matrix, manner, theme) {
   return Number(matrix[`${manner}.${theme}`]) || 0;
 }
 
+/** 实验文风是玩家专属的公开风险选项：每场锁定一次整数百分比，不进 NPC 常规择优。 */
+export function experimentalMannerId(af = {}) {
+  return String((af.experimentalManner && af.experimentalManner.id) || 'experimental');
+}
+
+export function isExperimentalManner(af, manner) {
+  return String(manner || '') === experimentalMannerId(af);
+}
+
+export function rollExperimentalMannerPct(af = {}, rand = Math.random) {
+  const spec = af.experimentalManner || {};
+  const min = Math.round(Number(spec.minPct ?? -0.12) * 100);
+  const max = Math.round(Number(spec.maxPct ?? 0.20) * 100);
+  const low = Math.min(min, max), high = Math.max(min, max);
+  const r = Math.max(0, Math.min(0.999999, Number(rand()) || 0));
+  return (low + Math.floor(r * (high - low + 1))) / 100;
+}
+
+export function npcManners(af = {}, manners = af.manners) {
+  const values = Array.isArray(manners) ? manners : [];
+  const filtered = values.filter(manner => manner !== experimentalMannerId(af));
+  return filtered.length ? filtered : values;
+}
+
 /** 相性星级：3=★★★(+10%) 2=★★ 1=★ 0=相冲 */
 export function affinityStars(v) {
   if (v >= 0.10) return 3;
@@ -319,11 +343,12 @@ export function bestMannerForTheme(matrix, manners, theme) {
  * @param {string|null} schoolHome  学派 homeManner，可为 'adaptive' 或具体风格或 null
  * @param {object|null} zeitgeist   { theme, manner } 本局风潮
  */
-export function effectiveAffinity(af, manner, theme, schoolHome, zeitgeist) {
+export function effectiveAffinity(af, manner, theme, schoolHome, zeitgeist, experimentalPct = 0) {
   let v = affinityValue(af.matrix, manner, theme);
+  if (isExperimentalManner(af, manner)) v += Number(experimentalPct) || 0;
   if (schoolHome) {
     if (schoolHome === 'adaptive') {
-      const best = bestMannerForTheme(af.matrix, af.manners, theme);
+      const best = bestMannerForTheme(af.matrix, npcManners(af), theme);
       if (manner === best) v += Number(af.homeAdaptiveBonus ?? 0.04);
     } else if (manner === schoolHome) {
       v += Number(af.homeMannerBonus ?? 0.05);

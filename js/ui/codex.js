@@ -192,10 +192,12 @@ export class CodexUI {
       const got = c.talents.includes(t.id);
       if (got) {
         const up = (this.cfg['talent-upgrade'] || {})[t.id];
+        const lvMax = Math.max(1, Number(up && up.maxLevel) || (up && up.levels ? up.levels.length : 1));
+        const historyLevel = Math.min(lvMax, Math.max(1, Number((c.talentLevels || {})[t.id]) || 1));
+        const historyHtml = `<div class="cx-history-lv">历史最高 Lv${historyLevel}${historyLevel > 1 ? ' · 再获即继承此等级' : ' · 再获从 Lv1 起'}</div>`;
         let upHtml = '';
         if (up) {
           const q = QUALITY_NAMES[up.quality] || up.quality || '未知';
-          const lvMax = Number(up.maxLevel) || (up.levels ? up.levels.length : 1);
           const badge = `<span class="rarity-tag r-${up.quality}">${esc(q)}</span>`;
           const head = `<div class="cx-up-head">${badge}<span class="cx-up-lv">可升至 Lv${lvMax}</span></div>`;
           const levels = (up.levels || []).slice(1); // 跳过 Lv1（= 基础效果）
@@ -211,6 +213,7 @@ export class CodexUI {
         return `<div class="album-card unlocked">
           <div class="ac-name">${esc(t.name)} <span class="ac-badge">${t.kind === 'active' ? '主动' : '被动'}</span></div>
           <div class="efx cx-efx">${talentEffectText(t)}</div>
+          ${historyHtml}
           ${upHtml}
           <div class="ac-text">${esc(firstSentence(t.text))}</div>
         </div>`;
@@ -233,7 +236,7 @@ export class CodexUI {
       case "dice_plus": return "灵感骰 +" + (ef.value || 0);
       case "extra_dice_pct": return "每枚追加骰得分 +" + Math.round((ef.value || 0) * 100) + "%";
       case "dice_transform": return ef.mode === "first_floor" ? "首骰最低视为 " + (ef.floor || 4) + " 点" : ef.mode === "lowest_to" ? "最低骰化为 " + (ef.target || 6) + " 点" : "低点骰抬高 " + (ef.value || 1) + " 点";
-      case "dice_pattern": return ef.pattern === "six" ? "最终六点骰形成联动" : ef.pattern === "distinct" ? "不同点数组形成联动" : ef.pattern === "single" ? "单骰收笔形成联动" : ef.pattern === "all_high" ? "全骰高点形成联动" : ef.pattern === "pair" ? "同点骰形成联动" : "骰组条件形成联动";
+      case "dice_pattern": return ef.pattern === "six" ? "最终六点骰形成联动" : ef.pattern === "distinct" ? "不同点数组形成联动" : ef.pattern === "single" ? "单骰收笔形成联动" : ef.pattern === "all_high" ? "全骰高点形成联动" : ef.pattern === "pair" ? "同点骰形成联动" : ef.pattern === "total_multiple" ? "总点数为倍数形成联动" : "骰组条件形成联动";
       case "style_switch_pct": return "换用不同文体，得分与心得增加";
       case "manuscript_pct": return "稿本越厚，论战得分越高";
       case "crit": return Math.round((ef.chance || 0) * 100) + "% 概率得分 ×" + (ef.mult || 0);

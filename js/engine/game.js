@@ -2,14 +2,14 @@
  * game.js —— 单人对局引擎（无 DOM）。所有表现通过注入的 ui 适配器完成。
  * 规则依据：全案 3.1–3.8。战斗与评分公式一律调用 rules.js。
  */
-import * as R from './rules.js?v=20260829-sidequest-npcs';
+import * as R from './rules.js?v=20260829merge1';
 import * as Album from './album.js';
 import * as Codex from './codex.js';
-import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260828sky1';
+import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260829merge1';
 import * as NpcSelection from './npc-selection.js';
 import { stableFoeId } from './npc-selection.js';
 
-export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260828sky1';
+export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260829merge1';
 
 export const PASSIVE_MAX = 8;
 export const ACTIVE_MAX = 4;
@@ -783,6 +783,9 @@ export class Game {
   start(schoolId, opts = {}) {
     const cfg = this.cfg;
     this._inheritApplied = null;
+    // 结算页只应报告“本局新写入”的跨局进度；开局先留快照，
+    // 避免把此前已经拥有的文心等级误报为本局所得。
+    this._crossRunCodexBefore = Codex.loadCodex();
     const school = cfg.schools.find(s => s.id === schoolId) || cfg.schools[0];
     const attrs = { ...cfg.attrs.initial };
     attrs[school.attr] = (attrs[school.attr] || 0) + (cfg.attrs.schoolBonus ?? 3);
@@ -2448,12 +2451,18 @@ export class Game {
       return true;
     })();
     const npcMech = mechOk ? (npc && npc.mech) : null;
+    const playerManners = af.manners || ['wanyue', 'haofang', 'zheli'];
+    const npcMannerPool = R.npcManners(af, playerManners);
+    const experimentalManner = R.experimentalMannerId(af);
+    // 实验的结果在开战时锁定并公开，选中后不会因结算/重试重新掷出。
+    const experimentalMannerPct = R.rollExperimentalMannerPct(af, this.rand);
     let npcIntent = null;
     if (npcMech) {
       npcIntent = R.rollIntention({
         mech: npcMech,
         npcAttrs: (npc && npc.attrs) || {},
         af,
+        manners: npcMannerPool,
         theme,
         zeitgeist: s.zeitgeist,
         templates: tplLib
@@ -2487,14 +2496,17 @@ export class Game {
       playerName: s.playerName || '',
       topic: opts.topic || pickTopic(theme, af, this.rand),
       intentLocked,               // NPC 三机制：本场锁定意图（E0）
-      manners: af.manners || ['wanyue', 'haofang', 'zheli'],
+      manners: playerManners,
+      npcManners: npcMannerPool,
+      experimentalManner,
+      experimentalMannerPct,
       mannerNames: af.mannerNames,
       themeNames: af.themeNames,
       schoolHome: (this.s.school && this.s.school.homeManner) || null,
       homeResolved: (() => {
         const hm = this.s.school && this.s.school.homeManner;
         if (!hm) return null;
-        if (hm === 'adaptive') return R.bestMannerForTheme(af.matrix, af.manners, theme);
+        if (hm === 'adaptive') return R.bestMannerForTheme(af.matrix, npcMannerPool, theme);
         return hm;
       })(),
       schoolHomeName: af.mannerNames && this.s.school && this.s.school.homeManner
@@ -2560,7 +2572,7 @@ export class Game {
 
       // 综合相性（基矩阵 + 门派文风 + 当朝风潮），供玩家抉择/UI 展示；不含气势连捷。
       affinityOf(manner) {
-        return R.effectiveAffinity(af, manner, theme, this.schoolHome, this.zeitgeist);
+        return R.effectiveAffinity(af, manner, theme, this.schoolHome, this.zeitgeist, this.experimentalMannerPct);
       },
       starsOf(manner) { return R.affinityStars(this.affinityOf(manner)); },
       tierOf(manner) { return R.affinityTierLabel(this.affinityOf(manner)); },
@@ -2604,7 +2616,7 @@ export class Game {
       extraDiceCost(style, extraIndex = 1, pips = []) {
         const base = Number((g.cfg.inspiration || {}).extraDiceCost) || 5;
         const activeEffects = this.usedActive.map(t => t.effect || {});
-        // 七步成诗把「第一笔续写」变成真正的免费选择；其余减费仍至少保留 1 灵感成本。
+        // 兼容仍配置 firstExtraFree 的主动骰组文心；被动文心不改变续掷成本。
         if (extraIndex === 1 && activeEffects.some(ef => ef.type === 'dice_pattern' && ef.firstExtraFree)) return 0;
         let discount = 0;
         if (style === 'ci' && extraIndex === 1) discount += Number((this.styleSystem.ci || {}).firstExtraDiscount) || 0;
@@ -2763,15 +2775,20 @@ export class Game {
       : [];
 
     // 相性 2.0：四层叠加（基矩阵 / 门派文风 / 当朝风潮 / 气势连捷）
-    const base = R.affinityValue(af.matrix, manner, session.theme);
-    if (base !== 0) pct.push({ source: 'affinity', label: `相性·${af.mannerNames[manner]}×${session.themeName}`, value: base });
+    const experimental = R.isExperimentalManner(af, manner);
+    const base = experimental ? Number(session.experimentalMannerPct) || 0 : R.affinityValue(af.matrix, manner, session.theme);
+    if (base !== 0) pct.push({
+      source: experimental ? 'experimental' : 'affinity',
+      label: experimental ? '实验·本场波动' : `相性·${af.mannerNames[manner]}×${session.themeName}`,
+      value: base
+    });
 
     // 门派文风（本门功底 / 通儒临题自化）：玩家专属身份层
     let home = 0;
     if (s.school && s.school.homeManner) {
       const hm = s.school.homeManner;
       if (hm === 'adaptive') {
-        const best = R.bestMannerForTheme(af.matrix, session.manners, session.theme);
+        const best = R.bestMannerForTheme(af.matrix, session.npcManners, session.theme);
         if (manner === best) home = Number(af.homeAdaptiveBonus ?? 0.04);
       } else if (manner === hm) {
         home = Number(af.homeMannerBonus ?? 0.05);
@@ -2935,6 +2952,10 @@ export class Game {
           const diceCount = Math.max(2, Number(ef.diceCount) || 2);
           occurrence = dicePips.length === diceCount && totalPips === (Number(ef.total) || 7) ? 1 : 0;
         }
+        else if (ef.pattern === 'total_multiple') {
+          const multiple = Math.max(1, Number(ef.multiple) || 7);
+          occurrence = totalPips > 0 && totalPips % multiple === 0 ? 1 : 0;
+        }
         else if (ef.pattern === 'total_tiers') {
           const tiers = Array.isArray(ef.tiers) ? ef.tiers.slice().sort((a, b) => (Number(b.threshold) || 0) - (Number(a.threshold) || 0)) : [];
           const tier = tiers.find(x => totalPips >= (Number(x.threshold) || 99));
@@ -3010,7 +3031,7 @@ export class Game {
     const npcStyle = (session.intentLocked && session.intentLocked.style)
       ? session.intentLocked.style : R.pickNpcStyle(npcAttrs, npcAttrs.lian >= 8, battleCoef);
     const npcManner = (session.intentLocked && session.intentLocked.manner)
-      ? session.intentLocked.manner : R.pickNpcManner(af.matrix, session.manners, session.theme);
+      ? session.intentLocked.manner : R.pickNpcManner(af.matrix, session.npcManners, session.theme);
     const npcAff = R.affinityValue(af.matrix, npcManner, session.theme);
     const npcDice = this.d6();
     // NPC 最佳文体期望分（阶段 E：供 sig_steady_pressure 的 floorPct / sig_dice_response
@@ -3866,12 +3887,42 @@ export class Game {
         if (mres.leveledUp) this.push(`流派造诣精进：${Album.masteryLevelName(mres.after.level)}！`);
       }
     } catch (e) { /* 熟练度累计失败不阻断结算 */ }
+    summary.crossRun = this.crossRunSummary(summary);
     // 通关（金榜题名）→ 提交分数到云端排行榜（解耦：由 app.js 注入 onVictory）
     if (['jinbang', 'taoyuan', 'secret_loss'].includes(summary.reason) && typeof this.onVictory === 'function') {
       try { this.onVictory((s.playerName || '无名氏'), summary.total); } catch (_) { /* 提交失败不阻断结算 */ }
     }
     await this.ui.showResult(summary);
     return summary;
+  }
+
+  /**
+   * 汇总本局已经落盘的跨局成长，供结算 UI 展示。
+   * 这里刻意只返回事实数据：展示层据此说明“下一局会发生什么”，
+   * 不再从瞬时对局状态猜测或重复计算历史最高等级。
+   */
+  crossRunSummary(summary) {
+    const before = this._crossRunCodexBefore || Codex.emptyCodex();
+    const after = Codex.loadCodex();
+    const beforeTalents = new Set(before.talents || []);
+    const newTalentIds = (after.talents || []).filter(id => !beforeTalents.has(id));
+    const talentLevels = Object.entries(after.talentLevels || {})
+      .map(([id, level]) => ({ id, before: Number((before.talentLevels || {})[id]) || 1, after: Number(level) || 1 }))
+      .filter(item => item.after > item.before);
+    const flame = Reincarnate.peek();
+    return {
+      mastery: summary.mastery || null,
+      newUnlocks: (summary.newUnlocks || []).map(card => card.id),
+      newTalentIds,
+      talentLevels,
+      reincarnate: flame && flame.attrs ? {
+        talentId: flame.talentId,
+        talentName: flame.talentName,
+        talentLevel: flame.talentLevel,
+        ratio: flame.ratio,
+        attrs: { ...flame.attrs }
+      } : null
+    };
   }
 
   /**
