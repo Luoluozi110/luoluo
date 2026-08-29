@@ -419,7 +419,9 @@ function makeUi() {
       if (modals.showStageChange) await modals.showStageChange(gate, state);
     },
     showZeitgeist: z => modals.showZeitgeist(z),
-    askScenic: (cell, cost, curInsp) => modals.askScenic(cell, cost, curInsp),
+    // 支线入口依赖此元数据决定是否展示「入世另行」与「行路凝心」。
+    // 不能在适配层截断第四参，否则配置虽存在，名胜 UI 仍会误判为无支线。
+    askScenic: (cell, cost, curInsp, sideQuestMeta) => modals.askScenic(cell, cost, curInsp, sideQuestMeta),
     chooseScenicTalent: (candidates, meta) => modals.chooseScenicTalent(candidates, meta),
     runBattle: async sess => {
       setScene('battle');     // 挥毫论战：切 combat 配乐
