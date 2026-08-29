@@ -659,6 +659,9 @@ export class Game {
   start(schoolId, opts = {}) {
     const cfg = this.cfg;
     this._inheritApplied = null;
+    // 结算页只应报告“本局新写入”的跨局进度；开局先留快照，
+    // 避免把此前已经拥有的文心等级误报为本局所得。
+    this._crossRunCodexBefore = Codex.loadCodex();
     const school = cfg.schools.find(s => s.id === schoolId) || cfg.schools[0];
     const attrs = { ...cfg.attrs.initial };
     attrs[school.attr] = (attrs[school.attr] || 0) + (cfg.attrs.schoolBonus ?? 3);
@@ -3264,12 +3267,42 @@ export class Game {
         if (mres.leveledUp) this.push(`流派造诣精进：${Album.masteryLevelName(mres.after.level)}！`);
       }
     } catch (e) { /* 熟练度累计失败不阻断结算 */ }
+    summary.crossRun = this.crossRunSummary(summary);
     // 通关（金榜题名）→ 提交分数到云端排行榜（解耦：由 app.js 注入 onVictory）
     if (['jinbang', 'taoyuan', 'secret_loss'].includes(summary.reason) && typeof this.onVictory === 'function') {
       try { this.onVictory((s.playerName || '无名氏'), summary.total); } catch (_) { /* 提交失败不阻断结算 */ }
     }
     await this.ui.showResult(summary);
     return summary;
+  }
+
+  /**
+   * 汇总本局已经落盘的跨局成长，供结算 UI 展示。
+   * 这里刻意只返回事实数据：展示层据此说明“下一局会发生什么”，
+   * 不再从瞬时对局状态猜测或重复计算历史最高等级。
+   */
+  crossRunSummary(summary) {
+    const before = this._crossRunCodexBefore || Codex.emptyCodex();
+    const after = Codex.loadCodex();
+    const beforeTalents = new Set(before.talents || []);
+    const newTalentIds = (after.talents || []).filter(id => !beforeTalents.has(id));
+    const talentLevels = Object.entries(after.talentLevels || {})
+      .map(([id, level]) => ({ id, before: Number((before.talentLevels || {})[id]) || 1, after: Number(level) || 1 }))
+      .filter(item => item.after > item.before);
+    const flame = Reincarnate.peek();
+    return {
+      mastery: summary.mastery || null,
+      newUnlocks: (summary.newUnlocks || []).map(card => card.id),
+      newTalentIds,
+      talentLevels,
+      reincarnate: flame && flame.attrs ? {
+        talentId: flame.talentId,
+        talentName: flame.talentName,
+        talentLevel: flame.talentLevel,
+        ratio: flame.ratio,
+        attrs: { ...flame.attrs }
+      } : null
+    };
   }
 
   /**
