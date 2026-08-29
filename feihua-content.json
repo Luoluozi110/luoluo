@@ -1,6 +1,6 @@
 {
   "_type": "feihua-content",
-  "_version": 6,
+  "_version": 7,
   "questions": [
     {
       "id": "Q0001",
@@ -22675,8 +22675,8 @@
         "guides": [
           {
             "id": "jh_liu_zhaoying",
-            "name": "柳照影",
-            "title": "负剑书客",
+            "name": "柳解眠",
+            "title": "旧雨楼主",
             "role": "引路人",
             "text": "负剑而来，只问你此诺为何。"
           }
