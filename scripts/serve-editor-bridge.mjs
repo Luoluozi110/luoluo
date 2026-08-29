@@ -14,7 +14,9 @@ const workspaceRoot = resolve(fileURLToPath(new URL('../', import.meta.url)));
 const port = Number(process.env.EDITOR_BRIDGE_PORT) || 8787;
 const host = '127.0.0.1';
 const maxBodyBytes = 5 * 1024 * 1024;
-const ghTimeoutMs = 20_000;
+// 读取仓库中的现有工程会返回数百 KB 的 Base64 内容；在普通网络下可能接近 20 秒。
+// 留出足够余量，避免发布前版本校验被误判为网络故障；仍可通过环境变量收紧或放宽。
+const ghTimeoutMs = Math.max(20_000, Number(process.env.EDITOR_GH_TIMEOUT_MS) || 60_000);
 const publicEditorOrigin = 'https://luoluozi110.github.io';
 const allowedStaticRoots = ['/feihua-editors/', '/feihuaqi-playable/'];
 const mime = {
@@ -29,13 +31,13 @@ function ghEnvironment() {
   return env;
 }
 
-function runGh(args, input) {
+function runGh(args, input, stage = 'GitHub API') {
   return new Promise((resolveRun, rejectRun) => {
     const child = spawn('gh', args, { env: ghEnvironment(), stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
     let stdout = '', stderr = '';
     const timer = setTimeout(() => {
       child.kill();
-      rejectRun(new Error('gh 请求超时，请检查网络或执行 gh auth status'));
+      rejectRun(new Error(`gh 请求超时（${Math.ceil(ghTimeoutMs / 1000)} 秒，阶段：${stage}）；请检查网络或执行 gh auth status`));
     }, ghTimeoutMs);
     child.stdout.setEncoding('utf8').on('data', chunk => { stdout += chunk; });
     child.stderr.setEncoding('utf8').on('data', chunk => { stderr += chunk; });
@@ -116,12 +118,12 @@ async function publishRepo(payload, content, incomingProject) {
   const path = typeof payload.path === 'string' && payload.path.trim() ? payload.path.trim() : 'feihua-content.json';
   if (!validRepoPart(owner) || !validRepoPart(repo)) throw new Error('仓库必须是合法的 owner/repo');
   if (!validPath(path)) throw new Error('发布路径无效');
-  const permission = await runGh(['api', `repos/${owner}/${repo}`, '--jq', '.permissions.push']);
+  const permission = await runGh(['api', `repos/${owner}/${repo}`, '--jq', '.permissions.push'], '', '检查仓库推送权限');
   if (permission !== 'true') throw new Error(`本机 gh 账号没有 ${owner}/${repo} 的推送权限`);
   const endpoint = contentEndpoint(owner, repo, path);
   let sha;
   try {
-    const current = await runGh(['api', `${endpoint}?ref=${encodeURIComponent(branch)}`]);
+    const current = await runGh(['api', `${endpoint}?ref=${encodeURIComponent(branch)}`], '', '读取现有云端工程');
     const currentBody = JSON.parse(current);
     sha = currentBody.sha;
     const currentProject = currentBody.content
@@ -136,7 +138,7 @@ async function publishRepo(payload, content, incomingProject) {
     content: Buffer.from(content, 'utf8').toString('base64'), branch
   };
   if (sha) body.sha = sha;
-  const output = JSON.parse(await runGh(['api', '--method', 'PUT', endpoint, '--input', '-'], JSON.stringify(body)));
+  const output = JSON.parse(await runGh(['api', '--method', 'PUT', endpoint, '--input', '-'], JSON.stringify(body), '写入云端工程'));
   const revision = output.commit && output.commit.sha;
   const rawPath = [owner, repo, branch, ...path.split('/')].map(encodeURIComponent).join('/');
   const verifyPath = [owner, repo, revision || branch, ...path.split('/')].map(encodeURIComponent).join('/');
@@ -150,7 +152,7 @@ async function publishRepo(payload, content, incomingProject) {
 async function publishGist(payload, content, incomingProject) {
   const gistId = typeof payload.gistId === 'string' ? payload.gistId.trim() : '';
   if (gistId) {
-    const current = JSON.parse(await runGh(['api', `gists/${encodeURIComponent(gistId)}`]));
+    const current = JSON.parse(await runGh(['api', `gists/${encodeURIComponent(gistId)}`], '', '读取现有 Gist 工程'));
     const currentFile = current.files && current.files['feihua-content.json'];
     if (currentFile && currentFile.content) {
       rejectOlderProject(incomingProject, JSON.parse(currentFile.content));
@@ -161,7 +163,7 @@ async function publishGist(payload, content, incomingProject) {
     : { description: '文心棋自定义配置（本机 gh 发布桥接）', public: true, files: { 'feihua-content.json': { content } } };
   const output = await runGh(gistId
     ? ['api', '--method', 'PATCH', `gists/${encodeURIComponent(gistId)}`, '--input', '-']
-    : ['api', '--method', 'POST', 'gists', '--input', '-'], JSON.stringify(body));
+    : ['api', '--method', 'POST', 'gists', '--input', '-'], JSON.stringify(body), '写入 Gist 工程');
   const gist = JSON.parse(output);
   const id = gist.id || gistId;
   if (!id) throw new Error('GitHub 未返回 Gist ID');
@@ -180,7 +182,7 @@ async function handleApi(req, res, pathname) {
   if (!requestOriginAllowed(req)) return json(res, 403, { ok: false, error: '只允许本机编辑器页面调用发布桥接' });
   try {
     if (req.method === 'GET' && pathname === '/api/github/status') {
-      const login = await runGh(['api', 'user', '--jq', '.login']);
+      const login = await runGh(['api', 'user', '--jq', '.login'], '', '检查 gh 登录状态');
       return json(res, 200, { ok: true, login, bridgeVersion: 2 });
     }
     if (req.method === 'POST' && pathname === '/api/github/publish') {
