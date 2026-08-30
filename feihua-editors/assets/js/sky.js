@@ -22,6 +22,20 @@
   const state = { cards: [], editIndex: -1, form: null, _ready: false };
 
   /* ---------------- 数据归一化 ---------------- */
+  function cloneJson(value) {
+    return value == null ? value : JSON.parse(JSON.stringify(value));
+  }
+  function officialSkySeed() {
+    return Array.isArray(window.GAME_SKY) ? window.GAME_SKY : [];
+  }
+  function normalizeChoice(choice) {
+    if (!choice || typeof choice !== "object") return null;
+    const out = cloneJson(choice);
+    if (out.id != null) out.id = String(out.id).trim();
+    if (out.name != null) out.name = String(out.name).trim();
+    if (out.desc != null) out.desc = String(out.desc).trim();
+    return out;
+  }
   function emptyCard() {
     return { id: "", name: "", icon: "", text: "", duration: 6, turns: 6, scope: "all", effect: { type: "attr_pct", attr: "shi", value: 0.2 } };
   }
@@ -36,8 +50,42 @@
       scope: SCOPES.some(s => s.id === c.scope) ? c.scope : "all"
     };
     if (c.icon) out.icon = String(c.icon).trim();
+    if (Array.isArray(c.choices)) {
+      const choices = c.choices.map(normalizeChoice).filter(choice => choice && choice.id);
+      if (choices.length) out.choices = choices;
+    }
     out.effect = normalizeEffect(c.effect);
     return out;
+  }
+  /**
+   * 把官方种子中新增的天象补进旧 localStorage；已有同 ID 卡片保持用户修改，
+   * 仅对空的名称/叙事/图标/应势选项补入官方值。这样新增 SK07 不会再被旧缓存遮蔽，
+   * 同时不会把用户编辑过的卡面覆盖掉。
+   */
+  function mergeOfficialCards(raw) {
+    const cards = (Array.isArray(raw) ? raw : []).map(normalizeCard);
+    const byId = new Map();
+    cards.forEach(card => { if (card.id && !byId.has(card.id)) byId.set(card.id, card); });
+    let changed = !Array.isArray(raw) || JSON.stringify(cards) !== JSON.stringify(raw);
+    for (const official of officialSkySeed().map(normalizeCard)) {
+      if (!official.id) continue;
+      const current = byId.get(official.id);
+      if (!current) {
+        cards.push(official);
+        byId.set(official.id, official);
+        changed = true;
+        continue;
+      }
+      if (!current.name && official.name) { current.name = official.name; changed = true; }
+      if (!current.text && official.text) { current.text = official.text; changed = true; }
+      if (!current.icon && official.icon) { current.icon = official.icon; changed = true; }
+      if (!Array.isArray(current.choices) && Array.isArray(official.choices)) {
+        current.choices = cloneJson(official.choices);
+        changed = true;
+      }
+    }
+    cards.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+    return { cards, changed };
   }
   function normalizeEffect(e) {
     e = e || {};

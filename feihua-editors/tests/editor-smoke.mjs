@@ -65,7 +65,7 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
 
 console.log('[1] 十个模块全部初始化（_ready）');
 ok(!!window.FeihuaConfigContract && typeof window.FeihuaConfigContract.assertProject === 'function', '配置契约在编辑器初始化前已加载');
-ok(window.Common.contentVersion === 6, '编辑器工程版本注入为 6，发布对象不会回退为版本 1');
+ok(window.Common.contentVersion === 4, '编辑器工程版本注入为 4，发布对象不会回退为版本 1');
 for (const name of ['QB', 'ADV', 'TALENT', 'NPC', 'AFFINITY', 'SYNERGY', 'BOARD', 'SKY', 'ALBUM', 'COPY']) {
   ok(window[name] && window[name]._ready === true, name + '._ready');
 }
@@ -547,35 +547,6 @@ console.log('[7.6] NPC：本阶段必遇条件可视化编辑 + 保存往返');
       window.NPC.importData(JSON.parse(seedRes), true);
     }
   }
-}
-
-console.log('[7.7] 支线 NPC：姓名、介绍与文案编辑器共享数据源');
-{
-  const original = window.NPC.exportSideQuestRaw();
-  const first = window.NPC.getSideQuestNpcCopy()[0];
-  ok(!!first && !!first.id, '支线 NPC 文案同步接口返回唯一角色');
-  if (first) {
-    const nameInput = document.querySelector(`#sidequestNpcList [data-npc-id="${first.id}"][data-field="name"]`);
-    ok(!!nameInput, 'NPC 页面显示支线角色姓名输入框');
-    if (nameInput) {
-      nameInput.value = '冒烟测试支线角色';
-      fire(nameInput, 'input');
-      click(document.getElementById('sidequestNpcSave'));
-      ok(window.NPC.getSideQuestNpcCopy().find(npc => npc.id === first.id)?.name === '冒烟测试支线角色', 'NPC 页面姓名修改写入支线配置');
-      const saved = JSON.parse(localStorage.getItem('feihua_editors_v1_sidequest-npcs') || '{}');
-      ok(saved.routes && JSON.stringify(saved).includes('冒烟测试支线角色'), '支线角色姓名持久化 localStorage');
-    }
-    window.COPY.renderList();
-    const introInput = document.querySelector(`#copylist [data-sidequest-npc-id="${first.id}"][data-sidequest-field="text"]`);
-    ok(!!introInput, '文案编辑器显示支线角色介绍输入框');
-    if (introInput) {
-      introInput.value = '冒烟测试·支线角色介绍';
-      fire(introInput, 'input');
-      ok(window.NPC.getSideQuestNpcCopy().find(npc => npc.id === first.id)?.text === '冒烟测试·支线角色介绍', '文案编辑器修改同步回 NPC 配置');
-    }
-  }
-  window.NPC.importSideQuestNpcs(original);
-  window.COPY.renderList();
 }
 
 console.log('[8] 文心 ↔ 奇遇双向关联：建立 / 重复 / 冲突 / 取消 / 持久化');

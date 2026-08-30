@@ -8,6 +8,7 @@ import * as Codex from './codex.js';
 import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260829merge2';
 import * as NpcSelection from './npc-selection.js';
 import { stableFoeId } from './npc-selection.js';
+import { sideQuestBattleCopy, sideQuestPresentation, sideQuestTransition } from './sidequest-presentation.js';
 
 export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260829merge2';
 
@@ -2111,6 +2112,12 @@ export class Game {
     return (cfg.routes || []).find(route => route && route.id === routeId) || null;
   }
 
+  /** 当前可见阶段语境；不改写 s.phase，避免支线名称进入题库、NPC 档位和阶段资源判断。 */
+  currentStagePresentation() {
+    const state = this.sideQuestState();
+    return sideQuestPresentation(this.sideQuestRoute(state.routeId), state, this.s.phase);
+  }
+
   sideQuestState() {
     const src = this.s.sideQuest;
     if (src && typeof src === 'object') return src;
@@ -2157,6 +2164,8 @@ export class Game {
     state.stage = actIndex === 0 ? 'decision' : 'climax';
     if (actIndex === 1) await this.openSideQuestTalentOffer({ immediate: true });
     this.push(`支线「${route.name}」·${act.title}：${option.label || option.id}`);
+    const transition = sideQuestTransition(route, state.stage, this.s.phase);
+    if (transition) this.ui.toast(transition);
     this.ui.onState(this.s);
     this.onForceSave?.();
     return true;
@@ -2217,7 +2226,6 @@ export class Game {
     const route = this.sideQuestRoute();
     if (!route) return false;
     const done = await this.chooseSideQuestAct(route, 1);
-    if (done) this.ui.toast(`「${route.name}」取舍已定，下一场论战将见分晓`);
     return done;
   }
 
@@ -2231,13 +2239,15 @@ export class Game {
     const configured = plan && plan.climax ? plan.climax : route.npc;
     const npc = this.scaleSideQuestNpc({ ...(configured || {}), attrs: { ...((configured || {}).attrs || {}) } }, targetNpc);
     state.climaxNpcId = npc.id || '';
-    const out = await this.doBattle({ npc, theme, returnOutcome: true, label: route.battleLabel || cell.name, sideQuestRoute: route });
+    const out = await this.doBattle({ npc, theme, returnOutcome: true, label: route.battleLabel || cell.name, sideQuestRoute: route, sideQuestBattleKind: 'climax' });
     const result = String(out && out.result || 'loss');
     state.climaxResult = result;
     state.merit = result === 'win' ? 2 : 1;
     state.stage = 'complete';
     state.rewardClaimed = true;
     this.push(`支线「${route.name}」应验：${result === 'win' ? '功业 2' : '功业 1·未竟'}`);
+    const completeText = sideQuestTransition(route, 'complete', this.s.phase);
+    if (completeText) this.ui.toast(completeText);
     if (typeof this.ui.showSideQuestComplete === 'function') await this.ui.showSideQuestComplete(route, state);
     this.ui.onState(this.s);
     this.onForceSave?.();
@@ -2387,11 +2397,23 @@ export class Game {
       this.refillStrategy(gate.phase);
       this.applyAlbumOutcomeEffects('phase', { phase: gate.phase, eventKey: gate.phase });
       if (typeof this.ui.syncStageRing === 'function') this.ui.syncStageRing(this.s);
-      if (typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gateWithInk, this.s);
+      const sideQuestClimax = !!(this.s.sideQuest && this.s.sideQuest.stage === 'climax');
+      if (!sideQuestClimax && typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gateWithInk, this.s);
       // 二次同步是故障自愈：阶段弹窗曾是唯一切圈入口，任何旧 UI/缓存路径都会留下外圈+透明棋子。
       if (typeof this.ui.syncStageRing === 'function') this.ui.syncStageRing(this.s);
       const tier = (this.cfg.npcs || []).find(n => n.id === gate.exam);
       const pick = tier ? NpcSelection.pickNpcFromTier(this, tier) : this.pickNpc(false);
+      if (sideQuestClimax) {
+        // 阶段门也是一场论战：支线高潮应替换“下一场”而非被主线晋阶试抢先。
+        // 主线 phase/ring 已先推进，故高潮合卷后 HUD 与后续规则会自然恢复到新主线阶段。
+        const replaced = await this.doSideQuestClimax(cell, pick);
+        if (replaced) {
+          if (typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gateWithInk, this.s);
+          return;
+        }
+        // 路线配置被移除或旧档 routeId 失效时，安全退回原晋阶试，不吞掉阶段门战斗。
+        if (typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gateWithInk, this.s);
+      }
       if (pick.stageForced) {
         this.push(`三力构筑应验，晋阶试必遇「${pick.name}」`);
         this.ui.toast(`本阶段必遇：${pick.name}`);
@@ -2484,10 +2506,14 @@ export class Game {
     // 为会话分配确定性的单场标识。结算可能因 UI 重试/读档恢复被再次调用，
     // 标识绑定“回合 + 结算前序号 + 场景标签”，不能随着 settleBattle 内 battleSeq 自增而变化。
     const battleId = `${s.turn}:${Number((s.schoolState || {}).battleSeq) || 0}:${opts.label || '挥毫论道'}`;
+    const sideQuestCopy = opts.sideQuestRoute
+      ? sideQuestBattleCopy(opts.sideQuestRoute, opts.sideQuestBattleKind || (opts.isPalace ? 'final' : 'climax'))
+      : null;
     const session = {
       battleId,
       label: opts.label || '挥毫论道',
-      stepLabels: opts.sideQuestRoute && Array.isArray(opts.sideQuestRoute.steps) ? opts.sideQuestRoute.steps.slice(0, 6) : null,
+      stepLabels: sideQuestCopy && Array.isArray(sideQuestCopy.steps) ? sideQuestCopy.steps : null,
+      copy: sideQuestCopy,
       npc,
       // 本场是否以完整机制运行（模板缺失已整套降级旧行为，供结算侧复用判定）
       _mechValid: !!mechOk,
@@ -3801,7 +3827,8 @@ export class Game {
         npc: palaceFoes[i], theme: themes[i], isPalace: true,
         returnOutcome: true,
         label: sideQuestFinal && i === 0 ? sideQuestFinal.route.finalLabel : `殿试第 ${i + 1} 场·${names[i]}`,
-        sideQuestRoute: sideQuestFinal && i === 0 ? sideQuestFinal.route : null
+        sideQuestRoute: sideQuestFinal && i === 0 ? sideQuestFinal.route : null,
+        sideQuestBattleKind: sideQuestFinal && i === 0 ? 'final' : null
       });
     }
     if (s.palaceWins >= n) this.ui.toast('殿试全胜——金榜题名！');

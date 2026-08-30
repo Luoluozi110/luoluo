@@ -65,7 +65,8 @@ assert.equal(window.Common.localDataVersion(), newerRemote._version,
 assert.equal(window.Common.buildProject()._version, newerRemote._version,
   '成功拉取/发布后的下一次工程构造必须沿用最新云端修订号');
 // 拉取后继续编辑时，发布快照必须从云端版本继续递增，不能卡在旧页面种子版本。
-const editedAfterPull = clone(window.Common.buildProject());editedAfterPull.questions[0].scenario += '（拉取后编辑）';
+const editedAfterPull = clone(window.Common.buildProject());
+editedAfterPull.questions[0].scenario += '（拉取后编辑）';
 assert.equal(Math.max(window.Common.localDataVersion(), editedAfterPull._version) + 1, newerRemote._version + 1,
   '拉取后编辑的下一次发布应从云端版本继续递增');
 

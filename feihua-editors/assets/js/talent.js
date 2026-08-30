@@ -118,6 +118,24 @@
     else if (type === "crit") { out.chance = Number(eff.chance) || 0; out.mult = Number(eff.mult) || 0; }
     else if (type === "palace_pct") { out.value = Number(eff.value) || 0; }
     else if (type === "insp_on_win" || type === "draw_bonus" || type === "insp_on_talent") { out.value = Number(eff.value) || 0; }
+    else if (type === "battle_history_pct") {
+      out.condition = ["repeat_style", "switch_style", "previous_nonwin"].includes(eff.condition) ? eff.condition : "previous_nonwin";
+      out.value = Number(eff.value) || 0;
+      if (eff.previousWinBonus != null) out.previousWinBonus = Number(eff.previousWinBonus) || 0;
+      if (eff.previousNonWinBonus != null) out.previousNonWinBonus = Number(eff.previousNonWinBonus) || 0;
+      if (eff.stackGroup) out.stackGroup = String(eff.stackGroup);
+    }
+    else if (type === "weakness_reward") {
+      out.value = Number(eff.value) || 0;
+      if (eff.reward && typeof eff.reward === "object") out.reward = { type: String(eff.reward.type || "inspiration"), value: Number(eff.reward.value) || 0, perMatch: eff.reward.perMatch !== false };
+    }
+    else if (type === "seal_signature") { out.penalty = Number(eff.penalty) || 0; }
+    else if (type === "dice_commitment") {
+      out.condition = eff.condition === "exactly_one_paid" ? "exactly_one_paid" : "none_paid";
+      out.value = Number(eff.value) || 0;
+      if (eff.firstCostDiscount != null) out.firstCostDiscount = Math.max(0, Number(eff.firstCostDiscount) || 0);
+    }
+    else if (type === "restraint_pct") { out.value = Number(eff.value) || 0; }
     else if (type === "style_pct") { out.style = ["shi", "ci", "lian", "any"].includes(eff.style) ? eff.style : "shi"; out.value = Number(eff.value) || 0; }
     else if (type === "theme_pct") { out.theme = THEMES.includes(eff.theme) ? eff.theme : "yongwu"; out.value = Number(eff.value) || 0; }
     else if (type === "streak_mult" || type === "insp_floor" || type === "study_bonus" || type === "palace_insp" || type === "start_insp" || type === "insp_turn_regen") { out.value = Number(eff.value) || 0; }

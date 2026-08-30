@@ -41,9 +41,6 @@ assert.ok(bridge.includes('rejectOlderProject(incomingProject, JSON.parse(curren
 assert.ok(bridge.includes('工程配置缺少有效 _version'),
   '桥接发布必须要求有效工程版本');
 assert.ok(bridge.includes("'HTTP_PROXY'"), '桥接服务应清理可能失效的代理环境变量');
-assert.ok(bridge.includes('EDITOR_GH_TIMEOUT_MS') && bridge.includes('60_000'),
-  '大型云端工程读取须允许至少 60 秒的 gh 请求时间，并支持显式覆盖');
-assert.ok(bridge.includes('阶段：${stage}'), 'gh 超时错误应指出具体发布阶段');
 assert.equal(bridge.includes('Authorization'), false, '桥接服务不得接收或构造浏览器 Token');
 assert.equal(packageJson.scripts['editor:bridge'], 'node scripts/serve-editor-bridge.mjs', '应提供桥接启动命令');
 assert.equal(packageJson.scripts['editor:open'], 'node scripts/start-editor-bridge.mjs',

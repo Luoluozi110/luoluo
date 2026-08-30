@@ -5,6 +5,7 @@ import { createCountdown } from './timer.js';
 import { play } from './audio.js';
 import { intentHint, weaknessHint, settleLines } from './mechHints.js?v=20260829merge2';
 import { SCHOLAR_PORTRAIT } from './svg.js';
+import { interpolateSideQuestCopy } from '../engine/sidequest-presentation.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -24,13 +25,15 @@ export class BattleStage {
   /** 驱动一场战斗；session 由 engine 提供。返回 resolve 结果 */
   async run(session) {
     const el = this.el;
+    const copy = session.copy || {};
+    const copyText = (key, fallback, values = {}) => interpolateSideQuestCopy(copy[key] || fallback, values);
     const step = index => (Array.isArray(session.stepLabels) && session.stepLabels[index]) || ['遭遇', '审题', '选文体', '选风格', '掷灵感骰', '算分对决'][index];
     const focusKey = session.npc && (session.npc.focusAttr || (!STYLE_NAMES[session.npc.style] && session.npc.style));
     const opponentFocus = focusKey ? `重${ATTR_NAMES[focusKey] || focusKey}` : `偏${STYLE_NAMES[session.npc.style] || ''}`;
     el.classList.add('on');
     el.innerHTML = `
       <div class="bt-banner">
-        <div class="sm">${esc(session.label)}</div>
+        <div class="sm">${esc(copy.kind || session.label)}</div>
         <div class="bg2" id="btTopic">—</div>
         <div class="th" id="btTheme"></div>
       </div>
@@ -38,22 +41,22 @@ export class BattleStage {
       <div class="bt-arena">
         <div class="fighter self">
           <div class="fighter-head"><div class="fighter-portrait" aria-hidden="true">${SCHOLAR_PORTRAIT.self}</div><div class="fighter-meta">
-            <div class="fname"><span class="seal">應試</span><span>${esc(session.playerName) || '在下'}</span></div>
-            <div class="fsub" id="selfPick">待审题</div>
+            <div class="fname"><span class="seal">${esc(copy.selfRole || '應試')}</span><span>${esc(session.playerName) || '在下'}</span></div>
+            <div class="fsub" id="selfPick">${esc(copy.waiting || '待审题')}</div>
             <div class="fattrs">${this.attrsRow(session.playerAttrs)}</div>
           </div></div>
           <div class="score-lines" id="selfLines"></div>
-          <div class="score-total" id="selfTotal"><span>作品得分</span><b>—</b></div>
+          <div class="score-total" id="selfTotal"><span>${esc(copy.scoreLabel || '作品得分')}</span><b>—</b></div>
         </div>
         <div class="vs-badge">對</div>
         <div class="fighter opp">
           <div class="fighter-head"><div class="fighter-portrait" aria-hidden="true">${SCHOLAR_PORTRAIT.opponent}</div><div class="fighter-meta">
-            <div class="fname"><span class="seal">對手</span><span>${esc(session.npc.fullName || session.npc.name)}</span>${session.npc.style ? `<span class="opp-style">${esc(opponentFocus)}</span>` : ''}</div>
+            <div class="fname"><span class="seal">${esc(copy.opponentRole || '對手')}</span><span>${esc(session.npc.fullName || session.npc.name)}</span>${session.npc.style ? `<span class="opp-style">${esc(opponentFocus)}</span>` : ''}</div>
             <div class="fsub">${esc(session.npc.title || '')}</div>
             <div class="fattrs">${this.attrsRow(session.npc.attrs)}</div>
           </div></div>
           <div class="score-lines" id="oppLines"></div>
-          <div class="score-total" id="oppTotal"><span>作品得分</span><b>—</b></div>
+          <div class="score-total" id="oppTotal"><span>${esc(copy.scoreLabel || '作品得分')}</span><b>—</b></div>
         </div>
       </div>
       <div class="bt-panel" id="btPanel"><div class="ph">① ${esc(step(0))}</div></div>`;
@@ -62,10 +65,10 @@ export class BattleStage {
 
     /* 首次论战先讲清六步流程，随后才进入遭遇，避免教学被倒计时打断。 */
     if (session.tutorialFirstBattle && session.tutorialFirstBattleText) {
-      panel.innerHTML = `<div class="ph">论战六步</div><div style="font-size:14px;line-height:1.9;white-space:pre-line;color:var(--mo-2)">${esc(session.tutorialFirstBattleText)}</div>`;
+      panel.innerHTML = `<div class="ph">${esc(copy.kind || '论战六步')}</div><div style="font-size:14px;line-height:1.9;white-space:pre-line;color:var(--mo-2)">${esc(session.tutorialFirstBattleText)}</div>`;
       const guideBtn = document.createElement('button');
       guideBtn.className = 'pick meet-confirm';
-      guideBtn.textContent = '开始第一场论战 →';
+      guideBtn.textContent = copy.encounterButton || '开始第一场论战 →';
       await new Promise(resolve => {
         guideBtn.addEventListener('click', () => { guideBtn.disabled = true; resolve(); });
         panel.appendChild(guideBtn);
@@ -73,8 +76,11 @@ export class BattleStage {
     }
 
     /* ① 遭遇：介绍弹窗，等待玩家「开始对决」确认后再推进（不再自动快跳） */
+    const encounter = copyText('encounter', '「{npc}」{npcTitle}拦路请教，愿以文会友。', {
+      npc: session.npc.fullName || session.npc.name, npcTitle: session.npc.title || ''
+    });
     panel.innerHTML = `<div class="ph">① ${esc(step(0))}</div>
-       <div style="font-size:17px;line-height:1.8">「${esc(session.npc.fullName || session.npc.name)}」${esc(session.npc.title || '')}拦路请教，愿以文会友。${session.npc.style ? `<span style="color:var(--zhu)">（此人${esc(opponentFocus)}）</span>` : ''}</div>`;
+       <div style="font-size:17px;line-height:1.8">${esc(encounter)}${session.npc.style ? `<span style="color:var(--zhu)">（此人${esc(opponentFocus)}）</span>` : ''}</div>`;
 
     /* ①½ 研判卡：机制 NPC 的意图行藏 + 长短可读提示（阶段 B），一并展示后统一确认 */
     const mechCtx = { styleNames: STYLE_NAMES, mannerNames: session.mannerNames || {} };
@@ -93,14 +99,14 @@ export class BattleStage {
     await new Promise(resolve => {
       const btn = document.createElement('button');
       btn.className = 'pick meet-confirm';
-      btn.textContent = '开始对决 →';
+      btn.textContent = copy.encounterButton || '开始对决 →';
       btn.addEventListener('click', () => { btn.disabled = true; resolve(); });
       panel.appendChild(btn);
     });
 
     /* ② 审题 */
     el.querySelector('#btTopic').textContent = session.topic;
-    el.querySelector('#btTheme').textContent = `题材 · ${session.themeName}`;
+    el.querySelector('#btTheme').textContent = `${copy.themePrefix || '题材'} · ${session.themeName}`;
     const zg = session.zeitgeist;
     let info = '';
     if (zg) {
@@ -116,8 +122,9 @@ export class BattleStage {
     if (syn.length) {
       info += `<div style="margin-top:4px;font-size:13px;color:var(--jin)">文心羁绊 · ${syn.map(sy => esc(sy.name)).join('、')}</div>`;
     }
+    const topicLead = copyText('topicLead', '题目「{topic}」，题材为「{theme}」。', { topic: session.topic, theme: session.themeName });
     panel.innerHTML = `<div class="ph">② ${esc(step(1))}</div>
-      <div style="font-size:17px;line-height:1.8">题目「<b>${esc(session.topic)}</b>」，题材为<b style="color:var(--zhu)">${session.themeName}</b>。</div>${info}`;
+      <div style="font-size:17px;line-height:1.8"><span style="color:var(--mo-3)">${esc(copy.topicPrefix || '')}${copy.topicPrefix ? ' · ' : ''}</span>${esc(topicLead)}</div>${info}`;
     await sleep(950);
 
     /* ③ 选文体（联力 <8 禁选联） */
@@ -142,9 +149,9 @@ export class BattleStage {
     panel.innerHTML = `<div class="ph">⑥ ${esc(step(5))}　<span style="font-size:12px;color:var(--mo-3)">
       ${session.tutorialFirstBattle ? '先看五项来源，再看最终作品得分　·　' : ''}
       对手以「${STYLE_NAMES[out.npcStyle]}·${esc(out.npcMannerName)}」应战，掷出 ${out.npcDice} 点</span></div>
-      <div style="font-size:14px;color:var(--mo-2);line-height:1.8" id="btNarrate">正在逐项计分……</div>`;
+      <div style="font-size:14px;color:var(--mo-2);line-height:1.8" id="btNarrate">${esc(copy.settling || '正在逐项计分……')}</div>`;
 
-    await this.revealScores(out);
+    await this.revealScores(out, session);
     await this.revealMech(out, session);
     await this.revealInsight(session);
     await this.showVerdict(out, session);
@@ -199,13 +206,15 @@ export class BattleStage {
       const finish = m => { if (done) return; done = true; stop(); resolve(m); };
       const cards = session.manners.map(m => {
         const isHome = session.homeResolved && m === session.homeResolved;
-        const isExperimental = m === 'experimental' || m === session.experimentalManner;
+        const isExperimental = m === session.experimentalManner;
         const mom = session.momentumPre(m);
-        const momTxt = !isExperimental && mom > 0 ? `<div class="mom">气势连捷 +${Math.round(mom * 100)}%</div>` : '';
-        const homeTxt = !isExperimental && isHome && session.homeBonus > 0 ? `<div class="home">本门 +${Math.round(session.homeBonus * 100)}%</div>` : '';
+        const momTxt = mom > 0 ? `<div class="mom">气势连捷 +${Math.round(mom * 100)}%</div>` : '';
+        const homeTxt = isHome && session.homeBonus > 0 ? `<div class="home">本门 +${Math.round(session.homeBonus * 100)}%</div>` : '';
+        const experimentPct = Math.round((Number(session.experimentalMannerPct) || 0) * 100);
+        const experimentTxt = isExperimental ? `<div class="home">本场实验 ${experimentPct >= 0 ? '+' : ''}${experimentPct}%</div>` : '';
         return `<button class="pick" data-m="${m}">
           <div class="pn">${session.mannerNames[m]}</div>
-          ${isExperimental ? '<div class="home">结果将在结算时揭示</div>' : `${homeTxt}${momTxt}`}
+          ${experimentTxt}${homeTxt}${momTxt}
         </button>`;
       }).join('');
       panel.innerHTML = `<div class="ph">④ ${esc(session._stepMannerLabel || '选风格')}　<span style="font-size:12px;color:var(--mo-3)">限时 ${this.seconds} 秒</span></div>
@@ -372,7 +381,7 @@ export class BattleStage {
   }
 
   /** 五项逐条弹出累加——玩家要能看懂为什么赢 */
-  async revealScores(out) {
+  async revealScores(out, session = {}) {
     const selfBox = this.el.querySelector('#selfLines');
     const oppBox = this.el.querySelector('#oppLines');
     const selfT = this.el.querySelector('#selfTotal');
@@ -395,8 +404,9 @@ export class BattleStage {
       goldBurst(this.el, 26);
       await sleep(620);
     }
-    selfT.innerHTML = `<span>作品得分</span><b>${out.selfCalc.total}</b>`;
-    oppT.innerHTML = `<span>作品得分</span><b>${out.oppCalc.total}</b>`;
+    const scoreLabel = esc((session.copy || {}).scoreLabel || '作品得分');
+    selfT.innerHTML = `<span>${scoreLabel}</span><b>${out.selfCalc.total}</b>`;
+    oppT.innerHTML = `<span>${scoreLabel}</span><b>${out.oppCalc.total}</b>`;
     // 平局时不加类；classList.add('') 会抛 DOMTokenList 异常
     const selfCls = out.result === 'win' ? 'win' : out.result === 'lose' ? 'lose' : '';
     const oppCls = out.result === 'lose' ? 'win' : out.result === 'win' ? 'lose' : '';
@@ -454,11 +464,13 @@ export class BattleStage {
       : session.projLoseInsp != null ? session.projLoseInsp
       : ((this.cfg.inspiration || {}).battleLoseExtra ?? -3);
     const drawPct = Math.round(BATTLE_COEF.drawRatio * 100);
-    const sub = {
+    const defaultSub = {
       win: out.upset ? '以弱胜强，一鸣惊人！' : '技高一筹，可喜可贺。',
       lose: `技不如人，灵感 ${signed(loseInsp)}。输的只是状态，不是成长。`,
       draw: `双方仅差 ${Math.abs(out.selfCalc.total - out.oppCalc.total)} 分（≤${drawPct}%），判为平局。`
     }[out.result];
+    const copy = session.copy || {};
+    const sub = ({ win: copy.verdictWin, lose: copy.verdictLose, draw: copy.verdictDraw }[out.result]) || defaultSub;
 
     const d = document.createElement('div');
     d.className = 'bt-result ' + out.result;
@@ -480,7 +492,7 @@ export class BattleStage {
     const btn = document.createElement('button');
     btn.className = 'btn btn-primary';
     btn.style.marginTop = '12px';
-    btn.textContent = session.isHiddenFinal ? '观终卷' : session.isPalace ? '继续殿试' : '收笔';
+    btn.textContent = copy.closeButton || (session.isHiddenFinal ? '观终卷' : session.isPalace ? '继续殿试' : '收笔');
     this.el.appendChild(btn);
     await new Promise(r => btn.addEventListener('click', r));
   }

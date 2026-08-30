@@ -545,6 +545,69 @@ window.GAME_SIDEQUESTS = {
         "振笔",
         "辨义定胜"
       ],
+      "presentation": {
+        "stageNames": {
+          "decision": "江湖·旧诺待决",
+          "climax": "江湖·辨义应验"
+        },
+        "transitions": {
+          "decision": "雨书已收，旧诺未决。行卷转入「江湖·旧诺待决」。",
+          "climax": "取舍既定，下一场「{battleLabel}」将辨明此诺所守何义。",
+          "complete": "「{routeName}」行卷已成，重返「{mainStage}」科举路。"
+        },
+        "battles": {
+          "climax": {
+            "kind": "江 湖 辨 义",
+            "steps": [
+              "逢客",
+              "观招",
+              "定式",
+              "运意",
+              "振笔",
+              "辨义定胜"
+            ],
+            "selfRole": "赴约",
+            "opponentRole": "问义",
+            "waiting": "待观来意",
+            "scoreLabel": "辨义得分",
+            "encounter": "「{npc}」{npcTitle}临席相候，要以一篇文章问你：旧诺与是非，究竟何者为义。",
+            "encounterButton": "入席辨义 →",
+            "topicPrefix": "义题",
+            "themePrefix": "借题",
+            "topicLead": "此番所辨为「{topic}」，借题于「{theme}」。",
+            "settling": "正在辨义定胜……",
+            "verdictWin": "一诺有据，群议为之而定。",
+            "verdictLose": "此诺尚有未明之处，且将余问收入行卷。",
+            "verdictDraw": "两说各有所守，此义暂留未决。",
+            "closeButton": "合卷归途"
+          },
+          "final": {
+            "kind": "群 英 问 义",
+            "steps": [
+              "入盟",
+              "听问",
+              "择体",
+              "立义",
+              "成章",
+              "群议定盟"
+            ],
+            "selfRole": "赴盟",
+            "opponentRole": "主问",
+            "waiting": "待听群问",
+            "scoreLabel": "问义得分",
+            "encounter": "「{npc}」{npcTitle}执卷主问，请你以一路所守回应群英。",
+            "encounterButton": "携卷赴问 →",
+            "topicPrefix": "盟题",
+            "themePrefix": "所问",
+            "topicLead": "群英所问为「{topic}」，落在「{theme}」。",
+            "settling": "群议正在定盟……",
+            "verdictWin": "一路所守终成公论。",
+            "verdictLose": "群问未尽，此道仍可再行。",
+            "verdictDraw": "群议未决，你的回答已留在盟卷。",
+            "closeButton": "观盟卷"
+          }
+        }
+      },
       "acts": [
         {
           "id": "origin",
@@ -639,6 +702,69 @@ window.GAME_SIDEQUESTS = {
         "落檄",
         "策议定势"
       ],
+      "presentation": {
+        "stageNames": {
+          "decision": "边塞·粮道待决",
+          "climax": "边塞·军帐定势"
+        },
+        "transitions": {
+          "decision": "残报已读，粮道未定。行卷转入「边塞·粮道待决」。",
+          "climax": "军令既出，下一场「{battleLabel}」将验此策能否安城定军。",
+          "complete": "「{routeName}」行卷已成，重返「{mainStage}」科举路。"
+        },
+        "battles": {
+          "climax": {
+            "kind": "军 帐 定 势",
+            "steps": [
+              "对阵",
+              "察势",
+              "择体",
+              "定调",
+              "落檄",
+              "策议定势"
+            ],
+            "selfRole": "献策",
+            "opponentRole": "判策",
+            "waiting": "待察军情",
+            "scoreLabel": "策议得分",
+            "encounter": "「{npc}」{npcTitle}展开舆图，请你当帐落笔：城与军，只能先救其一时该如何定势。",
+            "encounterButton": "升帐献策 →",
+            "topicPrefix": "军议",
+            "themePrefix": "所据",
+            "topicLead": "军议命题为「{topic}」，所据题材为「{theme}」。",
+            "settling": "正在合议军策……",
+            "verdictWin": "军令可行，孤城与前线皆有所凭。",
+            "verdictLose": "此策尚有缺口，边报仍催人再思。",
+            "verdictDraw": "攻守各有代价，军议暂记两可。",
+            "closeButton": "收檄归途"
+          },
+          "final": {
+            "kind": "帅 府 问 国",
+            "steps": [
+              "入府",
+              "阅图",
+              "择体",
+              "立策",
+              "成檄",
+              "帅府定议"
+            ],
+            "selfRole": "应策",
+            "opponentRole": "主问",
+            "waiting": "待阅舆图",
+            "scoreLabel": "问策得分",
+            "encounter": "「{npc}」{npcTitle}据帅案而问，要你以一路得失回答何以守国。",
+            "encounterButton": "整卷应策 →",
+            "topicPrefix": "策题",
+            "themePrefix": "国问",
+            "topicLead": "帅府策题为「{topic}」，国问落在「{theme}」。",
+            "settling": "帅府正在定议……",
+            "verdictWin": "策可经国，帅府为之定议。",
+            "verdictLose": "此策未能尽服众议，仍待后日补完。",
+            "verdictDraw": "攻守之议未分高下，你的策卷已入府藏。",
+            "closeButton": "观策卷"
+          }
+        }
+      },
       "acts": [
         {
           "id": "origin",
@@ -734,6 +860,69 @@ window.GAME_SIDEQUESTS = {
         "叩问",
         "照见破妄"
       ],
+      "presentation": {
+        "stageNames": {
+          "decision": "求仙·去留问心",
+          "climax": "求仙·照见破妄"
+        },
+        "transitions": {
+          "decision": "碑中姓名未散，去留之念未明。行卷转入「求仙·去留问心」。",
+          "climax": "一念已择，下一场「{battleLabel}」将照见所守是真是妄。",
+          "complete": "「{routeName}」行卷已成，重返「{mainStage}」科举路。"
+        },
+        "battles": {
+          "climax": {
+            "kind": "照 见 破 妄",
+            "steps": [
+              "入境",
+              "观心",
+              "立法",
+              "守念",
+              "叩问",
+              "照见破妄"
+            ],
+            "selfRole": "问道",
+            "opponentRole": "照心",
+            "waiting": "待观本心",
+            "scoreLabel": "问心得分",
+            "encounter": "「{npc}」{npcTitle}立于镜前，要你以文章照见：所留者是情，所忘者是否真能成道。",
+            "encounterButton": "入境问心 →",
+            "topicPrefix": "心题",
+            "themePrefix": "所照",
+            "topicLead": "镜中所问为「{topic}」，所照题材为「{theme}」。",
+            "settling": "正在照见真妄……",
+            "verdictWin": "镜影散去，所守之心清明可见。",
+            "verdictLose": "妄影未尽，此问仍随你下山。",
+            "verdictDraw": "真妄相生，镜中暂不判高下。",
+            "closeButton": "出境归途"
+          },
+          "final": {
+            "kind": "天 门 问 真",
+            "steps": [
+              "登门",
+              "听问",
+              "择体",
+              "守真",
+              "成章",
+              "天门照见"
+            ],
+            "selfRole": "叩门",
+            "opponentRole": "主问",
+            "waiting": "待听真问",
+            "scoreLabel": "问真得分",
+            "encounter": "「{npc}」{npcTitle}守在天门之前，只问你一路所见何者为真。",
+            "encounterButton": "携卷叩门 →",
+            "topicPrefix": "真题",
+            "themePrefix": "所见",
+            "topicLead": "天门所问为「{topic}」，所见落在「{theme}」。",
+            "settling": "天门正在照见……",
+            "verdictWin": "所见不欺，天门为此一问而开。",
+            "verdictLose": "门未全开，但你已知道下一次该问什么。",
+            "verdictDraw": "门影半开半合，真意留待尘世续答。",
+            "closeButton": "观真卷"
+          }
+        }
+      },
       "acts": [
         {
           "id": "origin",
@@ -1649,5 +1838,25 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         }
       }
     ]
+  }
+};
+window.GAME_SIDEQUEST_TALENT_OFFERS = {
+  "jianghu": {
+    "守义": "T041",
+    "权变": "T042",
+    "common": "T043",
+    "active": "TA09"
+  },
+  "biansai": {
+    "守土": "T044",
+    "出奇": "T045",
+    "common": "T046",
+    "active": "TA10"
+  },
+  "qiuxian": {
+    "留世": "T048",
+    "忘机": "T047",
+    "common": "T049",
+    "active": "TA11"
   }
 };

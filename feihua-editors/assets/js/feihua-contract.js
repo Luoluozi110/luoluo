@@ -11,7 +11,7 @@
   ];
   const PROJECT_KEYS = [
     'questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity',
-    'synergies', 'board', 'sky', 'album', 'schools', 'grades', 'narrative', 'sidequests', 'sidequest-npcs'
+    'synergies', 'board', 'sky', 'album', 'schools', 'grades', 'narrative', 'sidequests', 'sidequest-npcs', 'sidequest-talents'
   ];
 const ATTR_KEYS = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
 const INK_AXES = [['逐名', '求真'], ['守法', '出新'], ['与人', '独行'], ['惜身', '燃笔']];
@@ -431,11 +431,20 @@ const INK_TAGS = new Set(INK_AXES.flat());
       if (!isObj(sn)) add('sidequest-npcs', '必须是对象');
       else if (!isObj(sn.routes)) add('sidequest-npcs.routes', '必须是按路线组织的对象');
     }
+    if ('sidequest-talents' in cfg) {
+      const st = cfg['sidequest-talents'];
+      if (!isObj(st)) add('sidequest-talents', '必须是对象');
+      else {
+        if (!Array.isArray(st.talents)) add('sidequest-talents.talents', '必须是数组');
+        if (!isObj(st.upgrades)) add('sidequest-talents.upgrades', '必须是对象');
+        if (!isObj(st.offers)) add('sidequest-talents.offers', '必须是对象');
+      }
+    }
     if ('grades' in cfg && !isObj(cfg.grades)) add('grades', '必须是对象');
     if ('narrative' in cfg && !isObj(cfg.narrative)) add('narrative', '必须是对象');
     if ('npc-mechanics' in cfg && !isObj(cfg['npc-mechanics'])) add('npc-mechanics', '必须是对象');
 
-    const known = new Set([...REQUIRED_CONFIG_KEYS, ...PROJECT_KEYS, 'album', 'synergies', 'npc-mechanics', 'sidequests', 'sidequest-npcs']);
+    const known = new Set([...REQUIRED_CONFIG_KEYS, ...PROJECT_KEYS, 'album', 'synergies', 'npc-mechanics', 'sidequests', 'sidequest-npcs', 'sidequest-talents']);
     if (!partial) for (const key of Object.keys(cfg)) if (!known.has(key)) warn(key, '未知配置块，将按原样保留', 'unknown_key');
     return { ok: errors.length === 0, errors, warnings };
   }
