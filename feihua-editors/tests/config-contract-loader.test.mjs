@@ -21,6 +21,6 @@ assert.ok(!/document\.write\(/.test(html), '已移除 document.write 回退（�
 const contractAt = html.indexOf(localContract);
 const commonAt = html.indexOf(common);
 assert.ok(contractAt > 0 && commonAt > 0 && contractAt < commonAt, '契约脚本必须先于 common.js 执行');
-assert.match(html, /window\.GAME_CONTENT_VERSION\s*=\s*6/, '编辑器页面必须注入当前云端工程版本，阻止旧缓存发布');
+assert.match(html, /window\.GAME_CONTENT_VERSION\s*=\s*7/, '编辑器页面必须注入当前云端工程版本，阻止旧缓存发布');
 
 console.log('config-contract-loader.test.mjs: 编辑器契约静态优先 + 线上回退加载顺序通过');
