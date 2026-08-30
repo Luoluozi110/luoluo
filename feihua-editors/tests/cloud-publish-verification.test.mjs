@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const editorRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const common = readFileSync(join(editorRoot, 'assets/js/common.js'), 'utf8');
+const index = readFileSync(join(editorRoot, 'index.html'), 'utf8');
 
 assert.ok(common.includes('const expectedProject = global.CloudSync.buildProject();'),
   '发布前固定完整工程快照，保证回读比较的是本次编辑内容');
@@ -29,5 +30,9 @@ assert.ok(common.includes('markCurrentDataVersion(applied._version);'),
 assert.ok(common.includes('const result = applyCloudProject(data);'),
   '云端拉取使用可回滚的完整替换入口');
 assert.equal(common.includes('拉取模式：'), false, '云端同步不再提供容易造成跨入口分叉的合并模式');
+for (const asset of ['common.js', 'talent.js', 'synergy.js']) {
+  assert.ok(index.includes(`assets/js/${asset}?v=20260831cloudpullfix1`),
+    `${asset} 必须使用本次云端拉取修复的独立缓存版本`);
+}
 
 console.log('cloud-publish-verification.test.mjs: 发布完整回读与拉取原子替换校验已接入');
