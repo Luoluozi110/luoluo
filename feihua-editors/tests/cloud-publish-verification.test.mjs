@@ -22,8 +22,8 @@ assert.ok(common.includes('const diff = projectDiffKeys(expectedProject, remoteP
   '发布后逐模块校验完整工程，而非只检查传世名篇');
 assert.ok(common.includes('markCurrentDataVersion(remoteProject._version);'),
   '发布成功后记录最新云端修订号，保证连续发布不会被旧版本护栏误拦截');
-assert.ok(common.includes('const applied = buildProject(incoming._version);'),
-  '云端拉取回读必须保留远端修订号，避免版本字段不同导致必然回滚');
+assert.ok(common.includes('const applied = buildProject(incoming._version, { exactVersion: true });'),
+  '云端拉取回读必须严格采用远端修订号，不得被更高的本地版本游标改写');
 assert.ok(common.includes('markCurrentDataVersion(applied._version);'),
   '云端工程应用成功后必须推进本地版本游标，保证拉取后继续编辑可发布');
 assert.ok(common.includes('const result = applyCloudProject(data);'),
