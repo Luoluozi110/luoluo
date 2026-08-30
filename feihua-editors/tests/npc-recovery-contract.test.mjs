@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const readJson = path => JSON.parse(readFileSync(path, 'utf8'));
@@ -8,10 +10,11 @@ const findNpc = (data, id) => {
   return tiers.flatMap(tier => tier.npcs || []).find(npc => npc.id === id);
 };
 
-const root = readJson('feihua-content.json');
-const playable = readJson('feihuaqi-playable/config/npcs.json');
+const workspaceRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const root = readJson(join(workspaceRoot, 'feihua-content.json'));
+const playable = readJson(join(workspaceRoot, 'feihuaqi-playable/config/npcs.json'));
 const seedContext = { window: {} };
-vm.runInNewContext(readFileSync('feihua-editors/assets/js/seed-npcs.js', 'utf8'), seedContext);
+vm.runInNewContext(readFileSync(join(workspaceRoot, 'feihua-editors/assets/js/seed-npcs.js'), 'utf8'), seedContext);
 const seedNpcs = JSON.parse(JSON.stringify(seedContext.window.GAME_NPCS));
 
 const recovered = {
