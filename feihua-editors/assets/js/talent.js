@@ -350,6 +350,7 @@
      maxLevel 由品质决定（也可手工覆盖 1..6），upCost 长度补齐/截断到 maxLevel-1。 */
   function normalizeUpgrade(up, base) {
     up = up || {};
+    const preserved = up && typeof up === "object" && !Array.isArray(up) ? JSON.parse(JSON.stringify(up)) : {};
     const quality = (C.QUALITY && C.QUALITY[up.quality]) ? up.quality : "common";
     const maxLevel = Math.max(1, Math.min(6, Number(up.maxLevel) || (C.QUALITY_MAX[quality] || 3)));
     const defCurve = C.QUALITY_UPCOST[quality] || [6, 10];
@@ -359,23 +360,39 @@
     const rawLevels = Array.isArray(up.levels) ? up.levels.slice() : [];
     let baseLevel = up.baseLevel && typeof up.baseLevel === "object" ? JSON.parse(JSON.stringify(up.baseLevel)) : null;
     if (!baseLevel && rawLevels.length >= maxLevel) baseLevel = rawLevels.shift();
+    const styleSources = [baseLevel, ...rawLevels].map(level => level && typeof level === "object" ? level.style : null);
+    const hasStyleObject = value => value && typeof value === "object" && !Array.isArray(value);
+    const stylePresence = Array.isArray(up._stylePresence)
+      ? up._stylePresence.map(Boolean)
+      : (Array.isArray(up.levelStyles)
+        ? up.levelStyles.map(style => Object.values(style || {}).some(Boolean))
+        : styleSources.map(hasStyleObject));
     if (baseLevel) {
       baseLevel.effect = normalizeEffect(baseLevel.effect || base.effect);
       if (base.kind === "active" && baseLevel.cost != null) baseLevel.cost = Math.max(1, Number(baseLevel.cost) || 1);
       else delete baseLevel.cost;
       delete baseLevel.style;
     }
-    let levels = rawLevels.map(l => ({
-      effect: normalizeEffect(l.effect),
-      cost: (l.cost != null) ? Math.max(1, Number(l.cost) || 1) : undefined
-    }));
+    let levels = rawLevels.map(l => {
+      const out = l && typeof l === "object" && !Array.isArray(l) ? JSON.parse(JSON.stringify(l)) : {};
+      out.effect = normalizeEffect(l && l.effect);
+      if (l && l.cost != null) out.cost = Math.max(1, Number(l.cost) || 1);
+      else delete out.cost;
+      return out;
+    });
     while (levels.length < maxLevel - 1) levels.push({ effect: JSON.parse(JSON.stringify(base.effect || { type: "on_win_bonus" })), cost: (base.kind === "active" && base.cost != null) ? base.cost : undefined });
     while (levels.length > maxLevel - 1) levels.pop();
     // 逐级视觉样式：索引 j 对应视觉层级 Lv(j+1)，长度恒等于 maxLevel（Lv1..LvMax 各一份）。
-    let levelStyles = Array.isArray(up.levelStyles) ? up.levelStyles.map(normalizeStyle) : [];
+    let levelStyles = Array.isArray(up.levelStyles)
+      ? up.levelStyles.map(normalizeStyle)
+      : (styleSources.some(hasStyleObject) ? styleSources.map(normalizeStyle) : []);
     while (levelStyles.length < maxLevel) levelStyles.push(defaultStyle());
     while (levelStyles.length > maxLevel) levelStyles.pop();
-    return { quality, maxLevel, upCost, levels, levelStyles, baseLevel };
+    return {
+      ...preserved,
+      quality, maxLevel, upCost, levels, levelStyles, baseLevel,
+      _stylePresence: Array.from({ length: maxLevel }, (_, i) => Boolean(stylePresence[i]))
+    };
   }
 
   /* ---------------- 逐级视觉样式（字体/字号/颜色/行距/对齐/缩进/段间距） ---------------- */
@@ -395,7 +412,9 @@
   }
   function normalizeStyle(s) {
     s = s || {};
+    const out = s && typeof s === "object" && !Array.isArray(s) ? JSON.parse(JSON.stringify(s)) : {};
     return {
+      ...out,
       fontFamily: typeof s.fontFamily === "string" ? s.fontFamily : "",
       fontSize: Math.max(0, Number(s.fontSize) || 0),
       color: typeof s.color === "string" ? s.color : "",
@@ -1103,12 +1122,25 @@
       const base = state.talents[idx];
       const full = u.levels || [];
       const levelStyles = full.map(lv => normalizeStyle(lv.style));
-      const levels = full.slice(1).map(lv => ({
-        effect: normalizeEffect(lv.effect),
-        cost: (lv.cost != null) ? Math.max(1, Number(lv.cost) || 1) : undefined
-      }));
-      const baseLevel = full[0] ? { effect: normalizeEffect(full[0].effect), cost: full[0].cost } : null;
-      base.upgrade = normalizeUpgrade({ quality: u.quality, maxLevel: u.maxLevel, upCost: u.upCost || [], levels, levelStyles, baseLevel }, base);
+      const stylePresence = full.map(lv => Boolean(lv && typeof lv.style === "object" && !Array.isArray(lv.style)));
+      const upgrade = u && typeof u === "object" && !Array.isArray(u) ? JSON.parse(JSON.stringify(u)) : {};
+      const levels = full.slice(1).map(lv => {
+        const out = lv && typeof lv === "object" && !Array.isArray(lv) ? JSON.parse(JSON.stringify(lv)) : {};
+        out.effect = normalizeEffect(lv && lv.effect);
+        if (lv && lv.cost != null) out.cost = Math.max(1, Number(lv.cost) || 1);
+        else delete out.cost;
+        return out;
+      });
+      const baseLevel = full[0] ? {
+        ...(full[0] && typeof full[0] === "object" && !Array.isArray(full[0]) ? JSON.parse(JSON.stringify(full[0])) : {}),
+        effect: normalizeEffect(full[0].effect),
+        cost: full[0].cost
+      } : null;
+      upgrade.levels = levels;
+      upgrade.levelStyles = levelStyles;
+      upgrade.baseLevel = baseLevel;
+      upgrade._stylePresence = stylePresence;
+      base.upgrade = normalizeUpgrade(upgrade, base);
       if (base._embeddedUpgrade !== true) base._embeddedUpgrade = false;
       applied++;
     }
@@ -1146,7 +1178,10 @@
   function exportTalent(t) {
     const out = JSON.parse(JSON.stringify(t));
     if (!out._embeddedUpgrade) delete out.upgrade;
-    else if (out.upgrade) delete out.upgrade.baseLevel;
+    else if (out.upgrade) {
+      delete out.upgrade.baseLevel;
+      delete out.upgrade._stylePresence;
+    }
     delete out._embeddedUpgrade;
     return out;
   }
@@ -1183,19 +1218,30 @@
       const storedBaseEffect = t.upgrade.baseLevel && t.upgrade.baseLevel.effect;
       const baseEffect = normalizeEffect(storedBaseEffect || t.effect);
       const ls = t.upgrade.levelStyles || [];
-      const levels = [{ effect: baseEffect }];
+      const baseSource = t.upgrade.baseLevel && typeof t.upgrade.baseLevel === "object" ? t.upgrade.baseLevel : {};
+      const levels = [{ ...JSON.parse(JSON.stringify(baseSource)), effect: baseEffect }];
+      delete levels[0].style;
       const baseStyle = normalizeStyle(ls[0]);
-      if (Object.values(baseStyle).some(Boolean)) levels[0].style = baseStyle;
+      const stylePresence = Array.isArray(t.upgrade._stylePresence) ? t.upgrade._stylePresence : [];
+      if (stylePresence[0] || Object.values(baseStyle).some(Boolean)) levels[0].style = baseStyle;
       if (t.kind === "active" && t.cost != null) levels[0].cost = t.cost;
+      else delete levels[0].cost;
       for (let i = 0; i < t.upgrade.levels.length; i++) {
         const lv = t.upgrade.levels[i];
-        const e = { effect: normalizeEffect(lv.effect) };
+        const e = { ...(lv && typeof lv === "object" ? JSON.parse(JSON.stringify(lv)) : {}), effect: normalizeEffect(lv && lv.effect) };
+        delete e.style;
         const levelStyle = normalizeStyle(ls[i + 1]);
-        if (Object.values(levelStyle).some(Boolean)) e.style = levelStyle;
+        if (stylePresence[i + 1] || Object.values(levelStyle).some(Boolean)) e.style = levelStyle;
         if (t.kind === "active" && lv.cost != null) e.cost = lv.cost;
+        else delete e.cost;
         levels.push(e);
       }
-      out[t.id] = { quality: t.upgrade.quality, maxLevel: t.upgrade.maxLevel, upCost: t.upgrade.upCost.map(Number), levels };
+      const preserved = JSON.parse(JSON.stringify(t.upgrade));
+      delete preserved.baseLevel;
+      delete preserved.levelStyles;
+      delete preserved.levels;
+      delete preserved._stylePresence;
+      out[t.id] = { ...preserved, quality: t.upgrade.quality, maxLevel: t.upgrade.maxLevel, upCost: t.upgrade.upCost.map(Number), levels };
     }
     return out;
   }

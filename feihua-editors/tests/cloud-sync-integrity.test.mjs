@@ -70,6 +70,29 @@ editedAfterPull.questions[0].scenario += '（拉取后编辑）';
 assert.equal(Math.max(window.Common.localDataVersion(), editedAfterPull._version) + 1, newerRemote._version + 1,
   '拉取后编辑的下一次发布应从云端版本继续递增');
 
+// 兼容旧云端的无损字段：旧版羁绊可能没有 stackMode，云端模块也可能带有编辑器尚未展示的扩展字段。
+// 这些差异不应被误判为“当前编辑器会改写模块”，且扩展字段必须随拉取保留。
+const compatibleLegacy = clone(window.Common.buildProject());
+const explicitDefaultStyle = { fontFamily: '', fontSize: 0, color: '', lineHeight: 0, textAlign: '', textIndent: 0, marginBottom: 0 };
+for (const synergy of compatibleLegacy.synergies) {
+  for (const effect of synergy.effects) delete effect.stackMode;
+}
+for (const upgrade of Object.values(compatibleLegacy['talent-upgrade'])) {
+  for (const level of upgrade.levels) level.style = clone(explicitDefaultStyle);
+}
+compatibleLegacy.synergies[0].cloudNote = '云端羁绊扩展字段';
+const upgradeId = Object.keys(compatibleLegacy['talent-upgrade'])[0];
+compatibleLegacy['talent-upgrade'][upgradeId].cloudNote = '云端升级扩展字段';
+if (compatibleLegacy['talent-upgrade'][upgradeId].levels[1]) {
+  compatibleLegacy['talent-upgrade'][upgradeId].levels[1].cloudNote = '云端等级扩展字段';
+}
+const compatibleResult = window.Common.applyCloudProject(compatibleLegacy);
+assert.equal(window.Common.projectDiffKeys(compatibleLegacy, compatibleResult.project).length, 0,
+  '旧版缺省字段与编辑器未知扩展字段不应阻断云端拉取');
+assert.equal(compatibleResult.project.synergies[0].cloudNote, '云端羁绊扩展字段');
+assert.equal(compatibleResult.project['talent-upgrade'][upgradeId].cloudNote, '云端升级扩展字段');
+assert.equal(compatibleResult.project['talent-upgrade'][upgradeId].levels[1].cloudNote, '云端等级扩展字段');
+
 const changedSidequest = clone(newerRemote);
 changedSidequest.sidequests.routes[0].name += '（不同步）';
 assert.ok(window.Common.projectDiffKeys(newerRemote, changedSidequest).includes('sidequests'),

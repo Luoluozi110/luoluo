@@ -89,7 +89,13 @@
     else if (type === "insp_on_quiz") { out.value = Number(eff.value) || 0; out.maxTriggers = Number(eff.maxTriggers) || 0; }
     out.effectId = String(eff.effectId || '').trim();
     out.stackGroup = String(eff.stackGroup || '').trim();
-    out.stackMode = ['add', 'max', 'replace'].includes(eff.stackMode) ? eff.stackMode : 'add';
+    // 旧版云端数据可能没有 stackMode；缺省与“字段被编辑器补写”为两件事。
+    // 只有云端明确提供该字段时才归一化，避免拉取后因补写默认值触发整模块误报。
+    if (Object.prototype.hasOwnProperty.call(eff, 'stackMode')) {
+      out.stackMode = ['add', 'max', 'replace'].includes(eff.stackMode) ? eff.stackMode : 'add';
+    } else {
+      delete out.stackMode;
+    }
     if (!out.effectId) delete out.effectId;
     if (!out.stackGroup) delete out.stackGroup;
     return out;
@@ -123,7 +129,9 @@
   /* ---------------- 规范化 ---------------- */
   function normalize(s) {
     s = s || {};
+    const out = s && typeof s === "object" && !Array.isArray(s) ? JSON.parse(JSON.stringify(s)) : {};
     return {
+      ...out,
       id: String(s.id || "").trim(),
       name: String(s.name || "").trim(),
       desc: String(s.desc || "").trim(),
