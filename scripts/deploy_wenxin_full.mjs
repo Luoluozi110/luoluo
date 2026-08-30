@@ -12,6 +12,9 @@ const REPO = 'luoluo';
 const PLAYABLE = 'C:/Users/77522/WorkBuddy/2026-08-01-00-57-25/feihuaqi-playable';
 const EDITOR = 'C:/Users/77522/WorkBuddy/2026-08-01-00-57-25/feihua-editors';
 const PROJECT_CONTENT = 'C:/Users/77522/WorkBuddy/2026-08-01-00-57-25/feihua-content.json';
+const DEPLOY_MESSAGE = process.env.DEPLOY_MESSAGE || 'deploy: publish playable, editor, and cloud content';
+const TAG_TOPIC = (process.env.TAG_TOPIC || 'full-deploy').replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '') || 'full-deploy';
+const TAG_MESSAGE = process.env.TAG_MESSAGE || '完整部署（游戏、编辑器与云端工程基准）';
 // 仅文本类型按 utf-8 上传；字体/图片等二进制走 base64，避免损坏。
 const TEXT = new Set(['.html', '.css', '.js', '.json', '.md', '.mjs']);
 
@@ -122,7 +125,7 @@ async function main() {
   console.log('tree:', treeRes.sha, '| 条目:', finalTree.length);
 
   const commit = await api('POST', `/repos/${OWNER}/${REPO}/git/commits`, {
-    message: 'feihuaqi 部署：灵感骰文心改动方案 + 与并行会话支线工作的三方合并\n\n背景：8/28 部署后另一会话继续开发并自行部署（main 推进到 24f6ee57），两边形成双向分歧。\n本次以 8/28 的部署提交 4e39fa56 为合并基准做三方合并，取两边之长：\n① 合并他方「名胜支线九 NPC」：sideQuestNpcPlan/scaleSideQuestNpc/sideQuestFinalPackage、\n   save.js 四个 NPC 状态字段、modals 的「同行引路」与主考/副考展示、config 的 sidequest-npcs 支持；\n② 保留本地骰组改版：total_multiple 等新骰型、borrow_signature 解耦、跨局反馈、实验性战斗机制、\n   富文本叙事编辑(richedit)与自包含契约；\n③ 修复线上回退：根 feihua-content.json 曾被替换为缺 sky/schools/grades/narrative 四块、\n   只剩 67 题的版本，现恢复为 13 块齐全 77 题，并补齐 5 档 difficultyBoost 与\n   康尔玉 palaceForcedWhen.strictlyHigherThan（缺失会导致殿试必遇失效）；\n④ 修复 151 处乱码（U+FFFD），恢复《念奴娇》、河中府等文案，现为 0；\n⑤ 全量 ?v= 统一为 20260829merge1，保证回访用户刷新模块图。\n验证：编辑器 17/17、游戏侧 65/65 全绿；config 与编辑器种子 0 处不一致。',
+    message: DEPLOY_MESSAGE,
     tree: treeRes.sha, parents: [parentSha],
   });
   console.log('commit:', commit.sha);
@@ -132,9 +135,9 @@ async function main() {
   // 4) 带注释备份标签
   const d = new Date();
   const pad = (n) => String(n).padStart(2, '0');
-  const tag = `backup/${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}-wenxin-merge-sidequest`;
+  const tag = `backup/${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}-${TAG_TOPIC}`;
   const tagObj = await api('POST', `/repos/${OWNER}/${REPO}/git/tags`, {
-    tag, message: '灵感骰文心方案 与 支线九NPC 的三方合并部署（游戏+编辑器+云端工程基准，commit ' + commit.sha.slice(0, 8) + '）',
+    tag, message: TAG_MESSAGE + '（commit ' + commit.sha.slice(0, 8) + '）',
     object: commit.sha, type: 'commit',
     tagger: { name: 'WorkBuddy', email: 'buddy@local', date: d.toISOString() },
   });
