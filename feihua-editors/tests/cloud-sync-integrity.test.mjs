@@ -93,6 +93,42 @@ assert.equal(compatibleResult.project.synergies[0].cloudNote, '云端羁绊扩�
 assert.equal(compatibleResult.project['talent-upgrade'][upgradeId].cloudNote, '云端升级扩展字段');
 assert.equal(compatibleResult.project['talent-upgrade'][upgradeId].levels[1].cloudNote, '云端等级扩展字段');
 
+// 旧云端曾让 Lv1 升级效果和 talents 基础效果分别演进；当前契约要求以 talents 为唯一来源。
+// 拉取应在严格校验前迁移这类历史漂移，并明确返回迁移过的文心 ID。
+const driftedLevel1 = clone(window.Common.buildProject());
+const legacyLevel1Effects = {
+  T011: { type: 'copy_affinity', ratio: 0.6 },
+  T099: { type: 'palace_pct', value: 0.03 },
+  TA02: { type: 'borrow_signature', fraction: 0.3 },
+  T019: { type: 'insp_on_talent', value: 1 },
+  T020: { type: 'style_pct', style: 'shi', value: 0.04 }
+};
+// TA02 的旧 talents 基础效果缺少 fraction，而旧升级表单独携带该字段。
+driftedLevel1.talents.find(talent => talent.id === 'TA02').effect = { type: 'borrow_signature' };
+for (const [id, effect] of Object.entries(legacyLevel1Effects)) {
+  driftedLevel1['talent-upgrade'][id].levels[0].effect = clone(effect);
+}
+let legacyContractError = null;
+try { window.FeihuaConfigContract.assertProject(driftedLevel1); }
+catch (error) { legacyContractError = error; }
+assert.ok(legacyContractError, '迁移前的旧工程应命中 level1_drift 契约');
+assert.deepEqual(
+  clone(legacyContractError.result.errors.filter(error => error.code === 'level1_drift').map(error => error.path)),
+  ['talent-upgrade.T011.levels[0].effect', 'talent-upgrade.T099.levels[0].effect', 'talent-upgrade.TA02.levels[0].effect', 'talent-upgrade.T019.levels[0].effect', 'talent-upgrade.T020.levels[0].effect']
+);
+const driftResult = window.Common.applyCloudProject(driftedLevel1);
+assert.deepEqual(clone(driftResult.migrations.map(item => item.id)), ['T011', 'T099', 'TA02', 'T019', 'T020']);
+for (const id of Object.keys(legacyLevel1Effects)) {
+  const talent = driftResult.project.talents.find(item => item.id === id);
+  assert.deepEqual(clone(driftResult.project['talent-upgrade'][id].levels[0].effect), clone(talent.effect),
+    `${id} 的 Lv1 效果应迁移为同工程 talents 基础效果`);
+}
+assert.doesNotThrow(() => window.FeihuaConfigContract.assertProject(driftResult.project));
+assert.equal(window.Common.projectDiffKeys(driftResult.project, window.Common.buildProject()).length, 0,
+  '迁移后的工程必须与编辑器回读完全一致');
+assert.deepEqual(driftedLevel1['talent-upgrade'].T011.levels[0].effect, legacyLevel1Effects.T011,
+  '迁移只操作拉取副本，不能改写调用方持有的原始云端对象');
+
 const changedSidequest = clone(newerRemote);
 changedSidequest.sidequests.routes[0].name += '（不同步）';
 assert.ok(window.Common.projectDiffKeys(newerRemote, changedSidequest).includes('sidequests'),

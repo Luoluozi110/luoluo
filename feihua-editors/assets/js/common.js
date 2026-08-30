@@ -575,6 +575,29 @@
   function projectDiffKeys(expected, actual) {
     return PROJECT_FIELDS.filter(key => stableJson(expected && expected[key]) !== stableJson(actual && actual[key]));
   }
+  /**
+   * 旧版工程曾允许 talent-upgrade 的 Lv1 效果独立于 talents 基础效果演进。
+   * 当前运行时以 talents 为唯一基础效果来源；拉取时先把旧 Lv1 对齐到同一工程内的文心，
+   * 再进入严格契约与逐模块回读，避免无效旧数据永久阻断同步。
+   */
+  function migrateCloudProject(project) {
+    const migrations = [];
+    if (!project || !Array.isArray(project.talents) || !isObj(project["talent-upgrade"])) return migrations;
+    const talentById = new Map();
+    for (const talent of project.talents) {
+      if (talent && talent.id && !talentById.has(talent.id)) talentById.set(talent.id, talent);
+    }
+    for (const [id, upgrade] of Object.entries(project["talent-upgrade"])) {
+      const talent = talentById.get(id);
+      const level1 = upgrade && Array.isArray(upgrade.levels) ? upgrade.levels[0] : null;
+      if (!talent || !isObj(talent.effect) || !level1 || !isObj(level1.effect)) continue;
+      const changed = stableJson(level1.effect) !== stableJson(talent.effect);
+      // 同时统一对象键序，避免旧契约的 JSON 顺序比较把等价效果判成漂移。
+      level1.effect = JSON.parse(JSON.stringify(talent.effect));
+      if (changed) migrations.push({ type: "talent-upgrade-level1", id });
+    }
+    return migrations;
+  }
   /** 非安全用途的短指纹：帮助用户在不同网页入口肉眼确认是否为同一份工程。 */
   function projectFingerprint(project) {
     const text = stableJson(project);
@@ -752,8 +775,10 @@
         global.CloudSync.saveSettings("cloud", s);
         const active = document.querySelector(".nav button.active");
         if (active && global.Common && global.Common.switchTab) global.Common.switchTab(active.dataset.tab);
-        setMsg(`已用云端完整替换本地并逐模块核对；工程指纹 ${result.fingerprint}。`, false);
-        toast("云端 → 本地 同步完成");
+        const migratedIds = (result.migrations || []).map(item => item.id).filter(Boolean);
+        const migrationNote = migratedIds.length ? `；已修复旧版 Lv1 效果：${migratedIds.join("、")}` : "";
+        setMsg(`已用云端完整替换本地并逐模块核对${migrationNote}；工程指纹 ${result.fingerprint}。`, false);
+        toast(migratedIds.length ? `同步完成，已迁移 ${migratedIds.length} 枚旧版文心` : "云端 → 本地 同步完成");
       } catch (err) {
         setMsg("拉取失败：" + err.message, true);
       } finally {
@@ -942,6 +967,7 @@
     if (!data || data._type !== "feihua-content") throw new Error("云端文件不是 feihua-content 工程文件");
     const incoming = JSON.parse(JSON.stringify(data));
     if (!global.FeihuaConfigContract) throw new Error("配置契约校验器未加载");
+    const migrations = migrateCloudProject(incoming);
     global.FeihuaConfigContract.assertProject(incoming);
     const before = buildProject();
     let mutationStarted = false;
@@ -956,7 +982,7 @@
       }
       // 云端工程已完整应用后再推进本地版本游标；失败时不会污染版本状态。
       markCurrentDataVersion(applied._version);
-      return { project: applied, fingerprint: projectFingerprint(applied), routed };
+      return { project: applied, fingerprint: projectFingerprint(applied), routed, migrations };
     } catch (error) {
       if (mutationStarted) {
         try {
