@@ -402,22 +402,6 @@ const INK_TAGS = new Set(INK_AXES.flat());
             if (ids.has(route.id)) add(`${p}.id`, `路线 ID 重复：${route.id}`, 'duplicate_id'); else ids.add(route.id);
             if (!Array.isArray(route.axis) || route.axis.length !== 2 || route.axis.some(x => !text(x))) add(`${p}.axis`, '必须包含两个立场标签');
             if (!Array.isArray(route.battleThemePool) || !route.battleThemePool.length) add(`${p}.battleThemePool`, '高潮题材池不能为空');
-            if (route.presentation != null) {
-              const pr = route.presentation;
-              if (!isObj(pr)) add(`${p}.presentation`, '展示文案必须是对象');
-              else {
-                if (!isObj(pr.stageNames) || !text(pr.stageNames.decision) || !text(pr.stageNames.climax)) add(`${p}.presentation.stageNames`, '必须配置取舍与应验阶段名');
-                if (!isObj(pr.transitions) || !text(pr.transitions.decision) || !text(pr.transitions.climax) || !text(pr.transitions.complete)) add(`${p}.presentation.transitions`, '必须配置进入取舍、进入应验与返回主线文案');
-                if (!isObj(pr.battles)) add(`${p}.presentation.battles`, '必须按高潮与终问配置论战文案');
-                else for (const kind of ['climax', 'final']) {
-                  const battle = pr.battles[kind];
-                  const bp = `${p}.presentation.battles.${kind}`;
-                  if (!isObj(battle)) { add(bp, '必须是对象'); continue; }
-                  if (!Array.isArray(battle.steps) || battle.steps.length !== 6 || battle.steps.some(x => !text(x))) add(`${bp}.steps`, '必须包含六个非空步骤名');
-                  for (const key of ['kind', 'encounter', 'encounterButton', 'topicLead', 'scoreLabel', 'settling', 'verdictWin', 'verdictLose', 'verdictDraw', 'closeButton']) if (!text(battle[key])) add(`${bp}.${key}`, '必须是非空文案');
-                }
-              }
-            }
             if (!Array.isArray(route.acts) || route.acts.length !== 2) add(`${p}.acts`, '必须恰好包含缘起与取舍两幕');
             else route.acts.forEach((act, j) => {
               if (!isObj(act) || !text(act.id) || !Array.isArray(act.options) || act.options.length !== 2) add(`${p}.acts[${j}]`, '每幕必须包含 id 与两个选项');
