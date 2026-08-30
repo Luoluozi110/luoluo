@@ -748,14 +748,16 @@
    * 构造游戏可直接消费的完整工程对象。
    * 手动导出与云端发布必须共用此函数，避免两条交付路径的字段契约漂移。
    */
-  function buildProject(version) {
+  function buildProject(version, options) {
+    const exactVersion = !!(options && options.exactVersion);
     const missing = MODULES.filter(module => !(global[module.api] && global[module.api]._ready));
     if (missing.length) {
       throw new Error("以下编辑模块尚未完成载入，已阻止导出/发布残缺工程：" + missing.map(module => module.label).join("、"));
     }
     const project = {
       _type: "feihua-content",
-      _version: effectiveProjectVersion(version),
+      // 拉取以云端为唯一来源；不得让浏览器里更高的旧版本游标篡改云端版本。
+      _version: exactVersion ? Math.max(CONTENT_VERSION, Number(version) || CONTENT_VERSION) : effectiveProjectVersion(version),
       questions: global.QB ? global.QB.exportObj() : [],
       events: global.ADV ? global.ADV.exportRaw() : [],
       talents: global.TALENT ? global.TALENT.exportMainRaw() : [],
@@ -921,7 +923,7 @@
       mutationStarted = true;
       const routed = routeImport(incoming, true);
       if (!routed) throw new Error("云端数据未被任何已初始化的编辑器接收");
-      const applied = buildProject(incoming._version);
+      const applied = buildProject(incoming._version, { exactVersion: true });
       const diff = projectDiffKeys(incoming, applied);
       if (diff.length) {
         throw new Error("当前编辑器版本会改写这些云端模块：" + diff.map(key => PROJECT_FIELD_LABELS[key] || key).join("、"));
@@ -933,7 +935,7 @@
       if (mutationStarted) {
         try {
           routeImport(before, true);
-          const restored = buildProject(before._version);
+          const restored = buildProject(before._version, { exactVersion: true });
           const restoreDiff = projectDiffKeys(before, restored);
           if (restoreDiff.length) throw new Error("回滚后仍不一致：" + restoreDiff.join("、"));
         } catch (rollbackError) {

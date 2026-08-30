@@ -37,4 +37,11 @@ assert.deepEqual(
   '云端工程经过编辑器导入/导出后不得改写任何模块'
 );
 
+// 浏览器可能曾发布/拉取过更高版本；显式从云端拉取时，云端版本必须覆盖本地游标。
+window.Common.markCurrentDataVersion(cloudProject._version + 7);
+assert.equal(window.Common.buildProject()._version, cloudProject._version + 7, '测试前本地版本游标高于云端');
+const lowered = window.Common.applyCloudProject(cloudProject);
+assert.equal(lowered.project._version, cloudProject._version, '拉取结果必须严格采用云端版本');
+assert.equal(window.Common.localDataVersion(), cloudProject._version, '成功拉取后本地版本游标必须回落到云端版本');
+
 console.log('cloud-content-roundtrip.test.mjs: 当前云端工程无损拉取通过');
