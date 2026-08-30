@@ -51,7 +51,7 @@ function ok(m) { pass++; console.log('  ✓ ' + m); }
 console.log('== 结构校验：talent-upgrade.json ==');
 const cfg = buildCfg();
 const up = cfg['talent-upgrade'] || {};
-const UPCOST = { common: [6, 10], rare: [7, 11, 16], epic: [8, 12, 17, 23], legend: [9, 13, 18, 24, 31] };
+const UPCOST = { common: [4, 7], rare: [5, 8, 12], epic: [6, 9, 13, 18], legend: [7, 10, 14, 19, 25] };
 assert(Object.keys(up).length === cfg.talents.length, `升级表覆盖全部 ${cfg.talents.length} 枚文心（实际 ${Object.keys(up).length}）`);
 for (const t of cfg.talents) {
   const u = up[t.id];
@@ -73,14 +73,14 @@ console.log('\n== 引擎：grantTalent 落 Lv1 生效副本 ==');
 const game = new Game(cfg, makeUI(), rng);
 game.start('cizong_bi', { name: '测' }); // 三派之一；初始文心 T006（bi），与下文 T004 无关，避免重复授予
 game.s.inspiration = 60; game.s.inspirationMax = 60;
-// 选 attr_flat 文心 T004（学力 +2@Lv1 → +4@Lv3）
+// 选 attr_flat 文心 T004（强反馈曲线：学力 +3@Lv1 → +6@Lv3）
 const T004 = cfg.talentById.get('T004');
 const xueBefore = game.s.attrs.xue;
 game.grantTalent(T004, { silent: true });
 assert(game.s.talentLevels.T004 === 1, 'T004 等级=1');
 const held004 = game.s.passive.find(t => t.id === 'T004');
-assert(held004 && held004.effect.attrs.xue === 2, 'T004 持有副本 Lv1 学力+2');
-assert(game.s.attrs.xue === xueBefore + 2, 'T004 落地后学力+2（attr_flat 常驻）');
+assert(held004 && held004.effect.attrs.xue === 3, 'T004 持有副本 Lv1 学力+3');
+assert(game.s.attrs.xue === xueBefore + 3, 'T004 落地后学力+3（attr_flat 常驻）');
 
 console.log('\n== 引擎：upgradeTalent 扣灵感 + 缩放 + 一次性差值 ==');
 const cost0 = up.T004.upCost[0];
@@ -88,12 +88,12 @@ const inspBefore = game.s.inspiration;
 const r1 = game.upgradeTalent('T004');
 assert(r1.ok && r1.level === 2, 'T004 升级至 Lv2 成功');
 assert(game.s.inspiration === inspBefore - cost0, `灵感扣减 ${cost0}`);
-assert(held004.effect.attrs.xue === 3, 'T004 Lv2 学力+3');
-assert(game.s.attrs.xue === xueBefore + 3, '学力净 +3（差值结算，未重复 +2）');
+assert(held004.effect.attrs.xue === 4, 'T004 Lv2 学力+4');
+assert(game.s.attrs.xue === xueBefore + 4, '学力净 +4（差值结算，未重复叠加）');
 // 再升到 Lv3（满级）
 const r2 = game.upgradeTalent('T004');
 assert(r2.ok && r2.level === 3, 'T004 升级至 Lv3（满级）');
-assert(held004.effect.attrs.xue === 4, 'T004 Lv3 学力+4');
+assert(held004.effect.attrs.xue === 6, 'T004 Lv3 学力+6');
 const r3 = game.upgradeTalent('T004');
 assert(!r3.ok && r3.reason === '已满级', '满级后再升级被拒');
 
@@ -122,7 +122,7 @@ const de = deserializeRun(blob, cfg);
 assert(de.ok, '反序列化成功');
 assert(de.state.talentLevels.T004 === 3, '读档后 T004 仍为 Lv3');
 const held004b = de.state.passive.find(t => t.id === 'T004');
-assert(held004b && held004b.effect.attrs.xue === 4, '读档后 T004 生效副本=学力+4（Lv3）');
-assert(de.state.attrs.xue === xueBefore + 4, '读档后学力累计值正确');
+assert(held004b && held004b.effect.attrs.xue === 6, '读档后 T004 生效副本=学力+6（Lv3）');
+assert(de.state.attrs.xue === xueBefore + 6, '读档后学力累计值正确');
 
 console.log(`\n全部升级单测通过 ✓（RUN_SAVE_VERSION=${RUN_SAVE_VERSION}）`);

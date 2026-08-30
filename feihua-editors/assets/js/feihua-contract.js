@@ -239,7 +239,35 @@ const INK_TAGS = new Set(INK_AXES.flat());
         if (!Number.isInteger(max) || max < 1) add(`${p}.maxLevel`, '必须是正整数');
         if (!Array.isArray(up.levels) || (Number.isInteger(max) && up.levels.length !== max)) add(`${p}.levels`, '长度必须等于 maxLevel');
         if (!Array.isArray(up.upCost) || (Number.isInteger(max) && up.upCost.length !== Math.max(0, max - 1))) add(`${p}.upCost`, '长度必须等于 maxLevel - 1');
+        if (Array.isArray(up.levels)) up.levels.forEach((lv, i) => {
+          if (!isObj(lv) || !isObj(lv.effect) || !text(lv.effect.type)) add(`${p}.levels[${i}].effect`, '必须包含 effect.type');
+          if (i > 0 && JSON.stringify(lv.effect) === JSON.stringify(up.levels[i - 1] && up.levels[i - 1].effect)) warn(`${p}.levels[${i}].effect`, '升级后效果与上一等级完全相同', 'dead_upgrade');
+        });
+        const talent = Array.isArray(cfg.talents) ? cfg.talents.find(t => t && t.id === id) : null;
+        if (talent && up.levels && up.levels[0] && JSON.stringify(talent.effect) !== JSON.stringify(up.levels[0].effect)) add(`${p}.levels[0].effect`, '必须与 talents 中的基础效果一致', 'level1_drift');
       }
+    }
+
+    if ('synergies' in cfg && Array.isArray(cfg.synergies)) {
+      const allowed = new Set(['syn_pct','style_pct','theme_pct','palace_pct','on_win_bonus','dice_plus','dice_pattern','extra_dice_pct','crit','comeback','battle_history_pct','armory_pct','study_bonus','insp_on_win','insp_turn_regen','insp_battle_recover','style_switch_pct','manuscript_pct','streak_pct','palace_insp','insp_on_quiz']);
+      cfg.synergies.forEach((sy, i) => {
+        const p = `synergies[${i}]`;
+        if (!Array.isArray(sy.members) || sy.members.length < 2) add(`${p}.members`, '羁绊至少需要两枚成员文心');
+        else sy.members.forEach((id, j) => { if (talentIds.size && !talentIds.has(id)) add(`${p}.members[${j}]`, `引用了不存在的文心 ${id}`, 'missing_ref'); });
+        if (!Array.isArray(sy.effects) || !sy.effects.length) add(`${p}.effects`, '至少需要一条效果');
+        else {
+          const effectIds = new Set();
+          sy.effects.forEach((ef, j) => {
+            const ep = `${p}.effects[${j}]`;
+            if (!isObj(ef) || !allowed.has(ef.type)) add(`${ep}.type`, '羁绊效果类型不受支持');
+            if (!text(ef.effectId)) add(`${ep}.effectId`, '必须提供稳定 effectId');
+            else if (effectIds.has(ef.effectId)) add(`${ep}.effectId`, '同一羁绊内 effectId 不可重复', 'duplicate_id');
+            else effectIds.add(ef.effectId);
+            if (ef.stackMode != null && !['add','max','replace'].includes(ef.stackMode)) add(`${ep}.stackMode`, '必须是 add、max 或 replace');
+            if (ef.when != null && !isObj(ef.when)) add(`${ep}.when`, '必须是条件对象');
+          });
+        }
+      });
     }
 
     if ('board' in cfg) {

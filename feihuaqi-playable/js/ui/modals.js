@@ -402,12 +402,20 @@ export class Modals {
   }
 
   /* ---------------------------------------------------- 文心卡 */
-  async showTalentGain(t) {
+  async showTalentGain(t, meta = {}) {
+    const level = Math.max(1, Number(meta.level) || 1);
+    const maxLevel = Math.max(level, Number(meta.maxLevel) || level);
+    const hints = Array.isArray(meta.synergies) ? meta.synergies : [];
+    const synergyHtml = hints.length ? `<div class="dianggu" style="margin-top:10px">${hints.map(h => h.active
+      ? `<b style="color:var(--zhu)">✦ 已激活羁绊：${esc(h.name)}</b>`
+      : `羁绊「${esc(h.name)}」还差：${h.missing.map(esc).join('、')}`).join('<br>')}</div>` : '';
     const ov = this.open(`
       <div class="talent-card paper ${t.kind === 'active' ? 'act' : ''}">
-        <div class="kind">${t.kind === 'active' ? `主动文心　消耗灵感 ${t.cost || 1}` : '被动文心　常驻生效'}</div>
+        <div class="kind">${t.kind === 'active' ? `主动文心　消耗灵感 ${t.cost || 1}` : '被动文心　常驻生效'}　·　Lv ${level}/${maxLevel}</div>
         <h3>${esc(t.name)}</h3>
+        <div class="up-next-h" style="color:var(--zhu);margin-bottom:8px">✦ 已按当前等级完整生效</div>
         <div class="efx">${talentEffectText(t)}</div>
+        ${synergyHtml}
         <div class="dianggu">${esc(personalize(t.text || '', this.playerName))}</div>
         <div class="dianggu" style="margin-top:10px;color:var(--mo-3)">获得后可在右侧“文心”栏查看；点击已有文心，可查看当前等级、下一级效果与升级所需灵感。</div>
         <div style="text-align:center;margin-top:16px"><button class="btn btn-primary" data-ok>收入囊中</button></div>
@@ -1018,7 +1026,7 @@ export function talentEffectText(t) {
       const discount = Number(e.firstCostDiscount) || 0;
       return discount ? `首枚追加少耗 ${discount} 灵感；${pct}` : pct;
     }
-    case 'extra_dice_chain': return `支付首枚续掷后自动续得第二枚骰；若自动骰不低于首枚续骰，得分 +${Math.round((e.value || 0) * 100)}%`;
+    case 'extra_dice_chain': return `支付首枚续掷后自动续得第二枚骰；若自动骰不低于首枚续骰，得分 +${Math.round((e.value || 0) * 100)}%${e.refund ? `，并返还 ${e.refund} 灵感` : ''}`;
     case 'dice_transform':
       if (e.mode === 'first_floor') return `本场首枚灵感骰最低视为 ${e.floor || 4} 点，并禁止追加骰${e.value ? `；得分 +${Math.round(e.value * 100)}%` : ''}`;
       if (e.mode === 'polarize') return `至少两枚骰时，将最左最低骰化为 1、最右最高骰化为 6${e.value ? `；得分 +${Math.round(e.value * 100)}%` : ''}`;
@@ -1072,21 +1080,21 @@ export function talentEffectText(t) {
     case 'insp_on_win': return `每场论战取胜，灵感 +${e.value || 0}`;
     case 'draw_bonus': return `平分秋色时，出战文体额外 +${e.value || 0}`;
     case 'insp_on_talent': return `每获得一枚新文心，灵感 +${e.value || 0}`;
-    case 'style_pct': return `以${S[e.style] || e.style}出战，得分 +${Math.round((e.value || 0) * 100)}%`;
-    case 'theme_pct': return `指定题材出战，得分 +${Math.round((e.value || 0) * 100)}%`;
+    case 'style_pct': return `以${S[e.style] || e.style}出战，得分 +${Math.round((e.value || 0) * 100)}%${e.singleDieBonus ? `；仅用一骰再 +${Math.round(e.singleDieBonus * 100)}%` : ''}`;
+    case 'theme_pct': return `指定题材出战，得分 +${Math.round((e.value || 0) * 100)}%${e.reward ? `；触发后获得 ${e.reward.value || 0} ${e.reward.type || ''}` : ''}`;
     case 'streak_mult': return `气势连捷收益 ×${(1 + (e.value || 0)).toFixed(2)}`;
     case 'insp_floor': return `每场结算后灵感至少为 ${e.value || 0}`;
     case 'lucky_six': return `任一灵感骰掷出六点，本场得分 ×${e.mult || 0}`;
     case 'comeback': return `灵感 ≤${e.threshold || 0} 时，本场得分 +${Math.round((e.value || 0) * 100)}%`;
-    case 'armory_pct': return `每拥有 ${e.step || 0} 枚文心，六维算分属性 +${Math.round((e.value || 0) * 100)}%`;
-    case 'study_bonus': return `败/平研习补偿属性额外 +${e.value || 0}`;
-    case 'palace_insp': return `殿试每场开场，灵感 +${e.value || 0}`;
+    case 'armory_pct': return `每拥有 ${e.step || 0} 枚文心，六维算分属性 +${Math.round((e.value || 0) * 100)}%${e.cap ? `（上限 ${Math.round(e.cap * 100)}%）` : ''}`;
+    case 'study_bonus': return `败/平研习补偿属性额外 +${e.value || 0}${e.nextBattlePct ? `；下一场得分 +${Math.round(e.nextBattlePct * 100)}%` : ''}`;
+    case 'palace_insp': return `殿试每场开场，灵感 +${e.value || 0}${e.startValue ? `；入场先 +${e.startValue}` : ''}`;
     case 'start_insp': return `获得时，灵感一次性 +${e.value || 0}`;
-    case 'insp_turn_regen': return `持有时，每回合开始恢复灵感 +${e.value || 0}`;
+    case 'insp_turn_regen': return `持有时，每回合开始恢复灵感 +${e.value || 0}${e.thresholdRatio ? `（低于上限 ${Math.round(e.thresholdRatio * 100)}% 时）` : ''}${e.onTalent ? `；新得文心时 +${e.onTalent}` : ''}`;
     case 'insp_on_quiz': return `答对/完成抉择额外 +${e.value || 0} 灵感（每局最多 ${e.maxTriggers || 0} 次）`;
     case 'insp_battle_recover': return `战后灵感 ≤${e.threshold || 0} 时恢复 ${e.value || 0}（每局最多 ${e.maxTriggers || 0} 次）`;
-    case 'insp_max': return `获得时，本局灵感上限永久 +${e.value || 0}（同类扩容互斥）`;
-    case 'reincarnate': return `殿试结算时若剩余灵感 ≥ ${Number(e.inspThreshold) || 0}，下一局继承本局属性的 ${Math.round((Number(e.attrRatio) || 0) * 100)}%，并保留此文心与当前等级`;
+    case 'insp_max': return `获得时，本局灵感上限永久 +${e.value || 0}${e.fillRatio ? `，并立即补充扩容量的 ${Math.round(e.fillRatio * 100)}%` : ''}（同类扩容互斥）`;
+    case 'reincarnate': return `${e.startInspiration ? `获得时灵感 +${e.startInspiration}；` : ''}殿试结算时若剩余灵感 ≥ ${Number(e.inspThreshold) || 0}，下一局继承本局属性的 ${Math.round((Number(e.attrRatio) || 0) * 100)}%，并保留此文心与当前等级`;
     default: return t.desc || '效果由配置定义';
   }
 }

@@ -1,29 +1,15 @@
 // 文心羁绊验证：对照「羁绊开启」vs「羁绊关闭」，量化平衡与羁绊激活率。
 import * as R from './feihuaqi-playable/js/engine/rules.js';
 import { Game } from './feihuaqi-playable/js/engine/game.js';
+import { normalizeConfig } from './feihuaqi-playable/js/engine/config.js';
 import fs from 'fs';
 
 const D = 'feihuaqi-playable/config/';
 const base = {};
-for (const n of ['attrs','inspiration','board','questions','events','talents','schools','affinity','npcs','sky','grades','album','synergies']) {
+for (const n of ['attrs','inspiration','board','questions','events','talents','schools','affinity','npcs','sky','grades','album','synergies','npc-mechanics','talent-upgrade','narrative','sidequests','sidequest-talents','sidequest-npcs']) {
   try { base[n] = JSON.parse(fs.readFileSync(D+n+'.json','utf8')); } catch { base[n] = []; }
 }
-const board = base.board;
-const byId = new Map();
-for (const c of board.mainRing) byId.set(c.id, { ...c, ring:'main' });
-const declared = new Map();
-for (const c of (board.branchCells||[])) declared.set(c.id, c);
-for (const [bid,br] of Object.entries(board.branches||{})) {
-  br.id = bid;
-  const BT=['ping','quiz','event','battle','landmark'];
-  br.cells.forEach((cid,i)=>{ const d=declared.get(cid)||{}; byId.set(cid,{id:cid,type:d.type||BT[i]||'ping',name:d.name||`${br.landmark}·${i+1}`,branch:bid,branchIndex:i,ring:'branch'}); });
-}
-board.cellById = byId; board.gateOf={};
-for (const [g,b] of Object.entries(board.branchGates||{})) board.gateOf[b]=Number(g);
-board.laps = Number(board.laps)||2; board.ringSize = board.mainRing.length;
-base.questions = (base.questions||[]).filter(q=>q.enabled!==false);
-base.events = (base.events||[]).filter(e=>e.enabled!==false);
-base.talentById = new Map((base.talents||[]).map(t=>[t.id,t]));
+normalizeConfig(base);
 
 function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 
@@ -33,6 +19,7 @@ function makeUI(rand, quizAcc){
     highlightCell(){}, showQuizResult(){}, showSky(){}, showLandmark(){}, skyExpired(){},
     showTalentGain(){}, showPalaceIntro(){}, async showResult(){},
     async askReplaceTalent(){ return 0; },
+    async chooseScenicTalent(candidates, meta){ return meta && String(meta.title || '').includes('战后文心') ? Math.floor(rand() * candidates.length) : -1; },
     async askBranch(br, cell, cost, insp){ return insp >= cost+8; },
     async askScenic(cell, cost, insp){ return (insp||0) >= (cost||0); },
     async showQuiz(q){ const correct = q.type==='knowledge' ? q.answer : 0;
@@ -102,7 +89,7 @@ async function runGames(N, quizAcc, mode){
   };
 }
 
-const N=2000;
+const N=Math.max(100, Number(process.env.SIM_GAMES) || 3500);
 (async()=>{
   console.log('=== 羁绊关闭(对照)  quizAcc=0.75 ===');
   console.log(JSON.stringify(await runGames(N,0.75,'nosyn'),null,0));

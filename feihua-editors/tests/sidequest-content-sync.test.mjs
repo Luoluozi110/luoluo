@@ -10,6 +10,11 @@ assert.deepEqual([...sandbox.window.GAME_SIDEQUEST_TALENTS.map(t => t.id)].sort(
 const npcRoutes = Object.values(sandbox.window.GAME_SIDEQUEST_NPCS.routes);
 const npcIds = npcRoutes.flatMap(route => [route.guides[0], route.climax, ...Object.values(route.final.secondary)]).map(npc => npc.id);
 assert.equal(new Set(npcIds).size, 9, '编辑器需同步剩余 9 名支线专属 NPC');
-assert.match(readFileSync(new URL('../assets/js/common.js', import.meta.url), 'utf8'), /project\.sidequests = global\.GAME_SIDEQUESTS/, '导出工程必须携带支线 NPC 与路线');
-assert.match(readFileSync(new URL('../assets/js/common.js', import.meta.url), 'utf8'), /project\['sidequest-npcs'\] = global\.GAME_SIDEQUEST_NPCS/, '导出工程必须携带支线专属 NPC 配置');
+const common = readFileSync(new URL('../assets/js/common.js', import.meta.url), 'utf8');
+assert.match(common, /project\.sidequests = global\.GAME_SIDEQUESTS/, '导出工程必须携带支线路线');
+assert.match(common, /SIDEQUEST_NPC\.exportRaw\(\)/, '导出工程必须读取支线 NPC 编辑器实时数据');
+const npcSeed = JSON.parse(readFileSync(new URL('../assets/js/seed-npcs.js', import.meta.url), 'utf8').replace(/^[\s\S]*?window\.GAME_NPCS\s*=\s*/, '').replace(/;\s*$/, ''));
+const restoredIds = npcSeed.flatMap(tier => tier.npcs || []).map(npc => npc.id);
+assert.ok(restoredIds.includes('npc_tongsheng_1') && restoredIds.includes('npc_juren_1'), '普通 NPC 种子应恢复两名自编辑具名 NPC');
+assert.match(readFileSync(new URL('../assets/js/sidequest-npc.js', import.meta.url), 'utf8'), /sideNpcBtnImport/, '编辑器必须提供支线 NPC 独立管理入口');
 console.log('sidequest-content-sync.test.mjs: 编辑器支线内容同步 ✓');

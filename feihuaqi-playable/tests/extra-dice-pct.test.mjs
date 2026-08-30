@@ -136,7 +136,7 @@ console.log('== 文心：骰组构型、免费续掷与续章链 ==');
   assert.equal(upgrades.T005.levels.at(-1).effect.value, 0.22, '急智满级高走收益提升');
   assert.equal(upgrades.T010.levels.at(-1).effect.firstCostDiscount, 3, '天马行空满级首枚减费 3');
   assert.equal(upgrades.T016.levels.at(-1).effect.fullValue, 0.14, '文思泉涌满级保留三骰连升高潮');
-  assert.equal(upgrades.TA05.levels.at(-1).effect.value, 0.1, '一气呵成满级续章命中 +10%');
+  assert.equal(upgrades.TA05.levels.at(-1).effect.value, 0.28, '一气呵成满级续章命中 +28%');
 
   const game = newGame();
   game.s.passive = [qishi, flow, tianma];
@@ -151,7 +151,7 @@ console.log('== 文心：骰组构型、免费续掷与续章链 ==');
   session.usedActive = [yiqi];
   session._extraDiceChainUsed = true;
   const activeOut = game.resolveBattle(session, 'shi', 'zheli', [3, 4, 5]);
-  assert.ok(activeOut.selfCalc.items[4].detail.includes('文心·一气呵成·续章 +4%'), '明细显示一气呵成续章命中');
+  assert.ok(activeOut.selfCalc.items[4].detail.includes('文心·一气呵成·续章 +14%'), '明细显示强化后的一气呵成续章命中');
 
   const qibuGame = newGame();
   qibuGame.s.passive = [qibu];

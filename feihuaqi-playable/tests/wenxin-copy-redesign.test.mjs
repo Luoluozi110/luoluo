@@ -33,28 +33,29 @@ console.log('== 知人论世升级：逐级新增能力（非纯比率微调） 
   const L = T011up.levels;
   assert.equal(L.length, 6);
 
-  // Lv1→Lv2：复制比率从 0.6 提升到 1.0（满复制）
-  assert.equal(L[0].effect.ratio, 0.6, 'Lv1 复制 60%');
-  assert.equal(L[1].effect.ratio, 1.0, 'Lv2 满复制 100%');
+  // 强反馈曲线：每级均提升，并从 Lv2 起揭示意图
+  assert.equal(L[0].effect.ratio, 0.8, 'Lv1 复制 80%');
+  assert.equal(L[1].effect.ratio, 0.9, 'Lv2 复制 90%');
+  assert.equal(L[1].effect.revealIntent, true, 'Lv2 开始揭示意图');
 
   // Lv3：揭示对手意图（此前完全没有的能力）
   assert.equal(L[2].effect.revealIntent, true, 'Lv3 揭示意图');
   assert.equal(L[2].effect.ratio, 1.0);
 
   // Lv4：相性协同（+3% 当文风一致）
-  assert.equal(L[3].effect.synergyPct, 0.03, 'Lv4 文风协同 +3%');
+  assert.equal(L[3].effect.synergyPct, 0.04, 'Lv4 文风协同 +4%');
   assert.equal(L[3].effect.revealIntent, true);
 
   // Lv5：通晓题材（+3% 泛化）
-  assert.equal(L[4].effect.themeFlat, 0.03, 'Lv5 通晓题材 +3%');
-  assert.equal(L[4].effect.synergyPct, 0.03);
+  assert.equal(L[4].effect.themeFlat, 0.04, 'Lv5 通晓题材 +4%');
+  assert.equal(L[4].effect.synergyPct, 0.04);
   assert.equal(L[4].effect.revealIntent, true);
 
   // Lv6：相性化境（转化 50%）+ 揭示破绽
   assert.equal(L[5].effect.convertPct, 0.5, 'Lv6 相性化境转化 50%');
   assert.equal(L[5].effect.revealWeakness, true, 'Lv6 揭示破绽');
-  assert.equal(L[5].effect.themeFlat, 0.03);
-  assert.equal(L[5].effect.synergyPct, 0.03);
+  assert.equal(L[5].effect.themeFlat, 0.04);
+  assert.equal(L[5].effect.synergyPct, 0.04);
   assert.equal(L[5].effect.revealIntent, true);
 
   // 关键不变量：相邻等级的效果“指纹”互不相同（升级确有可感知差异）
