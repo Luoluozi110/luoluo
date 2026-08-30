@@ -126,7 +126,7 @@ export function applyProjectOverride(baseCfg, project, options = {}) {
   // 引擎内部与测试可直接传配置补丁（无工程包装层）；外部编辑器发布仍由 assertProject 默认严格校验 _type。
   CONTRACT.assertProject(project, { requireComplete: false, requireType: !!options.requireType });
   const next = Object.assign({}, baseCfg);
-  for (const key of ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics', 'sky', 'album', 'schools', 'grades', 'narrative', 'sidequests', 'sidequest-npcs']) {
+  for (const key of ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics', 'sky', 'album', 'schools', 'grades', 'narrative', 'sidequests', 'sidequest-npcs', 'sidequest-talents']) {
     if (project[key] !== undefined && project[key] !== null) next[key] = project[key];
   }
   // 旧云端工程可能已有支线路线、却尚未携带 presentation。展示文案属于运行时玩法契约，

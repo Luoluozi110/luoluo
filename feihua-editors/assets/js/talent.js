@@ -648,6 +648,7 @@
           <p class="q-name">${C.esc(t.name)}</p>
           <div class="q-tags"><span class="t">${TALENT_TYPE_LABELS[t.effect.type] || t.effect.type}</span></div>
           <div class="q-opts">${C.esc(eff)}${cost}</div>
+          ${desc ? `<div class="q-desc" title="${C.esc(desc)}">${C.esc(desc)}</div>` : ""}
         </div>
         <div class="q-actions">
           <button class="btn sm" data-preview="${idx}">预览</button>
@@ -708,20 +709,23 @@
     }
     if (type === "dice_transform") {
       const mode = eff.mode || "low_lift";
-      const opts = [["low_lift", "抬高低点"], ["first_floor", "首骰保底"], ["lowest_to", "最低点化用"]];
+      const opts = [["low_lift", "抬高低点"], ["first_floor", "首骰保底"], ["lowest_to", "最低点化用"], ["polarize", "两极化用"]];
       let dyn = "";
       if (mode === "low_lift") dyn = `<div class="row3"><div class="field" style="margin:0"><label>低点阈值</label><input type="number" class="tal-threshold" value="${eff.threshold || 2}" min="1" max="6"/></div><div class="field" style="margin:0"><label>抬高点数</label><input type="number" class="tal-value" value="${eff.value || 1}" min="1"/></div><div class="field" style="margin:0"><label>最多处理枚数</label><input type="number" class="tal-count" value="${eff.count || 1}" min="1" max="3"/></div></div>`;
-      else if (mode === "first_floor") dyn = `<div class="field"><label>首骰最低点</label><input type="number" class="tal-floor" value="${eff.floor || 4}" min="1" max="6"/></div>`;
+      else if (mode === "first_floor") dyn = `<div class="row2"><div class="field" style="margin:0"><label>首骰最低点</label><input type="number" class="tal-floor" value="${eff.floor || 4}" min="1" max="6"/></div><div class="field" style="margin:0"><label>本场不能追加骰</label><select class="tal-no-extra"><option value="0" ${!eff.noExtraDice ? "selected" : ""}>否</option><option value="1" ${eff.noExtraDice ? "selected" : ""}>是</option></select></div></div>`;
+      else if (mode === "polarize") dyn = `<div class="row2"><div class="field" style="margin:0"><label>至少骰数</label><input type="number" class="tal-min-dice" value="${eff.minDice || 2}" min="2" max="3"/></div><div class="field" style="margin:0"><label>命中得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" min="0" step="1"/></div></div>`;
       else dyn = `<div class="row2"><div class="field" style="margin:0"><label>最低骰须不高于</label><input type="number" class="tal-max-pip" value="${eff.maxPip || 3}" min="1" max="6"/></div><div class="field" style="margin:0"><label>化为点数</label><input type="number" class="tal-target-pip" value="${eff.target || 6}" min="1" max="6"/></div></div>`;
       return `<div class="field"><label>化用方式</label><select class="tal-transform-mode">${opts.map(([v, n]) => `<option value="${v}" ${v === mode ? "selected" : ""}>${n}</option>`).join("")}</select></div>${dyn}`;
     }
     if (type === "dice_pattern") {
       const pattern = eff.pattern || "six";
-      const opts = [["six", "最终六点"], ["distinct", "不同点数"], ["all_distinct", "三骰各异"], ["low_then_high", "低开高走"], ["ascending", "逐骰递升"], ["single", "只用单骰"], ["all_high", "全骰高点"], ["pair", "出现同点"], ["total", "总点达标"], ["exact_total", "合点命中"], ["total_multiple", "总点为倍数"], ["total_tiers", "总点分档"], ["extremes", "高低两极"]];
+      const opts = [["six", "最终六点"], ["distinct", "不同点数"], ["all_distinct", "三骰各异"], ["low_then_high", "低开高走"], ["ascending", "逐骰递升"], ["first_last_equal", "首尾同点"], ["low_and_high", "低高并见"], ["single", "只用单骰"], ["all_high", "全骰高点"], ["pair", "出现同点"], ["total", "总点达标"], ["exact_total", "合点命中"], ["total_multiple", "总点为倍数"], ["total_tiers", "总点分档"], ["extremes", "高低两极"]];
       let dyn = "";
       if (pattern === "extremes") dyn = `<div class="row2"><div class="field" style="margin:0"><label>高点门槛 / 每枚 +%</label><input type="number" class="tal-high-min" value="${eff.highMin || 5}" min="1" max="6"/><input type="number" class="tal-high-pct" value="${Math.round((eff.highValue || 0) * 100)}" step="1"/></div><div class="field" style="margin:0"><label>低点门槛 / 每枚 +%（可负）</label><input type="number" class="tal-low-max" value="${eff.lowMax || 2}" min="1" max="6"/><input type="number" class="tal-low-pct" value="${Math.round((eff.lowValue || 0) * 100)}" step="1"/></div></div>`;
       else if (pattern === "all_distinct") dyn = `<div class="row3"><div class="field" style="margin:0"><label>至少骰数</label><input type="number" class="tal-min-dice" value="${eff.minDice || 3}" min="2" max="3"/></div><div class="field" style="margin:0"><label>命中得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" step="1"/></div><div class="field" style="margin:0"><label>首枚续掷减费</label><input type="number" class="tal-first-discount" value="${eff.firstCostDiscount || 0}" min="0"/></div></div>`;
       else if (pattern === "low_then_high") dyn = `<div class="row4"><div class="field" style="margin:0"><label>首骰不高于</label><input type="number" class="tal-low-max" value="${eff.lowMax || 2}" min="1" max="6"/></div><div class="field" style="margin:0"><label>续骰不低于</label><input type="number" class="tal-next-high-min" value="${eff.nextHighMin || 5}" min="1" max="6"/></div><div class="field" style="margin:0"><label>命中得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" step="1"/></div><div class="field" style="margin:0"><label>低开续掷减费</label><input type="number" class="tal-conditional-discount" value="${eff.conditionalFirstCostDiscount || 0}" min="0"/></div></div>`;
+      else if (pattern === "first_last_equal") dyn = `<div class="row3"><div class="field" style="margin:0"><label>至少骰数</label><input type="number" class="tal-min-dice" value="${eff.minDice || 2}" min="2" max="3"/></div><div class="field" style="margin:0"><label>首尾同点得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" step="1"/></div><div class="field" style="margin:0"><label>首枚续掷减费</label><input type="number" class="tal-first-discount" value="${eff.firstCostDiscount || 0}" min="0"/></div></div>`;
+      else if (pattern === "low_and_high") dyn = `<div class="row3"><div class="field" style="margin:0"><label>低点不高于</label><input type="number" class="tal-low-max" value="${eff.lowMax || 2}" min="1" max="6"/></div><div class="field" style="margin:0"><label>高点不低于</label><input type="number" class="tal-high-min" value="${eff.highMin || 5}" min="1" max="6"/></div><div class="field" style="margin:0"><label>命中得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" step="1"/></div></div>`;
       else if (pattern === "ascending") dyn = `<div class="row4"><div class="field" style="margin:0"><label>每次递升 +%</label><input type="number" class="tal-step-pct" value="${Math.round((eff.perStepValue || 0) * 100)}" step="1"/></div><div class="field" style="margin:0"><label>连升骰数</label><input type="number" class="tal-full-dice" value="${eff.fullDice || 3}" min="2" max="3"/></div><div class="field" style="margin:0"><label>连升额外 +%</label><input type="number" class="tal-full-pct" value="${Math.round((eff.fullValue || 0) * 100)}" step="1"/></div><div class="field" style="margin:0"><label>首枚续掷减费</label><input type="number" class="tal-first-discount" value="${eff.firstCostDiscount || 0}" min="0"/></div></div>`;
       else if (pattern === "exact_total") dyn = `<div class="row4"><div class="field" style="margin:0"><label>骰数</label><input type="number" class="tal-dice-count" value="${eff.diceCount || 2}" min="2" max="3"/></div><div class="field" style="margin:0"><label>目标合点</label><input type="number" class="tal-exact-total" value="${eff.total || 7}" min="2" max="18"/></div><div class="field" style="margin:0"><label>命中得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" step="1"/></div><div class="field" style="margin:0"><label>首枚续掷免费</label><select class="tal-first-free"><option value="0" ${!eff.firstExtraFree ? "selected" : ""}>否</option><option value="1" ${eff.firstExtraFree ? "selected" : ""}>是</option></select></div></div>`;
       else if (pattern === "total_multiple") dyn = `<div class="row2"><div class="field" style="margin:0"><label>倍数</label><input type="number" class="tal-total-multiple" value="${eff.multiple || 7}" min="1" step="1"/></div><div class="field" style="margin:0"><label>命中得分 +%</label><input type="number" class="tal-value-pct" value="${Math.round((eff.value || 0) * 100)}" step="1"/></div></div>`;
@@ -930,7 +934,7 @@
       state.form = {
         id: src.id, name: src.name, kind: src.kind, school: src.school || "", text: src.text,
         effect: JSON.parse(JSON.stringify(src.effect)),
-        cost: src.cost, source: src.source || "",
+        cost: src.cost, source: src.source || "", routeId: src.routeId || "", axis: src.axis || "", quality: src.quality || "",
         acquire: src.acquire ? JSON.parse(JSON.stringify(src.acquire)) : null,
         acquireText: src.acquireText || "",
         upgrade: src.upgrade ? JSON.parse(JSON.stringify(src.upgrade)) : null
@@ -969,6 +973,7 @@
     if (form.school) out.school = form.school;
     if (form.kind === "active") out.cost = Math.max(1, Number(form.cost) || 1);
     if (form.source) out.source = form.source.trim();
+    for (const key of ["routeId", "axis", "quality"]) if (form[key] && String(form[key]).trim()) out[key] = String(form[key]).trim();
     if (form.acquire && typeof form.acquire === "object") out.acquire = JSON.parse(JSON.stringify(form.acquire));
     if (form.acquireText) out.acquireText = String(form.acquireText).trim();
     if (form.upgrade && typeof form.upgrade === "object") out.upgrade = normalizeUpgrade(form.upgrade, out);
@@ -1333,8 +1338,9 @@
       if (!eff) return;
       if (t.classList.contains("tal-transform-mode")) {
         const next = defaultEffect("dice_transform"); next.mode = t.value;
-        if (t.value === "first_floor") { delete next.threshold; delete next.value; delete next.count; next.floor = 4; }
-        if (t.value === "lowest_to") { delete next.threshold; delete next.value; delete next.count; next.maxPip = 3; next.target = 6; }
+        if (t.value === "first_floor") { delete next.threshold; delete next.value; delete next.count; next.floor = 4; next.noExtraDice = false; }
+        if (t.value === "polarize") { delete next.threshold; delete next.count; next.minDice = 2; next.value = 0; }
+        if (t.value === "lowest_to") { delete next.threshold; delete next.value; delete next.count; delete next.noExtraDice; next.maxPip = 3; next.target = 6; }
         if (dyn && state.form.upgrade) state.form.upgrade.levels[lvlIdx].effect = next; else state.form.effect = next;
         dyn ? renderLevelEffects() : renderEffectFields(); return;
       }
@@ -1342,6 +1348,8 @@
         const next = defaultEffect("dice_pattern"); next.pattern = t.value;
         if (t.value === "all_high") next.minPip = 4;
         if (t.value === "total") next.threshold = 12;
+        if (t.value === "first_last_equal") { next.minDice = 2; next.firstCostDiscount = 1; next.value = 0.12; }
+        if (t.value === "low_and_high") { next.lowMax = 2; next.highMin = 5; next.value = 0.12; }
         if (t.value === "distinct") next.firstCostDiscount = 0;
         if (t.value === "all_distinct") { next.minDice = 3; next.firstCostDiscount = 2; next.value = 0.15; }
         if (t.value === "low_then_high") { next.lowMax = 2; next.nextHighMin = 5; next.conditionalFirstCostDiscount = 2; next.value = 0.1; }
@@ -1381,6 +1389,7 @@
       else if (t.classList.contains("tal-exact-total")) eff.total = Math.max(2, Number(t.value) || 7);
       else if (t.classList.contains("tal-total-multiple")) eff.multiple = Math.max(1, Number(t.value) || 7);
       else if (t.classList.contains("tal-first-free")) eff.firstExtraFree = t.value === "1";
+      else if (t.classList.contains("tal-no-extra")) eff.noExtraDice = t.value === "1";
       else if (t.classList.contains("tal-chain-compare")) eff.compare = t.value;
       else if (t.classList.contains("tal-tier-high-threshold") || t.classList.contains("tal-tier-high-pct") || t.classList.contains("tal-tier-low-threshold") || t.classList.contains("tal-tier-low-pct") || t.classList.contains("tal-tier-reward")) {
         const tiers = Array.isArray(eff.tiers) ? eff.tiers.slice().sort((a,b) => (b.threshold || 0) - (a.threshold || 0)) : [];

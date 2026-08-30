@@ -32,7 +32,7 @@ game.start('qishi');
 const before = game.s.inspiration;
 game.addInspiration(3, '答对');
 assert.equal(game.s.inspiration, before + 3, 'qishi positive inspiration uses restrained 20% accumulator');
-assert.equal(game.s.schoolState.inspirationAccumulator, 0.6, 'fractional inspiration is retained');
+assert.ok(Math.abs(game.s.schoolState.inspirationAccumulator - 0.6) < 1e-9, 'fractional inspiration is retained');
 game.s.inspiration = 66;
 game.s.talentLevels.T008 = 1;
 game.s.passive = [game.leveledTalent(talentById.get('T008'), 1)];
@@ -53,7 +53,7 @@ game.start('cizong_bi');
 const session = game.createSession({ npc: { id: 'n', name: '测试', attrs: { shi: 5, ci: 5, lian: 5, bi: 5, xue: 5, si: 5 } }, theme: 'yongwu' });
 const out = game.resolveBattle(session, 'shi', 'wanyue', 1);
 assert.deepEqual(out.dicePips, [1]);
-assert.equal(out.selfCalc.diceScore, 4, '辞宗不再常驻 +2 骰；诗·一气低骰按 0.7 结算');
+assert.equal(out.selfCalc.diceScore, 5, '辞宗不再常驻 +2 骰；当前诗·一气低骰按 0.85 结算，并保留入木三分的 +1 骰点');
 assert.equal(game.manuscriptCap(), 4, '辞宗开局稿匣获得 +1 容量');
 
 const saved = serializeRun(game);

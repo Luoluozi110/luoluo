@@ -23,10 +23,11 @@ const { normalizeConfig } = await import('../feihuaqi-playable/js/engine/config.
 const fs = await import('fs');
 
 /* ---------------- 真实配置 ---------------- */
-const D = 'feihuaqi-playable/config/';
+// 使用相对本测试文件的 URL，避免由 scripts/run-test-suite.mjs 改变 cwd 后读不到配置。
+const configPath = name => new URL(`../feihuaqi-playable/config/${name}.json`, import.meta.url);
 const cfg = {};
 for (const n of ['attrs','inspiration','board','questions','events','talents','schools','affinity','npcs','sky','grades','album','synergies','npc-mechanics','talent-upgrade','narrative']) {
-  try { cfg[n] = JSON.parse(fs.readFileSync(D + n + '.json', 'utf8')); } catch { cfg[n] = []; }
+  try { cfg[n] = JSON.parse(fs.readFileSync(configPath(n), 'utf8')); } catch { cfg[n] = []; }
 }
 normalizeConfig(cfg);
 
