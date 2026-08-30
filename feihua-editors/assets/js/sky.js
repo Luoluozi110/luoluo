@@ -114,13 +114,9 @@
   }
   function loadData() {
     const raw = C.load("sky", null);
-    if (!raw) {
-      const base = Array.isArray(window.GAME_SKY) ? window.GAME_SKY : [];
-      state.cards = base.map(normalizeCard);
-      C.store("sky", state.cards);
-    } else {
-      state.cards = (Array.isArray(raw) ? raw : []).map(normalizeCard);
-    }
+    const merged = mergeOfficialCards(raw);
+    state.cards = merged.cards;
+    if (merged.changed) C.store("sky", state.cards);
   }
 
   /* ---------------- 效果预览文案（仿游戏 skyEffectText） ---------------- */
@@ -389,6 +385,7 @@
   function exportRaw() {
     return state.cards.map(c => {
       const out = { id: c.id, name: c.name, text: c.text, duration: c.duration, turns: c.turns, scope: c.scope, effect: c.effect };
+      if (Array.isArray(c.choices) && c.choices.length) out.choices = cloneJson(c.choices);
       if (c.icon) out.icon = c.icon;
       return out;
     });

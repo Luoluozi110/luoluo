@@ -43,11 +43,10 @@
     n = n || {};
     const style = ATTR_KEYS.includes(n.style) ? n.style : "";
     const w = Number(n.weight);
-    return {
+    const out = {
       id: String(n.id || "").trim(),
       name: String(n.name || "").trim(),
       title: String(n.title || "").trim(),
-      style,
       // 主属性用于战斗卡片提示；编辑器迁移时必须保留，不能只依赖文体推断。
       focusAttr: ATTR_KEYS.includes(n.focusAttr) ? n.focusAttr : undefined,
       // 出战权重：正整数；空/非法回退 undefined（引擎默认 100）；显式 0 保留为 0（本阶段不出战）
@@ -63,18 +62,19 @@
         ? JSON.parse(JSON.stringify(n.stageForcedWhen))
         : ((n.palaceForcedWhen && typeof n.palaceForcedWhen === 'object' && !Array.isArray(n.palaceForcedWhen)) ? JSON.parse(JSON.stringify(n.palaceForcedWhen)) : undefined)
     };
+    if (style) out.style = style;
+    return out;
   }
   function normalizeTier(t) {
     t = t || {};
     const out = {
       id: String(t.id || "").trim(),
       tier: String(t.tier || t.name || "").trim(),
-      range: Array.isArray(t.range) && t.range.length === 2
-        ? [Number(t.range[0]) || 0, Number(t.range[1]) || 0]
-        : [0, 1],
       desc: String(t.desc || "").trim(),
       npcs: Array.isArray(t.npcs) ? t.npcs.map(normalizeNpc) : []
     };
+    if (Array.isArray(t.range) && t.range.length === 2) out.range = [Number(t.range[0]) || 0, Number(t.range[1]) || 0];
+    else if (!t.isHiddenFinal) out.range = [0, 1];
     if (t.isFinal) {
       out.isFinal = true;
       out.battles = Math.max(1, Number(t.battles) || 3);
@@ -363,7 +363,7 @@
           <div class="meta">
             <span class="q-id">${C.esc(t.id)}</span>
             <span class="badge k-active">${C.esc(tierLabel(t))}</span>
-            <span class="badge">进度 ${Number(t.range[0]).toFixed(2)}–${Number(t.range[1]).toFixed(2)}</span>
+            ${t.isHiddenFinal ? "" : `<span class="badge">进度 ${Number(t.range[0]).toFixed(2)}–${Number(t.range[1]).toFixed(2)}</span>`}
             ${finalTag}
             <span class="npc-count">${t.npcs.length} 名对手</span>
           </div>
@@ -390,8 +390,9 @@
     state.editTier = index;
     const src = index >= 0 ? state.tiers[index] : null;
     if (src) {
+      const range = Array.isArray(src.range) ? src.range : [0, 1];
       state.tierForm = {
-        id: src.id, tier: tierLabel(src), rangeMin: Number(src.range[0]), rangeMax: Number(src.range[1]),
+        id: src.id, tier: tierLabel(src), rangeMin: Number(range[0]), rangeMax: Number(range[1]),
         desc: src.desc, isFinal: !!src.isFinal, isHiddenFinal: !!src.isHiddenFinal, battles: src.battles || 3,
         themes: (src.themes || []).join(",")
       };
@@ -427,6 +428,7 @@
       t.themes = String(form.themes || "").split(/[,，\s]+/).map(s => s.trim()).filter(Boolean);
     }
     if (form.isHiddenFinal) {
+      delete t.range;
       t.isHiddenFinal = true;
       t.themes = String(form.themes || "huaigu").split(/[,，\s]+/).map(s => s.trim()).filter(Boolean);
     }
@@ -772,7 +774,7 @@
   function showStats() {
     const totalNpc = state.tiers.reduce((s, t) => s + t.npcs.length, 0);
     const rows = state.tiers.map(t => `<tr><td>${C.esc(t.id)}</td><td>${C.esc(tierLabel(t))}</td>
-      <td class="num">${t.npcs.length}</td><td>${t.isFinal ? "殿试" : Number(t.range[0]).toFixed(2) + "–" + Number(t.range[1]).toFixed(2)}</td></tr>`).join("");
+      <td class="num">${t.npcs.length}</td><td>${t.isHiddenFinal ? "隐藏终圈" : t.isFinal ? "殿试" : Number(t.range[0]).toFixed(2) + "–" + Number(t.range[1]).toFixed(2)}</td></tr>`).join("");
     document.getElementById("npcStBody").innerHTML = `
       <p><b>对手档：</b>${state.tiers.length}　<b>具名对手：</b>${totalNpc}</p>
       <table class="stat-table" style="margin-top:8px">

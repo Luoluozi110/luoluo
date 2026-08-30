@@ -72,6 +72,8 @@
 
   const state = { talents: [], editIndex: -1, form: null, _ready: false };
   const officialTalentSeed = () => [...(window.GAME_TALENTS || []), ...(window.GAME_SIDEQUEST_TALENTS || [])];
+  const sidequestTalentIds = () => new Set((window.GAME_SIDEQUEST_TALENTS || []).map(t => t && t.id).filter(Boolean));
+  const isSidequestTalent = (talent, ids = sidequestTalentIds()) => ids.has(talent && talent.id) || talent && talent.source === "sidequest";
 
   /* ---------------- 效果（默认 / 归一化） ---------------- */
   function defaultEffect(type) {
@@ -111,8 +113,11 @@
   }
   function normalizeEffect(eff) {
     eff = eff || {};
-    const type = TALENT_TYPES.includes(eff.type) ? eff.type : "on_win_bonus";
-    const out = { type };
+    const type = typeof eff.type === "string" && eff.type.trim() ? eff.type.trim() : "on_win_bonus";
+    // 保留当前编辑器尚未提供表单的前向兼容字段（如 copy_affinity.ratio）。
+    // 已知字段仍由下方分支归一化，避免云端拉取时静默删掉运行时机制参数。
+    const out = eff && typeof eff === "object" && !Array.isArray(eff) ? JSON.parse(JSON.stringify(eff)) : {};
+    out.type = type;
     if (type === "on_win_bonus") { out.style = ["shi", "ci", "lian", "any"].includes(eff.style) ? eff.style : "shi"; out.value = Number(eff.value) || 0; }
     else if (type === "attr_flat") { out.attrs = cleanAttrs(eff.attrs); }
     else if (type === "crit") { out.chance = Number(eff.chance) || 0; out.mult = Number(eff.mult) || 0; }
@@ -120,7 +125,8 @@
     else if (type === "insp_on_win" || type === "draw_bonus" || type === "insp_on_talent") { out.value = Number(eff.value) || 0; }
     else if (type === "battle_history_pct") {
       out.condition = ["repeat_style", "switch_style", "previous_nonwin"].includes(eff.condition) ? eff.condition : "previous_nonwin";
-      out.value = Number(eff.value) || 0;
+      if (eff.value != null) out.value = Number(eff.value) || 0;
+      else delete out.value;
       if (eff.previousWinBonus != null) out.previousWinBonus = Number(eff.previousWinBonus) || 0;
       if (eff.previousNonWinBonus != null) out.previousNonWinBonus = Number(eff.previousNonWinBonus) || 0;
       if (eff.stackGroup) out.stackGroup = String(eff.stackGroup);
@@ -147,14 +153,25 @@
     else if (type === "extra_dice_pct") { out.value = Number(eff.value) || 0; out.firstCostDiscount = Math.max(0, Number(eff.firstCostDiscount) || 0); }
     else if (type === "extra_dice_chain") { out.compare = eff.compare === "not_lower" ? "not_lower" : "not_lower"; out.value = Number(eff.value) || 0; }
     else if (type === "dice_transform") {
-      out.mode = ["low_lift", "first_floor", "lowest_to"].includes(eff.mode) ? eff.mode : "low_lift";
+      out.mode = ["low_lift", "first_floor", "lowest_to", "polarize"].includes(eff.mode) ? eff.mode : "low_lift";
       if (out.mode === "low_lift") { out.threshold = Math.max(1, Math.min(6, Number(eff.threshold) || 2)); out.value = Math.max(1, Number(eff.value) || 1); out.count = Math.max(1, Number(eff.count) || 1); }
-      else if (out.mode === "first_floor") out.floor = Math.max(1, Math.min(6, Number(eff.floor) || 4));
+      else if (out.mode === "first_floor") {
+        out.floor = Math.max(1, Math.min(6, Number(eff.floor) || 4));
+        if (eff.value != null) out.value = Number(eff.value) || 0;
+      }
+      else if (out.mode === "polarize") {
+        out.minDice = Math.max(2, Number(eff.minDice) || 2);
+        out.value = Number(eff.value) || 0;
+      }
       else { out.maxPip = Math.max(1, Math.min(6, Number(eff.maxPip) || 3)); out.target = Math.max(1, Math.min(6, Number(eff.target) || 6)); }
+      if (eff.noExtraDice != null) out.noExtraDice = !!eff.noExtraDice;
     }
     else if (type === "dice_pattern") {
-      out.pattern = ["six", "distinct", "all_distinct", "low_then_high", "ascending", "single", "all_high", "pair", "total", "exact_total", "total_multiple", "total_tiers", "extremes"].includes(eff.pattern) ? eff.pattern : "six";
-      out.value = Number(eff.value) || 0;
+      out.pattern = ["six", "distinct", "all_distinct", "low_then_high", "ascending", "first_last_equal", "low_and_high", "single", "all_high", "pair", "total", "exact_total", "total_multiple", "total_tiers", "extremes"].includes(eff.pattern) ? eff.pattern : "six";
+      if (eff.value != null) out.value = Number(eff.value) || 0;
+      else delete out.value;
+      if (out.pattern === "first_last_equal") { out.minDice = Math.max(2, Number(eff.minDice) || 2); out.firstCostDiscount = Math.max(0, Number(eff.firstCostDiscount) || 0); }
+      if (out.pattern === "low_and_high") { out.lowMax = Math.max(1, Math.min(6, Number(eff.lowMax) || 2)); out.highMin = Math.max(1, Math.min(6, Number(eff.highMin) || 5)); }
       if (out.pattern === "all_high") out.minPip = Math.max(1, Math.min(6, Number(eff.minPip) || 4));
       if (out.pattern === "total") out.threshold = Math.max(1, Number(eff.threshold) || 12);
       if (out.pattern === "distinct") out.firstCostDiscount = Math.max(0, Number(eff.firstCostDiscount) || 0);
@@ -173,7 +190,7 @@
     else if (type === "comeback") { out.value = Number(eff.value) || 0; out.threshold = Number(eff.threshold) || 12; }
     else if (type === "armory_pct") { out.step = Math.max(1, Number(eff.step) || 3); out.value = Number(eff.value) || 0; }
     else if (type === "copy_affinity" || type === "unlock_lian") { /* 无额外字段 */ }
-    else { out.value = Number(eff.value) || 0; }
+    else if (["dice_plus", "fixed_dice", "dice_mult"].includes(type)) { out.value = Number(eff.value) || 0; }
     return out;
   }
 
@@ -198,21 +215,40 @@
     let changed = 0;
     for (const t of state.talents) {
       if (t.upgrade || !seed[t.id]) continue;
-      t.upgrade = normalizeUpgrade(seed[t.id], t);
+      const raw = seed[t.id];
+      const levels = Array.isArray(raw.levels) ? raw.levels.slice(1) : [];
+      const baseLevel = Array.isArray(raw.levels) && raw.levels[0] ? raw.levels[0] : null;
+      t.upgrade = normalizeUpgrade({ ...raw, levels, baseLevel }, t);
+      t._embeddedUpgrade = false;
       changed++;
     }
     return changed;
   }
   function backfillOfficialTalents() {
     const seed = officialTalentSeed();
-    const byId = new Set(state.talents.map(t => t.id));
-    let added = 0;
+    const byId = new Map(state.talents.map((t, i) => [t.id, i]));
+    let changed = 0;
     for (const src of seed) {
-      if (!src || !src.id || byId.has(src.id)) continue;
-      state.talents.push(normalize(src));
-      added++;
+      if (!src || !src.id) continue;
+      const idx = byId.get(src.id);
+      if (idx == null) {
+        state.talents.push(normalize(src));
+        byId.set(src.id, state.talents.length - 1);
+        changed++;
+        continue;
+      }
+      const current = state.talents[idx];
+      // 旧缓存可能已有同 ID 空壳：只补缺失字段，绝不覆盖用户已填写的内容。
+      let patched = false;
+      for (const key of ["name", "text", "source", "routeId", "axis", "quality"]) {
+        if (!current[key] && src[key]) { current[key] = typeof src[key] === "string" ? String(src[key]).trim() : src[key]; patched = true; }
+      }
+      if (current.kind !== src.kind && !current.kind) { current.kind = src.kind; patched = true; }
+      if ((!current.effect || !current.effect.type) && src.effect) { current.effect = normalizeEffect(src.effect); patched = true; }
+      if (current.kind === "active" && !current.cost && src.cost) { current.cost = Math.max(1, Number(src.cost) || 1); patched = true; }
+      if (patched) changed++;
     }
-    return added;
+    return changed;
   }
 
   /**
@@ -298,9 +334,15 @@
     if (t.school) out.school = t.school;
     if (out.kind === "active") out.cost = Math.max(1, Number(t.cost) || 1);
     if (t.source) out.source = String(t.source).trim();
+    for (const key of ["routeId", "axis", "quality"]) {
+      if (t[key] != null && String(t[key]).trim()) out[key] = String(t[key]).trim();
+    }
     if (t.acquire && typeof t.acquire === "object") out.acquire = JSON.parse(JSON.stringify(t.acquire));
     if (t.acquireText) out.acquireText = String(t.acquireText).trim();
-    if (t.upgrade && typeof t.upgrade === "object") out.upgrade = normalizeUpgrade(t.upgrade, t);
+    if (t.upgrade && typeof t.upgrade === "object") {
+      out.upgrade = normalizeUpgrade(t.upgrade, t);
+      out._embeddedUpgrade = t._embeddedUpgrade !== false;
+    }
     return out;
   }
 
@@ -314,17 +356,26 @@
     let upCost = Array.isArray(up.upCost) ? up.upCost.map(Number) : [];
     while (upCost.length < maxLevel - 1) upCost.push(defCurve[upCost.length] != null ? defCurve[upCost.length] : (upCost.length ? upCost[upCost.length - 1] : 6));
     while (upCost.length > maxLevel - 1) upCost.pop();
-    let levels = Array.isArray(up.levels) ? up.levels.map(l => ({
+    const rawLevels = Array.isArray(up.levels) ? up.levels.slice() : [];
+    let baseLevel = up.baseLevel && typeof up.baseLevel === "object" ? JSON.parse(JSON.stringify(up.baseLevel)) : null;
+    if (!baseLevel && rawLevels.length >= maxLevel) baseLevel = rawLevels.shift();
+    if (baseLevel) {
+      baseLevel.effect = normalizeEffect(baseLevel.effect || base.effect);
+      if (base.kind === "active" && baseLevel.cost != null) baseLevel.cost = Math.max(1, Number(baseLevel.cost) || 1);
+      else delete baseLevel.cost;
+      delete baseLevel.style;
+    }
+    let levels = rawLevels.map(l => ({
       effect: normalizeEffect(l.effect),
       cost: (l.cost != null) ? Math.max(1, Number(l.cost) || 1) : undefined
-    })) : [];
+    }));
     while (levels.length < maxLevel - 1) levels.push({ effect: JSON.parse(JSON.stringify(base.effect || { type: "on_win_bonus" })), cost: (base.kind === "active" && base.cost != null) ? base.cost : undefined });
     while (levels.length > maxLevel - 1) levels.pop();
     // 逐级视觉样式：索引 j 对应视觉层级 Lv(j+1)，长度恒等于 maxLevel（Lv1..LvMax 各一份）。
     let levelStyles = Array.isArray(up.levelStyles) ? up.levelStyles.map(normalizeStyle) : [];
     while (levelStyles.length < maxLevel) levelStyles.push(defaultStyle());
     while (levelStyles.length > maxLevel) levelStyles.pop();
-    return { quality, maxLevel, upCost, levels, levelStyles };
+    return { quality, maxLevel, upCost, levels, levelStyles, baseLevel };
   }
 
   /* ---------------- 逐级视觉样式（字体/字号/颜色/行距/对齐/缩进/段间距） ---------------- */
@@ -434,10 +485,10 @@
       if (!(Number(t.effect.value) >= 0)) errors.push("extra_dice_chain 的续章得分须 ≥ 0");
     }
     else if (t.effect.type === "dice_transform") {
-      if (!["low_lift", "first_floor", "lowest_to"].includes(t.effect.mode)) errors.push("dice_transform 的 mode 非法");
+      if (!["low_lift", "first_floor", "lowest_to", "polarize"].includes(t.effect.mode)) errors.push("dice_transform 的 mode 非法");
     }
     else if (t.effect.type === "dice_pattern") {
-      if (!["six", "distinct", "all_distinct", "low_then_high", "ascending", "single", "all_high", "pair", "total", "exact_total", "total_multiple", "total_tiers", "extremes"].includes(t.effect.pattern)) errors.push("dice_pattern 的 pattern 非法");
+      if (!["six", "distinct", "all_distinct", "low_then_high", "ascending", "first_last_equal", "low_and_high", "single", "all_high", "pair", "total", "exact_total", "total_multiple", "total_tiers", "extremes"].includes(t.effect.pattern)) errors.push("dice_pattern 的 pattern 非法");
       if (t.effect.reward && !["insight", "fragment", "page", "inspiration"].includes(t.effect.reward.type)) errors.push("dice_pattern 的 reward.type 非法");
       if (t.effect.fullReward && !["insight", "fragment", "page", "inspiration"].includes(t.effect.fullReward.type)) errors.push("dice_pattern 的 fullReward.type 非法");
     }
@@ -473,6 +524,8 @@
     else if (eff.pattern === "distinct") base = "每多一种不同点数：得分 +" + pct(eff.value) + (eff.firstCostDiscount ? "；首枚追加少耗 " + eff.firstCostDiscount : "");
     else if (eff.pattern === "all_distinct") base = (eff.minDice || 3) + " 枚骰点各不相同：得分 +" + pct(eff.value) + (eff.firstCostDiscount ? "；首枚续掷少耗 " + eff.firstCostDiscount : "");
     else if (eff.pattern === "low_then_high") base = "首骰 ≤" + (eff.lowMax || 2) + " 后续骰 ≥" + (eff.nextHighMin || 5) + "：得分 +" + pct(eff.value) + "；低开时首枚续掷少耗 " + (eff.conditionalFirstCostDiscount || 0);
+    else if (eff.pattern === "first_last_equal") base = "至少 " + (eff.minDice || 2) + " 枚骰且首尾同点：得分 +" + pct(eff.value) + (eff.firstCostDiscount ? "；首枚追加少耗 " + eff.firstCostDiscount : "");
+    else if (eff.pattern === "low_and_high") base = "骰组同时有 ≤" + (eff.lowMax || 2) + " 与 ≥" + (eff.highMin || 5) + " 点：得分 +" + pct(eff.value);
     else if (eff.pattern === "ascending") base = "续骰逐枚递升：每次 +" + pct(eff.perStepValue) + "；" + (eff.fullDice || 3) + " 骰连升另 +" + pct(eff.fullValue);
     else if (eff.pattern === "single") base = "仅以一枚骰结算：得分 +" + pct(eff.value);
     else if (eff.pattern === "all_high") base = "全部骰不低于 " + (eff.minPip || 4) + " 点：得分 +" + pct(eff.value);
@@ -511,7 +564,8 @@
       case "extra_dice_pct": return "每追加一枚灵感骰，作品得分 +" + Math.round((eff.value || 0) * 100) + "%" + (eff.firstCostDiscount ? "；首枚少耗 " + eff.firstCostDiscount + " 灵感" : "");
       case "extra_dice_chain": return "支付首枚续掷后自动续得第二枚骰；自动骰不低于首枚续骰时得分 +" + Math.round((eff.value || 0) * 100) + "%";
       case "dice_transform": {
-        if (eff.mode === "first_floor") return "本场首骰最低视为 " + (eff.floor || 4) + " 点";
+        if (eff.mode === "first_floor") return "本场首骰最低视为 " + (eff.floor || 4) + " 点" + (eff.noExtraDice ? "；本场不能追加骰" : "") + (eff.value ? "；得分 +" + Math.round(eff.value * 100) + "%" : "");
+        if (eff.mode === "polarize") return "至少 " + (eff.minDice || 2) + " 枚骰时，将最低骰化为 1、最高骰化为 6" + (eff.value ? "；得分 +" + Math.round(eff.value * 100) + "%" : "");
         if (eff.mode === "lowest_to") return "将最低且不高于 " + (eff.maxPip || 3) + " 点的一骰化为 " + (eff.target || 6) + " 点";
         return "将 " + (eff.count || 1) + " 枚不高于 " + (eff.threshold || 2) + " 点的最低骰抬高 " + (eff.value || 1) + " 点";
       }
@@ -580,6 +634,7 @@
       const srcN = talentSources(t.id).length;
       const eff = talentEffectText(t.effect);
       const cost = t.kind === "active" ? ` · 灵感消耗 ${t.cost}` : "";
+      const desc = String(t.text || "").trim();
       return `<div class="q-card" data-idx="${idx}">
         <div class="meta">
           <span class="q-id">${C.esc(t.id)}</span>
@@ -1047,7 +1102,9 @@
         effect: normalizeEffect(lv.effect),
         cost: (lv.cost != null) ? Math.max(1, Number(lv.cost) || 1) : undefined
       }));
-      base.upgrade = normalizeUpgrade({ quality: u.quality, maxLevel: u.maxLevel, upCost: u.upCost || [], levels, levelStyles }, base);
+      const baseLevel = full[0] ? { effect: normalizeEffect(full[0].effect), cost: full[0].cost } : null;
+      base.upgrade = normalizeUpgrade({ quality: u.quality, maxLevel: u.maxLevel, upCost: u.upCost || [], levels, levelStyles, baseLevel }, base);
+      if (base._embeddedUpgrade !== true) base._embeddedUpgrade = false;
       applied++;
     }
     save(); renderList();
@@ -1081,7 +1138,22 @@
     };
     reader.readAsText(file, "utf-8");
   }
-  function exportRaw() { return state.talents.map(t => JSON.parse(JSON.stringify(t))); }
+  function exportTalent(t) {
+    const out = JSON.parse(JSON.stringify(t));
+    if (!out._embeddedUpgrade) delete out.upgrade;
+    else if (out.upgrade) delete out.upgrade.baseLevel;
+    delete out._embeddedUpgrade;
+    return out;
+  }
+  function exportRaw() { return state.talents.map(exportTalent); }
+  function exportMainRaw() {
+    const ids = sidequestTalentIds();
+    return state.talents.filter(t => !isSidequestTalent(t, ids)).map(exportTalent);
+  }
+  function exportSidequestRaw() {
+    const ids = sidequestTalentIds();
+    return state.talents.filter(t => isSidequestTalent(t, ids)).map(exportTalent);
+  }
   function exportData() {
     const bad = validateAll();
     if (bad.length) {
@@ -1100,22 +1172,35 @@
   }
   /* 构造游戏可直接消费的文心升级表。工程文件与独立 talent-upgrade.json 共用此函数，
      防止云端只同步 talents、却继续沿用旧升级表而造成等级/effect/cost 来源分裂。 */
-  function exportUpgradeRaw() {
+  function exportUpgradeRaw(filter) {
     const out = {};
-    for (const t of state.talents.filter(t => t.upgrade)) {
-      const baseEffect = normalizeEffect(t.effect);
+    for (const t of state.talents.filter(t => t.upgrade && (!filter || filter(t)))) {
+      const storedBaseEffect = t.upgrade.baseLevel && t.upgrade.baseLevel.effect;
+      const baseEffect = normalizeEffect(storedBaseEffect || t.effect);
       const ls = t.upgrade.levelStyles || [];
-      const levels = [{ effect: baseEffect, style: normalizeStyle(ls[0]) }];
+      const levels = [{ effect: baseEffect }];
+      const baseStyle = normalizeStyle(ls[0]);
+      if (Object.values(baseStyle).some(Boolean)) levels[0].style = baseStyle;
       if (t.kind === "active" && t.cost != null) levels[0].cost = t.cost;
       for (let i = 0; i < t.upgrade.levels.length; i++) {
         const lv = t.upgrade.levels[i];
-        const e = { effect: normalizeEffect(lv.effect), style: normalizeStyle(ls[i + 1]) };
+        const e = { effect: normalizeEffect(lv.effect) };
+        const levelStyle = normalizeStyle(ls[i + 1]);
+        if (Object.values(levelStyle).some(Boolean)) e.style = levelStyle;
         if (t.kind === "active" && lv.cost != null) e.cost = lv.cost;
         levels.push(e);
       }
       out[t.id] = { quality: t.upgrade.quality, maxLevel: t.upgrade.maxLevel, upCost: t.upgrade.upCost.map(Number), levels };
     }
     return out;
+  }
+  function exportMainUpgradeRaw() {
+    const ids = sidequestTalentIds();
+    return exportUpgradeRaw(t => !isSidequestTalent(t, ids));
+  }
+  function exportSidequestUpgradeRaw() {
+    const ids = sidequestTalentIds();
+    return exportUpgradeRaw(t => isSidequestTalent(t, ids));
   }
   /* 导出文心升级配置 talent-upgrade.json：仅含「可升级」文心。
      levels[0]（Lv1）恒等于文心基础 effect（主动文心附 base cost），Lv2..LvMax 取 upgrade.levels，
@@ -1494,5 +1579,11 @@
     global.TALENT._ready = true;
   }
 
-  global.TALENT = { init, get: () => state.talents, exportRaw, exportUpgradeRaw, exportUpgrade, validateAll, importData, importUpgrade, syncOfficialTalents, renderList, effectText: talentEffectText, _ready: false };
+  global.TALENT = {
+    init, get: () => state.talents,
+    exportRaw, exportMainRaw, exportSidequestRaw,
+    exportUpgradeRaw, exportMainUpgradeRaw, exportSidequestUpgradeRaw, exportUpgrade,
+    validateAll, importData, importUpgrade, syncOfficialTalents, renderList,
+    effectText: talentEffectText, _ready: false
+  };
 })(window);
