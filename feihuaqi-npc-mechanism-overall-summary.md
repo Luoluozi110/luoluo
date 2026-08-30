@@ -84,7 +84,7 @@
 3. **NPC 标识迁移**：旧 `npcs.json` 用"档位+名称"识别具名 NPC，需补稳定 `id` 以避免图鉴与统计改名错位（第三章 FR-NPC-001）。实施时需跑一次兼容迁移，不得用整体覆盖损坏现有 playable 补丁与 `quality.js`。
 4. **编辑器、导入导出、云端同步同步**：编辑器新增 NPC 机制tab/校验、模板库选择、单NPC试演；导出 `npcs.json` 需含新字段；云端 `feihua-content.json` 覆盖需按"完整逻辑单元覆盖"约定（第六章 16.5）。
 5. **存档升级**：图鉴四级认知、破绽成功次数、有限玩家历史、殿试有效的跨场状态需纳入 `save.js` 序列化，并保证旧档默认空状态载入不报错。
-6. **实装回归与部署**：按第七章 L1–L5 分层跑通后，需对 `feihuaqi-playable/` 增量修改（严格遵守"不整体覆盖 playable"铁律），回归冒烟，再部署 GitHub Pages `https://luoluozi110.github.io/luoluo/` 与 CloudStudio 版本。
+6. **实装回归与部署**：按第七章 L1–L5 分层跑通后，需对 `feihuaqi-playable/` 增量修改（严格遵守"不整体覆盖 playable"铁律），回归冒烟，再部署 GitHub Pages 游戏 `https://luoluozi110.github.io/luoluo/`；在线内容编辑器唯一正式入口为 `https://luoluozi110.github.io/luoluo/feihua-editors/`，CloudStudio 仅作为游戏预览分享页。
 7. **数据安全收尾**：此前对话中出现过 GitHub 凭据，建议用户在 GitHub 设置中撤销并重新生成 token，避免凭据滞留。
 
 ---

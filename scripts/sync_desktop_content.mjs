@@ -17,6 +17,45 @@ const DESKTOP = 'C:/Users/77522/Desktop/feihua-content (1).json';
 const CFG_DIR = path.join(ROOT, 'feihuaqi-playable/config');
 const SEED_DIR = path.join(ROOT, 'feihua-editors/assets/js');
 
+/* ---------------------------------------------------------------------------
+ * ⚠️ 安全护栏（2026-08-29 加入）
+ * 本脚本是**反向**同步：用桌面那份工程文件覆盖本地 config / 种子 / 云端基准。
+ * 桌面文件一旦比 config 旧，误跑会把所有内容整体回退 —— 2026-08-29 排查时发现
+ * 该桌面文件停留在 8/16，而 config 已含 87 题、grades v2.3、schoolMechanics 等新内容，
+ * 一旦执行将造成大面积内容丢失。
+ * 因此默认拒绝执行；确需从桌面回灌时必须显式 --force，并自行确认桌面文件更新。
+ * ------------------------------------------------------------------------- */
+const FORCE = process.argv.includes('--force');
+
+if (!fs.existsSync(DESKTOP)) {
+  console.error('✗ 已中止：桌面工程文件不存在 -> ' + DESKTOP);
+  console.error('  本脚本会用桌面文件覆盖本地 config，源缺失时不执行。');
+  process.exit(1);
+}
+
+// 取 config 目录中最新修改时间，判断桌面文件是否更旧
+const CFG_KEYS_GUARD = ['events', 'talents', 'questions', 'npcs', 'affinity', 'sky', 'board', 'album', 'schools', 'grades', 'narrative'];
+let latestCfg = 0, latestCfgName = '';
+for (const k of CFG_KEYS_GUARD) {
+  const p = path.join(CFG_DIR, k + '.json');
+  if (!fs.existsSync(p)) continue;
+  const m = fs.statSync(p).mtimeMs;
+  if (m > latestCfg) { latestCfg = m; latestCfgName = k + '.json'; }
+}
+const desktopMtime = fs.statSync(DESKTOP).mtimeMs;
+const fmt = (ms) => new Date(ms).toLocaleString('zh-CN', { hour12: false });
+
+if (desktopMtime < latestCfg) {
+  console.error('✗ 已中止：桌面工程文件比本地 config 更旧，执行会造成内容回退。');
+  console.error('    桌面文件  : ' + fmt(desktopMtime) + '  (' + DESKTOP + ')');
+  console.error('    最新 config: ' + fmt(latestCfg) + '  (config/' + latestCfgName + ')');
+  console.error('  若确认要用这份桌面文件回灌，请显式执行：node scripts/sync_desktop_content.mjs --force');
+  if (!FORCE) process.exit(1);
+  console.warn('⚠️  --force 已指定，继续执行；后果自负。');
+} else {
+  console.log('· 桌面文件(' + fmt(desktopMtime) + ') 不早于最新 config(' + fmt(latestCfg) + ')，放行。');
+}
+
 const raw = fs.readFileSync(DESKTOP, 'utf-8');
 const data = JSON.parse(raw);
 

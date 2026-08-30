@@ -31,12 +31,18 @@
 - 评分收紧专项测试（含“旧阈值可拿/新阈值拿不到”与“达到新阈值仍能拿”双向断言）通过。
 - config-contract、ability-system 与全量 40 个测试通过。
 
-## 双平台部署（2026-08-20）
-- **GitHub Pages**：已恢复并同步完整可玩版，commit `bfd6002` 已更新 main；96 个静态文件 + 根 `feihua-content.json` 同步，`leaderboard.json` 已保留。
-  - 站点：`https://luoluozi110.github.io/luoluo/`
-  - 验证：页面可访问，`index.html` 引用版本号已为 `20260820albumdesc1`，名篇分支说明已上线。
-- **CloudStudio**：经独立沙箱通道部署成功（verified: true），复用旧沙箱 `b7448dae814340d882052e04260fa5cb`。
-  - 分享链接：`https://b7448dae814340d882052e04260fa5cb.gz3.agentos-app.net`
+## 双平台部署（2026-08-29，当前状态）
+- **GitHub Pages 游戏**：`https://luoluozi110.github.io/luoluo/`
+- **GitHub Pages 在线内容编辑器（唯一正式编辑器网址）**：`https://luoluozi110.github.io/luoluo/feihua-editors/`
+  - 线上返回当前 10 模块编辑器，工程版本为 4；GitHub `main` 的 `feihua-editors/` 子树共 44 个正式文件。
+- **GitHub raw 运行时内容源（唯一正式云端基准）**：`https://raw.githubusercontent.com/Luoluozi110/luoluo/main/feihua-content.json`
+  - 游戏 `config/cloud.json` 指向此地址；编辑器发布桥接也以此仓库文件为目标，不把 CloudStudio 页面当作数据源。
+- **CloudStudio 游戏分享页**：`https://b7448dae814340d882052e04260fa5cb.gz3.agentos-app.net/`
+  - 已验证可访问，但访问 `/feihua-editors/` 仍返回游戏页面，不是编辑器入口。
+- **旧 CloudStudio 编辑器分享页**：`https://f5dca83d06194721a95f5dcd28133267.app.workbuddy.link/`
+  - 已确认是旧版编辑器（无工程版本注入、无本地契约、无支线种子），从正式入口体系废弃，不得继续使用。
+
+> 旧部署记录中的历史提交、旧版“部署中”链接和已废弃 CloudStudio 编辑器地址仅用于追溯，不代表当前版本或权威入口。
 - **关键修正**：修复一次文档部署误删 Pages 游戏树的问题；`bfd6002` 从现有 main 快进恢复完整静态文件，之后部署脚本统一以当前 main 为父提交，避免再生成孤儿提交。
 
 ## 版本记录

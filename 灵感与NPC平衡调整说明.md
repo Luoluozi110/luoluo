@@ -70,12 +70,15 @@
 - 新手模拟（答题率 0.55）N=2000：封笔率 **16.8%**，胜率 **65.3%**。
 - NPC机制校准 PASS；殿试跨场适应、破绽与换策逻辑保持生效。
 
-## 7. 部署
+## 7. 部署（历史记录，已由 2026-08-29 版本取代）
 
-- GitHub Pages commit：`94073712036dd4a99dec67bafb03a58a0a46c5b4`
-- GitHub Pages：`https://luoluozi110.github.io/luoluo/`
-- CloudStudio 游戏：`https://b7448dae814340d882052e04260fa5cb.app.workbuddy.link`
-- CloudStudio 编辑器：`https://f5dca83d06194721a95f5dcd28133267.app.workbuddy.link`
+- 历史 GitHub Pages commit：`94073712036dd4a99dec67bafb03a58a0a46c5b4`
+- 当前 GitHub Pages 游戏：`https://luoluozi110.github.io/luoluo/`
+- 当前唯一正式在线编辑器：`https://luoluozi110.github.io/luoluo/feihua-editors/`
+- 当前游戏运行时内容源：`https://raw.githubusercontent.com/Luoluozi110/luoluo/main/feihua-content.json`
+- 当前 CloudStudio 游戏：`https://b7448dae814340d882052e04260fa5cb.gz3.agentos-app.net/`
+
+> 本节原先记录的 `f5dca83d06194721a95f5dcd28133267.app.workbuddy.link` 是旧版 CloudStudio 编辑器页面，已废弃；原先的 `b7448dae814340d882052e04260fa5cb.app.workbuddy.link` 是旧版游戏分享地址，也已失效。两者均不得继续作为正式入口。
 
 ## 8. Excel v2
 

@@ -8,6 +8,11 @@
   "use strict";
 
   const PREFIX = "feihua_editors_v1_";
+  // 由 index.html 注入并随 config -> seed -> 云端基准同步递增；旧编辑器页面会因此被桥接层识别为过期。
+  const CONTENT_VERSION = Math.max(1, Number(global.GAME_CONTENT_VERSION) || 1);
+  const DATA_STORAGE_KEYS = ["qbank", "events", "talents", "npcs", "affinity", "synergies", "board", "sky", "album", "copy_schools", "copy_grades", "copy_narrative"];
+  const DATA_VERSION_KEY = "contentVersion";
+  let legacyStorageDetected = false;
   const MODULES = [
     { tab: "qbank", label: "题库", api: "QB" },
     { tab: "adv", label: "奇遇", api: "ADV" },
@@ -36,7 +41,14 @@
 
   /* ---------------- 存储 ---------------- */
   function store(key, val) {
-    try { localStorage.setItem(PREFIX + key, JSON.stringify(val)); return true; }
+    try {
+      localStorage.setItem(PREFIX + key, JSON.stringify(val));
+      // 旧缓存迁移期间不抬高来源版本；必须先从云端拉取或显式确认后才解除发布护栏。
+      if (DATA_STORAGE_KEYS.includes(key) && !legacyStorageDetected && !localStorage.getItem(PREFIX + DATA_VERSION_KEY)) {
+        localStorage.setItem(PREFIX + DATA_VERSION_KEY, String(CONTENT_VERSION));
+      }
+      return true;
+    }
     catch (e) { return false; }
   }
   function load(key, fallback) {
@@ -45,6 +57,28 @@
       return r ? JSON.parse(r) : fallback;
     } catch (e) { return fallback; }
   }
+  function detectLegacyStorage() {
+    let version = 0;
+    try { version = Number(localStorage.getItem(PREFIX + DATA_VERSION_KEY)) || 0; } catch (_) {}
+    let hasData = false;
+    try { hasData = DATA_STORAGE_KEYS.some(key => !!localStorage.getItem(PREFIX + key)); } catch (_) {}
+    legacyStorageDetected = hasData && version < CONTENT_VERSION;
+    return legacyStorageDetected;
+  }
+  function localDataVersion() {
+    try { return Number(localStorage.getItem(PREFIX + DATA_VERSION_KEY)) || 0; } catch (_) { return 0; }
+  }
+  function markCurrentDataVersion(version = CONTENT_VERSION) {
+    try { localStorage.setItem(PREFIX + DATA_VERSION_KEY, String(Math.max(CONTENT_VERSION, Number(version) || CONTENT_VERSION))); } catch (_) {}
+    legacyStorageDetected = false;
+  }
+  function currentProjectVersion() {
+    return Math.max(CONTENT_VERSION, localDataVersion());
+  }
+  function effectiveProjectVersion(version) {
+    return Math.max(CONTENT_VERSION, localDataVersion(), Number(version) || 0);
+  }
+  function hasStaleStorage() { return legacyStorageDetected || localDataVersion() < CONTENT_VERSION; }
   /* 旧版题库单机文件迁移：若新版 key 为空且旧 key 存在，则搬过来 */
   function migrateQbankIfNeeded() {
     const NEWK = PREFIX + "qbank";
@@ -396,6 +430,9 @@
       </div>
       <div class="mgmt-section">
         <h4>统一操作</h4>
+        <p style="font-size:12.5px;color:${hasStaleStorage() ? "var(--bad)" : "var(--mo-3)"};line-height:1.7;margin:4px 0 10px">
+          ${hasStaleStorage() ? `检测到本机数据版本 ${localDataVersion() || "未知"} 低于当前种子版本 ${CONTENT_VERSION}。发布前请先从云端拉取，或在各模块使用“重置默认”后再编辑；系统会阻止旧版本覆盖新云端。` : `当前编辑器数据版本：${currentProjectVersion()}（页面种子 ${CONTENT_VERSION}）。`}
+        </p>
         <p style="font-size:13px;color:var(--ink2);margin:4px 0 10px">
           合并导出会把题库、奇遇、文心、传世名篇、叙事文案（流派 / 段位 / 评分）等内容打包成一个工程文件（<code>feihua-content.json</code>），便于整体备份与迁移；
           合并导入会自动识别题库 / 奇遇 / 文心 / 传世名篇 / 叙事文案 / 工程文件并分别路由。
@@ -405,6 +442,7 @@
           再到游戏菜单的 <b>「载入自定义配置（高级）」</b> 粘贴/上传该文件，<b>当前浏览器立即生效，无需重新部署</b>。
         </p>
         <div class="modal-actions" style="justify-content:flex-start">
+          <button class="btn" id="mgmtMarkCurrent" title="仅在你已确认当前数据就是要发布的版本时使用">确认本机版本</button>
           <button class="btn primary" id="mgmtExport">合并导出工程文件</button>
           <button class="btn" id="mgmtImport">合并导入…</button>
           <input type="file" id="mgmtFile" accept=".json,application/json" style="display:none" />
@@ -414,7 +452,8 @@
         <h4>云端同步（所有玩家自动同步）</h4>
         <p style="font-size:12.5px;color:var(--mo-3);line-height:1.7;margin:4px 0 10px">
           填好下方并点「发布到云端」，配置会被推送到你的 GitHub 仓库 / Gist；<br/>
-          游戏端读取该地址后，<b>所有玩家启动时自动同步，无需手动载入</b>。发布使用本机 <code>gh</code> 登录；请用 <code>npm run editor:bridge</code> 启动编辑器。
+          游戏端读取该地址后，<b>所有玩家启动时自动同步，无需手动载入</b>。不同网页入口会自动读取部署级云端地址；
+          手动拉取始终以云端完整替换本地，任一模块不一致都会自动回滚。发布使用本机 <code>gh</code> 登录；请用 <code>npm run editor:bridge</code> 启动编辑器。
         </p>
         <div class="cloud-form">
           <label>方式
@@ -449,6 +488,12 @@
         </div>
       </div>`;
 
+    document.getElementById("mgmtMarkCurrent").addEventListener("click", () => {
+      if (!confirm(`确认当前编辑器内容就是要发布的版本 ${CONTENT_VERSION}？\n\n确认后才允许覆盖同版本或更旧的云端工程。`)) return;
+      markCurrentDataVersion();
+      showManagement();
+      toast(`已确认本机版本 ${CONTENT_VERSION}`);
+    });
     document.getElementById("mgmtExport").addEventListener("click", exportProject);
     document.getElementById("mgmtImport").addEventListener("click", () =>
       document.getElementById("mgmtFile").click());
@@ -485,10 +530,52 @@
     return { owner: "", repo: "" };
   }
 
+  const PROJECT_FIELDS = [
+    "_type", "_version", "questions", "events", "talents", "talent-upgrade", "npcs",
+    "affinity", "synergies", "board", "sky", "album", "schools", "grades", "narrative",
+    "sidequests", "sidequest-npcs"
+  ];
+  const PROJECT_FIELD_LABELS = {
+    questions: "题库", events: "奇遇", talents: "文心", "talent-upgrade": "文心升级",
+    npcs: "NPC", affinity: "相性", synergies: "羁绊", board: "地图", sky: "天象",
+    album: "传世名篇", schools: "流派文案", grades: "段位文案", narrative: "叙事文案",
+    sidequests: "支线路线", "sidequest-npcs": "支线 NPC"
+  };
+
+  function sortedJsonValue(value) {
+    if (Array.isArray(value)) return value.map(sortedJsonValue);
+    if (value && typeof value === "object") {
+      return Object.keys(value).sort().reduce((out, key) => {
+        if (value[key] !== undefined) out[key] = sortedJsonValue(value[key]);
+        return out;
+      }, {});
+    }
+    return value;
+  }
+  function stableJson(value) { return JSON.stringify(sortedJsonValue(value)); }
+  function projectDiffKeys(expected, actual) {
+    return PROJECT_FIELDS.filter(key => stableJson(expected && expected[key]) !== stableJson(actual && actual[key]));
+  }
+  /** 非安全用途的短指纹：帮助用户在不同网页入口肉眼确认是否为同一份工程。 */
+  function projectFingerprint(project) {
+    const text = stableJson(project);
+    let hash = 2166136261;
+    for (let i = 0; i < text.length; i++) {
+      hash ^= text.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(16).padStart(8, "0").toUpperCase();
+  }
+  function cacheBust(url) {
+    const target = new URL(url, global.location.href);
+    target.searchParams.set("_wb", String(Date.now()));
+    return target.href;
+  }
+
   /* 云端同步：填充已存设置、检查本机 gh 桥接、发布、复制地址 */
   function wireCloudSync() {
     const $ = id => document.getElementById(id);
-    const saved = global.CloudSync ? global.CloudSync.loadSettings("cloud", {}) : {};
+    let saved = global.CloudSync ? global.CloudSync.loadSettings("cloud", {}) : {};
     // 旧版会将 Token 写入 localStorage；升级后立即移除，仅保留非敏感发布目标。
     if (Object.prototype.hasOwnProperty.call(saved, "token")) {
       delete saved.token;
@@ -506,13 +593,27 @@
       setMode(saved.mode || "repo");
       mode.addEventListener("change", () => setMode(mode.value));
     }
-    if ($("cloudRepo")) $("cloudRepo").value = saved.repoRaw || (saved.owner && saved.repo ? (saved.owner + "/" + saved.repo) : "") || "";
-    if ($("cloudBranch")) $("cloudBranch").value = saved.branch || "main";
-    if ($("cloudPath")) $("cloudPath").value = saved.path || "feihua-content.json";
-    if ($("cloudGist")) $("cloudGist").value = saved.gistId || "";
+    const fillSettings = settings => {
+      setMode(settings.mode || "repo");
+      if ($("cloudRepo")) $("cloudRepo").value = settings.repoRaw || (settings.owner && settings.repo ? (settings.owner + "/" + settings.repo) : "") || "";
+      if ($("cloudBranch")) $("cloudBranch").value = settings.branch || "main";
+      if ($("cloudPath")) $("cloudPath").value = settings.path || "feihua-content.json";
+      if ($("cloudGist")) $("cloudGist").value = settings.gistId || "";
+    };
+    fillSettings(saved);
 
     const setMsg = (t, bad) => { const m = $("cloudMsg"); if (m) { m.textContent = t; m.style.color = bad ? "var(--bad)" : "var(--mo-2)"; } };
     const bridgeStatus = $("cloudBridgeStatus");
+    const hasSavedTarget = () => saved.mode === "gist" ? !!saved.gistId : !!(saved.owner && saved.repo);
+    if (!hasSavedTarget() && global.CloudSync && typeof global.CloudSync.discoverSettings === "function") {
+      global.CloudSync.discoverSettings().then(discovered => {
+        if (!discovered) return;
+        saved = discovered;
+        fillSettings(saved);
+        global.CloudSync.saveSettings("cloud", saved);
+        setMsg("已从当前部署自动识别共同云端地址。", false);
+      });
+    }
     const checkBridge = async () => {
       if (!global.CloudSync || typeof global.CloudSync.status !== "function") {
         if (bridgeStatus) bridgeStatus.textContent = "本机 gh 发布桥接未加载；请刷新页面。";
@@ -520,16 +621,17 @@
       }
       try {
         const result = await global.CloudSync.status();
-        if (bridgeStatus) bridgeStatus.textContent = `本机 gh 已登录：${result.login}。发布不会使用浏览器 Token。`;
+        if (bridgeStatus) bridgeStatus.textContent = `本机 gh 已登录：${result.login}。正式编辑器已连接发布桥接，发布不会使用浏览器 Token。`;
         return true;
       } catch (error) {
-        if (bridgeStatus) bridgeStatus.textContent = "本机 gh 发布桥接不可用；请运行 npm run editor:bridge 后从该地址打开编辑器。";
+        if (bridgeStatus) bridgeStatus.textContent = `本机 gh 发布桥接不可用：${error.message || error}`;
         return false;
       }
     };
     checkBridge();
 
     if ($("cloudPublish")) $("cloudPublish").addEventListener("click", async () => {
+      const publishButton = $("cloudPublish");
       const repoRaw = $("cloudRepo").value.trim();
       const parsed = parseRepo(repoRaw);
       const s = {
@@ -546,65 +648,98 @@
         setMsg("发布失败：本机 gh 发布桥接不可用。请使用 npm run editor:bridge。", true);
         return;
       }
-      // 只记住非敏感发布目标；凭据始终由本机 gh 管理。
-      if (global.CloudSync) {
-        global.CloudSync.saveSettings("cloud", s);
-      }
+      // 先记住非敏感发布目标；Gist 新建成功后会再补回 GitHub 返回的稳定 ID。
+      if (global.CloudSync) global.CloudSync.saveSettings("cloud", s);
       setMsg("发布中…");
+      publishButton.disabled = true;
+      publishButton.setAttribute("aria-busy", "true");
       try {
-        // 发布前固定一份工程快照；发布后回读同一地址，确认 CDN 返回的名篇确实是本次内容。
+        // 发布前固定完整工程快照；发布后从不可变 revision 回读并逐模块核对。
         const expectedProject = global.CloudSync.buildProject();
-        const url = await global.CloudSync.publish(s);
-        const verifyUrl = url + (url.includes("?") ? "&" : "?") + "_wb=" + Date.now();
+        if (hasStaleStorage()) {
+          throw new Error(`本机数据版本 ${localDataVersion() || "未知"} 尚未确认，已阻止发布旧缓存；请先“从云端拉取”、重置默认，或点击“确认本机版本”。`);
+        }
+        const remoteBefore = global.CloudSync.fetchProject ? await global.CloudSync.fetchProject(s) : null;
+        if (remoteBefore && Number(remoteBefore._version) > Number(expectedProject._version)) {
+          throw new Error(`当前编辑器工程版本 ${expectedProject._version} 低于云端版本 ${remoteBefore._version}，已阻止旧缓存覆盖；请先“从云端拉取”或硬刷新编辑器。`);
+        }
+        if (remoteBefore && Number(remoteBefore._version) >= Number(expectedProject._version)) {
+          expectedProject._version = Number(remoteBefore._version) + 1;
+        }
+        const published = await global.CloudSync.publish(s, expectedProject);
+        const url = published.url;
+        const verifyUrl = cacheBust(published.verifyUrl || url);
         const verifyRes = await fetch(verifyUrl, { cache: "no-store" });
         if (!verifyRes.ok) throw new Error("发布成功但回读失败 HTTP " + verifyRes.status);
         const remoteProject = await verifyRes.json();
         if (!remoteProject || remoteProject._type !== "feihua-content") throw new Error("发布成功但回读内容不是有效工程文件");
-        if (JSON.stringify(remoteProject.album || []) !== JSON.stringify(expectedProject.album || [])) {
-          throw new Error("发布成功但回读的传世名篇与编辑器内容不一致，请稍后重试");
+        const diff = projectDiffKeys(expectedProject, remoteProject);
+        if (diff.length) {
+          throw new Error("发布成功但回读有模块不一致：" + diff.map(key => PROJECT_FIELD_LABELS[key] || key).join("、"));
         }
+        if (published.gistId) {
+          s.gistId = published.gistId;
+          s.gistOwner = published.gistOwner || "";
+          if ($("cloudGist")) $("cloudGist").value = published.gistId;
+        }
+        s.url = url;
+        s.revision = published.revision || "";
+        s.fingerprint = projectFingerprint(remoteProject);
+        markCurrentDataVersion(remoteProject._version);
+        global.CloudSync.saveSettings("cloud", s);
         const box = $("cloudUrlBox"), u = $("cloudUrl"), copy = $("cloudCopy");
         if (box) box.style.display = "";
         if (u) u.textContent = url;
         if (copy) { copy.style.display = ""; copy.onclick = () => { navigator.clipboard && navigator.clipboard.writeText(url); toast("已复制云端地址"); }; }
-        setMsg("发布成功并已回读校验！游戏端已可在启动时自动同步。", false);
+        setMsg(`发布成功并已完整回读校验；工程指纹 ${s.fingerprint}${s.revision ? `，版本 ${s.revision.slice(0, 8)}` : ""}。`, false);
         toast("已发布到云端");
       } catch (err) {
         setMsg("发布失败：" + err.message, true);
+      } finally {
+        publishButton.disabled = false;
+        publishButton.removeAttribute("aria-busy");
       }
     });
 
     if ($("cloudPull")) $("cloudPull").addEventListener("click", async () => {
+      const pullButton = $("cloudPull");
       const p = parseRepo($("cloudRepo").value.trim());
       const s = {
         mode: mode ? mode.value : "repo",
         owner: p.owner, repo: p.repo,
         branch: $("cloudBranch").value.trim() || "main",
         path: $("cloudPath").value.trim() || "feihua-content.json",
-        gistId: $("cloudGist").value.trim()
+        gistId: $("cloudGist").value.trim(),
+        gistOwner: saved.gistOwner || ""
       };
       if (s.mode === "repo" && (!s.owner || !s.repo)) { setMsg("请先填写仓库（owner/repo）。", true); return; }
       if (s.mode === "gist" && !s.gistId) { setMsg("请先填写 Gist ID（或先用『发布到云端』创建）。", true); return; }
       setMsg("从云端拉取中…");
+      pullButton.disabled = true;
+      pullButton.setAttribute("aria-busy", "true");
       try {
         const rawUrl = global.CloudSync.rawUrl(s);
         // GitHub Raw / Gist CDN 可能继续返回旧版本；cache: no-store 只约束浏览器，
         // 因此追加时间戳主动绕过上游缓存，确保跨浏览器拉到刚发布的内容。
-        const url = rawUrl + (rawUrl.includes("?") ? "&" : "?") + "_wb=" + Date.now();
+        const url = cacheBust(rawUrl);
         const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) throw new Error("拉取失败 HTTP " + res.status + (res.status === 404 ? "（云端还没有该文件，请先『发布到云端』）" : ""));
         const text = await res.text();
         let data; try { data = JSON.parse(text); } catch (e) { throw new Error("云端文件不是合法 JSON：" + e.message); }
         if (!data || data._type !== "feihua-content") throw new Error("云端文件不是 feihua-content 工程文件（_type 不符）");
-        const mode2 = confirm("拉取模式：\n\n确定 = 用云端数据替换本地；\n取消 = 按 ID 合并（云端覆盖同 ID，追加新的）");
-        const routed = routeImport(data, mode2);
-        if (!routed) throw new Error("云端数据未被任何已初始化的编辑器接收，请刷新页面后重试");
+        const result = applyCloudProject(data);
+        s.url = rawUrl;
+        s.fingerprint = result.fingerprint;
+        global.CloudSync.saveSettings("cloud", s);
         const active = document.querySelector(".nav button.active");
         if (active && global.Common && global.Common.switchTab) global.Common.switchTab(active.dataset.tab);
-        setMsg("已从云端拉取并载入本地编辑器。", false);
+        setMsg(`已用云端完整替换本地并逐模块核对；工程指纹 ${result.fingerprint}。`, false);
         toast("云端 → 本地 同步完成");
       } catch (err) {
         setMsg("拉取失败：" + err.message, true);
+      } finally {
+        pullButton.disabled = false;
+        pullButton.removeAttribute("aria-busy");
       }
     });
   }
@@ -613,10 +748,14 @@
    * 构造游戏可直接消费的完整工程对象。
    * 手动导出与云端发布必须共用此函数，避免两条交付路径的字段契约漂移。
    */
-  function buildProject() {
+  function buildProject(version) {
+    const missing = MODULES.filter(module => !(global[module.api] && global[module.api]._ready));
+    if (missing.length) {
+      throw new Error("以下编辑模块尚未完成载入，已阻止导出/发布残缺工程：" + missing.map(module => module.label).join("、"));
+    }
     const project = {
       _type: "feihua-content",
-      _version: 1,
+      _version: effectiveProjectVersion(version),
       questions: global.QB ? global.QB.exportObj() : [],
       events: global.ADV ? global.ADV.exportRaw() : [],
       talents: global.TALENT ? global.TALENT.exportRaw() : [],
@@ -631,9 +770,20 @@
       grades: global.COPY ? global.COPY.exportGradesRaw() : {},
       narrative: global.COPY ? global.COPY.exportNarrativeRaw() : {}
     };
+    if (global.GAME_SIDEQUESTS) project.sidequests = global.GAME_SIDEQUESTS;
+    if (global.GAME_SIDEQUEST_NPCS) project['sidequest-npcs'] = global.GAME_SIDEQUEST_NPCS;
+    if (global.GAME_SIDEQUEST_TALENTS || global.GAME_SIDEQUEST_TALENT_UPGRADE || global.GAME_SIDEQUEST_TALENT_OFFERS) {
+      project['sidequest-talents'] = {
+        version: 1,
+        talents: global.GAME_SIDEQUEST_TALENTS || [],
+        upgrades: global.GAME_SIDEQUEST_TALENT_UPGRADE || {},
+        offers: global.GAME_SIDEQUEST_TALENT_OFFERS || {}
+      };
+    }
     if (!global.FeihuaConfigContract) throw new Error("配置契约校验器未加载");
     global.FeihuaConfigContract.assertProject(project);
-    return project;
+    // 返回快照而不是模块内部 state 的引用，防止异步发布期间后续编辑改写本次内容。
+    return JSON.parse(JSON.stringify(project));
   }
 
   function exportProject() {
@@ -746,6 +896,44 @@
     return routed;
   }
 
+  /**
+   * 云端同步是单一来源替换，不提供合并语义。
+   * 先校验、再快照、应用后逐模块回读；任何异常都恢复同步前的完整工程。
+   */
+  function applyCloudProject(data) {
+    if (!data || data._type !== "feihua-content") throw new Error("云端文件不是 feihua-content 工程文件");
+    const incoming = JSON.parse(JSON.stringify(data));
+    if (!global.FeihuaConfigContract) throw new Error("配置契约校验器未加载");
+    global.FeihuaConfigContract.assertProject(incoming);
+    const before = buildProject();
+    let mutationStarted = false;
+    try {
+      mutationStarted = true;
+      const routed = routeImport(incoming, true);
+      if (!routed) throw new Error("云端数据未被任何已初始化的编辑器接收");
+      const applied = buildProject(incoming._version);
+      const diff = projectDiffKeys(incoming, applied);
+      if (diff.length) {
+        throw new Error("当前编辑器版本会改写这些云端模块：" + diff.map(key => PROJECT_FIELD_LABELS[key] || key).join("、"));
+      }
+      // 云端工程已完整应用后再推进本地版本游标；失败时不会污染版本状态。
+      markCurrentDataVersion(applied._version);
+      return { project: applied, fingerprint: projectFingerprint(applied), routed };
+    } catch (error) {
+      if (mutationStarted) {
+        try {
+          routeImport(before, true);
+          const restored = buildProject(before._version);
+          const restoreDiff = projectDiffKeys(before, restored);
+          if (restoreDiff.length) throw new Error("回滚后仍不一致：" + restoreDiff.join("、"));
+        } catch (rollbackError) {
+          throw new Error((error.message || String(error)) + "；自动回滚失败：" + (rollbackError.message || String(rollbackError)));
+        }
+      }
+      throw error;
+    }
+  }
+
   function importProject(file) {
     const reader = new FileReader();
     reader.onload = () => {
@@ -842,6 +1030,8 @@
 
   /* ---------------- 初始化（导航 + 数据管理按钮 + 全局快捷键） ---------------- */
   function init() {
+    // 必须在各模块首次写回规范化数据前探测旧缓存，否则迁移写回会掩盖“来源版本过旧”。
+    detectLegacyStorage();
     migrateQbankIfNeeded();
     // 导航
     document.querySelectorAll(".nav button").forEach(b =>
@@ -903,8 +1093,10 @@
 
   global.Common = {
     store, load, esc, toast, openOverlay, closeOverlay,
-    init, switchTab, setStatus, showManagement, buildProject, classify, talentIds, talentById, nextSeqId,
+    init, switchTab, setStatus, showManagement, buildProject, applyCloudProject, projectDiffKeys, projectFingerprint,
+    classify, talentIds, talentById, nextSeqId,
     getWorkspaceHealth, reviewWorkspace, refreshWorkspaceUI, openCommandPalette,
+    contentVersion: CONTENT_VERSION, localDataVersion, hasStaleStorage, markCurrentDataVersion,
     ATTR, ATTR_KEYS, CATEGORY, RARITY, QUALITY, QUALITY_MAX, QUALITY_UPCOST, KIND, TALENTS, TALENT_IDS,
     effectBrief, effectDetail
   };

@@ -65,6 +65,7 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
 
 console.log('[1] 十个模块全部初始化（_ready）');
 ok(!!window.FeihuaConfigContract && typeof window.FeihuaConfigContract.assertProject === 'function', '配置契约在编辑器初始化前已加载');
+ok(window.Common.contentVersion === 4, '编辑器工程版本注入为 4，发布对象不会回退为版本 1');
 for (const name of ['QB', 'ADV', 'TALENT', 'NPC', 'AFFINITY', 'SYNERGY', 'BOARD', 'SKY', 'ALBUM', 'COPY']) {
   ok(window[name] && window[name]._ready === true, name + '._ready');
 }
@@ -262,15 +263,25 @@ const diceWenxin = ['T035', 'T036', 'T037', 'T038', 'T039', 'T040'].map(id => wi
 ok(diceWenxin.every(Boolean), '旧 localStorage 自动补齐 6 枚新版文心');
 ok(diceWenxin.some(t => t.effect.type === 'dice_pattern') && diceWenxin.some(t => t.effect.type === 'manuscript_pct'), '新版骰组与稿本效果在编辑器中保持类型');
 const upgradeCount = window.TALENT.get().filter(t => t.upgrade).length;
-ok(upgradeCount === Object.keys(window.GAME_TALENT_UPGRADE || {}).length && upgradeCount >= 40, '游戏升级配置已合并到编辑器文心', upgradeCount);
+// 官方种子 = 主文心 + 支线文心，故升级配置键数须两侧相加（支线文心带自己的 upgrades）。
+const upgradeKeys = Object.keys(window.GAME_TALENT_UPGRADE || {}).length
+  + Object.keys(window.GAME_SIDEQUEST_TALENT_UPGRADE || {}).length;
+ok(upgradeCount === upgradeKeys && upgradeCount >= 40, '游戏升级配置已合并到编辑器文心（含支线文心）', upgradeCount);
 const t001 = window.TALENT.get().find(t => t.id === 'T001');
 ok(!!t001 && t001.upgrade && t001.upgrade.maxLevel === 3 && t001.upgrade.levels.length === 2, '普通文心 T001 可升级且逐级效果完整');
 const ta08Card = window.TALENT.get().find(t => t.id === 'TA08');
 ok(!!ta08Card && ta08Card.cost === 5 && ta08Card.upgrade && ta08Card.upgrade.levels[0].cost === 5, '布局谋篇编辑器成本与升级配置完整');
-ok(document.querySelectorAll('#afflist select.aff-cell').length === 36, '相性矩阵 36 格下拉', document.querySelectorAll('#afflist select.aff-cell').length);
+// 格数随数据自适应（题材 × 文体），新增题材/文体时不必改断言
+const affData = window.AFFINITY.get ? window.AFFINITY.get() : (window.GAME_AFFINITY || {});
+const themeN = (affData.themes || []).length, mannerN = (affData.manners || []).length;
+const affCells = document.querySelectorAll('#afflist select.aff-cell').length;
+ok(affCells === themeN * mannerN, `相性矩阵 ${themeN}×${mannerN}=${themeN * mannerN} 格下拉`, affCells);
 ok(document.querySelectorAll('#synlist .q-card').length === 17, '羁绊列表 17 条', document.querySelectorAll('#synlist .q-card').length);
 ok(document.querySelectorAll('#boardlist .board-card').length === 192 && window.BOARD.get().layout === 'concentric_spiral' && window.BOARD.get().mainRing.length === 192 && window.BOARD.get().rings.map(r => r.cells.length).join(',') === '72,64,56', '三圈地图列表 192 格（72/64/56）', document.querySelectorAll('#boardlist .board-card').length);
-ok(document.querySelectorAll('#skylist .sky-card').length === 6, '天象列表 6 张', document.querySelectorAll('#skylist .sky-card').length);
+// 张数随种子自适应（云端独有的 SK07 已并入 config/sky.json）
+const skyN = (window.GAME_SKY || []).length;
+const skyCards = document.querySelectorAll('#skylist .sky-card').length;
+ok(skyCards === skyN, `天象列表 ${skyN} 张`, skyCards);
 ok(window.ALBUM.get().length === 12, '传世名篇默认 12 张', window.ALBUM.get().length);
 ok(document.querySelectorAll('#albumlist .q-card').length === 12, '传世名篇列表 12 张', document.querySelectorAll('#albumlist .q-card').length);
 

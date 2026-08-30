@@ -38,21 +38,30 @@ if (await bridgeReady()) {
 let childError = '';
 const child = spawn(process.execPath, [resolve(workspaceRoot, 'scripts/serve-editor-bridge.mjs')], {
   cwd: workspaceRoot,
-  detached: true,
-  stdio: 'ignore',
-  windowsHide: true,
+  stdio: 'inherit',
+  windowsHide: false,
   env: { ...process.env, EDITOR_BRIDGE_PORT: String(port) }
 });
-child.once('error', error => { childError = error.message; });
-child.once('exit', code => { childError ||= `桥接进程退出（代码 ${code}）`; });
-child.unref();
+const childExit = new Promise(resolveExit => {
+  child.once('error', error => {
+    childError = error.message;
+    resolveExit({ code: 1, signal: '' });
+  });
+  child.once('exit', (code, signal) => {
+    childError ||= `桥接进程退出（代码 ${code ?? '未知'}${signal ? `，信号 ${signal}` : ''}）`;
+    resolveExit({ code, signal });
+  });
+});
 
 for (let attempt = 1; attempt <= 20; attempt += 1) {
   await new Promise(resolveWait => setTimeout(resolveWait, 250));
   if (await bridgeReady()) {
     openEditor();
     console.log(`编辑器已启动：${editorUrl}`);
-    process.exit(0);
+    console.log('桥接服务运行中；请保持此窗口开启，按 Ctrl+C 可停止。');
+    const result = await childExit;
+    if (result.code && result.code !== 0) console.error(childError);
+    process.exit(result.code ?? 1);
   }
   if (childError) break;
 }

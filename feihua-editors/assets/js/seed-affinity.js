@@ -14,7 +14,8 @@ window.GAME_AFFINITY = {
     "zheli",
     "qingya",
     "chenyu",
-    "qili"
+    "qili",
+    "experimental"
   ],
   "themeNames": {
     "yongwu": "咏物",
@@ -30,7 +31,8 @@ window.GAME_AFFINITY = {
     "zheli": "哲理",
     "qingya": "清雅",
     "chenyu": "沉郁",
-    "qili": "绮丽"
+    "qili": "绮丽",
+    "experimental": "实验"
   },
   "matrix": {
     "wanyue.yongwu": 0.06,
@@ -68,7 +70,18 @@ window.GAME_AFFINITY = {
     "qili.shanshui": 0.06,
     "qili.biansai": -0.08,
     "qili.huaigu": 0,
-    "qili.jieling": 0.06
+    "qili.jieling": 0.06,
+    "experimental.yongwu": 0,
+    "experimental.songbie": 0,
+    "experimental.shanshui": 0,
+    "experimental.biansai": 0,
+    "experimental.huaigu": 0,
+    "experimental.jieling": 0
+  },
+  "experimentalManner": {
+    "id": "experimental",
+    "minPct": -0.12,
+    "maxPct": 0.2
   },
   "homeMannerBonus": 0.04,
   "homeAdaptiveBonus": 0.04,

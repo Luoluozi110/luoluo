@@ -67,7 +67,7 @@ if (ef.type === 'dice_mult') diceMult = R.BATTLE_COEF.diceMult * (Number(ef.valu
 ```js
 if (ef.type === 'dice_mult') diceMult = Number(ef.value) || R.BATTLE_COEF.diceMult;
 ```
-`fixed_dice`（七步成诗/倚马可待，写死 15/18）与 `dice_plus`（急智/天马/一气呵成）路径不受影响，无需改。
+`fixed_dice`（旧版七步成诗/倚马可待，写死 15/18）与 `dice_plus`（急智/天马/一气呵成）路径不受影响，无需改；当前七步成诗已迁移为被动总点倍数判定。
 
 ---
 

@@ -44,4 +44,4 @@
 
 ## 部署
 - 游戏 `feihuaqi-playable/` 已重新部署至 CloudStudio，链接不变：`https://b7448dae814340d882052e04260fa5cb.gz3.agentos-app.net`
-- 羁绊编辑器为本地创作工具，无需部署；其导出的 `synergies.json` 经云端同步 / 手动载入生效。
+- 羁绊编辑器属于十合一在线内容编辑器的一部分，正式入口为 `https://luoluozi110.github.io/luoluo/feihua-editors/`；其导出的 `synergies.json` 经统一云端同步 / 手动载入生效。CloudStudio 仅保留为游戏预览分享页。

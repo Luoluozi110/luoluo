@@ -400,19 +400,7 @@ window.GAME_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 0.55
-        }
-      },
-      {
-        "effect": {
-          "type": "copy_affinity",
-          "ratio": 0.7
-        }
-      },
-      {
-        "effect": {
-          "type": "copy_affinity",
-          "ratio": 0.85
+          "ratio": 0.6
         }
       },
       {
@@ -424,13 +412,36 @@ window.GAME_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1.15
+          "ratio": 1,
+          "revealIntent": true
         }
       },
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1.3
+          "ratio": 1,
+          "revealIntent": true,
+          "synergyPct": 0.03
+        }
+      },
+      {
+        "effect": {
+          "type": "copy_affinity",
+          "ratio": 1,
+          "revealIntent": true,
+          "synergyPct": 0.03,
+          "themeFlat": 0.03
+        }
+      },
+      {
+        "effect": {
+          "type": "copy_affinity",
+          "ratio": 1,
+          "revealIntent": true,
+          "synergyPct": 0.03,
+          "themeFlat": 0.03,
+          "convertPct": 0.5,
+          "revealWeakness": true
         }
       }
     ]
@@ -814,29 +825,29 @@ window.GAME_TALENT_UPGRADE = {
     "levels": [
       {
         "effect": {
-          "type": "copy_affinity",
-          "ratio": 0.7
+          "type": "borrow_signature",
+          "fraction": 0.3
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "copy_affinity",
-          "ratio": 0.85
+          "type": "borrow_signature",
+          "fraction": 0.45
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "copy_affinity",
-          "ratio": 1
+          "type": "borrow_signature",
+          "fraction": 0.6
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "copy_affinity",
-          "ratio": 1.15
+          "type": "borrow_signature",
+          "fraction": 0.75
         },
         "cost": 3
       }

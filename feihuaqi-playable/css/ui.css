@@ -889,6 +889,15 @@
 .school-card .flavor { font-family: var(--font-kai); font-size: 13px; line-height: 1.85; color: var(--mo-2); text-align: justify; padding: 0 2px; }
 .school-card .meta { margin-top: auto; font-size: 11px; color: var(--mo-3); letter-spacing: .05em; line-height: 1.6; border-top: 1px dashed rgba(120,100,70,.35); padding-top: 8px; width: 100%; }
 .school-card .school-guide { width: 100%; padding: 7px 9px; border-left: 3px solid var(--zhu); background: rgba(201,151,31,.1); color: var(--mo-2); font-size: 11px; line-height: 1.65; text-align: left; }
+.school-start { width: 100%; padding: 8px 9px; border: 1px solid rgba(120,100,70,.28); border-radius: 8px; background: rgba(255,250,232,.58); text-align: left; }
+.school-start-title { display:flex; justify-content:space-between; gap:6px; color:var(--mo-2); font-size:11px; letter-spacing:.08em; }
+.school-start-title span { color:var(--zhu); white-space:nowrap; }
+.school-start-attrs { display:grid; grid-template-columns:repeat(3,1fr); gap:4px 6px; margin-top:6px; color:var(--mo-1); font-size:12px; }
+.school-start-attrs span { display:flex; justify-content:space-between; gap:3px; }
+.school-start-attrs b { font-weight:400; color:var(--mo-3); }
+.school-start-talent { margin-top:7px; padding-top:6px; border-top:1px dashed rgba(120,100,70,.25); color:var(--mo-2); font-size:11px; line-height:1.55; }
+.school-start-talent strong { margin-left:5px; color:var(--zhu); font-weight:700; white-space:nowrap; }
+.school-start-note { margin-top:4px; color:var(--qing); font-size:10px; line-height:1.5; }
 
 /* =========================================== 装配名篇 / 传世名篇 / 图鉴阁 */
 #loadout-screen, #album-screen, #codex-screen {
@@ -1183,6 +1192,12 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 .result-radar svg { width: 168px; height: 168px; }
 .result-dims { flex: 1 1 auto; min-width: 0; padding: 10px 14px; }
 .result-dims > div:first-child { font-size: 14px !important; margin-bottom: 4px !important; }
+.crossrun-feedback { margin-top:10px; padding:9px 12px; border-left:3px solid var(--zhu); background:rgba(168,58,46,.055); }
+.crossrun-next { border-left-color:var(--qing); background:rgba(47,139,144,.07); }
+.crossrun-title { display:flex; align-items:baseline; justify-content:space-between; gap:8px; color:var(--mo-1); font-size:14px; letter-spacing:.14em; }
+.crossrun-title span { color:var(--mo-3); font-size:10px; letter-spacing:.06em; white-space:nowrap; }
+.crossrun-feedback ul { margin:6px 0 0; padding-left:18px; color:var(--mo-2); font-size:12px; line-height:1.7; }
+.crossrun-feedback li + li { margin-top:2px; }
 /* 六维两列网格：3 行 × 2 列，六项同屏 */
 .dim-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 16px; }
 .dim-row {
@@ -1620,6 +1635,7 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 /* --- 图鉴·文心升级信息 --- */
 .cx-up-head { display: flex; align-items: center; gap: 8px; margin: 6px 0 4px; }
 .cx-up-lv { font-size: 12px; color: var(--mo-2); }
+.cx-history-lv { margin-top:6px; color:var(--zhu); font-size:12px; letter-spacing:.06em; }
 .cx-up-levels { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
 .cx-up-lv-row { display: flex; gap: 8px; align-items: baseline; min-width: 0; font-size: 13px; line-height: 1.6; }
 .cx-up-lv-n { flex: 0 0 38px; color: var(--zhu); font-family: var(--font-song); font-weight: 700; }
