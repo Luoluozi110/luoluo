@@ -938,10 +938,35 @@
    * 云端同步是单一来源替换，不提供合并语义。
    * 先校验、再快照、应用后逐模块回读；任何异常都恢复同步前的完整工程。
    */
+  /**
+   * 旧版工程曾允许 talent-upgrade 的 Lv1 效果独立于 talents 基础效果演进。
+   * 当前运行时以 talents 为唯一基础效果来源；拉取时先把旧 Lv1 对齐到同一工程内的文心，
+   * 再进入严格契约与逐模块回读，避免无效旧数据永久阻断同步。
+   */
+  function migrateCloudProject(project) {
+    const migrations = [];
+    if (!project || !Array.isArray(project.talents) || !isObj(project["talent-upgrade"])) return migrations;
+    const talentById = new Map();
+    for (const talent of project.talents) {
+      if (talent && talent.id && !talentById.has(talent.id)) talentById.set(talent.id, talent);
+    }
+    for (const [id, upgrade] of Object.entries(project["talent-upgrade"])) {
+      const talent = talentById.get(id);
+      const level1 = upgrade && Array.isArray(upgrade.levels) ? upgrade.levels[0] : null;
+      if (!talent || !isObj(talent.effect) || !level1 || !isObj(level1.effect)) continue;
+      const changed = stableJson(level1.effect) !== stableJson(talent.effect);
+      // 同时统一对象键序，避免旧契约的 JSON 顺序比较把等价效果判成漂移。
+      level1.effect = JSON.parse(JSON.stringify(talent.effect));
+      if (changed) migrations.push({ type: "talent-upgrade-level1", id });
+    }
+    return migrations;
+  }
+
   function applyCloudProject(data) {
     if (!data || data._type !== "feihua-content") throw new Error("云端文件不是 feihua-content 工程文件");
     const incoming = JSON.parse(JSON.stringify(data));
     if (!global.FeihuaConfigContract) throw new Error("配置契约校验器未加载");
+    const migrations = migrateCloudProject(incoming);
     global.FeihuaConfigContract.assertProject(incoming);
     const before = buildProject();
     let mutationStarted = false;
