@@ -65,7 +65,7 @@ const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: t
 
 console.log('[1] 十个模块全部初始化（_ready）');
 ok(!!window.FeihuaConfigContract && typeof window.FeihuaConfigContract.assertProject === 'function', '配置契约在编辑器初始化前已加载');
-ok(window.Common.contentVersion === 4, '编辑器工程版本注入为 4，发布对象不会回退为版本 1');
+ok(window.Common.contentVersion === 6, '编辑器工程版本注入为 6，发布对象不会回退为旧版本');
 for (const name of ['QB', 'ADV', 'TALENT', 'NPC', 'AFFINITY', 'SYNERGY', 'BOARD', 'SKY', 'ALBUM', 'COPY']) {
   ok(window[name] && window[name]._ready === true, name + '._ready');
 }

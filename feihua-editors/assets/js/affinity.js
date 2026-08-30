@@ -70,7 +70,9 @@
       const k = m + "." + t;
       matrix[k] = num(a.matrix && a.matrix[k], 0);
     }
-    const out = { themes, manners, themeNames, mannerNames, matrix };
+    // 编辑器只修改矩阵与旋钮；实验参数等运行时扩展字段必须原样保留。
+    const out = a && typeof a === "object" && !Array.isArray(a) ? JSON.parse(JSON.stringify(a)) : {};
+    Object.assign(out, { themes, manners, themeNames, mannerNames, matrix });
     KNOB_KEYS.forEach(k => { out[k] = num(a[k], k === "momentumMax" ? 5 : 0.04); });
     if (a.momentumMax == null) out.momentumMax = 5;
     return out;
@@ -314,13 +316,12 @@
     reader.readAsText(file, "utf-8");
   }
   function exportRaw() {
-    const out = {
-      themes: state.af.themes.slice(),
-      manners: state.af.manners.slice(),
-      themeNames: Object.assign({}, state.af.themeNames),
-      mannerNames: Object.assign({}, state.af.mannerNames),
-      matrix: Object.assign({}, state.af.matrix)
-    };
+    const out = JSON.parse(JSON.stringify(state.af));
+    out.themes = state.af.themes.slice();
+    out.manners = state.af.manners.slice();
+    out.themeNames = Object.assign({}, state.af.themeNames);
+    out.mannerNames = Object.assign({}, state.af.mannerNames);
+    out.matrix = Object.assign({}, state.af.matrix);
     KNOB_KEYS.forEach(k => { out[k] = state.af[k]; });
     return out;
   }

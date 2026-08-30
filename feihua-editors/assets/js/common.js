@@ -533,13 +533,13 @@
   const PROJECT_FIELDS = [
     "_type", "_version", "questions", "events", "talents", "talent-upgrade", "npcs",
     "affinity", "synergies", "board", "sky", "album", "schools", "grades", "narrative",
-    "sidequests", "sidequest-npcs"
+    "sidequests", "sidequest-npcs", "sidequest-talents"
   ];
   const PROJECT_FIELD_LABELS = {
     questions: "题库", events: "奇遇", talents: "文心", "talent-upgrade": "文心升级",
     npcs: "NPC", affinity: "相性", synergies: "羁绊", board: "地图", sky: "天象",
     album: "传世名篇", schools: "流派文案", grades: "段位文案", narrative: "叙事文案",
-    sidequests: "支线路线", "sidequest-npcs": "支线 NPC"
+    sidequests: "支线路线", "sidequest-npcs": "支线 NPC", "sidequest-talents": "支线文心"
   };
 
   function sortedJsonValue(value) {
@@ -758,8 +758,8 @@
       _version: effectiveProjectVersion(version),
       questions: global.QB ? global.QB.exportObj() : [],
       events: global.ADV ? global.ADV.exportRaw() : [],
-      talents: global.TALENT ? global.TALENT.exportRaw() : [],
-      "talent-upgrade": global.TALENT && global.TALENT.exportUpgradeRaw ? global.TALENT.exportUpgradeRaw() : {},
+      talents: global.TALENT ? global.TALENT.exportMainRaw() : [],
+      "talent-upgrade": global.TALENT && global.TALENT.exportMainUpgradeRaw ? global.TALENT.exportMainUpgradeRaw() : {},
       npcs: global.NPC ? global.NPC.exportRaw() : [],
       affinity: global.AFFINITY ? global.AFFINITY.exportRaw() : {},
       synergies: global.SYNERGY ? global.SYNERGY.exportRaw() : [],
@@ -775,8 +775,8 @@
     if (global.GAME_SIDEQUEST_TALENTS || global.GAME_SIDEQUEST_TALENT_UPGRADE || global.GAME_SIDEQUEST_TALENT_OFFERS) {
       project['sidequest-talents'] = {
         version: 1,
-        talents: global.GAME_SIDEQUEST_TALENTS || [],
-        upgrades: global.GAME_SIDEQUEST_TALENT_UPGRADE || {},
+        talents: global.TALENT && global.TALENT.exportSidequestRaw ? global.TALENT.exportSidequestRaw() : (global.GAME_SIDEQUEST_TALENTS || []),
+        upgrades: global.TALENT && global.TALENT.exportSidequestUpgradeRaw ? global.TALENT.exportSidequestUpgradeRaw() : (global.GAME_SIDEQUEST_TALENT_UPGRADE || {}),
         offers: global.GAME_SIDEQUEST_TALENT_OFFERS || {}
       };
     }
@@ -879,8 +879,18 @@
     } else if (data && typeof data === "object") {
       if (Array.isArray(data.questions) && global.QB) { global.QB.importData(data.questions, mode); routed++; }
       if (Array.isArray(data.events) && global.ADV) { global.ADV.importData(data.events, mode); routed++; }
-      if (Array.isArray(data.talents) && global.TALENT) { global.TALENT.importData(data.talents, mode); routed++; }
-      if (data["talent-upgrade"] && typeof data["talent-upgrade"] === "object" && global.TALENT && global.TALENT.importUpgrade) { global.TALENT.importUpgrade(data["talent-upgrade"], mode); routed++; }
+      const sidequestTalents = data["sidequest-talents"] && Array.isArray(data["sidequest-talents"].talents)
+        ? data["sidequest-talents"].talents : [];
+      if ((Array.isArray(data.talents) || sidequestTalents.length) && global.TALENT) {
+        global.TALENT.importData([...(Array.isArray(data.talents) ? data.talents : []), ...sidequestTalents], mode);
+        routed++;
+      }
+      const sidequestUpgrades = data["sidequest-talents"] && data["sidequest-talents"].upgrades && typeof data["sidequest-talents"].upgrades === "object"
+        ? data["sidequest-talents"].upgrades : {};
+      if ((data["talent-upgrade"] || Object.keys(sidequestUpgrades).length) && global.TALENT && global.TALENT.importUpgrade) {
+        global.TALENT.importUpgrade({ ...(data["talent-upgrade"] || {}), ...sidequestUpgrades }, mode);
+        routed++;
+      }
       if (Array.isArray(data.npcs) && global.NPC) { global.NPC.importData(data.npcs, mode); routed++; }
       if (Array.isArray(data.synergies) && global.SYNERGY) { global.SYNERGY.importData(data.synergies, mode); routed++; }
       if (Array.isArray(data.sky) && global.SKY) { global.SKY.importData(data.sky, mode); routed++; }

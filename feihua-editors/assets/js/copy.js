@@ -69,6 +69,10 @@
     d.stageChange.names = Object.assign({ xiucai: "", juren: "", jinshi: "" }, (n.stageChange || {}).names || {});
     for (const k of ["invite", "victory", "defeat"])
       d.hiddenFinal[k] = Object.assign({}, d.hiddenFinal[k], officialHidden[k] || {}, ((n.hiddenFinal || {})[k]) || {});
+    // chapterTactics 等运行时叙事扩展不在当前表单中，但云端拉取/发布必须无损保留。
+    for (const [key, value] of Object.entries(n)) {
+      if (!(key in d)) d[key] = clone(value);
+    }
     return d;
   }
 
