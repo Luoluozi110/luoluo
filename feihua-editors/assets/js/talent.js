@@ -149,7 +149,7 @@
     else if (type === "insp_battle_recover") { out.value = Number(eff.value) || 0; out.threshold = Math.max(0, Number(eff.threshold) || 0); out.maxTriggers = Math.max(1, Number(eff.maxTriggers) || 1); }
     else if (type === "insp_max") { out.value = Number(eff.value) || 0; out.group = String(eff.group || "inspiration_capacity"); }
     else if (type === "reincarnate") { out.inspThreshold = Math.max(0, Number(eff.inspThreshold) || 0); out.attrRatio = Math.max(0, Math.min(1, Number(eff.attrRatio) || 0)); }
-    else if (type === "planned_dice") { out.baseCost = Math.max(1, Number(eff.baseCost) || 5); out.costStep = Math.max(0, Number(eff.costStep) || 2); out.maxValue = Math.max(1, Math.min(6, Number(eff.maxValue) || 6)); }
+    else if (type === "planned_dice") { out.baseCost = Math.max(1, Number(eff.baseCost ?? 5)); out.costStep = Math.max(0, Number(eff.costStep ?? 2)); out.maxValue = Math.max(1, Math.min(6, Number(eff.maxValue ?? 6))); }
     else if (type === "extra_dice_pct") { out.value = Number(eff.value) || 0; out.firstCostDiscount = Math.max(0, Number(eff.firstCostDiscount) || 0); }
     else if (type === "extra_dice_chain") { out.compare = eff.compare === "not_lower" ? "not_lower" : "not_lower"; out.value = Number(eff.value) || 0; }
     else if (type === "dice_transform") {

@@ -10,7 +10,7 @@
   const PREFIX = "feihua_editors_v1_";
   // 由 index.html 注入并随 config -> seed -> 云端基准同步递增；旧编辑器页面会因此被桥接层识别为过期。
   const CONTENT_VERSION = Math.max(1, Number(global.GAME_CONTENT_VERSION) || 1);
-  const DATA_STORAGE_KEYS = ["qbank", "events", "talents", "npcs", "affinity", "synergies", "board", "sky", "album", "copy_schools", "copy_grades", "copy_narrative"];
+  const DATA_STORAGE_KEYS = ["qbank", "events", "talents", "npcs", "sidequest_npcs", "affinity", "synergies", "board", "sky", "album", "copy_schools", "copy_grades", "copy_narrative"];
   const DATA_VERSION_KEY = "contentVersion";
   let legacyStorageDetected = false;
   const MODULES = [
@@ -18,6 +18,7 @@
     { tab: "adv", label: "奇遇", api: "ADV" },
     { tab: "tal", label: "文心", api: "TALENT" },
     { tab: "npc", label: "NPC", api: "NPC" },
+    { tab: "sidequest-npc", label: "支线 NPC", api: "SIDEQUEST_NPC" },
     { tab: "aff", label: "相性", api: "AFFINITY" },
     { tab: "syn", label: "羁绊", api: "SYNERGY" },
     { tab: "board", label: "地图", api: "BOARD" },
@@ -30,6 +31,7 @@
     adv: { add: "evBtnAdd", search: "evFSearch", noun: "奇遇" },
     tal: { add: "talBtnAdd", search: "talFSearch", noun: "文心" },
     npc: { add: "npcBtnAddTier", search: "npcFSearch", noun: "对手档" },
+    "sidequest-npc": { search: "sideNpcFSearch", noun: "支线 NPC" },
     aff: { search: "affBtnPreview", noun: "相性矩阵" },
     syn: { add: "synBtnAdd", search: "synFSearch", noun: "羁绊" },
     board: { add: "boardBtnAdd", search: "boardFSearch", noun: "格子" },
@@ -88,6 +90,7 @@
   }
 
   /* ---------------- 基础工具 ---------------- */
+  const isObj = value => !!value && typeof value === "object" && !Array.isArray(value);
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, m =>
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
@@ -181,6 +184,7 @@
     if (tab === "adv" && global.ADV && global.ADV._ready) global.ADV.renderList();
     if (tab === "tal" && global.TALENT && global.TALENT._ready) global.TALENT.renderList();
     if (tab === "npc" && global.NPC && global.NPC._ready) global.NPC.renderList();
+    if (tab === "sidequest-npc" && global.SIDEQUEST_NPC && global.SIDEQUEST_NPC._ready) global.SIDEQUEST_NPC.renderList();
     if (tab === "aff" && global.AFFINITY && global.AFFINITY._ready) global.AFFINITY.renderList();
     if (tab === "syn" && global.SYNERGY && global.SYNERGY._ready) global.SYNERGY.renderList();
     if (tab === "board" && global.BOARD && global.BOARD._ready) global.BOARD.renderList();
@@ -212,6 +216,7 @@
     try {
       const data = api.get();
       if (module.tab === "npc") return Array.isArray(data) ? data.reduce((sum, tier) => sum + ((tier.npcs || []).length), 0) : 0;
+      if (module.tab === "sidequest-npc") return typeof api.count === "function" ? api.count() : 0;
       if (module.tab === "aff") return data && Array.isArray(data.manners) && Array.isArray(data.themes) ? data.manners.length * data.themes.length : 0;
       if (module.tab === "board") return data && Array.isArray(data.mainRing) ? data.mainRing.length : 0;
       if (module.tab === "copy") {
@@ -294,6 +299,7 @@
     const E = global.ADV ? global.ADV.get() : [];
     const T = global.TALENT ? global.TALENT.get() : [];
     const N = global.NPC ? global.NPC.get() : [];
+    const SN = global.SIDEQUEST_NPC ? global.SIDEQUEST_NPC.get() : null;
     const A = global.AFFINITY ? global.AFFINITY.get() : null;
     const S = global.SYNERGY ? global.SYNERGY.get() : [];
     const B = global.BOARD ? global.BOARD.get() : null;
@@ -301,6 +307,7 @@
     const eIssues = global.ADV ? global.ADV.validateAll() : [];
     const tIssues = global.TALENT ? global.TALENT.validateAll() : [];
     const nIssues = global.NPC ? global.NPC.validateAll() : [];
+    const snIssues = global.SIDEQUEST_NPC ? global.SIDEQUEST_NPC.validateAll() : [];
     const aIssues = global.AFFINITY ? global.AFFINITY.validateAll() : [];
     const sIssues = global.SYNERGY ? global.SYNERGY.validateAll() : [];
     const bIssues = global.BOARD ? global.BOARD.validateAll() : [];
@@ -371,6 +378,18 @@
           <tr><td class="num">${N.length}</td><td class="num">${N.reduce((s, t) => s + t.npcs.length, 0)}</td>
               <td class="num">${N.filter(t => t.isFinal).length}</td>
               <td class="num">${nIssues.length ? `<span style="color:var(--bad)">${nIssues.length}</span>` : "0"}</td></tr>
+        </table>
+      </div>
+      <div class="mgmt-section">
+        <h4>支线 NPC（路线角色 / 高潮与终局）</h4>
+        <table class="stat-table">
+          <tr><th>支线路线</th><th>可编辑条目</th><th>稳定 ID</th><th>校验问题</th></tr>
+          <tr><td class="num">${SN && SN.routes ? Object.keys(SN.routes).length : 0}</td>
+              <td class="num">${global.SIDEQUEST_NPC && global.SIDEQUEST_NPC.count ? global.SIDEQUEST_NPC.count() : 0}</td>
+              <td class="num">${global.SIDEQUEST_NPC && global.SIDEQUEST_NPC.count ? new Set(Object.values(SN.routes || {}).flatMap(route => [
+                ...(route.guides || []), route.climax, ...Object.values((route.final && route.final.secondary) || {})
+              ].map(npc => npc && npc.id).filter(Boolean))).size : 0}</td>
+              <td class="num">${snIssues.length ? `<span style="color:var(--bad)">${snIssues.length}</span>` : "0"}</td></tr>
         </table>
       </div>
       <div class="mgmt-section">
@@ -773,7 +792,9 @@
       narrative: global.COPY ? global.COPY.exportNarrativeRaw() : {}
     };
     if (global.GAME_SIDEQUESTS) project.sidequests = global.GAME_SIDEQUESTS;
-    if (global.GAME_SIDEQUEST_NPCS) project['sidequest-npcs'] = global.GAME_SIDEQUEST_NPCS;
+    if (global.SIDEQUEST_NPC && global.SIDEQUEST_NPC._ready && typeof global.SIDEQUEST_NPC.exportRaw === "function") {
+      project['sidequest-npcs'] = global.SIDEQUEST_NPC.exportRaw();
+    } else if (global.GAME_SIDEQUEST_NPCS) project['sidequest-npcs'] = global.GAME_SIDEQUEST_NPCS;
     if (global.GAME_SIDEQUEST_TALENTS || global.GAME_SIDEQUEST_TALENT_UPGRADE || global.GAME_SIDEQUEST_TALENT_OFFERS) {
       project['sidequest-talents'] = {
         version: 1,
@@ -823,6 +844,7 @@
       if (Array.isArray(o.mainRing)) return "board";
       if (o.matrix && (o.manners || o.themes)) return "affinity";
       if (Array.isArray(o.synergies)) return "synergies";
+      if (isObj(o.routes) && Object.values(o.routes).some(route => route && (route.guides || route.climax || (route.final && route.final.secondary)))) return "sidequest-npcs";
       if (Array.isArray(o.npcs)) return "npcs";
       if (Array.isArray(o.talents)) return "talents";
       if (Array.isArray(o.sky)) return "sky";
@@ -881,6 +903,7 @@
     } else if (data && typeof data === "object") {
       if (Array.isArray(data.questions) && global.QB) { global.QB.importData(data.questions, mode); routed++; }
       if (Array.isArray(data.events) && global.ADV) { global.ADV.importData(data.events, mode); routed++; }
+      if (data["sidequest-npcs"] && global.SIDEQUEST_NPC) { global.SIDEQUEST_NPC.importData(data["sidequest-npcs"], mode); routed++; }
       const sidequestTalents = data["sidequest-talents"] && Array.isArray(data["sidequest-talents"].talents)
         ? data["sidequest-talents"].talents : [];
       if ((Array.isArray(data.talents) || sidequestTalents.length) && global.TALENT) {
@@ -902,6 +925,9 @@
       if (data.affinity && global.AFFINITY) { global.AFFINITY.importData(data.affinity, mode); routed++; }
       if ((data.mainRing || data.laps || data.sides) && global.BOARD) { global.BOARD.importData(data, mode); routed++; }
       if (data.board && data.board.mainRing && global.BOARD) { global.BOARD.importData(data.board, mode); routed++; }
+      if (data.routes && isObj(data.routes) && global.SIDEQUEST_NPC && classifyObject(data) === "sidequest-npcs") {
+        global.SIDEQUEST_NPC.importData(data, mode); routed++;
+      }
       if (!routed) { alert("文件不含 questions / events / talents / talent-upgrade / npcs / affinity / synergies / board / sky / album / schools / grades / narrative 字段。"); return; }
     } else { alert("未识别的 JSON 结构。"); return; }
     if (routed > 0) toast(mode ? "替换导入完成：已载入 " + routed + " 个模块" : "合并导入完成：已载入 " + routed + " 个模块");

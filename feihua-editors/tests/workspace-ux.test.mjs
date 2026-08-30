@@ -21,7 +21,7 @@ await new Promise(resolve => document.readyState !== 'loading'
 window.Common.refreshWorkspaceUI();
 const summary = document.getElementById('workspaceSummary');
 assert.match(summary.textContent, /条内容/);
-assert.equal(window.Common.getWorkspaceHealth().ready, 10, '全局状态应覆盖十个内容模块');
+assert.equal(window.Common.getWorkspaceHealth().ready, 11, '全局状态应覆盖十一个内容模块');
 
 window.Common.openCommandPalette();
 assert.equal(document.getElementById('commandOverlay').classList.contains('show'), true, '快捷操作面板可打开');

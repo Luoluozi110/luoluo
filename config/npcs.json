@@ -318,6 +318,52 @@
             "description": "本场顺应当朝风潮，以得势文风行文"
           }
         }
+      },
+      {
+        "id": "npc_tongsheng_1",
+        "name": "胡丹阳",
+        "title": "枕月观云",
+        "style": "si",
+        "attrs": {
+          "shi": 5,
+          "ci": 5,
+          "lian": 5,
+          "bi": 5,
+          "xue": 5,
+          "si": 15
+        },
+        "mech": {
+          "signature": {
+            "template": "sig_steady_pressure",
+            "name": "识破重复",
+            "pct": 0.06,
+            "bias": 1.3,
+            "floor": 5,
+            "ceiling": 5
+          },
+          "weakness": {
+            "template": "wea_go_against_zeitgeist",
+            "name": "逆潮立骨",
+            "minAffinity": 0,
+            "retention": 0.003,
+            "playerBonus": 0
+          },
+          "intent": {
+            "template": "int_declared_stance",
+            "name": "定策意图"
+          }
+        },
+        "stageForcedWhen": {
+          "primary": "si",
+          "minExclusive": 10,
+          "strictlyHigherThan": [
+            "shi",
+            "ci",
+            "lian",
+            "bi",
+            "xue"
+          ]
+        }
       }
     ],
     "balanceVersion": 2,
@@ -1005,6 +1051,56 @@
             "bottom": 0.75,
             "description": "本场紧盯主动文心的起落，伺机问锋"
           }
+        }
+      },
+      {
+        "id": "npc_juren_1",
+        "name": "江嫄",
+        "title": "一叶舟主",
+        "style": "lian",
+        "focusAttr": "lian",
+        "attrs": {
+          "shi": 21,
+          "ci": 21,
+          "lian": 33,
+          "bi": 20,
+          "xue": 21,
+          "si": 24
+        },
+        "mech": {
+          "signature": {
+            "name": "偏联力专精",
+            "template": "sig_dice_response",
+            "style": "lian",
+            "pct": 0.06,
+            "bias": 1.3,
+            "steps": [
+              14,
+              9,
+              4
+            ],
+            "cap": 22
+          },
+          "weakness": {
+            "template": "wea_limited_extra_dice",
+            "name": "跨场换策",
+            "layerReduce": 1,
+            "maxExtraDice": 1,
+            "retention": 0.003,
+            "playerBonus": 0
+          },
+          "intent": {
+            "template": "int_pattern_hunt",
+            "name": "审律意图"
+          }
+        },
+        "stageForcedWhen": {
+          "primary": "lian",
+          "minExclusive": 28,
+          "strictlyHigherThan": [
+            "shi",
+            "ci"
+          ]
         }
       }
     ],

@@ -25,21 +25,22 @@ const get = id => structuredClone(cfg.talentById.get(id));
 function game() { const g = new Game(cfg, ui, () => 0); g.push = () => {}; g.start('bowen', { name: '' }); return g; }
 function score(g, label = '羁绊校验') { return g.resolveBattle(g.createSession({ npc: foe, label }), 'ci', 'zheli', [4]); }
 
-assert.deepEqual(cfg.synergies.slice(-6).map(s => s.id), ['S12', 'S13', 'S14', 'S15', 'S16', 'S17'], '新增六组羁绊已进入游戏配置');
+assert.equal(cfg.synergies.length, 25, '羁绊已扩充至 25 组');
+assert.deepEqual(cfg.synergies.slice(-8).map(s => s.id), ['S18','S19','S20','S21','S22','S23','S24','S25'], '阶段 C 的八组新羁绊已进入游戏配置');
 
 {
   const g = game();
   g.s.inspiration = 14;
   g.s.passive = [get('T025'), get('T031')];
-  assert.match(score(g).selfCalc.items[4].detail, /羁绊·绝处逢春·逆境 \+5%/, '低灵感时逆境羁绊提供得分加成');
+  assert.match(score(g).selfCalc.items[4].detail, /羁绊·绝处逢春·逆境 \+14%/, '低灵感时逆境羁绊提供强反馈得分加成');
 }
 {
   const g = game();
   g.s.passive = [get('T037')]; g.s.active = [get('TA02')];
   g.ensureAbilityState().lastStyle = 'shi';
   const out = score(g, '换笔成章');
-  assert.match(out.selfCalc.items[4].detail, /羁绊·换笔成章·换体 \+6%/, '换体羁绊提供独立得分加成');
-  assert.equal(out.talentTriggers.find(t => t.id === 'synergy:S13').reward.value, 1, '换体羁绊把心得奖励写入战后结算快照');
+  assert.match(out.selfCalc.items[4].detail, /羁绊·换笔成章·换体 \+14%/, '换体羁绊提供独立得分加成');
+  assert.equal(out.talentTriggers.find(t => t.id === 'synergy:S13:S13-E1').reward.value, 2, '稳定 effectId 将心得奖励写入战后结算快照');
 }
 {
   const g = game();
@@ -47,15 +48,15 @@ assert.deepEqual(cfg.synergies.slice(-6).map(s => s.id), ['S12', 'S13', 'S14', '
   g.ensureAbilityState().manuscript.pages = 2;
   const session = g.createSession({ npc: foe, label: '稿本生辉' });
   const out = g.resolveBattle(session, 'ci', 'zheli', [4]);
-  assert.match(out.selfCalc.items[4].detail, /羁绊·稿本生辉·稿本2页 \+1%/, '稿本羁绊依稿页层数成长');
+  assert.match(out.selfCalc.items[4].detail, /羁绊·稿本生辉·稿本2页 \+3%/, '稿本羁绊依稿页层数成长');
 }
 {
   const g = game();
   g.s.passive = [get('T022'), get('T039')];
   g.s.affStreak = { manner: 'zheli', n: 2 };
-  assert.match(score(g, '一鼓同声').selfCalc.items[4].detail, /羁绊·一鼓同声·连捷 \+5%/, '连捷羁绊只在达成连胜门槛后生效');
+  assert.match(score(g, '连捷成章').selfCalc.items[4].detail, /羁绊·连捷成章·连捷 \+14%/, '连捷羁绊只在达成连胜门槛后生效');
 }
 
 const editorSeed = fs.readFileSync(path.resolve(ROOT, '..', 'feihua-editors', 'assets', 'js', 'seed-synergies.js'), 'utf8');
-for (const id of ['S12', 'S13', 'S14', 'S15', 'S16', 'S17']) assert.match(editorSeed, new RegExp(`"id": "${id}"`), `${id} 已同步至编辑器种子`);
+for (const id of ['S18','S19','S20','S21','S22','S23','S24','S25']) assert.match(editorSeed, new RegExp(`"id": "${id}"`), `${id} 已同步至编辑器种子`);
 console.log('synergy-effects.test.mjs: 多路线文心羁绊与编辑器同步 ✓');

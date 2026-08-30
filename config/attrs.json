@@ -1,19 +1,31 @@
 {
-  "initial": { "shi": 5, "ci": 5, "lian": 5, "bi": 5, "xue": 5, "si": 5 },
+  "initial": {
+    "shi": 5,
+    "ci": 5,
+    "lian": 5,
+    "bi": 5,
+    "xue": 5,
+    "si": 5
+  },
   "schoolBonus": 3,
   "quizCorrectGain": 4,
   "zeCellGain": 1,
   "branchLandmarkGain": 5,
-  "battleWinGain": [3, 5],
-  "battleDrawGain": { "style": 1 },
-  "battleLoseGain": { "style": 2 },
-
+  "battleWinGain": [
+    3,
+    5
+  ],
+  "battleDrawGain": {
+    "style": 1
+  },
+  "battleLoseGain": {
+    "style": 2
+  },
   "battleFormula": {
     "styleCommonMult": 7,
     "styleSpecialtyMult": 3,
     "basicMult": 4
   },
-
   "abilitySystem": {
     "version": 2,
     "growth": {
@@ -37,7 +49,10 @@
       "maxSlots": 3,
       "progressNeed": 3,
       "progressPerXue": 0.04,
-      "slotMilestones": [10, 20]
+      "slotMilestones": [
+        10,
+        20
+      ]
     },
     "strategy": {
       "baseCharges": 1,
@@ -84,7 +99,6 @@
       "volumeRefundPages": 1
     }
   },
-
   "styleSystem": {
     "shi": {
       "name": "一气",
@@ -108,15 +122,20 @@
       "lossInspirationReduce": 1
     }
   },
-
   "techniqueSystem": {
     "version": 1,
-    "thresholds": [10, 18, 28],
-    "nodes": { "shi": [], "ci": [], "lian": [] }
+    "thresholds": [
+      10,
+      18,
+      28
+    ],
+    "nodes": {
+      "shi": [],
+      "ci": [],
+      "lian": []
+    }
   },
-
-  "talentDropRate": 0.15,
-
+  "talentDropRate": 0.22,
   "diminish": {
     "soft": 34,
     "hard": 48,
@@ -124,7 +143,6 @@
     "highRate": 0.25,
     "minGain": 1
   },
-
   "winScale": {
     "min": 0.45,
     "max": 1,

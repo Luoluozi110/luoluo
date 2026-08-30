@@ -1,5 +1,5 @@
 /* 编辑器无头冒烟测试：真实载入 index.html + 全部脚本（jsdom），
- * 验证 7 个模块初始化、相性/羁绊/地图三个编辑器的渲染与「编辑→保存→localStorage 持久化」链路。
+ * 验证 11 个模块初始化、支线 NPC/相性/羁绊/地图编辑器的渲染与「编辑→保存→localStorage 持久化」链路。
  * 回归目标：affinity bind() 的 affBtnAdd 空引用曾导致 SYNERGY/BOARD 永不初始化。 */
 import { createRequire } from 'module';
 import { readFileSync } from 'fs';
@@ -67,10 +67,10 @@ function ok(cond, name, extra) {
 const fire = (el, type) => el.dispatchEvent(new window.Event(type, { bubbles: true }));
 const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
 
-console.log('[1] 十个模块全部初始化（_ready）');
+console.log('[1] 十一个模块全部初始化（_ready）');
 ok(!!window.FeihuaConfigContract && typeof window.FeihuaConfigContract.assertProject === 'function', '配置契约在编辑器初始化前已加载');
-ok(window.Common.contentVersion === 7, '编辑器工程版本注入为 7，发布对象不会回退为旧版本');
-for (const name of ['QB', 'ADV', 'TALENT', 'NPC', 'AFFINITY', 'SYNERGY', 'BOARD', 'SKY', 'ALBUM', 'COPY']) {
+ok(window.Common.contentVersion === 14, '编辑器工程版本注入为 14，发布对象不会回退为旧版本');
+for (const name of ['QB', 'ADV', 'TALENT', 'NPC', 'SIDEQUEST_NPC', 'AFFINITY', 'SYNERGY', 'BOARD', 'SKY', 'ALBUM', 'COPY']) {
   ok(window[name] && window[name]._ready === true, name + '._ready');
 }
 
@@ -284,13 +284,13 @@ ok(upgradeCount === upgradeKeys && upgradeCount >= 40, '游戏升级配置已合
 const t001 = window.TALENT.get().find(t => t.id === 'T001');
 ok(!!t001 && t001.upgrade && t001.upgrade.maxLevel === 3 && t001.upgrade.levels.length === 2, '普通文心 T001 可升级且逐级效果完整');
 const ta08Card = window.TALENT.get().find(t => t.id === 'TA08');
-ok(!!ta08Card && ta08Card.cost === 5 && ta08Card.upgrade && ta08Card.upgrade.levels[0].cost === 5, '布局谋篇编辑器成本与升级配置完整');
+ok(!!ta08Card && ta08Card.cost === 4 && ta08Card.upgrade && ta08Card.upgrade.levels[0].cost === 3, '布局谋篇编辑器成本与升级配置完整');
 // 格数随数据自适应（题材 × 文体），新增题材/文体时不必改断言
 const affData = window.AFFINITY.get ? window.AFFINITY.get() : (window.GAME_AFFINITY || {});
 const themeN = (affData.themes || []).length, mannerN = (affData.manners || []).length;
 const affCells = document.querySelectorAll('#afflist select.aff-cell').length;
 ok(affCells === themeN * mannerN, `相性矩阵 ${themeN}×${mannerN}=${themeN * mannerN} 格下拉`, affCells);
-ok(document.querySelectorAll('#synlist .q-card').length === 17, '羁绊列表 17 条', document.querySelectorAll('#synlist .q-card').length);
+ok(document.querySelectorAll('#synlist .q-card').length === 25, '羁绊列表 25 条', document.querySelectorAll('#synlist .q-card').length);
 ok(document.querySelectorAll('#boardlist .board-card').length === 192 && window.BOARD.get().layout === 'concentric_spiral' && window.BOARD.get().mainRing.length === 192 && window.BOARD.get().rings.map(r => r.cells.length).join(',') === '72,64,56', '三圈地图列表 192 格（72/64/56）', document.querySelectorAll('#boardlist .board-card').length);
 // 张数随种子自适应（云端独有的 SK07 已并入 config/sky.json）
 const skyN = (window.GAME_SKY || []).length;
@@ -428,6 +428,30 @@ console.log('[6] NPC：机制对手编辑 → id/mech 保留 → 保存 → stat
     restore[0].npcs[0].id = 'zhou_xiaoman';
     restore[0].npcs[0].mech.signature.pct = 0.06;
     window.NPC.importData(restore, true);
+  }
+}
+
+console.log('[6.25] 支线 NPC：引路人编辑 → 保存 → state / localStorage / 工程导出');
+{
+  const editBtn = document.querySelector('#sideNpclist [data-sq-kind="guide"][data-sq-edit]');
+  ok(editBtn != null, '支线 NPC 列表渲染引路人编辑入口');
+  if (editBtn) {
+    click(editBtn);
+    ok(document.getElementById('sideNpcOverlay').classList.contains('show'), '支线 NPC 编辑弹窗打开');
+    const nameInput = document.getElementById('sideNpc-name');
+    nameInput.value = '冒烟测试引路人';
+    fire(nameInput, 'input');
+    click(document.getElementById('sideNpcSave'));
+    const guide = window.SIDEQUEST_NPC.get().routes.jianghu.guides[0];
+    ok(guide.name === '冒烟测试引路人', '支线 NPC 姓名写入 state', guide.name);
+    const saved = JSON.parse(localStorage.getItem('feihua_editors_v1_sidequest_npcs') || '{}');
+    ok(saved.routes.jianghu.guides[0].name === '冒烟测试引路人', '支线 NPC 姓名持久化 localStorage');
+    const project = window.Common.buildProject();
+    ok(project['sidequest-npcs'].routes.jianghu.guides[0].name === '冒烟测试引路人', '工程导出读取支线 NPC 编辑器实时数据');
+    const seedRes = readFileSync(join(root, 'assets/js/seed-sidequests.js'), 'utf8')
+      .replace(/^[\s\S]*?window\.GAME_SIDEQUEST_NPCS\s*=\s*/, '').replace(/;\s*window\.GAME_SIDEQUESTS[\s\S]*$/, '');
+    window.SIDEQUEST_NPC.importData(JSON.parse(seedRes), true);
+    ok(window.SIDEQUEST_NPC.get().routes.jianghu.guides[0].name === '柳照影', '支线 NPC 测试改动恢复默认种子');
   }
 }
 

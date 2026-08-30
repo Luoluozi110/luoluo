@@ -66,7 +66,7 @@ const de = deserializeRun(best.obj, cfg);
 ok(de.ok, '读档成功');
 ok(de.state.talentLevels.T004 === 2, '重载后 T004 = Lv2（升级已持久化）');
 const held = de.state.passive.find(t => t.id === 'T004');
-ok(held && held.effect.attrs.xue === 3, '重载后生效副本 = 学力+3（Lv2 效果保留）');
+ok(held && held.effect.attrs.xue === 4, '重载后生效副本 = 学力+4（Lv2 效果保留）');
 ok(de.state.attrs.xue === (g.s.attrs.xue), '重载后学力累计值与升级后一致');
 
 console.log('== 升级立即落盘：手动槽同步（含跨局继承基线）==');

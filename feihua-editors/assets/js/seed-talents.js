@@ -8,7 +8,7 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "on_win_bonus",
       "style": "shi",
-      "value": 1
+      "value": 2
     },
     "school": "shixian"
   },
@@ -20,7 +20,7 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "on_win_bonus",
       "style": "ci",
-      "value": 1
+      "value": 2
     },
     "school": "cizong"
   },
@@ -32,7 +32,7 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "on_win_bonus",
       "style": "lian",
-      "value": 1
+      "value": 2
     },
     "school": "liansheng"
   },
@@ -44,8 +44,9 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "attr_flat",
       "attrs": {
-        "xue": 2
-      }
+        "xue": 3
+      },
+      "value": 3
     },
     "school": "tongru"
   },
@@ -84,7 +85,7 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "dice_pattern",
       "pattern": "six",
-      "value": 0.05
+      "value": 0.08
     }
   },
   {
@@ -135,7 +136,8 @@ window.GAME_TALENTS = [
     "kind": "passive",
     "text": "「颂其诗，读其书，不知其人可乎？是以论其世也。」——《孟子·万章下》。深谙题材与风格之配，自动获得对手所选风格的相性加成。",
     "effect": {
-      "type": "copy_affinity"
+      "type": "copy_affinity",
+      "ratio": 0.8
     }
   },
   {
@@ -146,7 +148,7 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "on_win_bonus",
       "style": "shi",
-      "value": 2
+      "value": 3
     }
   },
   {
@@ -157,7 +159,7 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "on_win_bonus",
       "style": "ci",
-      "value": 2
+      "value": 3
     }
   },
   {
@@ -168,7 +170,7 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "on_win_bonus",
       "style": "lian",
-      "value": 2
+      "value": 3
     }
   },
   {
@@ -209,7 +211,8 @@ window.GAME_TALENTS = [
     "text": "解元、会元、状元连中三元，本朝数百年不过数人。图鉴「连中三元」解锁后可装配：殿试三场得分各 +5%。",
     "effect": {
       "type": "palace_pct",
-      "value": 0.05
+      "value": 0.15,
+      "startInspiration": 4
     },
     "source": "album"
   },
@@ -236,7 +239,8 @@ window.GAME_TALENTS = [
     "kind": "active",
     "text": "惠洪《冷斋夜话》记黄庭坚论诗：不易其意而造其语，谓之换骨法；窥入其意而形容之，谓之夺胎法。本场窥敌之技，暂借对手招牌之强为我所用——敌愈强，此招愈利。",
     "effect": {
-      "type": "borrow_signature"
+      "type": "borrow_signature",
+      "fraction": 0.3
     },
     "cost": 3
   },
@@ -275,7 +279,9 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "extra_dice_chain",
       "compare": "not_lower",
-      "value": 0.04
+      "value": 0.14,
+      "cost": 2,
+      "refund": 1
     },
     "cost": 2
   },
@@ -330,11 +336,12 @@ window.GAME_TALENTS = [
     "text": "胸中先有丘壑，落笔方能从容。发动后于回合掷移动骰前指定 1—6 格落点；本局每次再用，所耗灵感递增，谋定之后不可反悔。",
     "effect": {
       "type": "planned_dice",
-      "baseCost": 5,
+      "baseCost": 4,
       "costStep": 2,
-      "maxValue": 6
+      "maxValue": 6,
+      "cost": 4
     },
-    "cost": 5
+    "cost": 4
   },
   {
     "id": "T017",
@@ -343,7 +350,7 @@ window.GAME_TALENTS = [
     "text": "孟郊《登科后》：「春风得意马蹄疾，一日看尽长安花。」少年得志，意气风发——每场论战取胜，灵感 +1。",
     "effect": {
       "type": "insp_on_win",
-      "value": 1
+      "value": 2
     }
   },
   {
@@ -353,7 +360,7 @@ window.GAME_TALENTS = [
     "text": "王羲之《兰亭集序》载：引以为流觞曲水，列坐其次。雅集唱和，从容不迫——与对手平分秋色时，出战文体额外 +1。",
     "effect": {
       "type": "draw_bonus",
-      "value": 1
+      "value": 2
     }
   },
   {
@@ -363,7 +370,9 @@ window.GAME_TALENTS = [
     "text": "《晋书·左思传》：洛阳为之纸贵。一篇既出，士林争传，声名回响不断——持有时，每个回合开始恢复 1 点灵感。",
     "effect": {
       "type": "insp_turn_regen",
-      "value": 1
+      "value": 1,
+      "thresholdRatio": 0.5,
+      "onTalent": 2
     }
   },
   {
@@ -374,7 +383,8 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "style_pct",
       "style": "shi",
-      "value": 0.06
+      "value": 0.1,
+      "singleDieBonus": 0
     }
   },
   {
@@ -385,7 +395,7 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "theme_pct",
       "theme": "yongwu",
-      "value": 0.08
+      "value": 0.15
     }
   },
   {
@@ -405,7 +415,7 @@ window.GAME_TALENTS = [
     "text": "智永居永欣寺三十年，临书不退，笔头委积，埋之为冢——积学既深，虽江郎才尽亦有余勇。每场结算后灵感补足至 10，不致骤然封笔。",
     "effect": {
       "type": "insp_floor",
-      "value": 10
+      "value": 16
     }
   },
   {
@@ -415,7 +425,8 @@ window.GAME_TALENTS = [
     "text": "「六」者，顺也。灵感骰若掷出六点，灵思沛然，本场得分 ×1.3。",
     "effect": {
       "type": "lucky_six",
-      "mult": 1.3
+      "mult": 1.18,
+      "value": 1.25
     }
   },
   {
@@ -437,7 +448,8 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "armory_pct",
       "step": 3,
-      "value": 0.04
+      "value": 0.04,
+      "cap": 0.12
     }
   },
   {
@@ -447,7 +459,8 @@ window.GAME_TALENTS = [
     "text": "杜甫《戏为六绝句》：转益多师是汝师。败于名家而有所悟，平局亦能取法——「败中有得」「平分秋色」的补偿属性额外 +1。",
     "effect": {
       "type": "study_bonus",
-      "value": 1
+      "value": 2,
+      "nextBattlePct": 0.04
     }
   },
   {
@@ -457,7 +470,9 @@ window.GAME_TALENTS = [
     "text": "殿试策问，临轩而试。金殿之上从容奏对——殿试每场开场，灵感 +3。",
     "effect": {
       "type": "palace_insp",
-      "value": 3
+      "value": 3,
+      "startValue": 4,
+      "scorePct": 0
     }
   },
   {
@@ -467,7 +482,8 @@ window.GAME_TALENTS = [
     "text": "苏轼《文与可画筼筜谷偃竹记》：故画竹必先得成竹于胸中。谋定后动，临阵不慌——持有时，每个回合开始恢复 1 点灵感。",
     "effect": {
       "type": "insp_turn_regen",
-      "value": 1
+      "value": 1,
+      "thresholdRatio": 0.5
     }
   },
   {
@@ -477,7 +493,7 @@ window.GAME_TALENTS = [
     "text": "朱熹《观书有感》：“问渠那得清如许？为有源头活水来。”每次答对考题或完成创作抉择，灵感额外 +1；每局最多触发 4 次。",
     "effect": {
       "type": "insp_on_quiz",
-      "value": 1,
+      "value": 2,
       "maxTriggers": 4
     },
     "acquire": {
@@ -492,8 +508,8 @@ window.GAME_TALENTS = [
     "text": "枯木经霜，春来更发新枝。每场论战全部结算后，若灵感不高于 14，则恢复 2 点；每局最多触发 3 次。",
     "effect": {
       "type": "insp_battle_recover",
-      "value": 2,
-      "threshold": 14,
+      "value": 3,
+      "threshold": 16,
       "maxTriggers": 3
     },
     "acquire": {
@@ -509,8 +525,9 @@ window.GAME_TALENTS = [
     "text": "涓流不拒，积而成渊。获得时，本局灵感上限永久 +6；与「海纳百川」互斥，且扩容只结算一次。",
     "effect": {
       "type": "insp_max",
-      "value": 6,
-      "group": "inspiration_capacity"
+      "value": 8,
+      "group": "inspiration_capacity",
+      "fillRatio": 0.5
     },
     "acquire": {
       "minTurn": 12,
@@ -526,8 +543,9 @@ window.GAME_TALENTS = [
     "text": "《文心雕龙》言“操千曲而后晓声，观千剑而后识器”。获得时，本局灵感上限永久 +10；与「蓄水成渊」互斥，且扩容只结算一次。",
     "effect": {
       "type": "insp_max",
-      "value": 10,
-      "group": "inspiration_capacity"
+      "value": 14,
+      "group": "inspiration_capacity",
+      "fillRatio": 0.5
     },
     "acquire": {
       "phase": "lap2",
@@ -544,7 +562,7 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "dice_pattern",
       "pattern": "single",
-      "value": 0.08,
+      "value": 0.12,
       "reward": {
         "type": "insight",
         "value": 1,
@@ -616,7 +634,7 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "dice_pattern",
       "pattern": "six",
-      "value": 0,
+      "value": 0.08,
       "reward": {
         "type": "fragment",
         "value": 1,
@@ -632,111 +650,8 @@ window.GAME_TALENTS = [
     "effect": {
       "type": "reincarnate",
       "inspThreshold": 40,
-      "attrRatio": 0.8
-    },
-    "upgrade": {
-      "quality": "legend",
-      "maxLevel": 6,
-      "upCost": [
-        9,
-        13,
-        18,
-        24,
-        31
-      ],
-      "levels": [
-        {
-          "effect": {
-            "type": "reincarnate",
-            "inspThreshold": 36,
-            "attrRatio": 0.84
-          }
-        },
-        {
-          "effect": {
-            "type": "reincarnate",
-            "inspThreshold": 32,
-            "attrRatio": 0.88
-          }
-        },
-        {
-          "effect": {
-            "type": "reincarnate",
-            "inspThreshold": 28,
-            "attrRatio": 0.92
-          }
-        },
-        {
-          "effect": {
-            "type": "reincarnate",
-            "inspThreshold": 24,
-            "attrRatio": 0.96
-          }
-        },
-        {
-          "effect": {
-            "type": "reincarnate",
-            "inspThreshold": 20,
-            "attrRatio": 1
-          }
-        }
-      ],
-      "levelStyles": [
-        {
-          "fontFamily": "",
-          "fontSize": 0,
-          "color": "",
-          "lineHeight": 0,
-          "textAlign": "",
-          "textIndent": 0,
-          "marginBottom": 0
-        },
-        {
-          "fontFamily": "",
-          "fontSize": 0,
-          "color": "",
-          "lineHeight": 0,
-          "textAlign": "",
-          "textIndent": 0,
-          "marginBottom": 0
-        },
-        {
-          "fontFamily": "",
-          "fontSize": 0,
-          "color": "",
-          "lineHeight": 0,
-          "textAlign": "",
-          "textIndent": 0,
-          "marginBottom": 0
-        },
-        {
-          "fontFamily": "",
-          "fontSize": 0,
-          "color": "",
-          "lineHeight": 0,
-          "textAlign": "",
-          "textIndent": 0,
-          "marginBottom": 0
-        },
-        {
-          "fontFamily": "",
-          "fontSize": 0,
-          "color": "",
-          "lineHeight": 0,
-          "textAlign": "",
-          "textIndent": 0,
-          "marginBottom": 0
-        },
-        {
-          "fontFamily": "",
-          "fontSize": 0,
-          "color": "",
-          "lineHeight": 0,
-          "textAlign": "",
-          "textIndent": 0,
-          "marginBottom": 0
-        }
-      ]
+      "attrRatio": 0.8,
+      "startInspiration": 8
     }
   }
 ];
