@@ -542,7 +542,7 @@
   /** 解析仓库输入框：支持 owner/repo、完整 GitHub 链接、带 .git 后缀 */
   function parseRepo(raw) {
     let v = (raw || "").trim().replace(/\.git$/, "");
-    const m = v.match(/github\.com\/([^\/\s?#]+)\/([^\/\s?#]+)/i);
+    const m = v.match(/github\.com\/([^\/\s?#]+)\/([^\/\s?#]+)/i) || v.match(/raw\.githubusercontent\.com\/([^\/\s?#]+)\/([^\/\s?#]+)/i);
     if (m) return { owner: m[1].trim(), repo: m[2].trim() };
     const parts = v.split("/").map(p => p.trim()).filter(Boolean);
     if (parts.length >= 2) return { owner: parts[0], repo: parts[1] };
@@ -731,6 +731,24 @@
         gistId: $("cloudGist").value.trim(),
         gistOwner: saved.gistOwner || ""
       };
+      // 容错：用户可能把完整 URL 直接粘进「路径」或「仓库」框，自动解析回各字段
+      if (/^https?:\/\//i.test(s.repo)) {
+        try {
+          const u = new URL(s.repo);
+          const mm = u.pathname.match(/^\/([^\/]+)\/([^\/]+)\/(?:raw\/)?([^\/]+)\/(.+)$/);
+          if (mm) { s.owner = decodeURIComponent(mm[1]); s.repo = decodeURIComponent(mm[2]); s.branch = decodeURIComponent(mm[3]); s.path = decodeURIComponent(mm[4]); }
+          else { const pp = u.pathname.split("/").filter(Boolean); if (pp.length >= 2) { s.owner = pp[0]; s.repo = pp[1]; } }
+        } catch (_) { /* 非合法 URL，交由后续校验 */ }
+      }
+      if (/^https?:\/\//i.test(s.path)) {
+        try {
+          const u = new URL(s.path);
+          const mm = u.pathname.match(/^\/([^\/]+)\/([^\/]+)\/(?:raw\/)?([^\/]+)\/(.+)$/);
+          if (mm) { s.owner = decodeURIComponent(mm[1]); s.repo = decodeURIComponent(mm[2]); s.branch = decodeURIComponent(mm[3]); s.path = decodeURIComponent(mm[4]); setMsg("已自动解析完整 URL → 仓库 " + s.owner + "/" + s.repo + " · 分支 " + s.branch + " · 路径 " + s.path, false); }
+          else { s.path = u.pathname.split("/").pop() || "feihua-content.json"; }
+        } catch (_) { /* 非合法 URL，交由后续校验 */ }
+      }
+
       if (s.mode === "repo" && (!s.owner || !s.repo)) { setMsg("请先填写仓库（owner/repo）。", true); return; }
       if (s.mode === "gist" && !s.gistId) { setMsg("请先填写 Gist ID（或先用『发布到云端』创建）。", true); return; }
       setMsg("从云端拉取中…");
