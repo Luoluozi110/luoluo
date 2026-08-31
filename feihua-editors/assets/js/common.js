@@ -822,6 +822,7 @@
       };
     }
     if (!global.FeihuaConfigContract) throw new Error("配置契约校验器未加载");
+    migrateCloudProject(project);
     global.FeihuaConfigContract.assertProject(project);
     // 返回快照而不是模块内部 state 的引用，防止异步发布期间后续编辑改写本次内容。
     return JSON.parse(JSON.stringify(project));
@@ -963,17 +964,25 @@
    */
   function migrateCloudProject(project) {
     const migrations = [];
-    if (!project || !Array.isArray(project.talents) || !isObj(project["talent-upgrade"])) return migrations;
+    if (!project || !Array.isArray(project.talents)) return migrations;
     const talentById = new Map();
     for (const talent of project.talents) {
       if (talent && talent.id && !talentById.has(talent.id)) talentById.set(talent.id, talent);
     }
-    for (const [id, upgrade] of Object.entries(project["talent-upgrade"])) {
+    // 兼容 talent-upgrade 既可能是「对象（按 id 索引）」也可能是「数组」
+    const upgrades = isObj(project["talent-upgrade"])
+      ? Object.entries(project["talent-upgrade"])
+      : (Array.isArray(project["talent-upgrade"])
+        ? project["talent-upgrade"].map(u => [u && u.id, u]).filter(([id]) => !!id)
+        : []);
+    for (const [id, upgrade] of upgrades) {
+      if (!id || !upgrade) continue;
       const talent = talentById.get(id);
       const level1 = upgrade && Array.isArray(upgrade.levels) ? upgrade.levels[0] : null;
-      if (!talent || !isObj(talent.effect) || !level1 || !isObj(level1.effect)) continue;
-      const changed = stableJson(level1.effect) !== stableJson(talent.effect);
-      // 同时统一对象键序，避免旧契约的 JSON 顺序比较把等价效果判成漂移。
+      // 即便 level1.effect 缺失/非对象，只要 base 有 effect 也强制对齐，
+      // 避免旧源格式导致自愈静默跳过、漂移原样保留触发契约校验失败。
+      if (!talent || !isObj(talent.effect) || !level1) continue;
+      const changed = !isObj(level1.effect) || stableJson(level1.effect) !== stableJson(talent.effect);
       level1.effect = JSON.parse(JSON.stringify(talent.effect));
       if (changed) migrations.push({ type: "talent-upgrade-level1", id });
     }
