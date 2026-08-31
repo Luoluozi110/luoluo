@@ -608,16 +608,31 @@ async function fetchCloudText(s, rawUrl) {
         url: `https://cdn.jsdelivr.net/gh/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}@${encodeURIComponent(branch)}/${path}`
       });
     }
+    // 单通道超时：raw 域名常表现为「挂起」而非立即报错，不设上限会拖住整个回退链。
+    const TIMEOUT_MS = 10000;
     let lastStatus = 0;
     for (const c of candidates) {
       const url = cacheBust(c.url);
+      const init = { cache: "no-store" };
+      if (c.headers) init.headers = c.headers;
+      let ctrl = null, timer = null;
+      if (typeof AbortController !== "undefined") {
+        ctrl = new AbortController();
+        init.signal = ctrl.signal;
+        timer = setTimeout(() => { try { ctrl.abort(); } catch (_) { /* 已结束 */ } }, TIMEOUT_MS);
+      }
       try {
-        const res = await fetch(url, c.headers ? { cache: "no-store", headers: c.headers } : { cache: "no-store" });
-        if (res.ok) return { text: await res.text(), label: c.label, url };
+        const res = await fetch(url, init);
+        if (res.ok) {
+          const text = await res.text();
+          return { text, label: c.label, url };
+        }
         // 记录最后一个真实 HTTP 状态（404 多为文件确实不存在，镜像同步延迟也会短暂 404）
         lastStatus = res.status;
       } catch (e) {
-        // 网络层失败：静默换下一条通道
+        // 网络层失败或超时：静默换下一条通道
+      } finally {
+        if (timer) clearTimeout(timer);
       }
     }
     if (lastStatus) {
