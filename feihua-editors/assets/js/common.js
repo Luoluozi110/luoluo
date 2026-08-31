@@ -508,10 +508,15 @@
       </div>`;
 
     document.getElementById("mgmtMarkCurrent").addEventListener("click", () => {
-      if (!confirm(`确认当前编辑器内容就是要发布的版本 ${CONTENT_VERSION}？\n\n确认后才允许覆盖同版本或更旧的云端工程。`)) return;
-      markCurrentDataVersion();
+      // 若已知云端版本（拉取/发布时记下），则对齐到云端版本；
+      // 只标 CONTENT_VERSION 在云端版本更高时仍然解不开版本闸门。
+      const savedCloud = (global.CloudSync && global.CloudSync.loadSettings) ? global.CloudSync.loadSettings("cloud") : null;
+      const cloudVersion = Number(savedCloud && savedCloud.version) || 0;
+      const target = Math.max(CONTENT_VERSION, cloudVersion, localDataVersion());
+      if (!confirm(`确认当前编辑器内容就是要发布的版本 ${target}？\n\n确认后才允许覆盖同版本或更旧的云端工程。`)) return;
+      markCurrentDataVersion(target);
       showManagement();
-      toast(`已确认本机版本 ${CONTENT_VERSION}`);
+      toast(`已确认本机版本 ${target}`);
     });
     document.getElementById("mgmtExport").addEventListener("click", exportProject);
     document.getElementById("mgmtImport").addEventListener("click", () =>
@@ -836,7 +841,11 @@ async function fetchCloudText(s, rawUrl) {
         let data; try { data = JSON.parse(text); } catch (e) { throw new Error("云端文件不是合法 JSON：" + e.message); }
         if (!data || data._type !== "feihua-content") throw new Error("云端文件不是 feihua-content 工程文件（_type 不符）");
         const result = applyCloudProject(data);
+        // 关键：拉取后必须把本机版本标记对齐到云端版本。
+        // 否则后续发布仍会使用旧版本号，被版本闸门反复拦截。
+        markCurrentDataVersion(Number(data._version) || CONTENT_VERSION);
         s.url = rawUrl;
+        s.version = Number(data._version) || 0;
         s.fingerprint = result.fingerprint;
         global.CloudSync.saveSettings("cloud", s);
         const active = document.querySelector(".nav button.active");
