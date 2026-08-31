@@ -964,27 +964,57 @@
    */
   function migrateCloudProject(project) {
     const migrations = [];
-    if (!project || !Array.isArray(project.talents)) return migrations;
-    const talentById = new Map();
-    for (const talent of project.talents) {
-      if (talent && talent.id && !talentById.has(talent.id)) talentById.set(talent.id, talent);
+    if (!project) return migrations;
+
+    // --- 1. 文心升级 Lv1 效果须与 talents 基础效果一致 ---
+    if (Array.isArray(project.talents)) {
+      const talentById = new Map();
+      for (const talent of project.talents) {
+        if (talent && talent.id && !talentById.has(talent.id)) talentById.set(talent.id, talent);
+      }
+      // 兼容 talent-upgrade 既可能是「对象（按 id 索引）」也可能是「数组」
+      const upgrades = isObj(project["talent-upgrade"])
+        ? Object.entries(project["talent-upgrade"])
+        : (Array.isArray(project["talent-upgrade"])
+          ? project["talent-upgrade"].map(u => [u && u.id, u]).filter(([id]) => !!id)
+          : []);
+      for (const [id, upgrade] of upgrades) {
+        if (!id || !upgrade) continue;
+        const talent = talentById.get(id);
+        const level1 = upgrade && Array.isArray(upgrade.levels) ? upgrade.levels[0] : null;
+        // 即便 level1.effect 缺失/非对象，只要 base 有 effect 也强制对齐，
+        // 避免旧源格式导致自愈静默跳过、漂移原样保留触发契约校验失败。
+        if (!talent || !isObj(talent.effect) || !level1) continue;
+        const changed = !isObj(level1.effect) || stableJson(level1.effect) !== stableJson(talent.effect);
+        level1.effect = JSON.parse(JSON.stringify(talent.effect));
+        if (changed) migrations.push({ type: "talent-upgrade-level1", id });
+      }
     }
-    // 兼容 talent-upgrade 既可能是「对象（按 id 索引）」也可能是「数组」
-    const upgrades = isObj(project["talent-upgrade"])
-      ? Object.entries(project["talent-upgrade"])
-      : (Array.isArray(project["talent-upgrade"])
-        ? project["talent-upgrade"].map(u => [u && u.id, u]).filter(([id]) => !!id)
-        : []);
-    for (const [id, upgrade] of upgrades) {
-      if (!id || !upgrade) continue;
-      const talent = talentById.get(id);
-      const level1 = upgrade && Array.isArray(upgrade.levels) ? upgrade.levels[0] : null;
-      // 即便 level1.effect 缺失/非对象，只要 base 有 effect 也强制对齐，
-      // 避免旧源格式导致自愈静默跳过、漂移原样保留触发契约校验失败。
-      if (!talent || !isObj(talent.effect) || !level1) continue;
-      const changed = !isObj(level1.effect) || stableJson(level1.effect) !== stableJson(talent.effect);
-      level1.effect = JSON.parse(JSON.stringify(talent.effect));
-      if (changed) migrations.push({ type: "talent-upgrade-level1", id });
+
+    // --- 2. 羁绊效果须有稳定 effectId ---
+    // 契约要求每条 effect 都有非空且羁绊内唯一的 effectId；
+    // 旧云端数据/手工编辑常漏掉（synergy 的 normalizeEffect 对空值会直接 delete），
+    // 这里统一自愈补齐：{羁绊id}-E{序号}，并在同一羁绊内去重。
+    if (Array.isArray(project.synergies)) {
+      for (const synergy of project.synergies) {
+        if (!synergy || !Array.isArray(synergy.effects)) continue;
+        const used = new Set();
+        for (const ef of synergy.effects) {
+          if (isObj(ef) && typeof ef.effectId === "string" && ef.effectId.trim()) used.add(ef.effectId.trim());
+        }
+        synergy.effects.forEach((ef, i) => {
+          if (!isObj(ef)) return;
+          const cur = typeof ef.effectId === "string" ? ef.effectId.trim() : "";
+          if (cur) return;
+          const base = synergy && synergy.id ? String(synergy.id) : "SXX";
+          let candidate = `${base}-E${i + 1}`;
+          let n = i + 1;
+          while (used.has(candidate)) { n += 1; candidate = `${base}-E${n}`; }
+          ef.effectId = candidate;
+          used.add(candidate);
+          migrations.push({ type: "synergy-effectId", id: base, effectId: candidate });
+        });
+      }
     }
     return migrations;
   }
