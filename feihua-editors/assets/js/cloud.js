@@ -111,10 +111,25 @@
 
   /** 读取当前云端完整工程；发布前用于拦截旧编辑器覆盖新版本。 */
   async function fetchProject(s) {
-    const response = await fetch(cacheBust(rawUrl(s)), { cache: "no-store" });
-    if (response.status === 404) return null;
-    if (!response.ok) throw new Error("发布前读取云端失败 HTTP " + response.status);
-    const project = await response.json();
+    const target = rawUrl(s);
+    let text;
+    if (global.Common && typeof global.Common.fetchCloudText === "function") {
+      // 复用与「从云端拉取」一致的多通道回退：raw 不可达时自动改用 GitHub API / jsDelivr，
+      // 否则发布会被发布前的这一次读取直接卡死（raw 不通时报 Failed to fetch）。
+      try {
+        text = (await global.Common.fetchCloudText(s, target)).text;
+      } catch (error) {
+        if (error && error.status === 404) return null; // 云端还没有该文件
+        throw new Error("发布前读取云端失败：" + ((error && error.message) || error));
+      }
+    } else {
+      const response = await fetch(cacheBust(target), { cache: "no-store" });
+      if (response.status === 404) return null;
+      if (!response.ok) throw new Error("发布前读取云端失败 HTTP " + response.status);
+      text = await response.text();
+    }
+    let project;
+    try { project = JSON.parse(text); } catch (_) { throw new Error("发布前读取到的云端文件不是合法 JSON"); }
     if (!project || project._type !== "feihua-content") throw new Error("发布前读取到的云端文件不是有效工程");
     return project;
   }

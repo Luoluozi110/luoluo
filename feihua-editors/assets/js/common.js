@@ -636,9 +636,14 @@ async function fetchCloudText(s, rawUrl) {
       }
     }
     if (lastStatus) {
-      throw new Error("HTTP " + lastStatus + (lastStatus === 404 ? "（云端还没有该文件，请先『发布到云端』）" : ""));
+      // 带上 status，便于调用方区分「文件确实不存在(404)」与「网络不可达」。
+      const httpError = new Error("HTTP " + lastStatus + (lastStatus === 404 ? "（云端还没有该文件，请先『发布到云端』）" : ""));
+      httpError.status = lastStatus;
+      throw httpError;
     }
-    throw new Error("网络无法连接云端（raw / API / jsDelivr 三条通道均不可达）。请检查网络或代理后重试");
+    const netError = new Error("网络无法连接云端（raw / API / jsDelivr 三条通道均不可达）。请检查网络或代理后重试");
+    netError.isNetworkError = true;
+    throw netError;
   }
 
   /* 云端同步：填充已存设置、检查本机 gh 桥接、发布、复制地址 */
@@ -737,14 +742,25 @@ async function fetchCloudText(s, rawUrl) {
         }
         const published = await global.CloudSync.publish(s, expectedProject);
         const url = published.url;
-        const verifyUrl = cacheBust(published.verifyUrl || url);
-        const verifyRes = await fetch(verifyUrl, { cache: "no-store" });
-        if (!verifyRes.ok) throw new Error("发布成功但回读失败 HTTP " + verifyRes.status);
-        const remoteProject = await verifyRes.json();
-        if (!remoteProject || remoteProject._type !== "feihua-content") throw new Error("发布成功但回读内容不是有效工程文件");
-        const diff = projectDiffKeys(expectedProject, remoteProject);
-        if (diff.length) {
-          throw new Error("发布成功但回读有模块不一致：" + diff.map(key => PROJECT_FIELD_LABELS[key] || key).join("、"));
+        // 回读校验同样走多通道；此处发布其实已经成功，网络不可达不应被误报成「发布失败」。
+        let remoteProject = null;
+        let verifyNote = "";
+        try {
+          const fetched = await fetchCloudText(s, published.verifyUrl || url);
+          remoteProject = JSON.parse(fetched.text);
+          if (!remoteProject || remoteProject._type !== "feihua-content") throw new Error("回读内容不是有效工程文件");
+          if (fetched.label !== "GitHub Raw") verifyNote = `（回读经备用通道 ${fetched.label}）`;
+        } catch (verifyError) {
+          // 真实 HTTP 错误（如回读 404）仍视为异常；仅网络层不可达才降级。
+          if (verifyError && verifyError.status) throw verifyError;
+          remoteProject = null;
+          verifyNote = "（网络无法回读校验，请稍后用『从云端拉取』确认）";
+        }
+        if (remoteProject) {
+          const diff = projectDiffKeys(expectedProject, remoteProject);
+          if (diff.length) {
+            throw new Error("发布成功但回读有模块不一致：" + diff.map(key => PROJECT_FIELD_LABELS[key] || key).join("、"));
+          }
         }
         if (published.gistId) {
           s.gistId = published.gistId;
@@ -753,14 +769,20 @@ async function fetchCloudText(s, rawUrl) {
         }
         s.url = url;
         s.revision = published.revision || "";
-        s.fingerprint = projectFingerprint(remoteProject);
-        markCurrentDataVersion(remoteProject._version);
+        if (remoteProject) {
+          s.fingerprint = projectFingerprint(remoteProject);
+          markCurrentDataVersion(remoteProject._version);
+        } else {
+          s.fingerprint = projectFingerprint(expectedProject);
+        }
         global.CloudSync.saveSettings("cloud", s);
         const box = $("cloudUrlBox"), u = $("cloudUrl"), copy = $("cloudCopy");
         if (box) box.style.display = "";
         if (u) u.textContent = url;
         if (copy) { copy.style.display = ""; copy.onclick = () => { navigator.clipboard && navigator.clipboard.writeText(url); toast("已复制云端地址"); }; }
-        setMsg(`发布成功并已完整回读校验；工程指纹 ${s.fingerprint}${s.revision ? `，版本 ${s.revision.slice(0, 8)}` : ""}。`, false);
+        setMsg(remoteProject
+          ? `发布成功并已完整回读校验${verifyNote}；工程指纹 ${s.fingerprint}${s.revision ? `，版本 ${s.revision.slice(0, 8)}` : ""}。`
+          : `发布成功${verifyNote}；工程指纹 ${s.fingerprint}${s.revision ? `，版本 ${s.revision.slice(0, 8)}` : ""}。`, false);
         toast("已发布到云端");
       } catch (err) {
         setMsg("发布失败：" + err.message, true);
@@ -1263,6 +1285,8 @@ async function fetchCloudText(s, rawUrl) {
   global.Common = {
     store, load, esc, toast, openOverlay, closeOverlay,
     init, switchTab, setStatus, showManagement, buildProject, applyCloudProject, projectDiffKeys, projectFingerprint,
+    // 供 cloud.js 的发布前读取复用同一套多通道回退，避免两处各写一份。
+    fetchCloudText,
     classify, talentIds, talentById, nextSeqId,
     getWorkspaceHealth, reviewWorkspace, refreshWorkspaceUI, openCommandPalette,
     contentVersion: CONTENT_VERSION, localDataVersion, hasStaleStorage, markCurrentDataVersion,
