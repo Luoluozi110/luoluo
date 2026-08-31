@@ -1,5 +1,5 @@
 /** board.js —— 镜头可切换棋盘渲染、棋子移动、掷骰、飘字 */
-import { glyph, cellGlyphKey, FAR_HILLS, ensureDefs } from './svg.js?v=20260829merge2';
+import { glyph, cellGlyphKey, FAR_HILLS, ensureDefs } from './svg.js?v=20260831firstrun1';
 import { getBudget } from './quality.js';
 import { play } from './audio.js';
 import {
@@ -12,7 +12,7 @@ import {
   resolveBoardViewAngle,
   resolveBoardViewMode,
   resolveEffectiveBoardViewMode
-} from './boardView.js?v=20260829merge2';
+} from './boardView.js?v=20260831firstrun1';
 
 const UNIT = 46;        // 原版单环格距：42px 格面 + 4px 间距
 const GRID = 21;        // 兼容旧单环；三圈布局按各 ring.grid 计算
@@ -760,3 +760,4 @@ const PIECE_SVG = `<svg viewBox="0 0 40 56" xmlns="http://www.w3.org/2000/svg">
   <rect x="29" y="30" width="2.6" height="17" rx="1.3" fill="#8d6a45" transform="rotate(12 30 38)"/>
   <path d="M32.5 45.5l1.6 5-2.8.6z" fill="#2b2622"/>
 </svg>`;
+

@@ -6395,7 +6395,10 @@
               "description": "本场准备使用诗体"
             }
           },
-          "style": "shi"
+          "style": "shi",
+          "difficultyRole": "tutorial",
+          "beginnerWeight": 100,
+          "standardWeight": 100
         },
         {
           "id": "chen_yanqiu",
@@ -6445,7 +6448,10 @@
               "description": "本场准备使用词体"
             }
           },
-          "style": "ci"
+          "style": "ci",
+          "difficultyRole": "tutorial",
+          "beginnerWeight": 100,
+          "standardWeight": 100
         },
         {
           "id": "wu_shuang_er",
@@ -6489,7 +6495,10 @@
               "description": "本场准备使用联体"
             }
           },
-          "style": "lian"
+          "style": "lian",
+          "difficultyRole": "tutorial",
+          "beginnerWeight": 100,
+          "standardWeight": 100
         },
         {
           "id": "sun_a_niu",
@@ -6528,7 +6537,10 @@
               "description": "本场求稳，降低波动"
             }
           },
-          "style": "bi"
+          "style": "bi",
+          "difficultyRole": "tutorial",
+          "beginnerWeight": 100,
+          "standardWeight": 100
         },
         {
           "id": "qian_xiao_yi",
@@ -6571,7 +6583,10 @@
               "description": "本场准备沿用上一场路数"
             }
           },
-          "style": "xue"
+          "style": "xue",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100
         },
         {
           "id": "li_mo_tong",
@@ -6619,7 +6634,10 @@
               "xue"
             ]
           },
-          "style": "si"
+          "style": "si",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "shen_sui_feng",
@@ -6657,7 +6675,10 @@
               "description": "本场顺应当朝风潮，以得势文风行文"
             }
           },
-          "style": "ci"
+          "style": "ci",
+          "difficultyRole": "elite",
+          "beginnerWeight": 0,
+          "standardWeight": 15
         },
         {
           "id": "npc_tongsheng_1",
@@ -6703,7 +6724,10 @@
               "xue"
             ]
           },
-          "style": "si"
+          "style": "si",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100
         }
       ],
       "range": [
@@ -6758,7 +6782,10 @@
               "description": "本场求稳，降低波动"
             }
           },
-          "style": "shi"
+          "style": "shi",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100
         },
         {
           "id": "huang_ming_yuan",
@@ -6801,7 +6828,10 @@
               "description": "本场准备使用词体"
             }
           },
-          "style": "ci"
+          "style": "ci",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100
         },
         {
           "id": "lin_qingzhai",
@@ -6844,7 +6874,10 @@
               "description": "本场仍偏好联体"
             }
           },
-          "style": "lian"
+          "style": "lian",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100
         },
         {
           "id": "zhao_wen_bin",
@@ -6887,7 +6920,10 @@
               "description": "本场沿用你上一场路数"
             }
           },
-          "style": "bi"
+          "style": "bi",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100
         },
         {
           "id": "zheng_shu_yu",
@@ -6936,7 +6972,10 @@
               "description": "准备仿你近日常用路数"
             }
           },
-          "style": "xue"
+          "style": "xue",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "wang_han_sheng",
@@ -6983,7 +7022,10 @@
               "xue"
             ]
           },
-          "style": "si"
+          "style": "si",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "xie_lian_cheng",
@@ -7023,7 +7065,10 @@
               "description": "本场专审重复骰面，待你落笔露瑕"
             }
           },
-          "style": "lian"
+          "style": "lian",
+          "difficultyRole": "elite",
+          "beginnerWeight": 0,
+          "standardWeight": 15
         },
         {
           "id": "gu_qing_shang",
@@ -7066,7 +7111,10 @@
               "description": "本场稳守成卷，邀你以一枚追加骰破势"
             }
           },
-          "style": "ci"
+          "style": "ci",
+          "difficultyRole": "elite",
+          "beginnerWeight": 0,
+          "standardWeight": 15
         }
       ],
       "range": [
@@ -7127,7 +7175,10 @@
               "description": "正常应战；若玩家追加骰，则争先强攻"
             }
           },
-          "style": "shi"
+          "style": "shi",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "su_mingzhe",
@@ -7173,7 +7224,10 @@
               "description": "准备模仿你近日常用路数"
             }
           },
-          "style": "ci"
+          "style": "ci",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "lu_yun_ting",
@@ -7216,7 +7270,10 @@
               "description": "本场准备使用联体，以对仗相迎"
             }
           },
-          "style": "lian"
+          "style": "lian",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "han_shi_chang",
@@ -7255,7 +7312,10 @@
               "description": "本场求稳，严守章法"
             }
           },
-          "style": "bi"
+          "style": "bi",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "tang_ji_qing",
@@ -7305,7 +7365,10 @@
               "si"
             ]
           },
-          "style": "xue"
+          "style": "xue",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "bai_wen_yuan",
@@ -7354,7 +7417,10 @@
               "description": "准备仿你近日常用路数，相机转锋"
             }
           },
-          "style": "si"
+          "style": "si",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "cui_wu_jiu",
@@ -7391,7 +7457,10 @@
               "description": "本场紧盯主动文心的起落，伺机问锋"
             }
           },
-          "style": "shi"
+          "style": "shi",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "npc_juren_1",
@@ -7441,7 +7510,10 @@
               "ci"
             ]
           },
-          "style": "lian"
+          "style": "lian",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100
         }
       ],
       "range": [
@@ -7504,7 +7576,10 @@
               "description": "准备稳稿压人"
             }
           },
-          "style": "shi"
+          "style": "shi",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "si_ma_wen",
@@ -7548,7 +7623,10 @@
               "description": "本场准备使用词体"
             }
           },
-          "style": "ci"
+          "style": "ci",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "shang_guan_ming",
@@ -7597,7 +7675,10 @@
               "description": "准备仿你近日常用路数"
             }
           },
-          "style": "lian"
+          "style": "lian",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "xia_hou_jin",
@@ -7636,7 +7717,10 @@
               "description": "本场求稳，严守翰苑章法"
             }
           },
-          "style": "bi"
+          "style": "bi",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "mu_rong_yu",
@@ -7679,7 +7763,10 @@
               "description": "本场沿用你上一场路数"
             }
           },
-          "style": "xue"
+          "style": "xue",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "yuwen_yuan",
@@ -7745,7 +7832,10 @@
               "xue"
             ]
           },
-          "style": "si"
+          "style": "si",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         }
       ],
       "range": [
@@ -7812,7 +7902,10 @@
               "description": "已根据上一场战况调整策略"
             }
           },
-          "style": "shi"
+          "style": "shi",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "li_xue_shi",
@@ -7863,7 +7956,10 @@
               "description": "本场准备使用词体，以声律取胜"
             }
           },
-          "style": "ci"
+          "style": "ci",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "zhao_da_ru",
@@ -7905,7 +8001,10 @@
               "description": "本场先明守势经义，邀你以追加骰破其成规"
             }
           },
-          "style": "bi"
+          "style": "bi",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100
         },
         {
           "id": "kang_er_yu",
@@ -7957,7 +8056,10 @@
               "ci"
             ]
           },
-          "style": "lian"
+          "style": "lian",
+          "difficultyRole": "basic",
+          "beginnerWeight": 10,
+          "standardWeight": 10
         }
       ],
       "range": [
@@ -8003,7 +8105,10 @@
               "xue",
               "si"
             ]
-          }
+          },
+          "difficultyRole": "basic",
+          "beginnerWeight": 0,
+          "standardWeight": 0
         }
       ],
       "isHiddenFinal": true,

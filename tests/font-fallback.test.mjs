@@ -6,7 +6,7 @@ const css = fs.readFileSync(new URL('../css/base.css', import.meta.url), 'utf8')
 const page = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const font = new URL('../fonts/noto-serif-sc/NotoSerifSC-400.woff2', import.meta.url);
 
-assert.match(css, /@font-face\s*\{[\s\S]*?font-family:\s*"Wenxin Serif SC";[\s\S]*?font-display:\s*swap;[\s\S]*?NotoSerifSC-400\.woff2\?v=20260829merge2/s,
+assert.match(css, /@font-face\s*\{[\s\S]*?font-family:\s*"Wenxin Serif SC";[\s\S]*?font-display:\s*swap;[\s\S]*?NotoSerifSC-400\.woff2\?v=20260831firstrun1
   '自托管字体须使用 swap，网络加载未完成时可立即显示回退字体');
 assert.match(css, /--font-song:\s*var\(--font-system-cjk\)/, '首屏必须优先使用系统中文字体');
 assert.match(css, /--font-system-cjk:[\s\S]*?"Songti SC"[\s\S]*?"PingFang SC"[\s\S]*?"Microsoft YaHei"[\s\S]*?"Noto Sans CJK SC"[\s\S]*?system-ui/s,
@@ -17,9 +17,9 @@ assert.match(css, /--font-symbol:[\s\S]*?"Segoe UI Symbol"[\s\S]*?"Noto Sans Sym
   '符号必须使用独立回退链');
 assert.match(css, /--font-emoji:[\s\S]*?"Apple Color Emoji"[\s\S]*?"Segoe UI Emoji"/,
   '彩色表情必须使用独立回退链');
-assert.match(page, /rel="preload" as="font" type="font\/woff2" href="fonts\/noto-serif-sc\/NotoSerifSC-400\.woff2\?v=20260829merge2" crossorigin/,
+assert.match(page, /rel="preload" as="font" type="font\/woff2" href="fonts\/noto-serif-sc\/NotoSerifSC-400\.woff2\?v=20260831firstrun1" crossorigin/,
   '首屏应预加载自托管字体');
-assert.match(page, /css\/base\.css\?v=20260829merge2/,
+assert.match(page, /css\/base\.css\?v=20260831firstrun1
   '字体策略更新必须更新样式缓存版本');
 assert.match(page, /document\.fonts\.load\('400 16px "Wenxin Serif SC"',[\s\S]*?font-web-ready/,
   '页面必须在字体加载成功后才启用自托管字体');
@@ -31,3 +31,4 @@ assert.equal(bytes.subarray(0, 4).toString(), 'wOF2', '随包字体必须是有�
 assert.ok(bytes.byteLength > 1_000_000, '随包字体不得被意外替换为残缺文件');
 
 console.log('font-fallback.test.mjs: 自托管字体、跨平台中文回退与缓存版本全部通过');
+

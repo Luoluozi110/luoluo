@@ -1,9 +1,9 @@
 /** battle.js —— 「挥毫论道」全屏对决台，六步流程 + 五项逐条弹出累加 */
-import { ATTR_NAMES, STYLE_NAMES, ATTR_KEYS, BATTLE_COEF } from '../engine/rules.js?v=20260831sidequestcopy1';
-import { talentEffectText, goldBurst, signed, DEFAULT_SECONDS } from './modals.js';
+import { ATTR_NAMES, STYLE_NAMES, ATTR_KEYS, BATTLE_COEF } from '../engine/rules.js?v=20260831firstrun1';
+import { talentEffectText, goldBurst, signed, DEFAULT_SECONDS, mentorAidCardHTML } from './modals.js';
 import { createCountdown } from './timer.js';
 import { play } from './audio.js';
-import { intentHint, weaknessHint, settleLines } from './mechHints.js?v=20260831sidequestcopy1';
+import { intentHint, weaknessHint, settleLines } from './mechHints.js?v=20260831firstrun1';
 import { SCHOLAR_PORTRAIT } from './svg.js';
 import { interpolateSideQuestCopy } from '../engine/sidequest-presentation.js';
 
@@ -20,6 +20,59 @@ export class BattleStage {
 
   attrsRow(a) {
     return ATTR_KEYS.map(k => `<span>${ATTR_NAMES[k]}<b> ${a[k] || 0}</b></span>`).join('');
+  }
+
+  /** 入门卷降噪梯度：'first' | 'second' | 'thirdPlus' | null（null=非入门卷或已关闭/晋阶试） */
+  onboardingGrade(session) {
+    const obCtx = session && session.onboardingContext;
+    if (!obCtx || obCtx.isGate) return null;   // 晋阶试沿用受控对手池，不单独降噪
+    const n = Number(obCtx.battleCount) || 0;
+    if (n === 0) return 'first';
+    if (n === 1) return 'second';
+    return 'thirdPlus';
+  }
+
+  /** 选文体推荐：只用公开信息（玩家属性底盘），不锁定选项、不保证胜利 */
+  recommendStyle(session) {
+    const canUse = s => (typeof session.canUseStyle === 'function') ? session.canUseStyle(s) : true;
+    const usable = ['shi', 'ci', 'lian'].filter(s => canUse(s));
+    if (!usable.length) return null;
+    let best = usable[0];
+    for (const s of usable) if ((session.playerAttrs[s] || 0) > (session.playerAttrs[best] || 0)) best = s;
+    let reason = `你当前${ATTR_NAMES[best]}最高`;
+    const npc = session.npc;
+    if (npc && npc.mech && npc.mech.weakness) reason += '，对手亦露公开破绽，可先观其形迹再落笔';
+    return { name: STYLE_NAMES[best], reason };
+  }
+
+  /** 选文风推荐：只用公开信息（题材相性） */
+  recommendManner(session) {
+    const ms = session.manners || [];
+    if (!ms.length) return null;
+    const aff = m => (typeof session.affinityOf === 'function') ? session.affinityOf(m) : 0;
+    let best = ms[0];
+    for (const m of ms) if (aff(m) > aff(best)) best = m;
+    const name = session.mannerNames[best] || best;
+    return { name, reason: `当前与「${name}」相性最高` };
+  }
+
+  /** 推荐标签 HTML：首/二场自动展开；第三场起折叠为「为什么推荐？」 */
+  onboardingRecommendHTML(session, kind) {
+    const grade = this.onboardingGrade(session);
+    if (!grade) return '';
+    const rec = kind === 'style' ? this.recommendStyle(session) : this.recommendManner(session);
+    if (!rec) return '';
+    const text = `推荐：${rec.name}　理由：${rec.reason}`;
+    if (grade === 'thirdPlus') {
+      return `<details class="ob-recommend ob-collapsed" data-kind="${kind}">
+        <summary class="ob-why">为什么推荐？</summary>
+        <div class="ob-rec-body">${esc(text)}</div>
+      </details>`;
+    }
+    return `<div class="ob-recommend" data-kind="${kind}">
+      <span class="ob-rec-tag">推荐</span>
+      <span class="ob-rec-body">${esc(text)}</span>
+    </div>`;
   }
 
   /** 驱动一场战斗；session 由 engine 提供。返回 resolve 结果 */
@@ -63,8 +116,14 @@ export class BattleStage {
 
     const panel = el.querySelector('#btPanel');
 
+    // 入门卷降噪梯度：首场只给一条节点提示，不弹六步长说明；二场保留推荐标签，三场起折叠。
+    const obCtx = session.onboardingContext;
+    const obActive = !!obCtx;
+    const obFirst = obActive && !obCtx.isGate && (Number(obCtx.battleCount) || 0) === 0;
+    const showGenericTutorial = session.tutorialFirstBattle && !obFirst;
+
     /* 首次论战先讲清六步流程，随后才进入遭遇，避免教学被倒计时打断。 */
-    if (session.tutorialFirstBattle && session.tutorialFirstBattleText) {
+    if (showGenericTutorial && session.tutorialFirstBattleText) {
       panel.innerHTML = `<div class="ph">${esc(copy.kind || '论战六步')}</div><div style="font-size:14px;line-height:1.9;white-space:pre-line;color:var(--mo-2)">${esc(session.tutorialFirstBattleText)}</div>`;
       const guideBtn = document.createElement('button');
       guideBtn.className = 'pick meet-confirm';
@@ -76,11 +135,10 @@ export class BattleStage {
     }
 
     /* ① 遭遇：介绍弹窗，等待玩家「开始对决」确认后再推进（不再自动快跳） */
-    const encounter = copyText('encounter', '「{npc}」{npcTitle}拦路请教，愿以文会友。', {
-      npc: session.npc.fullName || session.npc.name, npcTitle: session.npc.title || ''
-    });
+    const encounter = `「${session.npc.fullName || session.npc.name}」${session.npc.title || ''}拦路请教，愿以文会友。`;
     panel.innerHTML = `<div class="ph">① ${esc(step(0))}</div>
-       <div style="font-size:17px;line-height:1.8">${esc(encounter)}${session.npc.style ? `<span style="color:var(--zhu)">（此人${esc(opponentFocus)}）</span>` : ''}</div>`;
+       <div style="font-size:17px;line-height:1.8">${esc(encounter)}${session.npc.style ? `<span style="color:var(--zhu)">（此人${esc(opponentFocus)}）</span>` : ''}</div>
+       ${obFirst ? `<div class="ob-node-hint">首场论战：按「遭遇→审题→选文体→选风格→掷骰→算分」逐节点推进；输赢都照常记录，先看懂规则。</div>` : ''}`;
 
     /* ①½ 研判卡：机制 NPC 的意图行藏 + 长短可读提示（阶段 B），一并展示后统一确认 */
     const mechCtx = { styleNames: STYLE_NAMES, mannerNames: session.mannerNames || {} };
@@ -187,7 +245,7 @@ export class BattleStage {
       }).join('');
       panel.innerHTML = `<div class="ph">③ ${esc(session._stepStyleLabel || '选文体')}　<span style="font-size:12px;color:var(--mo-3)">三体共通 ×7 ＋ 本体专精 ×3　·　限时 ${this.seconds} 秒</span></div>
         <div style="font-size:12px;line-height:1.7;color:var(--mo-3);margin:4px 2px 7px">三体共通是诗力、词力、联力的平均功底；本体专精是你本场选择的文体属性。属性最高不一定永远是答案，还要看风潮、文风、对手和灵感。</div>
-        <div class="pick-row">${cards}</div>${this.weaknessTip(session)}${this.activeRow(session)}`;
+        <div class="pick-row">${cards}</div>${this.weaknessTip(session)}${this.activeRow(session)}${this.onboardingRecommendHTML(session, 'style')}`;
       this.bindActive(panel, session);
       panel.querySelectorAll('[data-s]').forEach(b =>
         b.addEventListener('click', () => finish(b.dataset.s)));
@@ -221,7 +279,7 @@ export class BattleStage {
         <div class="pick-row">${cards}</div>
         <div style="font-size:12px;color:var(--mo-3);margin:6px 2px 0">文风会影响题材相性、当朝风潮和连续取胜的气势连捷；「实验」的本场波动已锁定并标在按钮上。</div>
         ${this.weaknessTip(session)}
-        ${this.activeRow(session)}`;
+        ${this.activeRow(session)}${this.onboardingRecommendHTML(session, 'manner')}`;
       this.bindActive(panel, session);
       panel.querySelectorAll('[data-m]').forEach(b =>
         b.addEventListener('click', () => finish(b.dataset.m)));
@@ -489,10 +547,20 @@ export class BattleStage {
     play(out.result === 'win' ? 'win' : out.result === 'lose' ? 'lose' : 'choice');
     if (out.result === 'win') goldBurst(this.el, 34);
 
+    // 入门卷·师友点拨复盘卡：仅首败且本阶段尚未点拨时展示（资格由引擎预计算到 session._aidEligibleForLoss）。
+    if (out.result === 'lose' && session._aidEligibleForLoss) {
+      const cardHtml = mentorAidCardHTML(out);
+      const wrap = document.createElement('div');
+      wrap.innerHTML = cardHtml;
+      if (wrap.firstElementChild) this.el.appendChild(wrap.firstElementChild);
+    }
+
     const btn = document.createElement('button');
     btn.className = 'btn btn-primary';
     btn.style.marginTop = '12px';
-    btn.textContent = copy.closeButton || (session.isHiddenFinal ? '观终卷' : session.isPalace ? '继续殿试' : '收笔');
+    btn.textContent = (out.result === 'lose' && session._aidEligibleForLoss)
+      ? '记下了，继续赶考'
+      : (copy.closeButton || (session.isHiddenFinal ? '观终卷' : session.isPalace ? '继续殿试' : '收笔'));
     this.el.appendChild(btn);
     await new Promise(r => btn.addEventListener('click', r));
   }
@@ -505,3 +573,4 @@ function lineEl(item) {
     <span class="vv">${item.value >= 0 ? '+' : ''}${item.value}</span>`;
   return d;
 }
+

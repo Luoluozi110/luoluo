@@ -33,6 +33,26 @@ export function normalizeTutorialState(raw) {
   return Object.fromEntries(TUTORIAL_STEPS.map(key => [key, !!src[key]]));
 }
 
+/**
+ * 入门卷状态归一化。缺省视为「开启 + 新玩家默认结构」，保证旧档读档不报错；
+ * 旧存档是否真正开启由 game.js 读档路径按跨局完成局数补齐（save.js 不可反向依赖 album）。
+ * 清洗非法战斗计数、版本号与阶段点拨记录，防止坏档污染运行态。
+ */
+export function normalizeOnboardingState(raw) {
+  const src = (raw && typeof raw === 'object') ? raw : {};
+  const lossAid = (src.lossAidUsedByPhase && typeof src.lossAidUsedByPhase === 'object') ? src.lossAidUsedByPhase : {};
+  return {
+    version: Number(src.version) || 1,
+    enabled: src.enabled !== false,
+    disabledByPlayer: !!src.disabledByPlayer,
+    battleCount: Math.max(0, Number(src.battleCount) || 0),
+    lossAidUsedByPhase: lossAid,
+    firstBattleCompleted: !!src.firstBattleCompleted,
+    firstGateCompleted: !!src.firstGateCompleted,
+    introSeen: !!src.introSeen
+  };
+}
+
 /** 参与序列化的运行时状态白名单 */
 const STATE_KEYS = [
   'school', 'playerName', 'attrs', 'inspiration', 'inspirationMax',
@@ -40,7 +60,7 @@ const STATE_KEYS = [
   'lap', 'routeIndex', 'ringId', 'phaseGateSeen', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
   'quiz', 'choiceHistory', 'narrativeState', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
   'sideQuest',
-  'zeitgeist', 'prologueSeen', 'tutorialState', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
+  'zeitgeist', 'prologueSeen', 'tutorialState', 'onboarding', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
   'talentLevels', 'schoolState', 'abilityState', 'albumState', 'secretFinal', 'over', 'reachedEnd', 'endReason', 'log'
 ];
 
@@ -279,6 +299,8 @@ function migrateRun(obj) {
   state.albumState = normalizeAlbumState(state.albumState);
   // v8：首局新手引导状态。旧档默认未完成，避免把未看过的教学误判为已读。
   state.tutorialState = normalizeTutorialState(state.tutorialState);
+  // v9 附加：入门卷状态（旧档无此字段 → 默认新玩家结构，由读档路径按完成局数决定是否开启）。
+  state.onboarding = normalizeOnboardingState(state.onboarding);
   const ab = state.abilityState;
   ab.version = Math.max(2, Number(ab.version) || 1);
   ab.study = (ab.study && typeof ab.study === 'object') ? ab.study : { focus: ['shi'], progress: {} };
@@ -458,6 +480,7 @@ export function deserializeRun(rawObj, cfg) {
   out.talentState.flags = (out.talentState.flags && typeof out.talentState.flags === 'object') ? out.talentState.flags : {};
   out.talentState.activeUses = (out.talentState.activeUses && typeof out.talentState.activeUses === 'object') ? out.talentState.activeUses : {};
   out.tutorialState = normalizeTutorialState(out.tutorialState);
+  out.onboarding = normalizeOnboardingState(out.onboarding);
   out.schoolState = (out.schoolState && typeof out.schoolState === 'object') ? out.schoolState : {};
   out.albumState = normalizeAlbumState(out.albumState);
   out.secretFinal = Object.assign({ eligible: false, invited: false, entered: false, completed: false, result: '' },
@@ -631,3 +654,4 @@ export function clearRun(slot) {
     memorySlots.delete(s);
   }
 }
+

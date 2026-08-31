@@ -1,6 +1,6 @@
 /** modals.js —— 题卡 / 奇遇卡 / 文心卡 / 支线选择 / 天象 / 名胜 */
-import { ATTR_NAMES } from '../engine/rules.js?v=20260829merge2';
-import { PASSIVE_MAX, ACTIVE_MAX } from '../engine/game.js?v=20260829merge2';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260831firstrun1';
+import { PASSIVE_MAX, ACTIVE_MAX } from '../engine/game.js?v=20260831firstrun1';
 import { LANDMARK_ART, EVENT_VIGNETTE, QUIZ_MARK } from './svg.js';
 import { createCountdown } from './timer.js';
 import { play } from './audio.js';
@@ -32,6 +32,15 @@ const NARRATIVE_DEFAULTS = {
       title: '论战六步',
       text: '① 遭遇：先看对手是否有招牌与破绽\n② 审题：确认题目题材，并留意当朝风潮\n③ 选文体：看属性底盘与本体专精\n④ 选风格：看题材、文风和连捷加成\n⑤ 掷灵感骰：决定临场发挥，可花灵感追加\n⑥ 算分对决：逐项揭示格律、意象、立意、骰子和修正\n\n记住：先看题，再选体；先算资源，再决定要不要追加。',
       button: '开始第一场论战'
+    }
+  },
+  onboarding: {
+    intro: {
+      title: '入 门 卷',
+      text: '你初次踏上科场，先以「入门卷」护持：前几场对手更温和，首战即便落败，也有师友点拨替你补回灵感。\n\n这是为新手准备的受控试炼——输赢都照常记录，资源代价也照常，但你能在看懂论战之后，再进入标准难度。\n\n随时可在右上角菜单关闭入门卷；关闭后立刻按标准规则对局。',
+      button: '开始体验',
+      close: '我已是老手，关闭入门卷',
+      closeConfirm: '关闭后，本局剩余对局将立即按标准难度进行，且不再有首败点拨。\n仍可随时重开新局，重新体验入门卷。'
     }
   },
   prologue: {
@@ -986,6 +995,66 @@ export class Modals {
       ov.querySelector('[data-back]').addEventListener('click', () => finish(null));
     });
   }
+
+  /** 入门卷说明：开局一次，向新手解释受控试炼；提供「关闭入门卷」入口。 */
+  async showOnboardingIntro() {
+    const N = narrativeOf(this.cfg);
+    const o = (N.onboarding && N.onboarding.intro) || {};
+    const title = o.title || '入 门 卷';
+    const text = o.text || '你初次踏上科场，先以「入门卷」护持：前几场对手更温和，首战即便落败，也有师友点拨替你补回灵感。';
+    const btn = o.button || '开始体验';
+    const close = o.close || '我已是老手，关闭入门卷';
+    const ov = this.open(`
+      <div class="modal scroll-frame paper ob-intro" style="width:min(600px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
+        <div class="kind">新 手 护 持</div>
+        <div class="title-ink" style="font-size:36px;text-align:center">${esc(title)}</div>
+        <hr class="hr-ink"/>
+        <div class="stage-story" style="font-size:15.5px;line-height:2;letter-spacing:.03em;text-align:left;white-space:pre-line">${esc(text)}</div>
+        <div class="btn-row" style="margin-top:16px">
+          <button class="btn btn-ink" data-close-ob>${esc(close)}</button>
+          <button class="btn btn-primary" data-ok>${esc(btn)}</button>
+        </div>
+      </div>`, 'ob-intro');
+    play('stage');
+    const choice = await new Promise(r => {
+      ov.querySelector('[data-ok]').addEventListener('click', () => { this.close(ov); r('ok'); });
+      ov.querySelector('[data-close-ob]').addEventListener('click', () => { this.close(ov); r('close'); });
+    });
+    if (this.game && this.game.s && this.game.s.onboarding) {
+      this.game.s.onboarding.introSeen = true;
+      if (choice === 'close') {
+        this.game.s.onboarding.disabledByPlayer = true;
+        this.game.onForceSave?.();
+        this.game.ui?.onState?.(this.game.s);
+      }
+    }
+    return choice;
+  }
+
+  /** 设置菜单中的「关闭入门卷」确认。 */
+  confirmCloseOnboarding() {
+    if (!this.game || !this.game.s || !this.game.s.onboarding) return;
+    const N = narrativeOf(this.cfg);
+    const o = (N.onboarding && N.onboarding.intro) || {};
+    const confirmText = o.closeConfirm || '关闭后，本局剩余对局将立即按标准难度进行，且不再有首败点拨。';
+    const ov = this.open(`
+      <div class="modal scroll-frame paper ob-confirm" style="width:min(460px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center">
+        <div class="mtitle"><h2>关闭入门卷</h2></div>
+        <hr class="hr-ink"/>
+        <p style="font-size:15px;line-height:1.95;color:var(--mo-2);white-space:pre-line">${esc(confirmText)}</p>
+        <div class="btn-row" style="margin-top:14px">
+          <button class="btn btn-ink" data-cancel>再想想</button>
+          <button class="btn btn-primary" data-confirm>确认关闭</button>
+        </div>
+      </div>`, 'ob-confirm');
+    ov.querySelector('[data-cancel]').addEventListener('click', () => this.close(ov));
+    ov.querySelector('[data-confirm]').addEventListener('click', () => {
+      this.game.s.onboarding.disabledByPlayer = true;
+      this.game.onForceSave?.();
+      this.game.ui?.onState?.(this.game.s);
+      this.close(ov);
+    });
+  }
 }
 
 /* ------------------------------------------------------- 文本化 */
@@ -1113,6 +1182,26 @@ export function skyEffectText(card) {
 }
 
 /** 传说卡全屏金色粒子 */
+/**
+ * 入门卷·师友点拨复盘卡（P1/P2）。只使用玩家已看见的公开信息，不泄露隐藏意图。
+ * 在战斗结算 verdict 阶段由 battle.js 注入到对决台。
+ * @param {object} out 结算结果（out.mech?.wea?.hit 为公开结算信息，用于措辞降级）
+ */
+export function mentorAidCardHTML(out = {}) {
+  const hit = !!(out && out.mech && out.mech.wea && out.mech.wea.hit);
+  const lossLine = hit
+    ? '本场已命中对手公开破绽，惜乎整体仍逊一筹。'
+    : '本场主要失分：未充分借对手公开破绽之力。';
+  return `
+    <div class="ob-review-card">
+      <div class="ob-rc-title">师 友 点 拨</div>
+      <div class="ob-rc-body">此战虽败，你已经有所领悟。</div>
+      <div class="ob-rc-gains">师友替你补回灵感 <b>2</b></div>
+      <div class="ob-rc-loss">${esc(lossLine)}</div>
+      <div class="ob-rc-next">下一场先查看对手研判（公开破绽），再决定是否追加灵感骰。</div>
+    </div>`;
+}
+
 export function goldBurst(ov, n = 60) {
   const box = document.createElement('div');
   box.className = 'gold-particles';
@@ -1133,3 +1222,4 @@ export function goldBurst(ov, n = 60) {
 }
 
 export { sleep };
+

@@ -3,27 +3,27 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260831sidequestcopy1';
-import { Game, Reincarnate } from '../engine/game.js?v=20260831sidequestcopy1';
-import { BoardView } from './board.js?v=20260831sidequestcopy1';
-import { Hud, radarSVG } from './hud.js?v=20260831sidequestcopy1';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260831firstrun1';
+import { Game, Reincarnate } from '../engine/game.js?v=20260831firstrun1';
+import { BoardView } from './board.js?v=20260831firstrun1';
+import { Hud, radarSVG } from './hud.js?v=20260831firstrun1';
 // 奇遇属性收益在 20260823eventattrs1 起于选择前完整展示；独立版本键避免旧模块缓存继续省略属性。
-import { Modals, talentEffectText } from './modals.js?v=20260831sidequestcopy1';
-import { BattleStage } from './battle.js?v=20260831sidequestcopy1';
-import { AlbumUI } from './album.js?v=20260831sidequestcopy1';
-import { CodexUI } from './codex.js?v=20260831sidequestcopy1';
-import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260831sidequestcopy1';
-import { initQuality, getTier, setTier } from './quality.js?v=20260831sidequestcopy1';
-import { ATTR_NAMES } from '../engine/rules.js?v=20260831sidequestcopy1';
-import * as Album from '../engine/album.js?v=20260831sidequestcopy1';
-import * as Codex from '../engine/codex.js?v=20260831sidequestcopy1';
+import { Modals, talentEffectText } from './modals.js?v=20260831firstrun1';
+import { BattleStage } from './battle.js?v=20260831firstrun1';
+import { AlbumUI } from './album.js?v=20260831firstrun1';
+import { CodexUI } from './codex.js?v=20260831firstrun1';
+import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260831firstrun1';
+import { initQuality, getTier, setTier } from './quality.js?v=20260831firstrun1';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260831firstrun1';
+import * as Album from '../engine/album.js?v=20260831firstrun1';
+import * as Codex from '../engine/codex.js?v=20260831firstrun1';
 // 音频模块统一使用同一 URL，确保静音、SFX 与配乐共享一个 AudioContext / Master 总线。
 import { initAudio, play } from './audio.js';
-import { setScene, setTension, setStage } from './music.js?v=20260831sidequestcopy1';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260831sidequestcopy1';
-import { Leaderboard } from './leaderboard.js?v=20260831sidequestcopy1';
-import { personalize } from './namefmt.js?v=20260831sidequestcopy1';
-import { ContentTestUI } from './contentTest.js?v=20260831sidequestcopy1';
+import { setScene, setTension, setStage } from './music.js?v=20260831firstrun1';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY, normalizeOnboardingState } from '../engine/save.js?v=20260831firstrun1';
+import { Leaderboard } from './leaderboard.js?v=20260831firstrun1';
+import { personalize } from './namefmt.js?v=20260831firstrun1';
+import { ContentTestUI } from './contentTest.js?v=20260831firstrun1';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -403,8 +403,13 @@ async function startGame(schoolId, loadout, playerName) {
     await modals.showKickoffTutorial();
     s.tutorialState.firstMoveSeen = true;
   }
+  // 入门卷说明：开局一次，向新手解释受控试炼；可在弹窗内直接关闭。
+  if (s.onboarding && s.onboarding.enabled && !s.onboarding.introSeen && typeof modals.showOnboardingIntro === 'function') {
+    await modals.showOnboardingIntro();
+  }
   if (cards.length) hud.toast(`行囊生效：${cards.map(c => `「${c.name}」`).join('')}`);
   hud.render(s, game);
+  updateOnboardingBadge(s);
   showMenuButton(true);
   setScene('board');          // 进入对局：行进配乐
   setTension(0);
@@ -438,7 +443,7 @@ function makeUi() {
     recordLog: entry => hud.recordLog(entry),
     showTalentGain: t => modals.showTalentGain(t),
     askReplaceTalent: (t, list) => modals.askReplaceTalent(t, list),
-    onState(s) { hud.render(s, game); },
+    onState(s) { hud.render(s, game); updateOnboardingBadge(s); },
     skyExpired(card) { hud.toast(`${card.name} 之效已散`); },
     showDice: d => board.showDice(d),
     showPlannedMovePrompt: gameRef => modals.showPlannedMovePrompt(gameRef),
@@ -498,6 +503,27 @@ function makeUi() {
     showHiddenFinalDefeat: (out, npc) => modals.showHiddenFinalDefeat(out, npc),
     showResult: sum => showResult(sum)
   };
+}
+
+/** 轻量「入门卷」HUD 标记：开启时显示，关闭/未开启时移除。点标记可关闭。 */
+function updateOnboardingBadge(s) {
+  const hudEl = document.getElementById('hud');
+  if (!hudEl) return;
+  let badge = hudEl.querySelector('#ob-badge');
+  const show = s && s.onboarding && s.onboarding.enabled && !s.onboarding.disabledByPlayer;
+  if (show) {
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'ob-badge';
+      badge.className = 'ob-badge';
+      badge.textContent = '入门卷';
+      badge.title = '入门卷开启：前几场对手更温和，并有师友点拨。点此可关闭。';
+      badge.addEventListener('click', () => { if (game) modals.confirmCloseOnboarding(); });
+      hudEl.appendChild(badge);
+    }
+  } else if (badge) {
+    badge.remove();
+  }
 }
 
 function enableRoll() {
@@ -621,6 +647,19 @@ function showMenu() {
   });
   ov.querySelector('[data-custom]')?.addEventListener('click', () => { closeMenu(); openCustomConfig(); });
   ov.querySelector('[data-restart]')?.addEventListener('click', () => { closeMenu(); openSchoolScreen(); });
+  // 入门卷开启时，菜单提供关闭入口（恢复标准难度，且不再有首败点拨）。
+  if (game && game.s && game.s.onboarding && game.s.onboarding.enabled && !game.s.onboarding.disabledByPlayer) {
+    const list = ov.querySelector('.menu-list');
+    const restart = list && list.querySelector('[data-restart]');
+    if (list) {
+      const b = document.createElement('button');
+      b.className = 'btn btn-ink menu-item';
+      b.textContent = '关闭入门卷（恢复标准难度）';
+      b.addEventListener('click', () => { closeMenu(); modals.confirmCloseOnboarding(); });
+      if (restart) list.insertBefore(b, restart);
+      else list.appendChild(b);
+    }
+  }
   ov.querySelector('[data-quality]')?.addEventListener('click', () => {
     const next = getTier() === 'low' ? 'high' : 'low';
     setTier(next);
@@ -948,6 +987,13 @@ async function loadGame() {
   wireGameSaves(game);
   game.onVictory = (nm, sc) => Leaderboard.submit(nm, sc).catch(() => {});   // 通关 → 提交云端排行榜
   game.s = res.state;
+  // 旧存档补齐：原存档没有 onboarding 字段时，按跨局完成局数决定开启，
+  // 已有关卡记录的旧档默认关闭（plan §4.1：外部统计变化不中途切换已有存档）。
+  // save.js 不可反向依赖 album（循环依赖禁忌），故此项判定放在读档路径而非存档层。
+  if (best.obj.state && !('onboarding' in best.obj.state)) {
+    game.s.onboarding = normalizeOnboardingState(game.s.onboarding);
+    game.s.onboarding.enabled = Album.loadStore().stats.games === 0;
+  }
   modals.playerName = game.s.playerName || '';   // 续玩沿用存档中的名号
   modals.game = game;                            // 文心升级：详情弹窗调用引擎 upgradeTalent
   schoolEl.classList.remove('on');
@@ -966,6 +1012,7 @@ async function loadGame() {
   board.cellEls.forEach(e => e.classList.remove('active'));
   game.rehydrate();            // 重算羁绊等派生态（内部会 hud.render）
   hud.render(st, game);
+  updateOnboardingBadge(st);
   showMenuButton(true);
   enableRoll();
   hud.toast('已读取存档，继续科场之路');
@@ -1171,3 +1218,4 @@ async function showResult(sum) {
   }
   boot();
 })();
+

@@ -1644,3 +1644,55 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 
 /* --- 图鉴·天象卡图标 --- */
 .sky-icon { font-size: 30px; text-align: center; line-height: 1.2; margin-bottom: 2px; }
+
+/* ============================================================ 入门卷（首局难度优化 P2-UI） */
+/* HUD 轻量标记 */
+.ob-badge {
+  position: absolute; top: 8px; right: 12px; z-index: 40;
+  font-family: var(--font-kai); font-size: 12px; letter-spacing: .12em;
+  color: #fff; background: linear-gradient(180deg, #c97b3a, #b23a2e);
+  padding: 3px 10px; border-radius: 999px; cursor: pointer;
+  box-shadow: 0 2px 6px rgba(120,40,20,.28); user-select: none;
+}
+.ob-badge:hover { filter: brightness(1.06); }
+
+/* 首场节点提示 */
+.ob-node-hint {
+  margin-top: 10px; font-size: 13.5px; line-height: 1.8; letter-spacing: .03em;
+  color: var(--mo-2); background: rgba(201,151,31,.10);
+  border-left: 3px solid var(--jin); border-radius: 6px; padding: 8px 12px;
+}
+
+/* 推荐标签 */
+.ob-recommend {
+  margin: 10px 2px 2px; font-size: 13.5px; line-height: 1.7;
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  color: var(--mo-2);
+}
+.ob-recommend .ob-rec-tag {
+  flex: 0 0 auto; font-family: var(--font-kai); font-size: 12px; letter-spacing: .1em;
+  color: #fff; background: var(--zhu); border-radius: 6px; padding: 2px 8px;
+}
+.ob-recommend .ob-rec-body { flex: 1; min-width: 0; }
+.ob-recommend.ob-collapsed { display: block; }
+.ob-recommend.ob-collapsed .ob-why {
+  font-size: 13px; color: var(--zhu); cursor: pointer; background: none;
+  border: none; padding: 4px 0; text-decoration: underline dotted;
+}
+.ob-recommend.ob-collapsed .ob-why:hover { filter: brightness(.92); }
+.ob-recommend.ob-collapsed .ob-rec-body { margin-top: 6px; padding-left: 4px; color: var(--mo-2); }
+
+/* 师友点拨复盘卡（结算内嵌） */
+.ob-review-card {
+  margin: 14px auto 2px; max-width: 460px; text-align: center;
+  background: rgba(255,250,232,.92); border: 1px solid rgba(178,58,46,.35);
+  border-radius: 12px; padding: 14px 18px; box-shadow: 0 4px 14px rgba(120,40,20,.12);
+}
+.ob-review-card .ob-rc-title {
+  font-family: var(--font-kai); font-size: 17px; letter-spacing: .14em; color: var(--zhu);
+}
+.ob-review-card .ob-rc-body { margin-top: 6px; font-size: 14.5px; color: var(--mo); line-height: 1.8; }
+.ob-review-card .ob-rc-gains { margin-top: 6px; font-size: 14px; color: var(--jin); font-weight: 600; }
+.ob-review-card .ob-rc-loss { margin-top: 4px; font-size: 13px; color: var(--mo-2); line-height: 1.7; }
+.ob-review-card .ob-rc-next { margin-top: 4px; font-size: 12.5px; color: var(--mo-3); line-height: 1.7; }
+

@@ -2,15 +2,15 @@
  * game.js —— 单人对局引擎（无 DOM）。所有表现通过注入的 ui 适配器完成。
  * 规则依据：全案 3.1–3.8。战斗与评分公式一律调用 rules.js。
  */
-import * as R from './rules.js?v=20260831sidequestcopy1';
+import * as R from './rules.js?v=20260831firstrun1';
 import * as Album from './album.js';
 import * as Codex from './codex.js';
-import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260831sidequestcopy1';
+import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260831firstrun1';
 import * as NpcSelection from './npc-selection.js';
 import { stableFoeId } from './npc-selection.js';
 import { sideQuestBattleCopy, sideQuestPresentation, sideQuestTransition } from './sidequest-presentation.js';
 
-export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260831sidequestcopy1';
+export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260831firstrun1';
 
 export const PASSIVE_MAX = 8;
 export const ACTIVE_MAX = 4;
@@ -846,6 +846,18 @@ export class Game {
         talentSeen: false,
         abilitySeen: false,
         rulesVisited: false
+      },
+      // 入门卷：仅面向「尚未完成过任何一局」的新玩家（跨局 stats.games===0）。
+      // 判定在开局固化为本局状态，读档以存档为准，外部统计变化不中途切换。
+      onboarding: {
+        version: 1,
+        enabled: Album.loadStore().stats.games === 0,
+        disabledByPlayer: false,
+        battleCount: 0,
+        lossAidUsedByPhase: {},
+        firstBattleCompleted: false,
+        firstGateCompleted: false,
+        introSeen: false
       },
       affStreak: { manner: null, n: 0 },             // 气势连捷：连续同风格胜场
       synergies: [],                                 // 当前已激活的文心羁绊（id/name/desc/members）
@@ -2291,7 +2303,7 @@ export class Game {
     return done;
   }
 
-  async doSideQuestClimax(cell, targetNpc = null) {
+  async doSideQuestClimax(cell, targetNpc = null, onboardingContext = null) {
     const state = this.sideQuestState();
     const route = this.sideQuestRoute();
     if (!route || state.stage !== 'climax') return false;
@@ -2301,7 +2313,7 @@ export class Game {
     const configured = plan && plan.climax ? plan.climax : route.npc;
     const npc = this.scaleSideQuestNpc({ ...(configured || {}), attrs: { ...((configured || {}).attrs || {}) } }, targetNpc);
     state.climaxNpcId = npc.id || '';
-    const out = await this.doBattle({ npc, theme, returnOutcome: true, label: route.battleLabel || cell.name, sideQuestRoute: route, sideQuestBattleKind: 'climax' });
+    const out = await this.doBattle({ npc, theme, returnOutcome: true, label: route.battleLabel || cell.name, sideQuestRoute: route, sideQuestBattleKind: 'climax', onboardingContext });
     const result = String(out && out.result || 'loss');
     state.climaxResult = result;
     state.merit = result === 'win' ? 2 : 1;
@@ -2463,38 +2475,65 @@ export class Game {
       if (!sideQuestClimax && typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gateWithInk, this.s);
       // 二次同步是故障自愈：阶段弹窗曾是唯一切圈入口，任何旧 UI/缓存路径都会留下外圈+透明棋子。
       if (typeof this.ui.syncStageRing === 'function') this.ui.syncStageRing(this.s);
+      const ob = this.s.onboarding;
+      const obEnabled = !!(ob && ob.enabled && !ob.disabledByPlayer);
+      const obCtx = obEnabled ? {
+        isGate: true,
+        phase: this.s.phase,
+        battleCount: ob ? ob.battleCount : 0,
+        isFirstXiucaiGate: this.s.phase === 'xiucai' && ob && !ob.firstGateCompleted,
+        isPalace: false
+      } : null;
       const tier = (this.cfg.npcs || []).find(n => n.id === gate.exam);
-      const pick = tier ? NpcSelection.pickNpcFromTier(this, tier) : this.pickNpc(false);
+      const pick = tier ? NpcSelection.pickNpcFromTier(this, tier, { context: obCtx }) : this.pickNpc(false, obCtx);
       if (sideQuestClimax) {
         // 阶段门也是一场论战：支线高潮应替换“下一场”而非被主线晋阶试抢先。
         // 主线 phase/ring 已先推进，故高潮合卷后 HUD 与后续规则会自然恢复到新主线阶段。
-        const replaced = await this.doSideQuestClimax(cell, pick);
+        const replaced = await this.doSideQuestClimax(cell, pick, obCtx);
         if (replaced) {
-          if (typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gateWithInk, this.s);
+          if (typeof this.ui.showStageChange === "function") await this.ui.showStageChange(gateWithInk, this.s);
           return;
         }
         // 路线配置被移除或旧档 routeId 失效时，安全退回原晋阶试，不吞掉阶段门战斗。
-        if (typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gateWithInk, this.s);
+        if (typeof this.ui.showStageChange === "function") await this.ui.showStageChange(gateWithInk, this.s);
       }
       if (pick.stageForced) {
         this.push(`三力构筑应验，晋阶试必遇「${pick.name}」`);
         this.ui.toast(`本阶段必遇：${pick.name}`);
       }
-      await this.doBattle({ npc: pick, label: `晋阶试·${gate.phase === 'xiucai' ? '秀才' : gate.phase === 'juren' ? '举人' : '进士'}` });
+      await this.doBattle({ npc: pick, label: `晋阶试·${gate.phase === 'xiucai' ? '秀才' : gate.phase === 'juren' ? '举人' : '进士'}`, onboardingContext: obCtx });
       return;
     }
     if (this.s.sideQuest && this.s.sideQuest.stage === 'climax') {
       // 先按原规则抽取本应遭遇的对手，再以其档位总预算等比投影到支线高潮角色。
-      const target = this.pickNpc(false);
-      await this.doSideQuestClimax(cell, target);
+      const ob = this.s.onboarding;
+      const obEnabled = !!(ob && ob.enabled && !ob.disabledByPlayer);
+      const obCtx = obEnabled ? {
+        isGate: false,
+        phase: this.s.phase,
+        battleCount: ob ? ob.battleCount : 0,
+        isFirstXiucaiGate: false,
+        isPalace: false
+      } : null;
+      const target = this.pickNpc(false, obCtx);
+      await this.doSideQuestClimax(cell, target, obCtx);
       return;
     }
-    const npc = this.pickNpc(false);
+    const ob = this.s.onboarding;
+    const obEnabled = !!(ob && ob.enabled && !ob.disabledByPlayer);
+    const obCtx = obEnabled ? {
+      isGate: false,
+      phase: this.s.phase,
+      battleCount: ob ? ob.battleCount : 0,
+      isFirstXiucaiGate: false,
+      isPalace: false
+    } : null;
+    const npc = this.pickNpc(false, obCtx);
     if (npc.stageForced) {
       this.push(`三力构筑应验，本阶段必遇「${npc.name}」`);
       this.ui.toast(`本阶段必遇：${npc.name}`);
     }
-    await this.doBattle({ npc, label: cell.name });
+    await this.doBattle({ npc, label: cell.name, onboardingContext: obCtx });
   }
 
   /** 建立一场战斗会话，交给 UI 逐步驱动六步流程 */
@@ -2619,6 +2658,8 @@ export class Game {
       })(),
       isPalace: !!opts.isPalace,
       isHiddenFinal: !!opts.isHiddenFinal,
+      // 入门卷上下文（仅本场会话持有，不参与存档）：供 settleBattle 判定梯度阶段、首败点拨与战斗计数。
+      onboardingContext: opts.onboardingContext || null,
       // 殿试跨场适应层数（若本场为殿试且这是机制主考官）：供 UI 出「场间评语」
       palaceLayers: (() => {
         if (!opts.isPalace || !(npc && npc.mech)) return 0;
@@ -3627,6 +3668,31 @@ export class Game {
     this.recordAlbumBattle(out);
     if (session.isPalace) s.palaceDone++;
 
+    // 入门卷：战斗计数、首战/首门标记与首次败北点拨。
+    // 位于结算幂等区内，本场仅执行一次；殿试与隐藏终卷不触发点拨。
+    {
+      const ob = s.onboarding;
+      const oc = session && session.onboardingContext;
+      if (ob && ob.enabled && !ob.disabledByPlayer && oc) {
+        if (!oc.isGate) {
+          ob.battleCount = (Number(ob.battleCount) || 0) + 1;
+          ob.firstBattleCompleted = true;
+        } else if (oc.isGate && oc.isFirstXiucaiGate) {
+          ob.firstGateCompleted = true;
+        }
+        if (out.result === 'lose' && !oc.isPalace) {
+          const phase = oc.phase || s.phase || 'child';
+          if (ob.lossAidUsedByPhase[phase] !== true) {
+            // 精确回补灵感 2：直接 addInspiration，不走任何正向倍率链（首败返还不受文心/流派放大）。
+            this.addInspiration(2, '师友点拨');
+            ob.lossAidUsedByPhase[phase] = true;
+            session._lossAidGiven = 2;
+            this.push(`师友点拨：替你补回灵感 2，下一场先看对手公开破绽再应战`);
+          }
+        }
+      }
+    }
+
     // 气势连捷：维护连续同风格胜场。胜→累加；换风格→以新风格起 1；败→清零；平局同风格保留（不惩罚）。
     {
       const prev = s.affStreak, m = out.manner, won = out.result === 'win';
@@ -3781,6 +3847,18 @@ export class Game {
     const insp0 = this.cfg.inspiration;
     this.addInspiration(this.lateVal(insp0.battleCost ?? -2, insp0.battleCostLate), '应战');
     const session = this.createSession(opts);
+    // 入门卷·首败点拨（P1）的「展示复盘卡」资格预计算：UI 在结算 verdict 阶段需要它，
+    // 但此时 out.result 尚未产生，故只算「除结果外的全部守卫」，UI 再结合 out.result==='lose' 判定。
+    // 真实灵感返还仍在 settleBattle 内按完整守卫（含结果）执行，两处守卫口径一致。
+    {
+      const ob = s.onboarding;
+      const oc = opts.onboardingContext;
+      const phase = (oc && oc.phase) || s.phase || 'child';
+      session._aidEligibleForLoss = !!(
+        ob && ob.enabled && !ob.disabledByPlayer && oc && !oc.isPalace
+        && ob.lossAidUsedByPhase[phase] !== true
+      );
+    }
     if (s.tutorialState && !s.tutorialState.firstBattleSeen) {
       const tutorial = (this.cfg.narrative && this.cfg.narrative.tutorial && this.cfg.narrative.tutorial.battle) || {};
       session.tutorialFirstBattle = !!this.ui.showBattleTutorial;
@@ -4029,6 +4107,8 @@ export class Game {
     summary.sideQuestEpilogue = this.sideQuestEpilogue();
     if (summary.sideQuestEpilogue) summary.narrativeEpilogue = [summary.narrativeEpilogue, summary.sideQuestEpilogue].filter(Boolean).join('\n');
     summary.state = s;
+    // 入门卷标记：供结算页说明与排行榜过滤（入门卷成绩不进入竞技榜）。
+    summary.onboardingRun = !!(s.onboarding && s.onboarding.enabled);
     Object.assign(summary, this.commitAlbum(summary));
     // 流派熟练度：结算后按本局结果累加（完成即加、通关/文宗额外）
     try {
@@ -4047,9 +4127,10 @@ export class Game {
       }
     } catch (e) { /* 熟练度累计失败不阻断结算 */ }
     summary.crossRun = this.crossRunSummary(summary);
-    // 通关（金榜题名）→ 提交分数到云端排行榜（解耦：由 app.js 注入 onVictory）
+    // 通关（金榜题名）→ 提交分数到云端排行榜（解耦：由 app.js 注入 onVictory）。
+    // 第三参透传 summary，便于 onVictory 按 onboardingRun 过滤入门卷成绩。
     if (['jinbang', 'taoyuan', 'secret_loss'].includes(summary.reason) && typeof this.onVictory === 'function') {
-      try { this.onVictory((s.playerName || '无名氏'), summary.total); } catch (_) { /* 提交失败不阻断结算 */ }
+      try { this.onVictory((s.playerName || '无名氏'), summary.total, summary); } catch (_) { /* 提交失败不阻断结算 */ }
     }
     await this.ui.showResult(summary);
     return summary;
@@ -4127,3 +4208,4 @@ function pickTopic(theme, af, rand) {
   const arr = TOPIC_WORDS[theme] || [af.themeNames[theme] || theme];
   return arr[Math.floor(rand() * arr.length)];
 }
+

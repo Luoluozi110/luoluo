@@ -83,10 +83,124 @@ export function tierForCurrentStage(game, list = game.cfg.npcs || []) {
 }
 
 /**
+ * 入门卷：把具名 NPC 的难度角色推导出来。
+ * 优先取已外置的 `difficultyRole`；缺省时回退到 `mech.complexity` 映射；
+ * 两者皆无则默认 `advanced`（不冒险放进新手池）。
+ */
+const ROLE_FROM_COMPLEXITY = {
+  tutorial: 'tutorial',
+  basic: 'basic',
+  advanced: 'advanced',
+  cross_battle: 'advanced'
+};
+export function npcDifficultyRole(npc) {
+  if (npc && npc.difficultyRole) {
+    return ['tutorial', 'basic', 'advanced', 'elite'].includes(npc.difficultyRole) ? npc.difficultyRole : 'advanced';
+  }
+  const c = npc && npc.mech && npc.mech.complexity;
+  if (c && ROLE_FROM_COMPLEXITY[c]) return ROLE_FROM_COMPLEXITY[c];
+  return 'advanced';
+}
+
+/**
+ * 模式权重解析。兼容顺序：
+ *   入门卷：beginnerWeight → weight → 默认权重
+ *   标准局：standardWeight → weight → 默认权重
+ * `npcWeightForMode(npc, false)` 必须与现有标准选择行为完全一致，
+ * 因此标准局不读取任何入门卷字段。
+ */
+export function npcWeightForMode(npc, onboardingEnabled) {
+  const def = R.NPC_DEFAULT_WEIGHT;
+  const w = Number(npc && npc.weight);
+  if (onboardingEnabled) {
+    const bw = Number(npc && npc.beginnerWeight);
+    if (Number.isFinite(bw) && bw >= 0) return bw;
+  } else {
+    const sw = Number(npc && npc.standardWeight);
+    if (Number.isFinite(sw) && sw >= 0) return sw;
+  }
+  if (Number.isFinite(w) && w >= 0) return w;
+  return def;
+}
+
+/**
+ * 入门卷候选池筛选。纯函数，便于单元测试。
+ * `context` 由 game.js 传入：{ isGate, phase, battleCount, isFirstXiucaiGate, isPalace }。
+ * 殿试（isPalace）由调用方保证传入完整池，此处仅做防御性兜底。
+ * 任一档位找不到符合要求的 NPC 时，按 tutorial → basic → advanced → 原始池 放宽，
+ * 每次放宽都写入开发日志，便于发现配置缺口。
+ */
+export function poolForOnboarding(game, tier, context) {
+  const pool = Array.isArray(tier.npcs) ? tier.npcs : [];
+  if (!pool.length) return pool;
+  if (context && context.isPalace) return pool;
+
+  const { isGate, battleCount = 0, isFirstXiucaiGate } = context || {};
+  const roleOf = npcDifficultyRole;
+  let result = pool;
+  let relaxedFrom = null;
+
+  if (isGate && isFirstXiucaiGate) {
+    // 首次秀才晋阶试：只取 basic（排除 117/123 等超规格精英）
+    const basic = pool.filter(n => roleOf(n) === 'basic');
+    if (basic.length) {
+      result = basic;
+    } else {
+      relaxedFrom = 'basic';
+      const advanced = pool.filter(n => roleOf(n) === 'advanced');
+      result = advanced.length ? advanced : pool;
+    }
+  } else if (isGate) {
+    // 后续晋阶试：排除 elite，advanced 借 beginnerWeight 保持低概率
+    const nonElite = pool.filter(n => roleOf(n) !== 'elite');
+    if (nonElite.length) {
+      result = nonElite;
+    } else {
+      relaxedFrom = 'non-elite';
+      result = pool;
+    }
+  } else if (battleCount === 0) {
+    // 第 1 场普通论战：只取 tutorial
+    const tutorial = pool.filter(n => roleOf(n) === 'tutorial');
+    if (tutorial.length) {
+      result = tutorial;
+    } else {
+      relaxedFrom = 'tutorial';
+      const basic = pool.filter(n => roleOf(n) === 'basic');
+      if (basic.length) result = basic;
+      else {
+        const advanced = pool.filter(n => roleOf(n) === 'advanced');
+        result = advanced.length ? advanced : pool;
+      }
+    }
+  } else if (battleCount === 1) {
+    // 第 2 场普通论战：tutorial 或 basic，不得选 elite
+    const tb = pool.filter(n => { const r = roleOf(n); return r === 'tutorial' || r === 'basic'; });
+    if (tb.length) {
+      result = tb;
+    } else {
+      relaxedFrom = 'tutorial/basic';
+      const advanced = pool.filter(n => roleOf(n) === 'advanced');
+      result = advanced.length ? advanced : pool;
+    }
+  } else {
+    // 第 3 场及以后：按 beginnerWeight 抽取（elite 已为 0），不做结构性过滤
+    result = pool;
+  }
+
+  if (relaxedFrom) {
+    console.warn(`[onboarding] tier ${tier.id} 候选池放宽：请求 ${relaxedFrom} 不可用，回退到更宽池（${result.length} 名 NPC）。`);
+  }
+  return result;
+}
+
+/**
  * 从一个明确档位抽取对手。阶段必遇只在该档首次命中时生效，
  * 之后恢复权重随机，避免一路反复遭遇同一名 NPC。
+ * 新增 `context`：入门卷开启时，前两场普通论战与首次秀才晋阶试优先于普通
+ * `stageForcedWhen`，以保证新手梯度不被阶段必遇 NPC 打断。
  */
-export function pickNpcFromTier(game, tier, { recordStageForce = true } = {}) {
+export function pickNpcFromTier(game, tier, { recordStageForce = true, context = null } = {}) {
   if (!tier) return { name: '论敌', fullName: '论敌', attrs: { shi: 5, ci: 4, lian: 3, bi: 4, xue: 4, si: 4 } };
   const label = tier.tier || tier.name || '论敌';
   const pool = Array.isArray(tier.npcs) ? tier.npcs : null;
@@ -98,16 +212,34 @@ export function pickNpcFromTier(game, tier, { recordStageForce = true } = {}) {
     };
   }
   const state = game.s || {};
-  const seen = state.stageForcedSeen || (state.stageForcedSeen = {});
-  const forced = forcedStageNpc(pool, state.attrs);
-  if (forced && !seen[tier.id]) {
-    if (recordStageForce) seen[tier.id] = stableFoeId(forced);
-    return { ...npcFromPick(tier, forced), stageForced: true };
+  const onboarding = state.onboarding;
+  const onboardingEnabled = !!(onboarding && onboarding.enabled && !onboarding.disabledByPlayer);
+  const isPalace = !!(context && context.isPalace);
+  // 殿试沿用当前主考规则，不套用入门卷权重/筛选
+  const useOnboarding = onboardingEnabled && !isPalace;
+
+  // 入门卷前两场普通论战、首次秀才晋阶试优先于普通 stageForcedWhen，
+  // 把被推迟的必遇 NPC 留给该阶段下一场符合条件的普通论战恢复触发。
+  const overrideForced = useOnboarding && context && (
+    (context.isGate && context.isFirstXiucaiGate) ||
+    (!context.isGate && context.battleCount < 2)
+  );
+  if (!overrideForced) {
+    const seen = state.stageForcedSeen || (state.stageForcedSeen = {});
+    const forced = forcedStageNpc(pool, state.attrs);
+    if (forced && !seen[tier.id]) {
+      if (recordStageForce) seen[tier.id] = stableFoeId(forced);
+      return { ...npcFromPick(tier, forced), stageForced: true };
+    }
   }
-  return npcFromPick(tier, R.pickNpcByWeight(pool, game.rand) || pool[0]);
+
+  const chosenPool = useOnboarding && context ? poolForOnboarding(game, tier, context) : pool;
+  const weightedPool = chosenPool.map(n => ({ ...n, weight: npcWeightForMode(n, useOnboarding) }));
+  const pick = R.pickNpcByWeight(weightedPool, game.rand) || weightedPool[0];
+  return npcFromPick(tier, pick);
 }
 
-export function pickNpc(game, forPalace) {
+export function pickNpc(game, forPalace, context = null) {
   const list = game.cfg.npcs || [];
   let tier;
   if (forPalace) {
@@ -117,7 +249,7 @@ export function pickNpc(game, forPalace) {
   } else {
     tier = tierForCurrentStage(game, list);
   }
-  return pickNpcFromTier(game, tier, { recordStageForce: !forPalace });
+  return pickNpcFromTier(game, tier, { recordStageForce: !forPalace, context });
 }
 
 export function mechHistoryForNpc(state, npcId) {
@@ -149,3 +281,4 @@ export function palaceStrategyChanged(state, style, manner) {
     return !!(last && last.style) && (last.style !== style || last.manner !== manner);
   } catch (_) { return false; }
 }
+
