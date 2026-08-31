@@ -1,6 +1,6 @@
 {
   "_type": "feihua-content",
-  "_version": 15,
+  "_version": 16,
   "questions": [
     {
       "id": "Q0001",
@@ -8071,7 +8071,7 @@
       "qingya.shanshui": 0.12,
       "qingya.biansai": -0.08,
       "qingya.huaigu": 0,
-      "qingya.jieling": 0.06,
+      "qingya.jieling": 0.12,
       "chenyu.yongwu": 0.06,
       "chenyu.songbie": 0.06,
       "chenyu.shanshui": 0,
