@@ -591,6 +591,41 @@
     return target.href;
   }
 
+async function fetchCloudText(s, rawUrl) {
+    const path = String((s && s.path) || "feihua-content.json").split("/").map(encodeURIComponent).join("/");
+    const owner = s && s.owner;
+    const repo = s && s.repo;
+    const branch = (s && s.branch) || "main";
+    const candidates = [{ label: "GitHub Raw", url: rawUrl }];
+    if (owner && repo && (s.mode || "repo") !== "gist") {
+      candidates.push({
+        label: "GitHub API",
+        url: `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${path}?ref=${encodeURIComponent(branch)}`,
+        headers: { Accept: "application/vnd.github.v3.raw" }
+      });
+      candidates.push({
+        label: "jsDelivr",
+        url: `https://cdn.jsdelivr.net/gh/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}@${encodeURIComponent(branch)}/${path}`
+      });
+    }
+    let lastStatus = 0;
+    for (const c of candidates) {
+      const url = cacheBust(c.url);
+      try {
+        const res = await fetch(url, c.headers ? { cache: "no-store", headers: c.headers } : { cache: "no-store" });
+        if (res.ok) return { text: await res.text(), label: c.label, url };
+        // 记录最后一个真实 HTTP 状态（404 多为文件确实不存在，镜像同步延迟也会短暂 404）
+        lastStatus = res.status;
+      } catch (e) {
+        // 网络层失败：静默换下一条通道
+      }
+    }
+    if (lastStatus) {
+      throw new Error("HTTP " + lastStatus + (lastStatus === 404 ? "（云端还没有该文件，请先『发布到云端』）" : ""));
+    }
+    throw new Error("网络无法连接云端（raw / API / jsDelivr 三条通道均不可达）。请检查网络或代理后重试");
+  }
+
   /* 云端同步：填充已存设置、检查本机 gh 桥接、发布、复制地址 */
   function wireCloudSync() {
     const $ = id => document.getElementById(id);
@@ -756,12 +791,11 @@
       pullButton.setAttribute("aria-busy", "true");
       try {
         const rawUrl = global.CloudSync.rawUrl(s);
-        // GitHub Raw / Gist CDN 可能继续返回旧版本；cache: no-store 只约束浏览器，
-        // 因此追加时间戳主动绕过上游缓存，确保跨浏览器拉到刚发布的内容。
-        const url = cacheBust(rawUrl);
-        const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok) throw new Error("拉取失败 HTTP " + res.status + (res.status === 404 ? "（云端还没有该文件，请先『发布到云端』）" : ""));
-        const text = await res.text();
+        // 各通道均追加时间戳主动绕过上游缓存，确保跨浏览器拉到刚发布的内容。
+        // raw 域名在部分网络会被重置连接，故由 fetchCloudText 逐级回退到 API / jsDelivr。
+        const fetched = await fetchCloudText(s, rawUrl);
+        const text = fetched.text;
+        const channelNote = fetched.label !== "GitHub Raw" ? `（经备用通道 ${fetched.label}）` : "";
         let data; try { data = JSON.parse(text); } catch (e) { throw new Error("云端文件不是合法 JSON：" + e.message); }
         if (!data || data._type !== "feihua-content") throw new Error("云端文件不是 feihua-content 工程文件（_type 不符）");
         const result = applyCloudProject(data);
@@ -770,7 +804,7 @@
         global.CloudSync.saveSettings("cloud", s);
         const active = document.querySelector(".nav button.active");
         if (active && global.Common && global.Common.switchTab) global.Common.switchTab(active.dataset.tab);
-        setMsg(`已用云端完整替换本地并逐模块核对；工程指纹 ${result.fingerprint}。`, false);
+        setMsg(`已用云端完整替换本地并逐模块核对${channelNote}；工程指纹 ${result.fingerprint}。`, false);
         toast("云端 → 本地 同步完成");
       } catch (err) {
         setMsg("拉取失败：" + err.message, true);
