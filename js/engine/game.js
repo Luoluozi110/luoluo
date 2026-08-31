@@ -2,15 +2,15 @@
  * game.js —— 单人对局引擎（无 DOM）。所有表现通过注入的 ui 适配器完成。
  * 规则依据：全案 3.1–3.8。战斗与评分公式一律调用 rules.js。
  */
-import * as R from './rules.js?v=20260829merge2';
+import * as R from './rules.js?v=20260831sidequestcopy1';
 import * as Album from './album.js';
 import * as Codex from './codex.js';
-import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260829merge2';
+import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260831sidequestcopy1';
 import * as NpcSelection from './npc-selection.js';
 import { stableFoeId } from './npc-selection.js';
 import { sideQuestBattleCopy, sideQuestPresentation, sideQuestTransition } from './sidequest-presentation.js';
 
-export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260829merge2';
+export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260831sidequestcopy1';
 
 export const PASSIVE_MAX = 8;
 export const ACTIVE_MAX = 4;

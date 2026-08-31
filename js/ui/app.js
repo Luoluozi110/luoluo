@@ -3,27 +3,27 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260829sidecopy1';
-import { Game, Reincarnate } from '../engine/game.js?v=20260829sidecopy1';
-import { BoardView } from './board.js?v=20260829merge2';
-import { Hud, radarSVG } from './hud.js?v=20260829sidecopy1';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260831sidequestcopy1';
+import { Game, Reincarnate } from '../engine/game.js?v=20260831sidequestcopy1';
+import { BoardView } from './board.js?v=20260831sidequestcopy1';
+import { Hud, radarSVG } from './hud.js?v=20260831sidequestcopy1';
 // 奇遇属性收益在 20260823eventattrs1 起于选择前完整展示；独立版本键避免旧模块缓存继续省略属性。
-import { Modals, talentEffectText } from './modals.js?v=20260829merge2';
-import { BattleStage } from './battle.js?v=20260829sidecopy1';
-import { AlbumUI } from './album.js?v=20260829merge2';
-import { CodexUI } from './codex.js?v=20260829merge2';
-import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260829merge2';
-import { initQuality, getTier, setTier } from './quality.js?v=20260829merge2';
-import { ATTR_NAMES } from '../engine/rules.js?v=20260829merge2';
-import * as Album from '../engine/album.js?v=20260829merge2';
-import * as Codex from '../engine/codex.js?v=20260829merge2';
+import { Modals, talentEffectText } from './modals.js?v=20260831sidequestcopy1';
+import { BattleStage } from './battle.js?v=20260831sidequestcopy1';
+import { AlbumUI } from './album.js?v=20260831sidequestcopy1';
+import { CodexUI } from './codex.js?v=20260831sidequestcopy1';
+import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260831sidequestcopy1';
+import { initQuality, getTier, setTier } from './quality.js?v=20260831sidequestcopy1';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260831sidequestcopy1';
+import * as Album from '../engine/album.js?v=20260831sidequestcopy1';
+import * as Codex from '../engine/codex.js?v=20260831sidequestcopy1';
 // 音频模块统一使用同一 URL，确保静音、SFX 与配乐共享一个 AudioContext / Master 总线。
 import { initAudio, play } from './audio.js';
-import { setScene, setTension, setStage } from './music.js?v=20260829merge2';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260829merge2';
-import { Leaderboard } from './leaderboard.js?v=20260829merge2';
-import { personalize } from './namefmt.js?v=20260829merge2';
-import { ContentTestUI } from './contentTest.js?v=20260829merge2';
+import { setScene, setTension, setStage } from './music.js?v=20260831sidequestcopy1';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY } from '../engine/save.js?v=20260831sidequestcopy1';
+import { Leaderboard } from './leaderboard.js?v=20260831sidequestcopy1';
+import { personalize } from './namefmt.js?v=20260831sidequestcopy1';
+import { ContentTestUI } from './contentTest.js?v=20260831sidequestcopy1';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
