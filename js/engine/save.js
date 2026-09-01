@@ -15,6 +15,8 @@
  *   - 写失败降级：localStorage → sessionStorage → 内存，且上报存储位置。
  */
 
+import { normalizePoetryState } from './end-scroll.js?v=20260902endscroll1';
+
 export const RUN_SAVE_KEY = 'feihua_run_save';               // 自动存档槽（每回合结束）
 export const RUN_SAVE_MANUAL_KEY = 'feihua_run_save_manual'; // 手动存档槽（菜单「保存当前进度」）
 export const RUN_SAVE_VERSION = 9;
@@ -58,7 +60,7 @@ const STATE_KEYS = [
   'school', 'playerName', 'attrs', 'inspiration', 'inspirationMax',
   'passive', 'active', 'track', 'pos', 'branchId', 'branchIndex',
   'lap', 'routeIndex', 'ringId', 'phaseGateSeen', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
-  'quiz', 'choiceHistory', 'narrativeState', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
+  'quiz', 'choiceHistory', 'narrativeState', 'poetryState', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
   'sideQuest',
   'zeitgeist', 'prologueSeen', 'tutorialState', 'onboarding', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
   'talentLevels', 'schoolState', 'abilityState', 'albumState', 'secretFinal', 'over', 'reachedEnd', 'endReason', 'log'
@@ -453,6 +455,7 @@ export function deserializeRun(rawObj, cfg) {
       resultText: typeof src.resultText === 'string' ? src.resultText.slice(0, 180) : '',
       optionText: typeof src.optionText === 'string' ? src.optionText.slice(0, 120) : '',
       phase: typeof src.phase === 'string' ? src.phase.slice(0, 24) : '',
+      chapter: ['outer', 'middle', 'inner'].includes(src.chapter) ? src.chapter : '',
       turn: Math.max(0, Number(src.turn) || 0)
     };
   }).slice(-24);
@@ -464,12 +467,14 @@ export function deserializeRun(rawObj, cfg) {
       eventName: typeof src.eventName === 'string' ? src.eventName.slice(0, 40) : '',
       choiceText: typeof src.choiceText === 'string' ? src.choiceText.slice(0, 120) : '',
       resultText: typeof src.resultText === 'string' ? src.resultText.slice(0, 180) : '',
+      chapter: ['outer', 'middle', 'inner'].includes(src.chapter) ? src.chapter : '',
       turn: Math.max(0, Number(src.turn) || 0)
     };
   }).filter(item => item.eventId).slice(-24);
   out.narrativeState.echoesShown = (out.narrativeState.echoesShown && typeof out.narrativeState.echoesShown === 'object') ? out.narrativeState.echoesShown : {};
   out.narrativeState.relationEncounters = (out.narrativeState.relationEncounters && typeof out.narrativeState.relationEncounters === 'object') ? out.narrativeState.relationEncounters : {};
   out.narrativeState.relationIntroduced = (out.narrativeState.relationIntroduced && typeof out.narrativeState.relationIntroduced === 'object') ? out.narrativeState.relationIntroduced : {};
+  out.poetryState = normalizePoetryState(out.poetryState);
   // 名胜支线为纯局内状态；旧档只补空行卷，不追溯奖励或终局加成。
   out.sideQuest = normalizeSideQuestState(out.sideQuest, cfg);
   out.log = Array.isArray(out.log) ? out.log.slice(-LOG_KEEP) : [];

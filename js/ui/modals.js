@@ -1,6 +1,6 @@
 /** modals.js —— 题卡 / 奇遇卡 / 文心卡 / 支线选择 / 天象 / 名胜 */
 import { ATTR_NAMES } from '../engine/rules.js?v=20260831firstrun1';
-import { PASSIVE_MAX, ACTIVE_MAX } from '../engine/game.js?v=20260831firstrun1';
+import { PASSIVE_MAX, ACTIVE_MAX } from '../engine/game.js?v=20260902endscroll1';
 import { LANDMARK_ART, EVENT_VIGNETTE, QUIZ_MARK } from './svg.js';
 import { createCountdown } from './timer.js';
 import { play } from './audio.js';
@@ -9,6 +9,40 @@ import { personalize, normalizeName } from './namefmt.js';
 const RARITY_CN = { common: '普通', rare: '稀有', legend: '传说' };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+const CHAPTER_NAMES = { outer: '外圈初章', middle: '中圈行章', inner: '内圈终章' };
+
+/** 章末二择一与阶段信息共用一个弹窗；首项已默认选中，因此不会增加必点步骤。 */
+function chapterDraftMarkup(draft) {
+  const candidates = draft && Array.isArray(draft.candidates) ? draft.candidates : [];
+  if (!candidates.length) return '';
+  return `<section class="chapter-draft" aria-labelledby="chapterDraftTitle">
+    <div class="chapter-draft-head">
+      <div><span class="chapter-draft-kicker">行 卷 定 稿</span><b id="chapterDraftTitle">${esc(CHAPTER_NAMES[draft.chapter] || '本章')}</b></div>
+      <span>只定表达，不改得失</span>
+    </div>
+    <div class="chapter-line-choices" role="group" aria-label="选择收入终局行卷的章句">
+      ${candidates.map(item => `<button type="button" class="chapter-line-choice${item.id === draft.selectedId ? ' is-selected' : ''}" data-chapter-line="${esc(item.id)}" aria-pressed="${item.id === draft.selectedId ? 'true' : 'false'}">
+        <span class="chapter-line-meta">${esc(item.motif || '行卷')} · ${esc(item.tone || '自成一格')}</span>
+        <span class="chapter-line-text">${esc(item.text)}</span>
+      </button>`).join('')}
+    </div>
+  </section>`;
+}
+
+function bindChapterDraft(root, draft) {
+  let selectedId = String(draft && draft.selectedId || '');
+  const buttons = [...root.querySelectorAll('[data-chapter-line]')];
+  for (const button of buttons) button.addEventListener('click', () => {
+    selectedId = button.dataset.chapterLine || selectedId;
+    for (const item of buttons) {
+      const selected = item === button;
+      item.classList.toggle('is-selected', selected);
+      item.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    }
+  });
+  return () => selectedId;
+}
 
 /** 带符号的数值文案：-1 → 「−1」，+3 → 「+3」（用全角减号，排版更整） */
 export const signed = n => (Number(n) > 0 ? '+' : '−') + Math.abs(Number(n) || 0);
@@ -793,12 +827,16 @@ export class Modals {
         ${tacticCards.length ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">行 卷 章 法</div>${cards(tacticCards, '章法')}` : ''}
         ${echoes.length ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">旧 选 回 声</div>${cards(echoes, '回声')}` : ''}
         ${relations.length ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">故 人 来 笺</div>${cards(relations, '来笺')}` : ''}
+        ${chapterDraftMarkup(gate.chapterDraft)}
         <div class="btn-row"><button class="btn btn-primary" data-ok>${esc(button)}</button></div>
       </div>`, 'stage-change');
     const ok = ov.querySelector('[data-ok]');
+    const selectedLine = bindChapterDraft(ov, gate.chapterDraft);
     setTimeout(() => ok.focus(), 30);
     await new Promise(r => ok.addEventListener('click', r));
+    const selectedId = selectedLine();
     this.close(ov);
+    return selectedId;
   }
 
   /* ---------------------------------------------------- 当朝文风（风潮） */
@@ -836,7 +874,7 @@ export class Modals {
   }
 
   /* ---------------------------------------------------- 殿试开场 */
-  async showPalaceIntro(themes, names, inkSummary = '', questions = [], echoes = [], sideQuestFinal = null) {
+  async showPalaceIntro(themes, names, inkSummary = '', questions = [], echoes = [], sideQuestFinal = null, chapterDraft = null) {
     // 圈数、殿试场次、金榜奖励分全部从配置读取；殿试题材由主考官配置决定
     const boardCfg = this.cfg.board || {};
     const isSpiral = boardCfg.layout === 'concentric_spiral';
@@ -865,13 +903,17 @@ export class Modals {
         ${String(inkSummary || '').trim() ? `<div class="dianggu" style="margin-top:12px;text-align:left">${esc(String(inkSummary).trim())}</div>` : ''}
         ${questionCards ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">殿 试 三 问</div>${questionCards}` : ''}
         ${echoCards ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">旧 选 回 声</div>${echoCards}` : ''}
+        ${chapterDraftMarkup(chapterDraft)}
         <div class="btn-row"><button class="btn btn-primary" data-ok>整冠入殿</button></div>
       </div>`, 'palace-intro');
     goldBurst(ov, 40);
     const ok = ov.querySelector('[data-ok]');
+    const selectedLine = bindChapterDraft(ov, chapterDraft);
     setTimeout(() => ok.focus(), 30);
     await new Promise(r => ok.addEventListener('click', r));
+    const selectedId = selectedLine();
     this.close(ov);
+    return selectedId;
   }
 
   /* ---------------------------------------------------- 隐藏终圈 */

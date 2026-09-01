@@ -147,6 +147,10 @@ export function applyProjectOverride(baseCfg, project, options = {}) {
   if (project.board && !project.board.hiddenFinalRing && baseCfg.board && baseCfg.board.hiddenFinalRing) {
     next.board = { ...next.board, hiddenFinalRing: baseCfg.board.hiddenFinalRing };
   }
+  // 旧云端工程没有终局成卷模板时，保留随版本发布的本地模板；已有新模板则整体采用云端内容。
+  if (project.narrative && !project.narrative.endScroll && baseCfg.narrative && baseCfg.narrative.endScroll) {
+    next.narrative = { ...next.narrative, endScroll: baseCfg.narrative.endScroll };
+  }
   CONTRACT.assertConfig(next);
   return normalizeConfig(next);
 }

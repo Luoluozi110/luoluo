@@ -535,13 +535,21 @@ export function drawScoreCard(sum) {
     by += 38;
   }
 
-  /* 底：评语 */
+  /* 底：成卷摘句；旧结算数据仍回退到原评语。 */
   const key = sum.topDim || 'wencai';
   const comment = TOP_COMMENT[key] || '文心一片，长路未央';
+  const scroll = sum.endScroll || null;
   g.textAlign = 'center';
   g.fillStyle = '#262019';
-  g.font = `26px ${CANVAS_FONT}`;
-  g.fillText(`「${comment}」`, W / 2, 396);
+  g.font = `${scroll ? 20 : 26}px ${CANVAS_FONT}`;
+  g.fillText(scroll ? `《${String(scroll.title || '此局成卷').slice(0, 18)}》` : `「${comment}」`, W / 2, scroll ? 370 : 396);
+  if (scroll) {
+    const excerpt = (Array.isArray(scroll.lines) && scroll.lines[scroll.lines.length - 1] && scroll.lines[scroll.lines.length - 1].text)
+      || scroll.endingLine || '';
+    g.fillStyle = '#483f34';
+    g.font = `16px ${CANVAS_FONT}`;
+    g.fillText(String(excerpt).slice(0, 34), W / 2, 398);
+  }
   g.fillStyle = '#7a6d5d';
   g.font = `13px ${CANVAS_FONT}`;
   g.fillText(sum.reasonText || '', W / 2, 422);
@@ -555,8 +563,9 @@ export function drawScoreCard(sum) {
   g.fillStyle = '#fff2ee';
   g.font = `17px ${CANVAS_FONT}`;
   g.textBaseline = 'middle';
-  g.fillText('桃花', 0, -11);
-  g.fillText('文印', 0, 11);
+  const seal = String(scroll && scroll.seal || '桃花文印').replace(/\s+/g, '').slice(0, 4).padEnd(4, '印');
+  g.fillText(seal.slice(0, 2), 0, -11);
+  g.fillText(seal.slice(2, 4), 0, 11);
   g.restore();
 
   /* 画面暗角 */

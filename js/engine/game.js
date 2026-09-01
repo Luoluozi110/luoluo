@@ -9,6 +9,7 @@ import { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260831firstru
 import * as NpcSelection from './npc-selection.js';
 import { stableFoeId } from './npc-selection.js';
 import { sideQuestBattleCopy, sideQuestPresentation, sideQuestTransition } from './sidequest-presentation.js';
+import * as EndScroll from './end-scroll.js?v=20260902endscroll1';
 
 export { Reincarnate, REINCARNATE_KEY } from './reincarnate.js?v=20260831firstrun1';
 
@@ -364,6 +365,44 @@ export class Game {
 
   narrativeConfig() { return (this.cfg && this.cfg.narrative) || {}; }
 
+  /** 「终局成卷」只消费事实型信号，不进入任何战斗或评分公式。 */
+  ensurePoetryState() {
+    this.s.poetryState = EndScroll.normalizePoetryState(this.s.poetryState);
+    return this.s.poetryState;
+  }
+
+  poetryChapter() { return EndScroll.chapterFromState(this.s); }
+
+  poetryContext(extra = {}) {
+    const affinity = this.cfg.affinity || {};
+    return {
+      playerName: this.s.playerName,
+      turn: this.s.turn,
+      routeIndex: this.s.routeIndex,
+      ringId: this.s.ringId,
+      reachedEnd: this.s.reachedEnd,
+      choiceHistory: this.ensureChoiceHistory(),
+      labels: { themes: affinity.themeNames || {}, manners: affinity.mannerNames || {} },
+      ...extra
+    };
+  }
+
+  preparePoetryChapter(chapter) {
+    return EndScroll.prepareChapterDraft(
+      this.ensurePoetryState(), this.narrativeConfig().endScroll || {}, chapter, this.poetryContext()
+    );
+  }
+
+  selectPoetryLine(chapter, selectedId) {
+    return EndScroll.selectChapterLine(this.ensurePoetryState(), chapter, selectedId);
+  }
+
+  rememberPoetry(moment) {
+    EndScroll.recordPoetryMoment(this.ensurePoetryState(), {
+      chapter: this.poetryChapter(), turn: Number(this.s.turn) || 0, ...moment
+    });
+  }
+
   recordNarrativeEventChoice(ev, choiceText, resultText) {
     const state = this.ensureNarrativeState();
     const eventId = String(ev && ev.id || '');
@@ -371,9 +410,10 @@ export class Game {
     state.eventChoices.push({
       eventId, eventName: String(ev && ev.name || '奇遇').slice(0, 40),
       choiceText: String(choiceText || '').slice(0, 120), resultText: String(resultText || '').slice(0, 180),
-      turn: Number(this.s.turn) || 0
+      chapter: this.poetryChapter(), turn: Number(this.s.turn) || 0
     });
     if (state.eventChoices.length > 24) state.eventChoices.splice(0, state.eventChoices.length - 24);
+    this.rememberPoetry({ type: 'event', refId: eventId, resultText });
   }
 
   /** 已命中的强回声会在下一次换圈或入殿时统一返场；无随机，每条仅一次。 */
@@ -490,11 +530,13 @@ export class Game {
     const mark = {
       questionId: String(q && q.id || ''), optionIndex: Math.max(0, Number(optionIndex) || 0),
       target, inkTags: this.choiceInkTags(option), resultText: this.choiceResultText(option),
-      optionText: String(option.text || ''), phase: String(this.s.phase || ''), turn: Number(this.s.turn) || 0
+      optionText: String(option.text || ''), phase: String(this.s.phase || ''),
+      chapter: this.poetryChapter(), turn: Number(this.s.turn) || 0
     };
     const history = this.ensureChoiceHistory();
     history.push(mark);
     if (history.length > 24) history.splice(0, history.length - 24);
+    this.rememberPoetry({ type: 'choice', refId: mark.questionId, resultText: mark.resultText, inkTags: mark.inkTags });
     const targetName = R.ATTR_NAMES[target] || target;
     let rewardText;
     if (mode === 'insight') rewardText = `修习所得：旁通${targetName}，心得 +${insight}`;
@@ -834,6 +876,7 @@ export class Game {
       quiz: { asked: 0, right: 0 },
       choiceHistory: [],                              // 创作抉择的墨痕来源；只服务修习反馈与叙事回看
       narrativeState: { eventChoices: [], echoesShown: {}, relationEncounters: {}, relationIntroduced: {} },
+      poetryState: EndScroll.emptyPoetryState(),      // 三章定稿与关键记忆；不参与数值结算
       seenEvents: new Set(), usedQuestions: new Set(),
       palaceWins: 0, palaceDone: 0,
       zeitgeist: this.seedZeitgeist(cfg.affinity),   // 当朝风潮（每局随机，制造变化性）
@@ -1087,6 +1130,7 @@ export class Game {
     const s = this.s;
     if (!s) return;
     this.ensureAbilityState();
+    this.ensurePoetryState();
     s.synergies = this.synergySet().map(sy => ({ id: sy.id, name: sy.name, desc: sy.desc, members: sy.members }));
     this.ui.onState(s);
   }
@@ -2458,11 +2502,14 @@ export class Game {
     if (this.s.inspiration <= 0) { this.ui.toast('灵感枯竭，无力应战'); return; }
     const gate = cell.phaseGate;
     if (this.cfg.board.layout === 'concentric_spiral' && gate && !this.s.phaseGateSeen[gate.phase]) {
+      const closingChapter = gate.transition === 'middle' ? 'outer' : gate.transition === 'inner' ? 'middle' : '';
+      const chapterDraft = closingChapter ? this.preparePoetryChapter(closingChapter) : null;
       const gateWithInk = Object.assign({}, gate, {
         inkSummary: this.choiceInkSummary(this.s.phase),
         chapterTactics: this.chapterTactics(),
         echoes: this.consumeNarrativeEchoes(),
-        relations: this.relationBeats(gate.transition)
+        relations: this.relationBeats(gate.transition),
+        chapterDraft
       });
       // 状态先落定，UI 再展示：即使弹窗/资源加载被中断，棋盘也能按 routeIndex 自愈到正确圈层。
       if (gate.transition) this.s.ringId = gate.transition;
@@ -2472,7 +2519,12 @@ export class Game {
       this.applyAlbumOutcomeEffects('phase', { phase: gate.phase, eventKey: gate.phase });
       if (typeof this.ui.syncStageRing === 'function') this.ui.syncStageRing(this.s);
       const sideQuestClimax = !!(this.s.sideQuest && this.s.sideQuest.stage === 'climax');
-      if (!sideQuestClimax && typeof this.ui.showStageChange === 'function') await this.ui.showStageChange(gateWithInk, this.s);
+      const showGateAndLockLine = async () => {
+        if (typeof this.ui.showStageChange !== 'function') return;
+        const selectedId = await this.ui.showStageChange(gateWithInk, this.s);
+        if (closingChapter) this.selectPoetryLine(closingChapter, selectedId);
+      };
+      if (!sideQuestClimax) await showGateAndLockLine();
       // 二次同步是故障自愈：阶段弹窗曾是唯一切圈入口，任何旧 UI/缓存路径都会留下外圈+透明棋子。
       if (typeof this.ui.syncStageRing === 'function') this.ui.syncStageRing(this.s);
       const ob = this.s.onboarding;
@@ -2491,11 +2543,11 @@ export class Game {
         // 主线 phase/ring 已先推进，故高潮合卷后 HUD 与后续规则会自然恢复到新主线阶段。
         const replaced = await this.doSideQuestClimax(cell, pick, obCtx);
         if (replaced) {
-          if (typeof this.ui.showStageChange === "function") await this.ui.showStageChange(gateWithInk, this.s);
+          await showGateAndLockLine();
           return;
         }
         // 路线配置被移除或旧档 routeId 失效时，安全退回原晋阶试，不吞掉阶段门战斗。
-        if (typeof this.ui.showStageChange === "function") await this.ui.showStageChange(gateWithInk, this.s);
+        await showGateAndLockLine();
       }
       if (pick.stageForced) {
         this.push(`三力构筑应验，晋阶试必遇「${pick.name}」`);
@@ -3664,6 +3716,12 @@ export class Game {
     if (abilityOn) this.applyAbilityBattleGrowth(session, out);
     s.battle.lastStyle = out.style;
     s.battle.lastResult = out.result;
+    this.rememberPoetry({
+      type: 'battle', refId: foeId, theme: session.theme, manner: out.manner,
+      result: out.upset ? 'upset' : out.result,
+      important: !!(out.upset || session.isPalace || session.isHiddenFinal || session.sideQuestRoute),
+      resultText: out.upset ? `以弱胜强，胜过「${session.npc.fullName || session.npc.name}」。` : ''
+    });
     this.applyAlbumOutcomeEffects('battle', out);
     this.recordAlbumBattle(out);
     if (session.isPalace) s.palaceDone++;
@@ -3955,6 +4013,8 @@ export class Game {
   /* ------------------------------------------------------ 殿试 */
   async runPalace() {
     const s = this.s;
+    // 入殿即为第三章章末：先保存默认句，再允许玩家在同一弹窗中改选。
+    const innerChapterDraft = this.preparePoetryChapter('inner');
     s.phase = 'palace';
     this.refillStrategy('palace');
     s.reachedEnd = true;
@@ -3969,7 +4029,11 @@ export class Game {
     const themes = (zk.themes && zk.themes.length ? zk.themes : ['yongwu', 'songbie', 'huaigu']).slice();
     const themeNames = (this.cfg.affinity || {}).themeNames || {};
     const names = themes.map(t => themeNames[t] || t);
-    await this.ui.showPalaceIntro(themes, names, this.choiceInkSummary(), this.palaceQuestions(), this.consumeNarrativeEchoes(), sideQuestFinal);
+    const selectedInnerLine = await this.ui.showPalaceIntro(
+      themes, names, this.choiceInkSummary(), this.palaceQuestions(),
+      this.consumeNarrativeEchoes(), sideQuestFinal, innerChapterDraft
+    );
+    this.selectPoetryLine('inner', selectedInnerLine);
 
     const n = this.cfg.board.layout === 'concentric_spiral' ? 1 : themes.length;
     // 殿试对手：三圈正式配置为单场；旧配置仍按 themes.length 兼容。「按出战权重加权、不重复抽取 n 个」（幂等去重，防止撞同名考官）。
@@ -4106,6 +4170,14 @@ export class Game {
     summary.sideQuest = this.sideQuestJournal();
     summary.sideQuestEpilogue = this.sideQuestEpilogue();
     if (summary.sideQuestEpilogue) summary.narrativeEpilogue = [summary.narrativeEpilogue, summary.sideQuestEpilogue].filter(Boolean).join('\n');
+    summary.endScroll = EndScroll.buildEndScroll(
+      this.ensurePoetryState(), this.narrativeConfig().endScroll || {},
+      this.poetryContext({
+        endReason: reason,
+        narrativeEpilogue: [summary.inkEpilogue, summary.narrativeEpilogue].filter(Boolean).join('\n'),
+        sideQuestEpilogue: summary.sideQuestEpilogue
+      })
+    );
     summary.state = s;
     // 入门卷标记：供结算页说明与排行榜过滤（入门卷成绩不进入竞技榜）。
     summary.onboardingRun = !!(s.onboarding && s.onboarding.enabled);

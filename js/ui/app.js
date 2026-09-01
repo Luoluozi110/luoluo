@@ -3,14 +3,14 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260831firstrun1';
-import { Game, Reincarnate } from '../engine/game.js?v=20260831firstrun1';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260902endscroll1';
+import { Game, Reincarnate } from '../engine/game.js?v=20260902endscroll1';
 import { BoardView } from './board.js?v=20260831firstrun1';
 import { Hud, radarSVG } from './hud.js?v=20260831firstrun1';
 // 奇遇属性收益在 20260823eventattrs1 起于选择前完整展示；独立版本键避免旧模块缓存继续省略属性。
-import { Modals, talentEffectText } from './modals.js?v=20260831firstrun1';
+import { Modals, talentEffectText } from './modals.js?v=20260902endscroll1';
 import { BattleStage } from './battle.js?v=20260831firstrun1';
-import { AlbumUI } from './album.js?v=20260831firstrun1';
+import { AlbumUI } from './album.js?v=20260902endscroll1';
 import { CodexUI } from './codex.js?v=20260831firstrun1';
 import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260831firstrun1';
 import { initQuality, getTier, setTier } from './quality.js?v=20260831firstrun1';
@@ -20,7 +20,7 @@ import * as Codex from '../engine/codex.js?v=20260831firstrun1';
 // 音频模块统一使用同一 URL，确保静音、SFX 与配乐共享一个 AudioContext / Master 总线。
 import { initAudio, play } from './audio.js';
 import { setScene, setTension, setStage } from './music.js?v=20260831firstrun1';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY, normalizeOnboardingState } from '../engine/save.js?v=20260831firstrun1';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY, normalizeOnboardingState } from '../engine/save.js?v=20260902endscroll1';
 import { Leaderboard } from './leaderboard.js?v=20260831firstrun1';
 import { personalize } from './namefmt.js?v=20260831firstrun1';
 import { ContentTestUI } from './contentTest.js?v=20260831firstrun1';
@@ -470,7 +470,8 @@ function makeUi() {
     // 引擎明确要求同步圈层；不再让阶段弹窗承担唯一的状态切换职责。
     syncStageRing: s => board.revealRouteState(s),
     showStageChange: async (gate, state) => {
-      if (modals.showStageChange) await modals.showStageChange(gate, state);
+      if (modals.showStageChange) return await modals.showStageChange(gate, state);
+      return '';
     },
     showZeitgeist: z => modals.showZeitgeist(z),
     // 支线入口依赖此元数据决定是否展示「入世另行」与「行路凝心」。
@@ -491,7 +492,7 @@ function makeUi() {
       setStage(stageFromProgress(game.progress())); // 战后阶段可能已进阶，重新移调
       return out;
     },
-    showPalaceIntro: (themes, names, inkSummary, questions, echoes, sideQuestFinal) => modals.showPalaceIntro(themes, names, inkSummary, questions, echoes, sideQuestFinal),
+    showPalaceIntro: (themes, names, inkSummary, questions, echoes, sideQuestFinal, chapterDraft) => modals.showPalaceIntro(themes, names, inkSummary, questions, echoes, sideQuestFinal, chapterDraft),
     askHiddenFinal: meta => modals.askHiddenFinal(meta),
     showHiddenFinalRing: async () => {
       setScene('board');
@@ -1132,18 +1133,21 @@ async function showResult(sum) {
     ? `<div class="result-unlocks paper"><div style="font-size:14px;letter-spacing:.16em;color:var(--zhu);margin-bottom:6px">本局新解锁</div>
        <div class="unlock-row">${unlocks}</div></div>`
     : '';
-  const inkBlock = sum.inkEpilogue
-    ? `<div class="result-mastery paper" style="margin-top:10px;padding:10px 14px;font-size:13px;line-height:1.8">
-      <div style="font-size:14px;letter-spacing:.16em;color:var(--mo-2);margin-bottom:4px">行卷留痕</div>
-      <div>${esc(sum.inkEpilogue)}</div>
-    </div>`
-    : '';
-  const narrativeBlock = sum.narrativeEpilogue
-    ? `<div class="result-mastery paper" style="margin-top:10px;padding:10px 14px;font-size:13px;line-height:1.85;white-space:pre-line">
-      <div style="font-size:14px;letter-spacing:.16em;color:var(--mo-2);margin-bottom:4px">卷 末 余 音</div>
-      <div>${esc(sum.narrativeEpilogue)}</div>
-    </div>`
-    : '';
+  const scroll = sum.endScroll || null;
+  const chapterNames = { outer: '初章', middle: '行章', inner: '终章' };
+  const endScrollBlock = scroll ? `<article class="end-scroll paper" aria-labelledby="endScrollTitle">
+    <div class="end-scroll-heading">
+      <span class="end-scroll-kicker">本 局 行 卷</span>
+      <h2 id="endScrollTitle">《${esc(scroll.title || '此局成卷')}》</h2>
+      <span class="end-scroll-byline">${esc(scroll.byline || pname || '无名氏')} · 题</span>
+    </div>
+    <div class="end-scroll-lines">
+      ${(scroll.lines || []).map(line => `<p><span>${esc(chapterNames[line.chapter] || '章句')}</span>${esc(line.text)}</p>`).join('')}
+      ${scroll.endingLine ? `<p class="end-scroll-ending">${esc(scroll.endingLine)}</p>` : ''}
+    </div>
+    <div class="end-scroll-note"><b>卷 后 小 记</b><p>${esc(scroll.note || '')}</p></div>
+    <div class="end-scroll-seal" aria-label="印章：${esc(scroll.seal || '此卷已成')}">${esc(scroll.seal || '此卷已成')}</div>
+  </article>` : '';
   const crossRunBlock = crossRunFeedback(sum);
 
   resultEl.innerHTML = `
@@ -1158,6 +1162,7 @@ async function showResult(sum) {
         </div>
       </div>
       <div class="result-body">
+        ${endScrollBlock}
         <div class="result-radar paper">
           <div style="font-size:15px;letter-spacing:.16em;color:var(--mo-2);margin-bottom:8px">六维才学</div>
           ${radarSVG(st.attrs || {})}
@@ -1169,8 +1174,6 @@ async function showResult(sum) {
           ${unlockBlock}
           ${masteryBlock}
           ${crossRunBlock}
-          ${inkBlock}
-          ${narrativeBlock}
         </div>
       </div>
       <div class="result-actions">

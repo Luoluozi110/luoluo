@@ -385,6 +385,28 @@ const INK_TAGS = new Set(INK_AXES.flat());
         const block = hidden[key];
         if (!isObj(block) || !text(block.title) || !text(block.text)) add(`narrative.hiddenFinal.${key}`, '必须包含标题与正文');
       }
+      const endScroll = cfg.narrative && cfg.narrative.endScroll;
+      if (endScroll != null) {
+        if (!isObj(endScroll)) add('narrative.endScroll', '终局成卷必须是对象');
+        else {
+          const lineIds = uniqueIds(endScroll.chapterLines, 'narrative.endScroll.chapterLines');
+          if (lineIds.size) for (const chapter of ['outer', 'middle', 'inner']) {
+            const lines = endScroll.chapterLines.filter(line => line && line.chapter === chapter);
+            if (lines.length < 2) add('narrative.endScroll.chapterLines', `${chapter} 至少需要两条候选章句`);
+            lines.forEach((line, i) => {
+              if (!text(line.text)) add(`narrative.endScroll.chapterLines[${endScroll.chapterLines.indexOf(line)}].text`, '章句正文不能为空');
+            });
+          }
+          uniqueIds(endScroll.titles, 'narrative.endScroll.titles');
+          if (Array.isArray(endScroll.titles)) endScroll.titles.forEach((title, i) => {
+            if (!text(title.text)) add(`narrative.endScroll.titles[${i}].text`, '卷名不能为空');
+          });
+          if (!isObj(endScroll.endings) || !isObj(endScroll.endings.default)) add('narrative.endScroll.endings', '必须提供 default 收束句与印章');
+          else for (const [key, ending] of Object.entries(endScroll.endings)) {
+            if (!isObj(ending) || !text(ending.line) || !text(ending.seal)) add(`narrative.endScroll.endings.${key}`, '必须包含收束句与印章');
+          }
+        }
+      }
     }
 
     for (const key of ['sky', 'album', 'synergies']) if (key in cfg) uniqueIds(cfg[key], key);
