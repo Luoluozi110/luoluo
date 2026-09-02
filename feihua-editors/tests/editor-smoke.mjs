@@ -421,6 +421,9 @@ console.log('[6] NPC：机制对手编辑 → id/mech 保留 → 保存 → stat
     ok(npc0.id === 'zhou_xiaoman_v2', '保存后 id 写入 state', npc0.id);
     ok(npc0.mech && npc0.mech.signature && npc0.mech.signature.template === 'sig_style_mastery', '保存后 mech 保留');
     ok(npc0.mech.signature.pct === 0.07, '保存后 mech 参数更新（pct=0.07）', npc0.mech.signature.pct);
+    ok(npc0.difficultyRole === 'tutorial', '编辑普通字段后保留入门难度角色', npc0.difficultyRole);
+    ok(npc0.beginnerWeight === 100, '编辑普通字段后保留入门卷权重', npc0.beginnerWeight);
+    ok(npc0.standardWeight === 100, '编辑普通字段后保留标准局权重', npc0.standardWeight);
     const saved = JSON.parse(localStorage.getItem('feihua_editors_v1_npcs'));
     ok(saved && saved[0].npcs[0].mech && saved[0].npcs[0].mech.signature.pct === 0.07, 'mech 持久化 localStorage');
     // 还原（写回原 id/pct，避免污染后续默认）

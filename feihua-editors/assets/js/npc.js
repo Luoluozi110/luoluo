@@ -12,6 +12,7 @@
   const ATTR = C.ATTR, ATTR_KEYS = C.ATTR_KEYS;
   const THEME_LABELS = { yongwu: "咏物", songbie: "送别", shanshui: "山水", biansai: "边塞", huaigu: "怀古", jieling: "节令" };
   const NPC_ID_RE = /^[a-z][a-z0-9_-]*$/;
+  const DIFFICULTY_ROLES = ["tutorial", "basic", "advanced", "elite"];
 
   const state = { tiers: [], editTier: -1, tierForm: null, npcForm: null, _ready: false };
 
@@ -43,15 +44,20 @@
     n = n || {};
     const style = ATTR_KEYS.includes(n.style) ? n.style : "";
     const w = Number(n.weight);
-    return {
+    const beginnerWeight = Number(n.beginnerWeight);
+    const standardWeight = Number(n.standardWeight);
+    const out = {
       id: String(n.id || "").trim(),
       name: String(n.name || "").trim(),
       title: String(n.title || "").trim(),
-      style,
       // 主属性用于战斗卡片提示；编辑器迁移时必须保留，不能只依赖文体推断。
       focusAttr: ATTR_KEYS.includes(n.focusAttr) ? n.focusAttr : undefined,
       // 出战权重：正整数；空/非法回退 undefined（引擎默认 100）；显式 0 保留为 0（本阶段不出战）
       weight: (Number.isFinite(w) && w >= 0) ? Math.floor(w) : undefined,
+      // 入门卷难度分层属于运行时选敌规则；导入、编辑、导出均须无损保留。
+      difficultyRole: DIFFICULTY_ROLES.includes(n.difficultyRole) ? n.difficultyRole : undefined,
+      beginnerWeight: (Number.isFinite(beginnerWeight) && beginnerWeight >= 0) ? Math.floor(beginnerWeight) : undefined,
+      standardWeight: (Number.isFinite(standardWeight) && standardWeight >= 0) ? Math.floor(standardWeight) : undefined,
       attrs: cleanAttrs(n.attrs),
       mech: (n.mech && typeof n.mech === 'object' && !Array.isArray(n.mech) && Object.keys(n.mech).length)
         ? n.mech : undefined,
@@ -63,18 +69,19 @@
         ? JSON.parse(JSON.stringify(n.stageForcedWhen))
         : ((n.palaceForcedWhen && typeof n.palaceForcedWhen === 'object' && !Array.isArray(n.palaceForcedWhen)) ? JSON.parse(JSON.stringify(n.palaceForcedWhen)) : undefined)
     };
+    if (style) out.style = style;
+    return out;
   }
   function normalizeTier(t) {
     t = t || {};
     const out = {
       id: String(t.id || "").trim(),
       tier: String(t.tier || t.name || "").trim(),
-      range: Array.isArray(t.range) && t.range.length === 2
-        ? [Number(t.range[0]) || 0, Number(t.range[1]) || 0]
-        : [0, 1],
       desc: String(t.desc || "").trim(),
       npcs: Array.isArray(t.npcs) ? t.npcs.map(normalizeNpc) : []
     };
+    if (Array.isArray(t.range) && t.range.length === 2) out.range = [Number(t.range[0]) || 0, Number(t.range[1]) || 0];
+    else if (!t.isHiddenFinal) out.range = [0, 1];
     if (t.isFinal) {
       out.isFinal = true;
       out.battles = Math.max(1, Number(t.battles) || 3);
@@ -118,6 +125,7 @@
   const OFFICIAL_NPC_STAGE_FORCE_IDS = new Set([
     "li_mo_tong", "wang_han_sheng", "tang_ji_qing", "yuwen_yuan", "kang_er_yu", "chen_zhiwei"
   ]);
+  const OFFICIAL_NPC_RUNTIME_FIELDS = ["difficultyRole", "beginnerWeight", "standardWeight"];
   function cloneData(v) { return JSON.parse(JSON.stringify(v)); }
 
   /**
@@ -164,7 +172,12 @@
     const out = Array.isArray(tiers) ? tiers : [];
     const seeds = (window.GAME_NPCS || []).map(normalizeTier);
     for (const seedTier of seeds) {
-      const seedTargets = seedTier.npcs.filter(n => OFFICIAL_NPC_BACKFILL_IDS.has(n.id) || OFFICIAL_NPC_MECH_V2_IDS.has(n.id) || OFFICIAL_NPC_STAGE_FORCE_IDS.has(n.id));
+      const seedTargets = seedTier.npcs.filter(n =>
+        OFFICIAL_NPC_BACKFILL_IDS.has(n.id)
+        || OFFICIAL_NPC_MECH_V2_IDS.has(n.id)
+        || OFFICIAL_NPC_STAGE_FORCE_IDS.has(n.id)
+        || OFFICIAL_NPC_RUNTIME_FIELDS.some(field => n[field] !== undefined)
+      );
       if (!seedTargets.length) continue;
       let tier = out.find(t => t && t.id === seedTier.id);
       if (!tier) {
@@ -180,6 +193,10 @@
           continue;
         }
         if (!existing.id) existing.id = seedNpc.id;
+        // 只补历史缓存缺失的运行时难度字段，不覆盖用户已经明确调整的值。
+        for (const field of OFFICIAL_NPC_RUNTIME_FIELDS) {
+          if (existing[field] === undefined && seedNpc[field] !== undefined) existing[field] = seedNpc[field];
+        }
         if (seedNpc.palaceForcedWhen && !existing.palaceForcedWhen) existing.palaceForcedWhen = cloneData(seedNpc.palaceForcedWhen);
         if (seedNpc.stageForcedWhen && !existing.stageForcedWhen) existing.stageForcedWhen = cloneData(seedNpc.stageForcedWhen);
         if (OFFICIAL_NPC_MECH_V2_IDS.has(seedNpc.id) && seedNpc.mech && Number(existing.mech && existing.mech.version) < 2) {
@@ -363,7 +380,7 @@
           <div class="meta">
             <span class="q-id">${C.esc(t.id)}</span>
             <span class="badge k-active">${C.esc(tierLabel(t))}</span>
-            <span class="badge">进度 ${Number(t.range[0]).toFixed(2)}–${Number(t.range[1]).toFixed(2)}</span>
+            ${t.isHiddenFinal ? "" : `<span class="badge">进度 ${Number(t.range[0]).toFixed(2)}–${Number(t.range[1]).toFixed(2)}</span>`}
             ${finalTag}
             <span class="npc-count">${t.npcs.length} 名对手</span>
           </div>
@@ -390,8 +407,9 @@
     state.editTier = index;
     const src = index >= 0 ? state.tiers[index] : null;
     if (src) {
+      const range = Array.isArray(src.range) ? src.range : [0, 1];
       state.tierForm = {
-        id: src.id, tier: tierLabel(src), rangeMin: Number(src.range[0]), rangeMax: Number(src.range[1]),
+        id: src.id, tier: tierLabel(src), rangeMin: Number(range[0]), rangeMax: Number(range[1]),
         desc: src.desc, isFinal: !!src.isFinal, isHiddenFinal: !!src.isHiddenFinal, battles: src.battles || 3,
         themes: (src.themes || []).join(",")
       };
@@ -427,6 +445,7 @@
       t.themes = String(form.themes || "").split(/[,，\s]+/).map(s => s.trim()).filter(Boolean);
     }
     if (form.isHiddenFinal) {
+      delete t.range;
       t.isHiddenFinal = true;
       t.themes = String(form.themes || "huaigu").split(/[,，\s]+/).map(s => s.trim()).filter(Boolean);
     }
@@ -459,6 +478,9 @@
       style: src ? (src.style || autoStyle(src.attrs)) : "",
       focusAttr: src ? (src.focusAttr || "") : "",
       weight: src ? (src.weight != null ? src.weight : "") : "",
+      difficultyRole: src && DIFFICULTY_ROLES.includes(src.difficultyRole) ? src.difficultyRole : undefined,
+      beginnerWeight: src && src.beginnerWeight != null ? src.beginnerWeight : undefined,
+      standardWeight: src && src.standardWeight != null ? src.standardWeight : undefined,
       attrs: src ? JSON.parse(JSON.stringify(src.attrs)) : {},
       mech: src && src.mech ? JSON.parse(JSON.stringify(src.mech)) : null,
       palaceForcedWhen: src && src.palaceForcedWhen ? JSON.parse(JSON.stringify(src.palaceForcedWhen)) : null,
@@ -708,7 +730,21 @@
         const msg = document.getElementById("npcMsg"); msg.className = "msg err"; msg.textContent = "✗ 本阶段必遇条件的阈值必须是数字。"; return;
       }
     }
-    const npc = { id: idVal, name: f.name.trim(), title: f.title.trim(), style: ATTR_KEYS.includes(styleVal) ? styleVal : "", focusAttr: ATTR_KEYS.includes(focusVal) ? focusVal : undefined, weight, attrs, mech: mech || undefined, stageForcedWhen: stageForcedWhen || undefined, palaceForcedWhen: f.palaceForcedWhen ? (stageForcedWhen || undefined) : undefined };
+    const npc = {
+      id: idVal,
+      name: f.name.trim(),
+      title: f.title.trim(),
+      style: ATTR_KEYS.includes(styleVal) ? styleVal : "",
+      focusAttr: ATTR_KEYS.includes(focusVal) ? focusVal : undefined,
+      weight,
+      difficultyRole: DIFFICULTY_ROLES.includes(f.difficultyRole) ? f.difficultyRole : undefined,
+      beginnerWeight: f.beginnerWeight != null ? f.beginnerWeight : undefined,
+      standardWeight: f.standardWeight != null ? f.standardWeight : undefined,
+      attrs,
+      mech: mech || undefined,
+      stageForcedWhen: stageForcedWhen || undefined,
+      palaceForcedWhen: f.palaceForcedWhen ? (stageForcedWhen || undefined) : undefined
+    };
     const names = {}; state.tiers[f.ti].npcs.forEach((x, k) => { if (x.name) names[x.name] = f.ti + ":" + k; });
     const { ok, errors } = validateNpc(npc, names, f.ti + ":" + f.ni, allNpcIds(f.ti + ":" + f.ni));
     const msg = document.getElementById("npcMsg");
@@ -772,7 +808,7 @@
   function showStats() {
     const totalNpc = state.tiers.reduce((s, t) => s + t.npcs.length, 0);
     const rows = state.tiers.map(t => `<tr><td>${C.esc(t.id)}</td><td>${C.esc(tierLabel(t))}</td>
-      <td class="num">${t.npcs.length}</td><td>${t.isFinal ? "殿试" : Number(t.range[0]).toFixed(2) + "–" + Number(t.range[1]).toFixed(2)}</td></tr>`).join("");
+      <td class="num">${t.npcs.length}</td><td>${t.isHiddenFinal ? "隐藏终圈" : t.isFinal ? "殿试" : Number(t.range[0]).toFixed(2) + "–" + Number(t.range[1]).toFixed(2)}</td></tr>`).join("");
     document.getElementById("npcStBody").innerHTML = `
       <p><b>对手档：</b>${state.tiers.length}　<b>具名对手：</b>${totalNpc}</p>
       <table class="stat-table" style="margin-top:8px">

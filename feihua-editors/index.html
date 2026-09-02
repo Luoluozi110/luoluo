@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>文心棋 · 内容编辑器（题库 & 奇遇 & 文心 & NPC & 相性 & 羁绊 & 地图 & 天象 & 传世名篇 & 叙事文案）</title>
-<link rel="stylesheet" href="assets/css/styles.css" />
+<title>文心棋 · 内容编辑器（题库 & 奇遇 & 文心 & NPC & 支线 NPC & 相性 & 羁绊 & 地图 & 天象 & 传世名篇 & 叙事文案）</title>
+<link rel="stylesheet" href="assets/css/styles.css?v=20260830contentfix1" />
 </head>
 <body>
 <header class="bar">
@@ -23,6 +23,7 @@
     <button data-tab="adv" aria-controls="adv-section">奇遇</button>
     <button data-tab="tal" aria-controls="tal-section">文心</button>
     <button data-tab="npc" aria-controls="npc-section">NPC</button>
+    <button data-tab="sidequest-npc" aria-controls="sidequest-npc-section">支线 NPC</button>
     <button data-tab="aff" aria-controls="aff-section">相性</button>
     <button data-tab="syn" aria-controls="syn-section">羁绊</button>
     <button data-tab="board" aria-controls="board-section">地图</button>
@@ -91,6 +92,7 @@
   <div class="toolbar">
     <span class="lead">文心管理</span>
     <div class="spacer"></div>
+    <button class="btn" id="talBtnSyncOfficial" title="用当前线上官方文心覆盖同 ID 的本地副本；自建文心不受影响">同步官方文心</button>
     <button class="btn" id="talBtnImport">导入 JSON</button>
     <button class="btn" id="talBtnExport">导出 talents.json</button>
     <button class="btn" id="talBtnExportUpgrade">导出升级 talent-upgrade.json</button>
@@ -130,6 +132,27 @@
   </div>
 
   <div class="qlist" id="npclist"></div>
+</section>
+
+<!-- ============================ 支线 NPC 编辑器 ============================ -->
+<section class="section wrap" id="sidequest-npc-section">
+  <div class="toolbar">
+    <span class="lead">支线 NPC 管理（引路人 · 高潮对手 · 终局副考）</span>
+    <div class="spacer"></div>
+    <button class="btn" id="sideNpcBtnImport">导入 JSON</button>
+    <button class="btn" id="sideNpcBtnExport">导出 sidequest-npcs.json</button>
+    <button class="btn" id="sideNpcBtnStats">统计</button>
+    <button class="btn primary" id="sideNpcBtnReset">重置默认</button>
+    <input type="file" id="sideNpcFileInput" accept=".json,application/json" style="display:none" />
+  </div>
+
+  <div class="stat-strip" id="sideNpcStatStrip"></div>
+
+  <div class="filters">
+    <input type="search" id="sideNpcFSearch" placeholder="搜索 路线 / 角色 / 姓名 / 稳定 ID…" />
+  </div>
+
+  <div class="qlist" id="sideNpclist"></div>
 </section>
 
 <!-- ============================ 相性编辑器 ============================ -->
@@ -729,8 +752,8 @@
         <select id="npc-focus-attr"><option value="">自动（按战斗文体）</option></select>
       </div>
       <div class="field" style="margin:0;max-width:200px">
-          <label>稳定 ID（自动生成，可手动指定）</label>
-          <input type="text" id="npc-id" placeholder="如 npc_juren_1" title="每位 NPC 必须有全局唯一的稳定 ID，用于游戏遭遇、存档与机制追踪。留空时保存会自动生成。" />
+        <label>稳定 ID（自动生成，可手动指定）</label>
+        <input type="text" id="npc-id" placeholder="如 npc_juren_1" title="每位 NPC 必须有全局唯一的稳定 ID，用于游戏遭遇、存档与机制追踪。留空时保存会自动生成。" />
       </div>
       <div class="field" style="margin:0;max-width:160px">
         <label>出战权重（本档出场权重）</label>
@@ -809,6 +832,94 @@
     <h3>NPC 统计</h3>
     <div id="npcStBody"></div>
     <div class="modal-actions"><button class="btn primary" id="npcStClose">关闭</button></div>
+  </div>
+</div>
+
+<!-- =================== 支线 NPC：编辑弹窗 =================== -->
+<div class="overlay" id="sideNpcOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="sideNpcTitle">
+    <h3 id="sideNpcTitle">编辑支线 NPC</h3>
+    <div class="msg" id="sideNpcMsg"></div>
+    <div class="row2 side-npc-context">
+      <div class="field" style="margin:0"><label>所属路线</label><div class="readonly-field" id="sideNpcRoute"></div></div>
+      <div class="field" style="margin:0"><label>编辑角色</label><div class="readonly-field" id="sideNpcRole"></div></div>
+    </div>
+    <div class="row2">
+      <div class="field" style="margin:0">
+        <label>姓名</label>
+        <input type="text" id="sideNpc-name" placeholder="顾长风" />
+      </div>
+      <div class="field" style="margin:0">
+        <label>称号 / 身份（可选）</label>
+        <input type="text" id="sideNpc-title" placeholder="群英盟主" />
+      </div>
+      <div class="field" style="margin:0;max-width:240px">
+        <label>稳定 ID（小写、全局追踪）</label>
+        <input type="text" id="sideNpc-id" placeholder="jh_gu_changfeng" />
+      </div>
+    </div>
+
+    <div id="sideNpcGuideFields" hidden>
+      <div class="row2">
+        <div class="field" style="margin:0;max-width:220px">
+          <label>角色文案</label>
+          <input type="text" id="sideNpc-role" placeholder="引路人" />
+        </div>
+      </div>
+      <div class="field">
+        <label>出场寄语</label>
+        <textarea id="sideNpc-text" placeholder="这句文案会显示在支线日志或引路人面板中…"></textarea>
+      </div>
+    </div>
+
+    <div id="sideNpcCombatFields" hidden>
+      <div class="row2">
+        <div class="field" style="margin:0;max-width:180px">
+          <label>专长文体</label>
+          <select id="sideNpc-style">
+            <option value="">请选择</option><option value="shi">诗力</option><option value="ci">词力</option>
+            <option value="lian">联力</option><option value="bi">笔力</option><option value="xue">学力</option><option value="si">思力</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0;max-width:180px">
+          <label>主属性（可选）</label>
+          <select id="sideNpc-focusAttr">
+            <option value="">自动</option><option value="shi">诗力</option><option value="ci">词力</option>
+            <option value="lian">联力</option><option value="bi">笔力</option><option value="xue">学力</option><option value="si">思力</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>六维属性</label>
+        <div class="row2" id="sideNpcAttrsBox">
+          <div class="field" style="margin:0"><label>诗力</label><input type="number" class="side-npc-attr" data-attr="shi" min="0" step="1" /></div>
+          <div class="field" style="margin:0"><label>词力</label><input type="number" class="side-npc-attr" data-attr="ci" min="0" step="1" /></div>
+          <div class="field" style="margin:0"><label>联力</label><input type="number" class="side-npc-attr" data-attr="lian" min="0" step="1" /></div>
+          <div class="field" style="margin:0"><label>笔力</label><input type="number" class="side-npc-attr" data-attr="bi" min="0" step="1" /></div>
+          <div class="field" style="margin:0"><label>学力</label><input type="number" class="side-npc-attr" data-attr="xue" min="0" step="1" /></div>
+          <div class="field" style="margin:0"><label>思力</label><input type="number" class="side-npc-attr" data-attr="si" min="0" step="1" /></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>机制 JSON（可选；保留 signature / weakness / intent 等运行时结构）</label>
+        <textarea id="sideNpc-mech" rows="10" spellcheck="false" placeholder='{"signature":{"template":"sig_steady_pressure"}}'></textarea>
+        <div class="hint" id="sideNpcVariantHint"></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn ghost" id="sideNpcCancel">取消</button>
+      <button class="btn primary" id="sideNpcSave">保存支线 NPC</button>
+    </div>
+  </div>
+</div>
+
+<!-- =================== 支线 NPC：统计弹窗 =================== -->
+<div class="overlay" id="sideNpcStOverlay">
+  <div class="modal">
+    <h3>支线 NPC 统计</h3>
+    <div id="sideNpcStBody"></div>
+    <div class="modal-actions"><button class="btn primary" id="sideNpcStClose">关闭</button></div>
   </div>
 </div>
 
@@ -1028,7 +1139,7 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<footer>数据自动保存在本浏览器（localStorage）。题库导出即 questions.json；奇遇导出即 events.json；文心导出即 talents.json；传世名篇导出即 album.json；NPC 导出即 npcs.json；相性导出即 affinity.json；羁绊导出即 synergies.json；地图导出即 board.json；天象导出即 sky.json；叙事文案导出即 schools.json / grades.json（仅含「玩家可见文案」，不改数值与公式）。亦可「数据管理」合并备份为工程文件。<b>线上游戏不会自动读取这里的改动</b>——请用游戏菜单「载入自定义配置（高级）」粘贴导出的工程文件，或重新部署游戏。</footer>
+<footer>数据自动保存在本浏览器（localStorage）。题库导出即 questions.json；奇遇导出即 events.json；文心导出即 talents.json；传世名篇导出即 album.json；普通 NPC 导出即 npcs.json；支线 NPC 导出即 sidequest-npcs.json；相性导出即 affinity.json；羁绊导出即 synergies.json；地图导出即 board.json；天象导出即 sky.json；叙事文案导出即 schools.json / grades.json（仅含「玩家可见文案」，不改数值与公式）。亦可「数据管理」合并备份为工程文件。<b>线上游戏不会自动读取这里的改动</b>——请用游戏菜单「载入自定义配置（高级）」粘贴导出的工程文件，或重新部署游戏。</footer>
 
 <!-- 文心候选（供奇遇效果中引用文心时联想） -->
 <datalist id="talentList">
@@ -1043,48 +1154,49 @@
   <option value="T099">三元及第</option><option value="TA01">七步成诗</option>
   <option value="TA02">夺胎换骨</option><option value="TA03">语不惊人</option><option value="TA04">笔落惊风雨</option>
   <option value="TA05">一气呵成</option><option value="TA06">倚马可待</option><option value="TA07">点铁成金</option><option value="TA08">布局谋篇</option>
+  <option value="T041">抱柱之信</option><option value="T042">相忘江湖</option><option value="T043">风尘知己</option><option value="TA09">杯酒解剑</option>
+  <option value="T044">坚壁清野</option><option value="T045">轻骑出塞</option><option value="T046">孤烽照夜</option><option value="TA10">背水列阵</option>
+  <option value="T047">坐忘</option><option value="T048">庄周梦蝶</option><option value="T049">知白守黑</option><option value="TA11">斩妄见真</option>
 </datalist>
 
 <!-- 游戏原始数据（作为编辑器默认种子；首次打开或仍为示例时自动载入） -->
-<script src="assets/js/seed-questions.js?v=20260827-literary-quiz-10"></script>
-<script src="assets/js/seed-events.js?v=20260823eventecho1"></script>
-<script src="assets/js/seed-talents.js?v=20260825npcdice1"></script>
-<script src="assets/js/seed-talent-upgrade.js?v=20260825npcdice1"></script>
-<script src="assets/js/seed-npcs.js?v=20260824npcmech2"></script>
-<script src="assets/js/seed-affinity.js"></script>
-<script src="assets/js/seed-synergies.js?v=20260824wenxindice1"></script>
-<script src="assets/js/seed-board.js"></script>
-<script src="assets/js/seed-sky.js"></script>
-<script src="assets/js/seed-album.js?v=20260823chapter1"></script>
-<script src="assets/js/seed-copy.js"></script>
-<script src="assets/js/icon-library.js"></script>
-<!-- 源码工作区与 GitHub Pages 的游戏目录不同；回退路径必须在 common.js 前同步完成。
-     静态标签优先加载源码工作区同级目录（file:// 与本地 http 预览均命中），
-     部署到 GitHub Pages（扁平根目录）时首个 404，由下方 document.write 回退到 ../js/engine/。 -->
-<script src="../feihuaqi-playable/js/engine/config-contract.js?v=20260827contractfix1"></script>
-<script>
-if (!window.FeihuaConfigContract) {
-  document.write('<script src="../js/engine/config-contract.js?v=20260827contractfix1"><\\/script>');
-}
-</script>
-<script src="assets/js/common.js?v=20260826workspace2"></script>
-<script src="assets/js/qbank.js?v=20260828-ink-axis-repair"></script>
-<script src="assets/js/adventure.js?v=20260826workspace2"></script>
-<script src="assets/js/talent.js?v=20260826workspace2"></script>
-<script src="assets/js/npc.js?v=20260826workspace2"></script>
-<script src="assets/js/affinity.js?v=20260826workspace2"></script>
-<script src="assets/js/synergy.js?v=20260826workspace2"></script>
-<script src="assets/js/board.js?v=20260826workspace2"></script>
-<script src="assets/js/sky.js?v=20260826workspace2"></script>
-<script src="assets/js/album.js?v=20260826workspace2"></script>
-<script src="assets/js/copy.js?v=20260826workspace2"></script>
-<script src="assets/js/cloud.js?v=20260826workspace2"></script>
+<script>window.GAME_CONTENT_VERSION = 14;</script>
+<script src="assets/js/seed-questions.js?v=20260830contentfix1"></script>
+<script src="assets/js/seed-events.js?v=20260830contentfix1"></script>
+<script src="assets/js/seed-talents.js?v=20260830contentfix1"></script>
+<script src="assets/js/seed-talent-upgrade.js?v=20260830contentfix1"></script>
+<script src="assets/js/seed-sidequests.js?v=20260830contentfix1"></script>
+<script src="assets/js/seed-npcs.js?v=20260902npcpullfix1"></script>
+<script src="assets/js/seed-affinity.js?v=20260830contentfix1"></script>
+<script src="assets/js/seed-synergies.js?v=20260830contentfix1"></script>
+<script src="assets/js/seed-board.js?v=20260830contentfix1"></script>
+<script src="assets/js/seed-sky.js?v=20260830contentfix1"></script>
+<script src="assets/js/seed-album.js?v=20260830contentfix1"></script>
+<script src="assets/js/seed-copy.js?v=20260830contentfix1"></script>
+<script src="assets/js/icon-library.js?v=20260830contentfix1"></script>
+<!-- 契约本地化：编辑器自包含，file:// / 本地 http / GitHub Pages 子目录部署均无跨目录 404，
+     不再依赖 document.write 回退（该路径仅线上扁平布局触发、无头测试无法复现）。 -->
+<script src="assets/js/feihua-contract.js?v=20260830contentfix1"></script>
+<script src="assets/js/common.js?v=20260831verfix1"></script>
+<script src="assets/js/richedit.js?v=20260830contentfix1"></script>
+<script src="assets/js/qbank.js?v=20260830contentfix1"></script>
+<script src="assets/js/adventure.js?v=20260830contentfix1"></script>
+<script src="assets/js/talent.js?v=20260831cloudpullfix1"></script>
+<script src="assets/js/npc.js?v=20260902npcpullfix1"></script>
+<script src="assets/js/sidequest-npc.js?v=20260830sidequestnpc1"></script>
+<script src="assets/js/affinity.js?v=20260830contentfix1"></script>
+<script src="assets/js/synergy.js?v=20260831cloudpullfix1"></script>
+<script src="assets/js/board.js?v=20260830contentfix1"></script>
+<script src="assets/js/sky.js?v=20260830contentfix1"></script>
+<script src="assets/js/album.js?v=20260830contentfix1"></script>
+<script src="assets/js/copy.js?v=20260830contentfix1"></script>
+<script src="assets/js/cloud.js?v=20260831verfix1"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   Common.init();
   // 各编辑器模块相互隔离初始化：任一模块抛错只影响自身标签页，
   // 不得阻断后续模块（此前 affinity 的 affBtnAdd 空引用曾导致羁绊/地图整页不初始化）。
-  ["QB", "ADV", "TALENT", "NPC", "AFFINITY", "SYNERGY", "BOARD", "SKY", "ALBUM", "COPY"].forEach(function (name) {
+  ["QB", "ADV", "TALENT", "NPC", "SIDEQUEST_NPC", "AFFINITY", "SYNERGY", "BOARD", "SKY", "ALBUM", "COPY"].forEach(function (name) {
     try {
       if (window[name] && typeof window[name].init === "function") window[name].init();
     } catch (err) {
