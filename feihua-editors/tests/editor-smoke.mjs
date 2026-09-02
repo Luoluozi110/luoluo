@@ -1,5 +1,5 @@
 /* 编辑器无头冒烟测试：真实载入 index.html + 全部脚本（jsdom），
- * 验证 7 个模块初始化、相性/羁绊/地图三个编辑器的渲染与「编辑→保存→localStorage 持久化」链路。
+ * 验证 11 个模块初始化、支线 NPC/相性/羁绊/地图编辑器的渲染与「编辑→保存→localStorage 持久化」链路。
  * 回归目标：affinity bind() 的 affBtnAdd 空引用曾导致 SYNERGY/BOARD 永不初始化。 */
 import { createRequire } from 'module';
 import { readFileSync } from 'fs';
@@ -29,10 +29,14 @@ const dom = new JSDOM(html, {
 const { window } = dom;
 const { document, localStorage } = window;
 
-// 模拟已经使用过旧版编辑器的浏览器：localStorage 里没有后续发布的官方文心。
-// 必须在 DOMContentLoaded 触发前写入，才能覆盖模块 init() 的真实加载路径。
-const oldTalents = (window.GAME_TALENTS || []).filter(t => !['T034', 'T035', 'T036', 'T037', 'T038', 'T039', 'T040', 'TA08'].includes(t.id));
+// 模拟已经使用过旧版编辑器的浏览器：localStorage 里没有后续发布的官方文心，
+// 且已有一枚 T041 空介绍旧壳；必须在 DOMContentLoaded 触发前写入，才能覆盖模块 init() 的真实加载路径。
+const oldTalents = (window.GAME_TALENTS || []).filter(t => !['T034', 'T035', 'T036', 'T037', 'T038', 'T039', 'T040', 'TA08', 'T041', 'T042', 'T043', 'TA09', 'T044', 'T045', 'T046', 'TA10', 'T047', 'T048', 'T049', 'TA11'].includes(t.id));
+oldTalents.push({ id: 'T041', name: '抱柱之信', kind: 'passive', text: '', effect: { type: 'on_win_bonus', style: 'shi', value: 1 } });
 localStorage.setItem('feihua_editors_v1_talents', JSON.stringify(oldTalents));
+// 同时模拟旧天象缓存：SK07 已发布到官方种子，但旧缓存尚未出现。
+const oldSky = (window.GAME_SKY || []).filter(card => card.id !== 'SK07');
+localStorage.setItem('feihua_editors_v1_sky', JSON.stringify(oldSky));
 // 同时模拟隐藏终圈上线前的编辑器缓存：三份旧数据都没有新增的系统字段。
 const oldBoard = JSON.parse(JSON.stringify(window.GAME_BOARD || {}));
 delete oldBoard.hiddenFinalRing;
@@ -63,9 +67,10 @@ function ok(cond, name, extra) {
 const fire = (el, type) => el.dispatchEvent(new window.Event(type, { bubbles: true }));
 const click = el => el.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
 
-console.log('[1] 十个模块全部初始化（_ready）');
+console.log('[1] 十一个模块全部初始化（_ready）');
 ok(!!window.FeihuaConfigContract && typeof window.FeihuaConfigContract.assertProject === 'function', '配置契约在编辑器初始化前已加载');
-for (const name of ['QB', 'ADV', 'TALENT', 'NPC', 'AFFINITY', 'SYNERGY', 'BOARD', 'SKY', 'ALBUM', 'COPY']) {
+ok(window.Common.contentVersion === 14, '编辑器工程版本注入为 14，发布对象不会回退为旧版本');
+for (const name of ['QB', 'ADV', 'TALENT', 'NPC', 'SIDEQUEST_NPC', 'AFFINITY', 'SYNERGY', 'BOARD', 'SKY', 'ALBUM', 'COPY']) {
   ok(window[name] && window[name]._ready === true, name + '._ready');
 }
 
@@ -253,6 +258,16 @@ console.log('[1.8] 奇遇：选择与挑战回声在编辑器中完整往返');
 console.log('[2] 旧本地数据的官方文心补齐 + 编辑器列表渲染');
 const t034 = window.TALENT.get().find(t => t.id === 'T034');
 ok(!!t034 && t034.name === '照我传灯', '旧 localStorage 自动补齐 T034「照我传灯」');
+const sideIds = ['T041','T042','T043','TA09','T044','T045','T046','TA10','T047','T048','T049','TA11'];
+const sideTalents = window.TALENT.get().filter(t => sideIds.includes(t.id));
+ok(sideTalents.length === 12 && sideTalents.every(t => t.text), 'T041 起 12 枚支线文心介绍均已补齐');
+const t041 = window.TALENT.get().find(t => t.id === 'T041');
+ok(t041 && t041.routeId && t041.axis && t041.quality, '支线文心元数据 routeId/axis/quality 保留');
+ok((document.querySelector('#tallist')?.textContent || '').includes(t041.text.slice(0, 12)), '文心列表直接显示介绍摘要');
+let initialProject = null;
+try { initialProject = window.Common.buildProject(); } catch (_) { /* 由断言给出明确失败 */ }
+ok(initialProject && initialProject['sidequest-talents'] && initialProject['sidequest-talents'].talents.length === 12, '完整工程包含 12 枚支线文心');
+ok(initialProject && Object.keys(initialProject['sidequest-talents'].upgrades || {}).length === 12, '完整工程包含支线文心升级表');
 const storedTalents = JSON.parse(localStorage.getItem('feihua_editors_v1_talents') || '[]');
 ok(storedTalents.some(t => t.id === 'T034'), '补齐后的 T034 已持久化 localStorage');
 const ta08 = window.TALENT.get().find(t => t.id === 'TA08');
@@ -262,17 +277,49 @@ const diceWenxin = ['T035', 'T036', 'T037', 'T038', 'T039', 'T040'].map(id => wi
 ok(diceWenxin.every(Boolean), '旧 localStorage 自动补齐 6 枚新版文心');
 ok(diceWenxin.some(t => t.effect.type === 'dice_pattern') && diceWenxin.some(t => t.effect.type === 'manuscript_pct'), '新版骰组与稿本效果在编辑器中保持类型');
 const upgradeCount = window.TALENT.get().filter(t => t.upgrade).length;
-ok(upgradeCount === Object.keys(window.GAME_TALENT_UPGRADE || {}).length && upgradeCount >= 40, '游戏升级配置已合并到编辑器文心', upgradeCount);
+// 官方种子 = 主文心 + 支线文心，故升级配置键数须两侧相加（支线文心带自己的 upgrades）。
+const upgradeKeys = Object.keys(window.GAME_TALENT_UPGRADE || {}).length
+  + Object.keys(window.GAME_SIDEQUEST_TALENT_UPGRADE || {}).length;
+ok(upgradeCount === upgradeKeys && upgradeCount >= 40, '游戏升级配置已合并到编辑器文心（含支线文心）', upgradeCount);
 const t001 = window.TALENT.get().find(t => t.id === 'T001');
 ok(!!t001 && t001.upgrade && t001.upgrade.maxLevel === 3 && t001.upgrade.levels.length === 2, '普通文心 T001 可升级且逐级效果完整');
 const ta08Card = window.TALENT.get().find(t => t.id === 'TA08');
-ok(!!ta08Card && ta08Card.cost === 5 && ta08Card.upgrade && ta08Card.upgrade.levels[0].cost === 5, '布局谋篇编辑器成本与升级配置完整');
-ok(document.querySelectorAll('#afflist select.aff-cell').length === 36, '相性矩阵 36 格下拉', document.querySelectorAll('#afflist select.aff-cell').length);
-ok(document.querySelectorAll('#synlist .q-card').length === 17, '羁绊列表 17 条', document.querySelectorAll('#synlist .q-card').length);
+ok(!!ta08Card && ta08Card.cost === 4 && ta08Card.upgrade && ta08Card.upgrade.levels[0].cost === 3, '布局谋篇编辑器成本与升级配置完整');
+// 格数随数据自适应（题材 × 文体），新增题材/文体时不必改断言
+const affData = window.AFFINITY.get ? window.AFFINITY.get() : (window.GAME_AFFINITY || {});
+const themeN = (affData.themes || []).length, mannerN = (affData.manners || []).length;
+const affCells = document.querySelectorAll('#afflist select.aff-cell').length;
+ok(affCells === themeN * mannerN, `相性矩阵 ${themeN}×${mannerN}=${themeN * mannerN} 格下拉`, affCells);
+ok(document.querySelectorAll('#synlist .q-card').length === 48, '羁绊列表 48 条', document.querySelectorAll('#synlist .q-card').length);
 ok(document.querySelectorAll('#boardlist .board-card').length === 192 && window.BOARD.get().layout === 'concentric_spiral' && window.BOARD.get().mainRing.length === 192 && window.BOARD.get().rings.map(r => r.cells.length).join(',') === '72,64,56', '三圈地图列表 192 格（72/64/56）', document.querySelectorAll('#boardlist .board-card').length);
-ok(document.querySelectorAll('#skylist .sky-card').length === 6, '天象列表 6 张', document.querySelectorAll('#skylist .sky-card').length);
+// 张数随种子自适应（云端独有的 SK07 已并入 config/sky.json）
+const skyN = (window.GAME_SKY || []).length;
+const skyCards = document.querySelectorAll('#skylist .sky-card').length;
+ok(skyCards === skyN, `天象列表 ${skyN} 张`, skyCards);
 ok(window.ALBUM.get().length === 12, '传世名篇默认 12 张', window.ALBUM.get().length);
 ok(document.querySelectorAll('#albumlist .q-card').length === 12, '传世名篇列表 12 张', document.querySelectorAll('#albumlist .q-card').length);
+
+console.log('[2.05] 支线骰效控件可编辑并保持机制字段');
+{
+  const cases = [
+    ['TA10', '.tal-transform-mode', 'first_floor', '.tal-no-extra', '1'],
+    ['TA11', '.tal-transform-mode', 'polarize', '.tal-min-dice', '3'],
+    ['T048', '.tal-pattern', 'first_last_equal', '.tal-first-discount', '2'],
+    ['T049', '.tal-pattern', 'low_and_high', '.tal-high-min', '6']
+  ];
+  for (const [id, selectClass, expectedMode, inputClass, value] of cases) {
+    const idx = window.TALENT.get().findIndex(t => t.id === id);
+    click(document.querySelector(`#tallist [data-edit="${idx}"]`));
+    const select = document.querySelector(`#tal-eff-dyn ${selectClass}`);
+    ok(select && select.value === expectedMode, `${id} 编辑器保留 ${expectedMode} 条件`);
+    const input = document.querySelector(`#tal-eff-dyn ${inputClass}`);
+    if (input) { input.value = value; fire(input, 'input'); }
+    click(document.getElementById('talSave'));
+    const saved = window.TALENT.get().find(t => t.id === id);
+    ok(saved && ((id === 'TA10' && saved.effect.noExtraDice === true) || (id === 'TA11' && saved.effect.minDice === 3) || (id === 'T048' && saved.effect.firstCostDiscount === 2) || (id === 'T049' && saved.effect.highMin === 6)), `${id} 新骰效字段保存往返`);
+  }
+  window.TALENT.importData([...(window.GAME_TALENTS || []), ...(window.GAME_SIDEQUEST_TALENTS || [])], true);
+}
 
 console.log('[2.1] 新版骰组效果：字段可编辑并完整往返');
 {
@@ -381,6 +428,30 @@ console.log('[6] NPC：机制对手编辑 → id/mech 保留 → 保存 → stat
     restore[0].npcs[0].id = 'zhou_xiaoman';
     restore[0].npcs[0].mech.signature.pct = 0.06;
     window.NPC.importData(restore, true);
+  }
+}
+
+console.log('[6.25] 支线 NPC：引路人编辑 → 保存 → state / localStorage / 工程导出');
+{
+  const editBtn = document.querySelector('#sideNpclist [data-sq-kind="guide"][data-sq-edit]');
+  ok(editBtn != null, '支线 NPC 列表渲染引路人编辑入口');
+  if (editBtn) {
+    click(editBtn);
+    ok(document.getElementById('sideNpcOverlay').classList.contains('show'), '支线 NPC 编辑弹窗打开');
+    const nameInput = document.getElementById('sideNpc-name');
+    nameInput.value = '冒烟测试引路人';
+    fire(nameInput, 'input');
+    click(document.getElementById('sideNpcSave'));
+    const guide = window.SIDEQUEST_NPC.get().routes.jianghu.guides[0];
+    ok(guide.name === '冒烟测试引路人', '支线 NPC 姓名写入 state', guide.name);
+    const saved = JSON.parse(localStorage.getItem('feihua_editors_v1_sidequest_npcs') || '{}');
+    ok(saved.routes.jianghu.guides[0].name === '冒烟测试引路人', '支线 NPC 姓名持久化 localStorage');
+    const project = window.Common.buildProject();
+    ok(project['sidequest-npcs'].routes.jianghu.guides[0].name === '冒烟测试引路人', '工程导出读取支线 NPC 编辑器实时数据');
+    const seedRes = readFileSync(join(root, 'assets/js/seed-sidequests.js'), 'utf8')
+      .replace(/^[\s\S]*?window\.GAME_SIDEQUEST_NPCS\s*=\s*/, '').replace(/;\s*window\.GAME_SIDEQUESTS[\s\S]*$/, '');
+    window.SIDEQUEST_NPC.importData(JSON.parse(seedRes), true);
+    ok(window.SIDEQUEST_NPC.get().routes.jianghu.guides[0].name === '柳照影', '支线 NPC 测试改动恢复默认种子');
   }
 }
 

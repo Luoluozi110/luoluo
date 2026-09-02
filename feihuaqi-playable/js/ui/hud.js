@@ -96,6 +96,7 @@ export class Hud {
           <div class="slot-grid" id="passiveSlots"></div>
           <div class="th"><span style="font-size:11px;color:var(--mo-3)">主动</span></div>
           <div class="slot-grid" id="activeSlots" style="grid-template-columns:repeat(${ACTIVE_MAX},1fr)"></div>
+          <div class="syn-tools"><span>文心羁绊</span><button id="synergyQuery" type="button" aria-label="查看羁绊组成与效果">查看图谱</button></div>
           <div id="synList" class="syn-list"></div>
         </div></div>
       </div>
@@ -125,9 +126,11 @@ export class Hud {
     this._feedback = [];
     this._feedbackSeq = 0;
     this.onTalent = null;   // 点击已拥有文心时回调（由 app.js 注入，打开详情）
+    this.onSynergy = null;  // 点击已激活羁绊或图谱入口时回调
     this.onSideQuest = null;
     this._pas = [];
     this._act = [];
+    this._synergies = [];
     this.el = {
       radar: root.querySelector('#radar'),
       list: root.querySelector('#attrList'),
@@ -141,6 +144,7 @@ export class Hud {
       act: root.querySelector('#activeSlots'),
       talCount: root.querySelector('#talCount'),
       synList: root.querySelector('#synList'),
+      synergyQuery: root.querySelector('#synergyQuery'),
       log: root.querySelector('#logBox'),
       sideQuest: root.querySelector('#sideQuestSeal'),
       turn: root.querySelector('#turnNum'),
@@ -164,6 +168,11 @@ export class Hud {
     };
     this.el.pas.addEventListener('click', e => this._onSlotClick(e, false));
     this.el.act.addEventListener('click', e => this._onSlotClick(e, true));
+    this.el.synList.addEventListener('click', e => {
+      const chip = e.target.closest('[data-synergy-idx]');
+      if (chip && this.onSynergy) this.onSynergy(this._synergies[Number(chip.dataset.synergyIdx)] || null);
+    });
+    this.el.synergyQuery.addEventListener('click', () => { if (this.onSynergy) this.onSynergy(null); });
     this.el.attrToggle.addEventListener('click', () => this.togglePanel('attr'));
     this.el.talentToggle.addEventListener('click', () => this.togglePanel('talent'));
     this.el.inspToggle.addEventListener('click', () => this.togglePanel('insp'));
@@ -290,10 +299,11 @@ export class Hud {
 
     // 文心羁绊：当前已激活的组合
     const syn = (s.synergies || []);
+    this._synergies = syn;
     this.el.synList.innerHTML = syn.length
-      ? `<div class="syn-h">文心羁绊</div>` + syn.map(sy =>
-          `<span class="syn-chip" title="${sy.desc || ''}">✦ ${sy.name}</span>`).join('')
-      : '';
+      ? syn.map((sy, index) =>
+          `<button class="syn-chip" type="button" data-synergy-idx="${index}" title="点击查看组成与完整效果">✦ ${sy.name}</button>`).join('')
+      : '<span class="syn-empty">尚未激活</span>';
 
     // 战报与即时数值反馈：数值事件由引擎主动推送，不轮询游戏状态。
     this._log = Array.isArray(s.log) ? s.log : [];
@@ -301,7 +311,15 @@ export class Hud {
 
     this.el.turn.textContent = s.turn;
     const phaseNames = { child: '童生', xiucai: '秀才', juren: '举人', jinshi: '进士', palace: '殿试', lap1: '乡试圈', lap2: '会试圈' };
-    this.el.phase.textContent = phaseNames[s.phase] || '童生';
+    const stagePresentation = game && typeof game.currentStagePresentation === 'function'
+      ? game.currentStagePresentation()
+      : null;
+    this.el.phase.textContent = stagePresentation && stagePresentation.active
+      ? stagePresentation.stageName
+      : (phaseNames[s.phase] || '童生');
+    this.el.phase.title = stagePresentation && stagePresentation.active
+      ? `支线行卷进行中；主线规则阶段：${stagePresentation.mainStageName}`
+      : '当前主线阶段';
     if (this.el.pname) this.el.pname.textContent = s.playerName ? `　「${s.playerName}」` : '';
     const sq = s.sideQuest || {};
     const route = game && typeof game.sideQuestRoute === 'function' ? game.sideQuestRoute(sq.routeId) : null;

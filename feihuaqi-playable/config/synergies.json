@@ -2,123 +2,1166 @@
   {
     "id": "S01",
     "name": "诗酒剑气",
-    "members": ["T001", "T007"],
-    "desc": "斗酒而诗思泉涌，梦笔而花光艳发——诗与灵交映，论战得分 +5%。",
-    "effects": [{ "type": "syn_pct", "value": 0.05 }]
+    "members": [
+      "T001",
+      "T007"
+    ],
+    "desc": "诗势与梦笔交映：诗体得分 +10%；出现六点再 +6%。",
+    "effects": [
+      {
+        "effectId": "S01-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "style_pct",
+        "style": "shi",
+        "value": 0.1
+      },
+      {
+        "effectId": "S01-E2",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "dice_pattern",
+        "pattern": "six",
+        "value": 0.06
+      }
+    ]
   },
   {
     "id": "S02",
     "name": "倚声双绝",
-    "members": ["T002", "T006"],
-    "desc": "倚声填词，复得入木三分——词笔相成，以词取胜时词力额外 +1。",
-    "effects": [{ "type": "on_win_bonus", "style": "ci", "value": 1 }]
+    "members": [
+      "T002",
+      "T006"
+    ],
+    "desc": "倚声入骨：词体得分 +8%；以词获胜时词力额外 +3。",
+    "effects": [
+      {
+        "effectId": "S02-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "style_pct",
+        "style": "ci",
+        "value": 0.08
+      },
+      {
+        "effectId": "S02-E2",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "on_win_bonus",
+        "style": "ci",
+        "value": 3
+      }
+    ]
   },
   {
     "id": "S03",
     "name": "联坛霸才",
-    "members": ["T003", "T010"],
-    "desc": "对对如流，更兼天马行空——联坛机锋不拘一格，论战得分 +4%。",
-    "effects": [{ "type": "syn_pct", "value": 0.04 }]
+    "members": [
+      "T003",
+      "T010"
+    ],
+    "desc": "机锋不拘：联体得分 +10%；三枚及以上点数各异再 +8%。",
+    "effects": [
+      {
+        "effectId": "S03-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "style_pct",
+        "style": "lian",
+        "value": 0.1
+      },
+      {
+        "effectId": "S03-E2",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "dice_pattern",
+        "pattern": "all_distinct",
+        "minDice": 3,
+        "value": 0.08
+      }
+    ]
   },
   {
     "id": "S04",
     "name": "思涌笔健",
-    "members": ["T016", "T005"],
-    "desc": "文思泉涌，急智生风——多骰有源，低点有救，论战得分 +4%。",
-    "effects": [{ "type": "syn_pct", "value": 0.04 }]
+    "members": [
+      "T016",
+      "T005"
+    ],
+    "desc": "多骰得分 +3%；骰面先低后高时再 +16%，首枚额外骰费用 -1。",
+    "effects": [
+      {
+        "effectId": "S04-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "extra_dice_pct",
+        "value": 0.03,
+        "firstCostDiscount": 1
+      },
+      {
+        "effectId": "S04-E2",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "dice_pattern",
+        "pattern": "low_then_high",
+        "value": 0.16
+      }
+    ]
   },
   {
     "id": "S05",
     "name": "通儒蕴藉",
-    "members": ["T004", "T009"],
-    "desc": "博览群书，囊萤映雪——学养深厚，满盘皆稳，论战得分 +5%。",
-    "effects": [{ "type": "syn_pct", "value": 0.05 }]
+    "members": [
+      "T004",
+      "T009"
+    ],
+    "desc": "学养深厚：论战得分 +8%；有效答题回复 1 灵感（每局 3 次）。",
+    "effects": [
+      {
+        "effectId": "S05-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "syn_pct",
+        "value": 0.08
+      },
+      {
+        "effectId": "S05-E2",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "insp_on_quiz",
+        "value": 1,
+        "maxTriggers": 3
+      }
+    ]
   },
   {
     "id": "S06",
     "name": "文运亨通",
-    "members": ["T017", "T018"],
-    "desc": "春风得意马蹄疾，曲水流觞雅集深——攻守俱得文运，论战得分 +4%。",
-    "effects": [{ "type": "syn_pct", "value": 0.04 }]
+    "members": [
+      "T017",
+      "T018"
+    ],
+    "desc": "获胜回复 2 灵感；上一场未胜时，本场得分 +8%。",
+    "effects": [
+      {
+        "effectId": "S06-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "insp_on_win",
+        "value": 2
+      },
+      {
+        "effectId": "S06-E2",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "battle_history_pct",
+        "result": "nonwin",
+        "value": 0.08
+      }
+    ]
   },
   {
     "id": "S07",
     "name": "梦笔泉涌",
-    "members": ["T007", "T016"],
-    "desc": "梦笔生花，文思不绝——泉涌多掷，花开六点，论战得分 +4%。",
-    "effects": [{ "type": "syn_pct", "value": 0.04 }]
+    "members": [
+      "T007",
+      "T016"
+    ],
+    "desc": "出现六点得分 +6%；骰面严格递增时再 +16%。",
+    "effects": [
+      {
+        "effectId": "S07-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "dice_pattern",
+        "pattern": "six",
+        "value": 0.06
+      },
+      {
+        "effectId": "S07-E2",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "dice_pattern",
+        "pattern": "ascending",
+        "value": 0.16
+      }
+    ]
   },
   {
     "id": "S08",
     "name": "笔墨相宣",
-    "members": ["T006", "T008"],
-    "desc": "入木三分，字字推敲——笔力思力交润，论战得分 +4%。",
-    "effects": [{ "type": "syn_pct", "value": 0.04 }]
+    "members": [
+      "T006",
+      "T008"
+    ],
+    "desc": "笔力与思力交润，论战得分 +10%。",
+    "effects": [
+      {
+        "effectId": "S08-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "syn_pct",
+        "value": 0.1
+      }
+    ]
   },
   {
     "id": "S09",
     "name": "洛阳才调",
-    "members": ["T017", "T019"],
-    "desc": "春风得意，洛阳纸贵——灵源不竭而才名远播，论战得分 +4%。",
-    "effects": [{ "type": "syn_pct", "value": 0.04 }]
+    "members": [
+      "T017",
+      "T019"
+    ],
+    "desc": "灵感不低于上限 60% 时，论战得分 +10%。",
+    "effects": [
+      {
+        "effectId": "S09-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "syn_pct",
+        "value": 0.1,
+        "when": {
+          "inspirationRatioMin": 0.6
+        }
+      }
+    ]
   },
   {
     "id": "S10",
     "name": "梦花偶得",
-    "members": ["T007", "T040"],
-    "desc": "梦笔生花，妙手偶得——六点既成华章，也沉淀稿痕，论战得分 +3%。",
-    "effects": [{ "type": "syn_pct", "value": 0.03 }]
+    "members": [
+      "T007",
+      "T040"
+    ],
+    "desc": "出现六点时得分 +10%，并获得 1 页稿本。",
+    "effects": [
+      {
+        "effectId": "S10-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "dice_pattern",
+        "pattern": "six",
+        "value": 0.1,
+        "reward": {
+          "type": "fragment",
+          "value": 1,
+          "perMatch": false
+        }
+      }
+    ]
   },
   {
     "id": "S11",
     "name": "七步珠玑",
-    "members": ["TA01", "T036"],
-    "desc": "七步落笔，字字珠玑——总点为 7 的倍数，满组争高，论战得分 +3%。",
-    "effects": [{ "type": "syn_pct", "value": 0.03 }]
+    "members": [
+      "TA01",
+      "T036"
+    ],
+    "desc": "骰点总和为 7 的倍数时，得分 +16%，并获得 2 点心得。",
+    "effects": [
+      {
+        "effectId": "S11-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "dice_pattern",
+        "pattern": "total_multiple",
+        "divisor": 7,
+        "value": 0.16,
+        "reward": {
+          "type": "insight",
+          "value": 2,
+          "perMatch": false
+        }
+      }
+    ]
   },
   {
     "id": "S12",
     "name": "绝处逢春",
-    "members": ["T025", "T031"],
-    "desc": "破釜之后犹有春意——灵感不高于 14 时论战得分 +5%，战后灵感不高于 14 时回复 2 点（每局至多 2 次）。",
+    "members": [
+      "T025",
+      "T031"
+    ],
+    "desc": "灵感不高于 16 时得分 +14%；战后回复 3 灵感（每局 3 次）。",
     "effects": [
-      { "type": "comeback", "threshold": 14, "value": 0.05 },
-      { "type": "insp_battle_recover", "threshold": 14, "value": 2, "maxTriggers": 2 }
+      {
+        "effectId": "S12-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "comeback",
+        "threshold": 16,
+        "value": 0.14
+      },
+      {
+        "effectId": "S12-E2",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "insp_battle_recover",
+        "threshold": 16,
+        "value": 3,
+        "maxTriggers": 3
+      }
     ]
   },
   {
     "id": "S13",
     "name": "换笔成章",
-    "members": ["T037", "TA02"],
-    "desc": "换体而不换意，化笔便成章——与上一场换用文体时，论战得分 +6%，并额外获得 1 点心得。",
-    "effects": [{ "type": "style_switch_pct", "value": 0.06, "insight": 1 }]
+    "members": [
+      "T037",
+      "TA02"
+    ],
+    "desc": "换用文体时得分 +14%，并获得 2 点心得。",
+    "effects": [
+      {
+        "effectId": "S13-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "style_switch_pct",
+        "value": 0.14,
+        "insight": 2
+      }
+    ]
   },
   {
     "id": "S14",
     "name": "稿本生辉",
-    "members": ["T038", "T040"],
-    "desc": "稿本累页，偶得成篇——每积 2 页稿本，论战得分 +1%，最多 +6%。",
-    "effects": [{ "type": "manuscript_pct", "step": 2, "value": 0.01, "cap": 0.06 }]
+    "members": [
+      "T038",
+      "T040"
+    ],
+    "desc": "每 2 页稿本得分 +3%，最多 +18%。",
+    "effects": [
+      {
+        "effectId": "S14-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "manuscript_pct",
+        "step": 2,
+        "value": 0.03,
+        "cap": 0.18
+      }
+    ]
   },
   {
     "id": "S15",
-    "name": "一鼓同声",
-    "members": ["T022", "T039"],
-    "desc": "同声相应，一鼓再进——同一文风已连捷至少 2 场时，论战得分 +5%。",
-    "effects": [{ "type": "streak_pct", "minStreak": 2, "value": 0.05 }]
+    "name": "连捷成章",
+    "members": [
+      "T039",
+      "T022"
+    ],
+    "desc": "同文体连捷 2 场后得分 +14%；出现对子回复 2 灵感。",
+    "effects": [
+      {
+        "effectId": "S15-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "streak_pct",
+        "minStreak": 2,
+        "value": 0.14
+      },
+      {
+        "effectId": "S15-E2",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "dice_pattern",
+        "pattern": "pair",
+        "value": 0,
+        "reward": {
+          "type": "inspiration",
+          "value": 2,
+          "perMatch": false
+        }
+      }
+    ]
   },
   {
     "id": "S16",
-    "name": "金殿蓄锐",
-    "members": ["T023", "T028"],
-    "desc": "养气于平日，发策于金殿——殿试每场开场额外回复 2 点灵感。",
-    "effects": [{ "type": "palace_insp", "value": 2 }]
+    "name": "殿前蓄势",
+    "members": [
+      "T028",
+      "T099"
+    ],
+    "desc": "殿试每场回复 4 灵感，入场时先回复 5 灵感；殿试得分 +8%。",
+    "effects": [
+      {
+        "effectId": "S16-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "palace_insp",
+        "value": 4,
+        "startValue": 5
+      },
+      {
+        "effectId": "S16-E2",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "palace_pct",
+        "value": 0.08
+      }
+    ]
   },
   {
     "id": "S17",
-    "name": "春风问答",
-    "members": ["T017", "T030"],
-    "desc": "答中有得，春风再来——每次有效答题额外回复 1 点灵感（每局至多 3 次）。",
-    "effects": [{ "type": "insp_on_quiz", "value": 1, "maxTriggers": 3 }]
+    "name": "问学相长",
+    "members": [
+      "T030",
+      "T009"
+    ],
+    "desc": "有效答题回复 2 灵感（每局 5 次）。",
+    "effects": [
+      {
+        "effectId": "S17-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "insp_on_quiz",
+        "value": 2,
+        "maxTriggers": 5
+      }
+    ]
+  },
+  {
+    "id": "S18",
+    "name": "诗胆雄心",
+    "members": [
+      "T020",
+      "T021"
+    ],
+    "desc": "以诗出战且选择勇武时得分 +18%，触发后获得 1 页稿本。",
+    "effects": [
+      {
+        "effectId": "S18-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "style_pct",
+        "style": "shi",
+        "value": 0.18,
+        "when": {
+          "themes": [
+            "yongwu"
+          ]
+        },
+        "reward": {
+          "type": "fragment",
+          "value": 1,
+          "perMatch": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "S19",
+    "name": "六曜回响",
+    "members": [
+      "T024",
+      "TA07"
+    ],
+    "desc": "使用指定文心后，出现六点得分 +16%，并回复 1 灵感。",
+    "effects": [
+      {
+        "effectId": "S19-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "dice_pattern",
+        "pattern": "six",
+        "value": 0.16,
+        "when": {
+          "usedTalents": [
+            "TA07"
+          ]
+        },
+        "reward": {
+          "type": "inspiration",
+          "value": 1,
+          "perMatch": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "S20",
+    "name": "连掷成势",
+    "members": [
+      "TA05",
+      "TA06"
+    ],
+    "desc": "使用任一连骰文心后，总点≥12 得分 +12%，≥16 得分 +22%，并回复 2 灵感。",
+    "effects": [
+      {
+        "effectId": "S20-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "dice_pattern",
+        "pattern": "total_tiers",
+        "tiers": [
+          {
+            "min": 12,
+            "value": 0.12
+          },
+          {
+            "min": 16,
+            "value": 0.22
+          }
+        ],
+        "when": {
+          "usedAnyTalents": [
+            "TA05",
+            "TA06"
+          ]
+        },
+        "reward": {
+          "type": "inspiration",
+          "value": 2,
+          "perMatch": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "S21",
+    "name": "鉴古知今",
+    "members": [
+      "T011",
+      "T027"
+    ],
+    "desc": "游学心得 +2；上一场未胜时本场得分 +12%。",
+    "effects": [
+      {
+        "effectId": "S21-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "study_bonus",
+        "value": 2,
+        "nextBattlePct": 0.08
+      },
+      {
+        "effectId": "S21-E2",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "battle_history_pct",
+        "result": "nonwin",
+        "value": 0.12
+      }
+    ]
+  },
+  {
+    "id": "S22",
+    "name": "百炼归真",
+    "members": [
+      "T026",
+      "T034"
+    ],
+    "desc": "每 4 点兵器属性令得分 +3%，最多 +15%。",
+    "effects": [
+      {
+        "effectId": "S22-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "armory_pct",
+        "step": 4,
+        "value": 0.03,
+        "cap": 0.15
+      }
+    ]
+  },
+  {
+    "id": "S23",
+    "name": "源流不息",
+    "members": [
+      "T032",
+      "T029"
+    ],
+    "desc": "回合开始时若灵感低于 60%，回复 2 灵感。",
+    "effects": [
+      {
+        "effectId": "S23-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "insp_turn_regen",
+        "value": 2,
+        "thresholdRatio": 0.6
+      }
+    ]
+  },
+  {
+    "id": "S24",
+    "name": "诗魁殿声",
+    "members": [
+      "T099",
+      "T012"
+    ],
+    "desc": "殿试以诗出战时得分 +18%；以诗获胜时诗力 +3。",
+    "effects": [
+      {
+        "effectId": "S24-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "palace_pct",
+        "value": 0.18,
+        "when": {
+          "styles": [
+            "shi"
+          ]
+        }
+      },
+      {
+        "effectId": "S24-E2",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "on_win_bonus",
+        "style": "shi",
+        "value": 3
+      }
+    ]
+  },
+  {
+    "id": "S25",
+    "name": "词联双璧",
+    "members": [
+      "T013",
+      "T014"
+    ],
+    "desc": "在词、联之间换体时得分 +16%，并获得 2 点心得。",
+    "effects": [
+      {
+        "effectId": "S25-E1",
+        "stackGroup": "synergy-score",
+        "stackMode": "add",
+        "type": "style_switch_pct",
+        "value": 0.16,
+        "insight": 2,
+        "when": {
+          "stylePair": [
+            "ci",
+            "lian"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "S26",
+    "name": "守诺成势",
+    "members": [
+      "T041",
+      "T022",
+      "T039"
+    ],
+    "desc": "守诺与连捷彼此应和：同文风连捷达到 2 场后，作品得分 +10%。",
+    "effects": [
+      {
+        "effectId": "S26-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "streak_pct",
+        "value": 0.1,
+        "minStreak": 2
+      }
+    ]
+  },
+  {
+    "id": "S27",
+    "name": "江湖换境",
+    "members": [
+      "T042",
+      "T037",
+      "TA02"
+    ],
+    "desc": "转身换境，旧意新辞：换用不同文体时得分 +12%，心得 +2。",
+    "effects": [
+      {
+        "effectId": "S27-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "style_switch_pct",
+        "value": 0.12,
+        "insight": 2
+      }
+    ]
+  },
+  {
+    "id": "S28",
+    "name": "知己知彼",
+    "members": [
+      "T043",
+      "T011",
+      "T027"
+    ],
+    "desc": "识人亦能自省：上一场未胜时本场得分 +10%；败或平的研习额外 +1，下一场再 +6%。",
+    "effects": [
+      {
+        "effectId": "S28-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "battle_history_pct",
+        "value": 0.1,
+        "condition": "previous_nonwin"
+      },
+      {
+        "effectId": "S28-E2",
+        "stackGroup": "synergy-growth",
+        "stackMode": "max",
+        "type": "study_bonus",
+        "value": 1,
+        "nextBattlePct": 0.06
+      }
+    ]
+  },
+  {
+    "id": "S29",
+    "name": "临渊止戈",
+    "members": [
+      "TA09",
+      "T015",
+      "T025"
+    ],
+    "desc": "绝境中解剑止戈：发动「杯酒解剑」且灵感不高于 16 时，本场得分 +14%。",
+    "effects": [
+      {
+        "effectId": "S29-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "comeback",
+        "value": 0.14,
+        "threshold": 16,
+        "when": {
+          "usedTalents": [
+            "TA09"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "S30",
+    "name": "藏锋守简",
+    "members": [
+      "T044",
+      "T035",
+      "T023"
+    ],
+    "desc": "一骰收笔，守简蓄锋：仅用一枚骰时得分 +12%，并恢复 1 灵感。",
+    "effects": [
+      {
+        "effectId": "S30-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "value": 0.12,
+        "pattern": "single",
+        "reward": {
+          "type": "inspiration",
+          "value": 1,
+          "perMatch": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "S31",
+    "name": "轻骑生变",
+    "members": [
+      "T045",
+      "T005",
+      "T010"
+    ],
+    "desc": "轻骑追笔，低开高走：首骰低、续骰高时得分 +14%。",
+    "effects": [
+      {
+        "effectId": "S31-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "value": 0.14,
+        "pattern": "low_then_high",
+        "lowMax": 2,
+        "nextHighMin": 5
+      }
+    ]
+  },
+  {
+    "id": "S32",
+    "name": "残烽回春",
+    "members": [
+      "T046",
+      "T018",
+      "T031"
+    ],
+    "desc": "失意之后仍有烽火：上一场未胜时本场得分 +8%；战后灵感不高于 18 时恢复 3（每局 3 次）。",
+    "effects": [
+      {
+        "effectId": "S32-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "battle_history_pct",
+        "value": 0.08,
+        "condition": "previous_nonwin"
+      },
+      {
+        "effectId": "S32-E2",
+        "stackGroup": "synergy-recovery",
+        "stackMode": "max",
+        "type": "insp_battle_recover",
+        "threshold": 18,
+        "value": 3,
+        "maxTriggers": 3
+      }
+    ]
+  },
+  {
+    "id": "S33",
+    "name": "成竹列阵",
+    "members": [
+      "TA10",
+      "T032",
+      "T029"
+    ],
+    "desc": "胸有成竹，临阵不乱：发动「背水列阵」时本场得分 +10%。",
+    "effects": [
+      {
+        "effectId": "S33-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "syn_pct",
+        "value": 0.1,
+        "when": {
+          "usedTalents": [
+            "TA10"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "S34",
+    "name": "坐忘定局",
+    "members": [
+      "T047",
+      "T008",
+      "TA08"
+    ],
+    "desc": "谋篇而不妄动：本场不发动论战主动文心时，作品得分 +10%。",
+    "effects": [
+      {
+        "effectId": "S34-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "restraint_pct",
+        "value": 0.1
+      }
+    ]
+  },
+  {
+    "id": "S35",
+    "name": "梦蝶偶得",
+    "members": [
+      "T048",
+      "T007",
+      "T040"
+    ],
+    "desc": "梦中首尾相照：骰组首尾同点时得分 +12%，并得 1 份残页。",
+    "effects": [
+      {
+        "effectId": "S35-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "value": 0.12,
+        "pattern": "first_last_equal",
+        "minDice": 2,
+        "reward": {
+          "type": "fragment",
+          "value": 1,
+          "perMatch": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "S36",
+    "name": "黑白惊锋",
+    "members": [
+      "T049",
+      "TA03",
+      "TA07"
+    ],
+    "desc": "黑白两极相激：骰组同时有低点与高点时得分 +14%，并恢复 1 灵感。",
+    "effects": [
+      {
+        "effectId": "S36-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "value": 0.14,
+        "pattern": "low_and_high",
+        "lowMax": 2,
+        "highMin": 5,
+        "reward": {
+          "type": "inspiration",
+          "value": 1,
+          "perMatch": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "S37",
+    "name": "斩妄惊雷",
+    "members": [
+      "TA11",
+      "TA04",
+      "T024"
+    ],
+    "desc": "斩妄见真后六曜惊雷：发动「斩妄见真」且骰组出现六点时，得分 +12%。",
+    "effects": [
+      {
+        "effectId": "S37-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "value": 0.12,
+        "pattern": "six",
+        "when": {
+          "usedTalents": [
+            "TA11"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "S38",
+    "name": "酒酣文章",
+    "members": [
+      "T001",
+      "T012"
+    ],
+    "desc": "酒酣诗胆壮，李杜文章长：以诗出战得分 +8%。",
+    "effects": [
+      {
+        "effectId": "S38-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "style_pct",
+        "value": 0.08,
+        "style": "shi"
+      }
+    ]
+  },
+  {
+    "id": "S39",
+    "name": "声传井巷",
+    "members": [
+      "T002",
+      "T013"
+    ],
+    "desc": "倚声入巷，清唱相传：以词获胜时词力额外 +2。",
+    "effects": [
+      {
+        "effectId": "S39-E1",
+        "stackGroup": "synergy-growth",
+        "stackMode": "max",
+        "type": "on_win_bonus",
+        "style": "ci",
+        "value": 2
+      }
+    ]
+  },
+  {
+    "id": "S40",
+    "name": "联珠铿锵",
+    "members": [
+      "T003",
+      "T014"
+    ],
+    "desc": "出口成对，铁板铿锵：以联出战得分 +8%。",
+    "effects": [
+      {
+        "effectId": "S40-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "style_pct",
+        "value": 0.08,
+        "style": "lian"
+      }
+    ]
+  },
+  {
+    "id": "S41",
+    "name": "腹笥五车",
+    "members": [
+      "T004",
+      "T026"
+    ],
+    "desc": "博览积为五车：每持有 3 枚文心，六维算分属性 +2%，最多 +6%。",
+    "effects": [
+      {
+        "effectId": "S41-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "armory_pct",
+        "value": 0.02,
+        "step": 3,
+        "cap": 0.06
+      }
+    ]
+  },
+  {
+    "id": "S42",
+    "name": "七步一气",
+    "members": [
+      "TA01",
+      "TA05"
+    ],
+    "desc": "七步之间一气成篇：发动「一气呵成」且总点为 7 的倍数时，得分 +10%。",
+    "effects": [
+      {
+        "effectId": "S42-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "value": 0.1,
+        "pattern": "total_multiple",
+        "multiple": 7,
+        "when": {
+          "usedTalents": [
+            "TA05"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "S43",
+    "name": "高吟珠落",
+    "members": [
+      "TA06",
+      "T036"
+    ],
+    "desc": "字字珠玑，倚马高吟：发动「倚马可待」时，总点 12 得分 +8%，总点 16 得分 +14%。",
+    "effects": [
+      {
+        "effectId": "S43-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "value": 0,
+        "pattern": "total_tiers",
+        "tiers": [
+          {
+            "threshold": 16,
+            "value": 0.14
+          },
+          {
+            "threshold": 12,
+            "value": 0.08
+          }
+        ],
+        "when": {
+          "usedTalents": [
+            "TA06"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "S44",
+    "name": "洛水活源",
+    "members": [
+      "T019",
+      "T030"
+    ],
+    "desc": "活水流入洛阳纸：有效答题额外恢复 1 灵感，每局最多 4 次。",
+    "effects": [
+      {
+        "effectId": "S44-E1",
+        "stackGroup": "synergy-recovery",
+        "stackMode": "max",
+        "type": "insp_on_quiz",
+        "value": 1,
+        "maxTriggers": 4
+      }
+    ]
+  },
+  {
+    "id": "S45",
+    "name": "诗骨成章",
+    "members": [
+      "T020",
+      "T038"
+    ],
+    "desc": "诗骨落为成章稿本：以诗出战时，每 2 页稿本得分 +2%，最多 +12%。",
+    "effects": [
+      {
+        "effectId": "S45-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "manuscript_pct",
+        "value": 0.02,
+        "step": 2,
+        "cap": 0.12,
+        "when": {
+          "styles": [
+            "shi"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "S46",
+    "name": "咏物珠玑",
+    "members": [
+      "T021",
+      "T036"
+    ],
+    "desc": "体物入微，字字有光：出战咏物题材时得分 +12%。",
+    "effects": [
+      {
+        "effectId": "S46-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "theme_pct",
+        "value": 0.12,
+        "theme": "yongwu"
+      }
+    ]
+  },
+  {
+    "id": "S47",
+    "name": "殿纳百川",
+    "members": [
+      "T028",
+      "T033"
+    ],
+    "desc": "百川入殿，策问从容：进入殿试先恢复 3 灵感，每场开场再恢复 2。",
+    "effects": [
+      {
+        "effectId": "S47-E1",
+        "stackGroup": "synergy-palace",
+        "stackMode": "max",
+        "type": "palace_insp",
+        "value": 2,
+        "startValue": 3
+      }
+    ]
+  },
+  {
+    "id": "S48",
+    "name": "传灯成卷",
+    "members": [
+      "T034",
+      "T033"
+    ],
+    "desc": "海纳旧学，传灯成卷：殿试每场得分 +12%。",
+    "effects": [
+      {
+        "effectId": "S48-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "palace_pct",
+        "value": 0.12
+      }
+    ]
   }
 ]

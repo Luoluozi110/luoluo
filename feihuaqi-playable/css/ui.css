@@ -562,15 +562,46 @@
 }
 
 /* ==================================================== 文心羁绊 */
-.syn-list { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.syn-h { width: 100%; font-size: 11px; letter-spacing: .2em; color: var(--mo-3); }
+.syn-tools { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 7px; color: var(--mo-3); font-size: 10px; letter-spacing: .08em; }
+.syn-tools button { border: 1px solid rgba(140,104,48,.36); border-radius: 999px; background: rgba(255,250,231,.76); color: var(--mo-2); font: inherit; letter-spacing: 0; padding: 2px 7px; cursor: pointer; }
+.syn-tools button:hover, .syn-tools button:focus-visible { color: var(--zhu); border-color: rgba(150,45,35,.55); outline: none; }
+.syn-list { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.syn-empty { color: var(--mo-3); font-size: 10px; }
 .syn-chip {
-  display: inline-block; font-size: 12px; letter-spacing: .08em; color: #5a3d12;
+  appearance: none; display: inline-block; font-family: var(--font-kai); font-size: 12px; letter-spacing: .08em; color: #5a3d12;
   background: linear-gradient(180deg, #f7ecc9, #ecd9a6); border: 1px solid #c9a94f;
   border-radius: 999px; padding: 2px 10px;
-  box-shadow: 0 0 10px rgba(201,169,79,.4); animation: spinCard .5s var(--ease-back) both;
+  box-shadow: 0 0 10px rgba(201,169,79,.4); animation: spinCard .5s var(--ease-back) both; cursor: pointer;
 }
-.syn-chip:hover { filter: brightness(1.05); }
+.syn-chip:hover, .syn-chip:focus-visible { filter: brightness(1.05); outline: 2px solid rgba(150,45,35,.32); outline-offset: 2px; }
+
+.synergy-detail-modal { width: min(620px, calc(100vw - var(--safe-left) - var(--safe-right) - 24px)); }
+.synergy-catalog-modal { width: min(760px, calc(100vw - var(--safe-left) - var(--safe-right) - 24px)); }
+.wenxin-bond-section { margin: 12px 0 4px; }
+.wenxin-bond-list { display: grid; gap: 9px; max-height: min(44vh, 420px); overflow: auto; padding: 2px 4px 2px 1px; scrollbar-gutter: stable; }
+.gain-bonds .wenxin-bond-list { max-height: min(30vh, 280px); }
+.wenxin-bond-card { border: 1px solid rgba(139,107,52,.25); border-radius: 10px; background: rgba(255,252,237,.72); padding: 10px 11px; text-align: left; box-shadow: inset 0 1px 0 rgba(255,255,255,.75); }
+.wenxin-bond-card.active { border-color: rgba(183,132,31,.72); background: linear-gradient(150deg, rgba(255,249,218,.94), rgba(245,226,168,.72)); box-shadow: 0 0 12px rgba(201,169,79,.22), inset 0 1px 0 #fff; }
+.bond-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; color: var(--mo-2); }
+.bond-card-head b { color: #6d4912; font-size: 15px; letter-spacing: .08em; }
+.bond-card-head span { flex: none; color: var(--mo-3); font-size: 11px; }
+.wenxin-bond-card.active .bond-card-head span { color: var(--zhu); font-weight: 700; }
+.bond-members { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 8px; font-size: 12px; line-height: 1.45; }
+.bond-member { border-radius: 999px; padding: 2px 7px; border: 1px solid rgba(110,96,67,.22); background: rgba(255,255,255,.55); }
+.bond-member.owned { color: #6b4b17; border-color: rgba(190,139,42,.48); }
+.bond-member.missing { color: var(--mo-3); border-style: dashed; }
+.bond-plus { color: rgba(89,72,43,.45); }
+.bond-effect { margin-top: 8px; color: var(--mo-2); font-size: 12.5px; line-height: 1.7; }
+.bond-effect strong { display: inline-block; margin-right: 7px; color: var(--zhu); font-size: 11px; letter-spacing: .1em; }
+.wenxin-bond-card p { margin: 5px 0 0; color: var(--mo-3); font-size: 11.5px; line-height: 1.55; }
+.wenxin-bond-empty { border: 1px dashed rgba(120,100,70,.32); border-radius: 8px; color: var(--mo-3); padding: 12px; text-align: center; font-size: 12px; }
+
+@media (max-width: 600px) {
+  .synergy-detail-modal, .synergy-catalog-modal { width: calc(100vw - var(--safe-left) - var(--safe-right) - 16px); }
+  .wenxin-bond-list { max-height: min(46dvh, 390px); }
+  .bond-card-head { align-items: flex-start; }
+  .bond-members { gap: 4px; }
+}
 
 /* ==================================================== 战斗台 */
 #battleStage {
@@ -889,6 +920,15 @@
 .school-card .flavor { font-family: var(--font-kai); font-size: 13px; line-height: 1.85; color: var(--mo-2); text-align: justify; padding: 0 2px; }
 .school-card .meta { margin-top: auto; font-size: 11px; color: var(--mo-3); letter-spacing: .05em; line-height: 1.6; border-top: 1px dashed rgba(120,100,70,.35); padding-top: 8px; width: 100%; }
 .school-card .school-guide { width: 100%; padding: 7px 9px; border-left: 3px solid var(--zhu); background: rgba(201,151,31,.1); color: var(--mo-2); font-size: 11px; line-height: 1.65; text-align: left; }
+.school-start { width: 100%; padding: 8px 9px; border: 1px solid rgba(120,100,70,.28); border-radius: 8px; background: rgba(255,250,232,.58); text-align: left; }
+.school-start-title { display:flex; justify-content:space-between; gap:6px; color:var(--mo-2); font-size:11px; letter-spacing:.08em; }
+.school-start-title span { color:var(--zhu); white-space:nowrap; }
+.school-start-attrs { display:grid; grid-template-columns:repeat(3,1fr); gap:4px 6px; margin-top:6px; color:var(--mo-1); font-size:12px; }
+.school-start-attrs span { display:flex; justify-content:space-between; gap:3px; }
+.school-start-attrs b { font-weight:400; color:var(--mo-3); }
+.school-start-talent { margin-top:7px; padding-top:6px; border-top:1px dashed rgba(120,100,70,.25); color:var(--mo-2); font-size:11px; line-height:1.55; }
+.school-start-talent strong { margin-left:5px; color:var(--zhu); font-weight:700; white-space:nowrap; }
+.school-start-note { margin-top:4px; color:var(--qing); font-size:10px; line-height:1.5; }
 
 /* =========================================== 装配名篇 / 传世名篇 / 图鉴阁 */
 #loadout-screen, #album-screen, #codex-screen {
@@ -1183,6 +1223,12 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 .result-radar svg { width: 168px; height: 168px; }
 .result-dims { flex: 1 1 auto; min-width: 0; padding: 10px 14px; }
 .result-dims > div:first-child { font-size: 14px !important; margin-bottom: 4px !important; }
+.crossrun-feedback { margin-top:10px; padding:9px 12px; border-left:3px solid var(--zhu); background:rgba(168,58,46,.055); }
+.crossrun-next { border-left-color:var(--qing); background:rgba(47,139,144,.07); }
+.crossrun-title { display:flex; align-items:baseline; justify-content:space-between; gap:8px; color:var(--mo-1); font-size:14px; letter-spacing:.14em; }
+.crossrun-title span { color:var(--mo-3); font-size:10px; letter-spacing:.06em; white-space:nowrap; }
+.crossrun-feedback ul { margin:6px 0 0; padding-left:18px; color:var(--mo-2); font-size:12px; line-height:1.7; }
+.crossrun-feedback li + li { margin-top:2px; }
 /* 六维两列网格：3 行 × 2 列，六项同屏 */
 .dim-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 16px; }
 .dim-row {
@@ -1620,6 +1666,7 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 /* --- 图鉴·文心升级信息 --- */
 .cx-up-head { display: flex; align-items: center; gap: 8px; margin: 6px 0 4px; }
 .cx-up-lv { font-size: 12px; color: var(--mo-2); }
+.cx-history-lv { margin-top:6px; color:var(--zhu); font-size:12px; letter-spacing:.06em; }
 .cx-up-levels { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
 .cx-up-lv-row { display: flex; gap: 8px; align-items: baseline; min-width: 0; font-size: 13px; line-height: 1.6; }
 .cx-up-lv-n { flex: 0 0 38px; color: var(--zhu); font-family: var(--font-song); font-weight: 700; }
@@ -1628,3 +1675,54 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 
 /* --- 图鉴·天象卡图标 --- */
 .sky-icon { font-size: 30px; text-align: center; line-height: 1.2; margin-bottom: 2px; }
+
+/* ============================================================ 入门卷（首局难度优化 P2-UI） */
+/* HUD 轻量标记 */
+.ob-badge {
+  position: absolute; top: 8px; right: 12px; z-index: 40;
+  font-family: var(--font-kai); font-size: 12px; letter-spacing: .12em;
+  color: #fff; background: linear-gradient(180deg, #c97b3a, #b23a2e);
+  padding: 3px 10px; border-radius: 999px; cursor: pointer;
+  box-shadow: 0 2px 6px rgba(120,40,20,.28); user-select: none;
+}
+.ob-badge:hover { filter: brightness(1.06); }
+
+/* 首场节点提示 */
+.ob-node-hint {
+  margin-top: 10px; font-size: 13.5px; line-height: 1.8; letter-spacing: .03em;
+  color: var(--mo-2); background: rgba(201,151,31,.10);
+  border-left: 3px solid var(--jin); border-radius: 6px; padding: 8px 12px;
+}
+
+/* 推荐标签 */
+.ob-recommend {
+  margin: 10px 2px 2px; font-size: 13.5px; line-height: 1.7;
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  color: var(--mo-2);
+}
+.ob-recommend .ob-rec-tag {
+  flex: 0 0 auto; font-family: var(--font-kai); font-size: 12px; letter-spacing: .1em;
+  color: #fff; background: var(--zhu); border-radius: 6px; padding: 2px 8px;
+}
+.ob-recommend .ob-rec-body { flex: 1; min-width: 0; }
+.ob-recommend.ob-collapsed { display: block; }
+.ob-recommend.ob-collapsed .ob-why {
+  font-size: 13px; color: var(--zhu); cursor: pointer; background: none;
+  border: none; padding: 4px 0; text-decoration: underline dotted;
+}
+.ob-recommend.ob-collapsed .ob-why:hover { filter: brightness(.92); }
+.ob-recommend.ob-collapsed .ob-rec-body { margin-top: 6px; padding-left: 4px; color: var(--mo-2); }
+
+/* 师友点拨复盘卡（结算内嵌） */
+.ob-review-card {
+  margin: 14px auto 2px; max-width: 460px; text-align: center;
+  background: rgba(255,250,232,.92); border: 1px solid rgba(178,58,46,.35);
+  border-radius: 12px; padding: 14px 18px; box-shadow: 0 4px 14px rgba(120,40,20,.12);
+}
+.ob-review-card .ob-rc-title {
+  font-family: var(--font-kai); font-size: 17px; letter-spacing: .14em; color: var(--zhu);
+}
+.ob-review-card .ob-rc-body { margin-top: 6px; font-size: 14.5px; color: var(--mo); line-height: 1.8; }
+.ob-review-card .ob-rc-gains { margin-top: 6px; font-size: 14px; color: var(--jin); font-weight: 600; }
+.ob-review-card .ob-rc-loss { margin-top: 4px; font-size: 13px; color: var(--mo-2); line-height: 1.7; }
+.ob-review-card .ob-rc-next { margin-top: 4px; font-size: 12.5px; color: var(--mo-3); line-height: 1.7; }

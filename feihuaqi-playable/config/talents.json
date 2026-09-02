@@ -3,11 +3,11 @@
     "id": "T001",
     "name": "斗酒诗百篇",
     "kind": "passive",
-    "text": "「李白斗酒诗百篇，长安市上酒家眠。」——杜甫《饮中八仙歌》。以诗出战获胜时，诗力额外 +1。",
+    "text": "「李白斗酒诗百篇，长安市上酒家眠。」——杜甫《饮中八仙歌》。以诗出战获胜时，诗力额外 +2。",
     "effect": {
       "type": "on_win_bonus",
       "style": "shi",
-      "value": 1
+      "value": 2
     },
     "school": "shixian"
   },
@@ -15,11 +15,11 @@
     "id": "T002",
     "name": "倚声填词",
     "kind": "passive",
-    "text": "词本倚声而作，先有腔调后有文字。填词日久，声律入骨——以词出战获胜时，词力额外 +1。",
+    "text": "词本倚声而作，先有腔调后有文字。填词日久，声律入骨——以词出战获胜时，词力额外 +2。",
     "effect": {
       "type": "on_win_bonus",
       "style": "ci",
-      "value": 1
+      "value": 2
     },
     "school": "cizong"
   },
@@ -27,11 +27,11 @@
     "id": "T003",
     "name": "对对如流",
     "kind": "passive",
-    "text": "属对之才，出口成双。相传解缙幼时应对如流，一座皆惊——以联出战获胜时，联力额外 +1。",
+    "text": "属对之才，出口成双。相传解缙幼时应对如流，一座皆惊——以联出战获胜时，联力额外 +2。",
     "effect": {
       "type": "on_win_bonus",
       "style": "lian",
-      "value": 1
+      "value": 2
     },
     "school": "liansheng"
   },
@@ -39,12 +39,13 @@
     "id": "T004",
     "name": "博览",
     "kind": "passive",
-    "text": "「读书破万卷，下笔如有神。」——杜甫《奉赠韦左丞丈二十二韵》。腹笥既广，学力常驻 +2。",
+    "text": "「读书破万卷，下笔如有神。」——杜甫《奉赠韦左丞丈二十二韵》。腹笥既广，学力常驻 +3。",
     "effect": {
       "type": "attr_flat",
       "attrs": {
-        "xue": 2
-      }
+        "xue": 3
+      },
+      "value": 3
     },
     "school": "tongru"
   },
@@ -52,7 +53,7 @@
     "id": "T005",
     "name": "急智",
     "kind": "passive",
-    "text": "临场生风，机锋不落。首骰为 1—2 点时，首次续掷少耗 2 灵感；续骰若为 5—6 点，作品得分 +10%。低开而能翻盘，方见机锋。",
+    "text": "临场生风，机锋不落。首骰为 1—2 点时，首枚续掷少耗 2 灵感；该枚续骰若为 5—6 点，作品得分 +10%。低开而能翻盘，方见机锋。",
     "effect": {
       "type": "dice_pattern",
       "pattern": "low_then_high",
@@ -79,11 +80,11 @@
     "id": "T007",
     "name": "梦笔生花",
     "kind": "passive",
-    "text": "五代王仁裕《开元天宝遗事》载：李白少时梦所用之笔头上生花，此后天才赡逸，名闻天下。每枚最终为 6 点的灵感骰令作品得分 +5%。",
+    "text": "五代王仁裕《开元天宝遗事》载：李白少时梦所用之笔头上生花，此后天才赡逸，名闻天下。每枚最终为 6 点的灵感骰令作品得分 +8%。",
     "effect": {
       "type": "dice_pattern",
       "pattern": "six",
-      "value": 0.05
+      "value": 0.08
     }
   },
   {
@@ -102,11 +103,11 @@
     "id": "T009",
     "name": "囊萤映雪",
     "kind": "passive",
-    "text": "晋人车胤囊萤照读，孙康映雪读书。贫不废学，学力常驻 +2。",
+    "text": "晋人车胤囊萤照读，孙康映雪读书。贫不废学，学力常驻 +3。",
     "effect": {
       "type": "attr_flat",
       "attrs": {
-        "xue": 2
+        "xue": 3
       }
     }
   },
@@ -114,7 +115,7 @@
     "id": "T010",
     "name": "天马行空",
     "kind": "passive",
-    "text": "笔势腾踔，不拘辙迹。首枚续掷少耗 2 灵感；三枚灵感骰点数各不相同，作品得分 +15%，并得残页 0.5。",
+    "text": "笔势腾踔，不拘辙迹。首枚续掷少耗 2 灵感；收笔时三枚灵感骰点数各不相同，作品得分 +15%，并得残页 0.5（每场一次）。",
     "effect": {
       "type": "dice_pattern",
       "pattern": "all_distinct",
@@ -134,58 +135,59 @@
     "kind": "passive",
     "text": "「颂其诗，读其书，不知其人可乎？是以论其世也。」——《孟子·万章下》。深谙题材与风格之配，自动获得对手所选风格的相性加成。",
     "effect": {
-      "type": "copy_affinity"
+      "type": "copy_affinity",
+      "ratio": 0.8
     }
   },
   {
     "id": "T012",
     "name": "李杜文章",
     "kind": "passive",
-    "text": "「李杜文章在，光焰万丈长。」——韩愈《调张籍》。以诗出战获胜时，诗力额外 +2。需先有「浪漫主义」倾向。",
+    "text": "「李杜文章在，光焰万丈长。」——韩愈《调张籍》。以诗出战获胜时，诗力额外 +3。需先有「浪漫主义」倾向。",
     "effect": {
       "type": "on_win_bonus",
       "style": "shi",
-      "value": 2
+      "value": 3
     }
   },
   {
     "id": "T013",
     "name": "凡有井水处",
     "kind": "passive",
-    "text": "南宋叶梦得《避暑录话》载：凡有井水饮处，即能歌柳词。以词出战获胜时，词力额外 +2。需先有「婉约派」倾向 ×2。",
+    "text": "南宋叶梦得《避暑录话》载：凡有井水饮处，即能歌柳词。以词出战获胜时，词力额外 +3。需先有「婉约派」倾向 ×2。",
     "effect": {
       "type": "on_win_bonus",
       "style": "ci",
-      "value": 2
+      "value": 3
     }
   },
   {
     "id": "T014",
     "name": "铁板铜琶",
     "kind": "passive",
-    "text": "俞文豹《吹剑续录》载幕士评东坡词：须关西大汉，执铁板，唱「大江东去」。以联出战获胜时，联力额外 +2。需先有「豪放派」倾向。",
+    "text": "俞文豹《吹剑续录》载幕士评东坡词：须关西大汉，执铁板，唱「大江东去」。以联出战获胜时，联力额外 +3。需先有「豪放派」倾向。",
     "effect": {
       "type": "on_win_bonus",
       "style": "lian",
-      "value": 2
+      "value": 3
     }
   },
   {
     "id": "T015",
     "name": "不平则鸣",
     "kind": "passive",
-    "text": "「大凡物不得其平则鸣。」——韩愈《送孟东野序》。灵感不高于 12 时，胸中块垒尽发，本场得分 +12%。需先有「哲思派」倾向。",
+    "text": "「大凡物不得其平则鸣。」——韩愈《送孟东野序》。灵感不高于 14 时，胸中块垒尽发，本场得分 +16%。需先有「哲思派」倾向。",
     "effect": {
       "type": "comeback",
-      "threshold": 12,
-      "value": 0.12
+      "threshold": 14,
+      "value": 0.16
     }
   },
   {
     "id": "T016",
     "name": "文思泉涌",
     "kind": "passive",
-    "text": "思若泉涌，源源不绝。首枚续掷少耗 1 灵感；每枚续骰都高于前骰时，每次递升得分 +5%；三骰连升另 +10%，并得 1 灵感。",
+    "text": "思若泉涌，源源不绝。首枚续掷少耗 1 灵感；每枚续骰严格高于前骰时，每次递升得分 +5%；收笔时三骰连升另 +10%，并得 1 灵感（每场一次）。",
     "effect": {
       "type": "dice_pattern",
       "pattern": "ascending",
@@ -205,10 +207,11 @@
     "id": "T099",
     "name": "三元及第",
     "kind": "passive",
-    "text": "解元、会元、状元连中三元，本朝数百年不过数人。图鉴「连中三元」解锁后可装配：殿试三场得分各 +5%。",
+    "text": "解元、会元、状元连中三元，本朝数百年不过数人。图鉴「连中三元」解锁后可装配：殿试三场得分各 +15%，并于入场时恢复 4 灵感。",
     "effect": {
       "type": "palace_pct",
-      "value": 0.05
+      "value": 0.15,
+      "startInspiration": 4
     },
     "source": "album"
   },
@@ -235,7 +238,8 @@
     "kind": "active",
     "text": "惠洪《冷斋夜话》记黄庭坚论诗：不易其意而造其语，谓之换骨法；窥入其意而形容之，谓之夺胎法。本场窥敌之技，暂借对手招牌之强为我所用——敌愈强，此招愈利。",
     "effect": {
-      "type": "borrow_signature"
+      "type": "borrow_signature",
+      "fraction": 0.3
     },
     "cost": 3
   },
@@ -270,11 +274,13 @@
     "id": "TA05",
     "name": "一气呵成",
     "kind": "active",
-    "text": "行文如一线贯珠，中无断续。支付首枚续掷后，自动续得第二枚骰（不再消耗灵感）；若自动续骰不低于首枚续骰，作品得分再 +4%。",
+    "text": "行文如一线贯珠，中无断续。支付首枚续掷后，自动续得第二枚骰（不再消耗灵感）；若自动骰不低于首枚续骰，作品得分再 +4%。",
     "effect": {
       "type": "extra_dice_chain",
       "compare": "not_lower",
-      "value": 0.04
+      "value": 0.14,
+      "cost": 2,
+      "refund": 1
     },
     "cost": 2
   },
@@ -282,7 +288,7 @@
     "id": "TA06",
     "name": "倚马可待",
     "kind": "active",
-    "text": "《世说新语·文学》载袁虎倚马前，须臾作露布文七纸，殊可观。本场三骰总点至少 12 时得分 +16% 并返还 3 灵感；若达到 16 点，则改为得分 +30% 并同样返还灵感。未达标则徒耗锋芒。",
+    "text": "《世说新语·文学》载袁虎倚马前，须臾作露布文七纸，殊可观。以三骰收笔时，总点至少 12 得分 +16% 并返还 3 灵感；达到 16 点则改为 +30%。未达标则徒耗锋芒。",
     "effect": {
       "type": "dice_pattern",
       "pattern": "total_tiers",
@@ -329,62 +335,66 @@
     "text": "胸中先有丘壑，落笔方能从容。发动后于回合掷移动骰前指定 1—6 格落点；本局每次再用，所耗灵感递增，谋定之后不可反悔。",
     "effect": {
       "type": "planned_dice",
-      "baseCost": 5,
+      "baseCost": 4,
       "costStep": 2,
-      "maxValue": 6
+      "maxValue": 6,
+      "cost": 4
     },
-    "cost": 5
+    "cost": 4
   },
   {
     "id": "T017",
     "name": "春风得意",
     "kind": "passive",
-    "text": "孟郊《登科后》：「春风得意马蹄疾，一日看尽长安花。」少年得志，意气风发——每场论战取胜，灵感 +1。",
+    "text": "孟郊《登科后》：「春风得意马蹄疾，一日看尽长安花。」少年得志，意气风发——每场论战取胜，灵感 +2。",
     "effect": {
       "type": "insp_on_win",
-      "value": 1
+      "value": 2
     }
   },
   {
     "id": "T018",
     "name": "曲水流觞",
     "kind": "passive",
-    "text": "王羲之《兰亭集序》载：引以为流觞曲水，列坐其次。雅集唱和，从容不迫——与对手平分秋色时，出战文体额外 +1。",
+    "text": "王羲之《兰亭集序》载：引以为流觞曲水，列坐其次。雅集唱和，从容不迫——与对手平分秋色时，出战文体额外 +3。",
     "effect": {
       "type": "draw_bonus",
-      "value": 1
+      "value": 3
     }
   },
   {
     "id": "T019",
     "name": "洛阳纸贵",
     "kind": "passive",
-    "text": "《晋书·左思传》：洛阳为之纸贵。一篇既出，士林争传，声名回响不断——持有时，每个回合开始恢复 1 点灵感。",
+    "text": "《晋书·左思传》：洛阳为之纸贵。一篇既出，士林争传，声名回响不断——灵感低于上限 50% 时，每回合恢复 1；每获得一枚新文心再恢复 2。",
     "effect": {
       "type": "insp_turn_regen",
-      "value": 1
+      "value": 1,
+      "thresholdRatio": 0.5,
+      "onTalent": 2
     }
   },
   {
     "id": "T020",
     "name": "诗骨嶙峋",
     "kind": "passive",
-    "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。诗乃风骨所寄，以诗出战，格调天然高出一筹——得分常驻 +6%。",
+    "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。诗乃风骨所寄，以诗出战，作品得分常驻 +10%。",
     "effect": {
       "type": "style_pct",
       "style": "shi",
-      "value": 0.06
+      "value": 0.1,
+      "singleDieBonus": 0
     }
   },
   {
     "id": "T021",
     "name": "咏物通灵",
     "kind": "passive",
-    "text": "「体物之工，穷情写貌。」咏物一题，体察入微，形神兼备——出战「咏物」题材时得分 +8%。",
+    "text": "「体物之工，穷情写貌。」咏物一题，体察入微，形神兼备——出战「咏物」题材时得分 +15%。",
     "effect": {
       "type": "theme_pct",
       "theme": "yongwu",
-      "value": 0.08
+      "value": 0.15
     }
   },
   {
@@ -401,20 +411,20 @@
     "id": "T023",
     "name": "退笔成冢",
     "kind": "passive",
-    "text": "智永居永欣寺三十年，临书不退，笔头委积，埋之为冢——积学既深，虽江郎才尽亦有余勇。每场结算后灵感补足至 10，不致骤然封笔。",
+    "text": "智永居永欣寺三十年，临书不退，笔头委积，埋之为冢——积学既深，虽江郎才尽亦有余勇。每场结算后灵感补足至 16，不致骤然封笔。",
     "effect": {
       "type": "insp_floor",
-      "value": 10
+      "value": 16
     }
   },
   {
     "id": "T024",
     "name": "六六大顺",
     "kind": "passive",
-    "text": "「六」者，顺也。灵感骰若掷出六点，灵思沛然，本场得分 ×1.3。",
+    "text": "「六」者，顺也。灵感骰若掷出六点，灵思沛然，本场得分 ×1.25。",
     "effect": {
       "type": "lucky_six",
-      "mult": 1.3
+      "mult": 1.25
     }
   },
   {
@@ -436,27 +446,31 @@
     "effect": {
       "type": "armory_pct",
       "step": 3,
-      "value": 0.04
+      "value": 0.04,
+      "cap": 0.12
     }
   },
   {
     "id": "T027",
     "name": "转益多师",
     "kind": "passive",
-    "text": "杜甫《戏为六绝句》：转益多师是汝师。败于名家而有所悟，平局亦能取法——「败中有得」「平分秋色」的补偿属性额外 +1。",
+    "text": "杜甫《戏为六绝句》：转益多师是汝师。败于名家而有所悟，平局亦能取法——「败中有得」「平分秋色」的补偿属性额外 +2，下一场得分 +4%。",
     "effect": {
       "type": "study_bonus",
-      "value": 1
+      "value": 2,
+      "nextBattlePct": 0.04
     }
   },
   {
     "id": "T028",
     "name": "金殿对策",
     "kind": "passive",
-    "text": "殿试策问，临轩而试。金殿之上从容奏对——殿试每场开场，灵感 +3。",
+    "text": "殿试策问，临轩而试。金殿之上从容奏对——进入殿试先恢复 4 灵感，殿试每场开场再恢复 3。",
     "effect": {
       "type": "palace_insp",
-      "value": 3
+      "value": 3,
+      "startValue": 4,
+      "scorePct": 0
     }
   },
   {
@@ -466,17 +480,18 @@
     "text": "苏轼《文与可画筼筜谷偃竹记》：故画竹必先得成竹于胸中。谋定后动，临阵不慌——持有时，每个回合开始恢复 1 点灵感。",
     "effect": {
       "type": "insp_turn_regen",
-      "value": 1
+      "value": 1,
+      "thresholdRatio": 0.5
     }
   },
   {
     "id": "T030",
     "name": "活水源头",
     "kind": "passive",
-    "text": "朱熹《观书有感》：“问渠那得清如许？为有源头活水来。”每次答对考题或完成创作抉择，灵感额外 +1；每局最多触发 4 次。",
+    "text": "朱熹《观书有感》：“问渠那得清如许？为有源头活水来。”每次答对考题或完成创作抉择，灵感额外 +2；每局最多触发 4 次。",
     "effect": {
       "type": "insp_on_quiz",
-      "value": 1,
+      "value": 2,
       "maxTriggers": 4
     },
     "acquire": {
@@ -488,11 +503,11 @@
     "id": "T031",
     "name": "枯木逢春",
     "kind": "passive",
-    "text": "枯木经霜，春来更发新枝。每场论战全部结算后，若灵感不高于 14，则恢复 2 点；每局最多触发 3 次。",
+    "text": "枯木经霜，春来更发新枝。每场论战全部结算后，若灵感不高于 16，则恢复 3 点；每局最多触发 3 次。",
     "effect": {
       "type": "insp_battle_recover",
-      "value": 2,
-      "threshold": 14,
+      "value": 3,
+      "threshold": 16,
       "maxTriggers": 3
     },
     "acquire": {
@@ -505,11 +520,12 @@
     "id": "T032",
     "name": "蓄水成渊",
     "kind": "passive",
-    "text": "涓流不拒，积而成渊。获得时，本局灵感上限永久 +6；与「海纳百川」互斥，且扩容只结算一次。",
+    "text": "涓流不拒，积而成渊。获得时，本局灵感上限永久 +8，并补充 4 灵感；与「海纳百川」互斥，且扩容只结算一次。",
     "effect": {
       "type": "insp_max",
-      "value": 6,
-      "group": "inspiration_capacity"
+      "value": 8,
+      "group": "inspiration_capacity",
+      "fillRatio": 0.5
     },
     "acquire": {
       "minTurn": 12,
@@ -522,11 +538,12 @@
     "id": "T033",
     "name": "海纳百川",
     "kind": "passive",
-    "text": "《文心雕龙》言“操千曲而后晓声，观千剑而后识器”。获得时，本局灵感上限永久 +10；与「蓄水成渊」互斥，且扩容只结算一次。",
+    "text": "《文心雕龙》言“操千曲而后晓声，观千剑而后识器”。获得时，本局灵感上限永久 +14，并补充 7 灵感；与「蓄水成渊」互斥，且扩容只结算一次。",
     "effect": {
       "type": "insp_max",
-      "value": 10,
-      "group": "inspiration_capacity"
+      "value": 14,
+      "group": "inspiration_capacity",
+      "fillRatio": 0.5
     },
     "acquire": {
       "phase": "lap2",
@@ -539,11 +556,11 @@
     "id": "T035",
     "name": "删繁就简",
     "kind": "passive",
-    "text": "郑板桥题画有言：删繁就简三秋树，领异标新二月花。只以一枚灵感骰收笔时，作品得分 +8%，战后心得额外 +1。",
+    "text": "郑板桥题画有言：删繁就简三秋树，领异标新二月花。只以一枚灵感骰收笔时，作品得分 +12%，战后心得额外 +1。",
     "effect": {
       "type": "dice_pattern",
       "pattern": "single",
-      "value": 0.08,
+      "value": 0.12,
       "reward": {
         "type": "insight",
         "value": 1,
@@ -583,12 +600,12 @@
     "id": "T038",
     "name": "落笔成章",
     "kind": "passive",
-    "text": "胸中已有篇章，落笔自见经营。每持有 2 页稿本，作品得分 +2%，最多 +10%。",
+    "text": "胸中已有篇章，落笔自见经营。每持有 2 页稿本，作品得分 +3%，最多 +15%。",
     "effect": {
       "type": "manuscript_pct",
       "step": 2,
-      "value": 0.02,
-      "cap": 0.1
+      "value": 0.03,
+      "cap": 0.15
     }
   },
   {
@@ -611,11 +628,11 @@
     "id": "T040",
     "name": "妙手偶得",
     "kind": "passive",
-    "text": "陆游诗云：文章本天成，妙手偶得之。本场首次出现最终为 6 点的灵感骰时，额外沉淀 1 份残页（每场一次）。",
+    "text": "陆游诗云：文章本天成，妙手偶得之。本场首次出现最终为 6 点的灵感骰时，作品得分 +8%，并额外沉淀 1 份残页（每场一次）。",
     "effect": {
       "type": "dice_pattern",
       "pattern": "six",
-      "value": 0,
+      "value": 0.08,
       "reward": {
         "type": "fragment",
         "value": 1,
@@ -631,111 +648,8 @@
     "effect": {
       "type": "reincarnate",
       "inspThreshold": 40,
-      "attrRatio": 0.8
-    },
-    "upgrade": {
-      "quality": "legend",
-      "maxLevel": 6,
-      "upCost": [
-        9,
-        13,
-        18,
-        24,
-        31
-      ],
-      "levels": [
-        {
-          "effect": {
-            "type": "reincarnate",
-            "inspThreshold": 36,
-            "attrRatio": 0.84
-          }
-        },
-        {
-          "effect": {
-            "type": "reincarnate",
-            "inspThreshold": 32,
-            "attrRatio": 0.88
-          }
-        },
-        {
-          "effect": {
-            "type": "reincarnate",
-            "inspThreshold": 28,
-            "attrRatio": 0.92
-          }
-        },
-        {
-          "effect": {
-            "type": "reincarnate",
-            "inspThreshold": 24,
-            "attrRatio": 0.96
-          }
-        },
-        {
-          "effect": {
-            "type": "reincarnate",
-            "inspThreshold": 20,
-            "attrRatio": 1
-          }
-        }
-      ],
-      "levelStyles": [
-        {
-          "fontFamily": "",
-          "fontSize": 0,
-          "color": "",
-          "lineHeight": 0,
-          "textAlign": "",
-          "textIndent": 0,
-          "marginBottom": 0
-        },
-        {
-          "fontFamily": "",
-          "fontSize": 0,
-          "color": "",
-          "lineHeight": 0,
-          "textAlign": "",
-          "textIndent": 0,
-          "marginBottom": 0
-        },
-        {
-          "fontFamily": "",
-          "fontSize": 0,
-          "color": "",
-          "lineHeight": 0,
-          "textAlign": "",
-          "textIndent": 0,
-          "marginBottom": 0
-        },
-        {
-          "fontFamily": "",
-          "fontSize": 0,
-          "color": "",
-          "lineHeight": 0,
-          "textAlign": "",
-          "textIndent": 0,
-          "marginBottom": 0
-        },
-        {
-          "fontFamily": "",
-          "fontSize": 0,
-          "color": "",
-          "lineHeight": 0,
-          "textAlign": "",
-          "textIndent": 0,
-          "marginBottom": 0
-        },
-        {
-          "fontFamily": "",
-          "fontSize": 0,
-          "color": "",
-          "lineHeight": 0,
-          "textAlign": "",
-          "textIndent": 0,
-          "marginBottom": 0
-        }
-      ]
+      "attrRatio": 0.8,
+      "startInspiration": 8
     }
   }
 ]

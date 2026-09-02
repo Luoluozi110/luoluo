@@ -4,29 +4,29 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      6,
-      10
+      4,
+      7
     ],
     "levels": [
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "shi",
-          "value": 1
-        }
-      },
-      {
-        "effect": {
-          "type": "on_win_bonus",
-          "style": "shi",
-          "value": 1
-        }
-      },
-      {
-        "effect": {
-          "type": "on_win_bonus",
-          "style": "shi",
           "value": 2
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "shi",
+          "value": 3
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "shi",
+          "value": 5
         }
       }
     ]
@@ -35,29 +35,29 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      6,
-      10
+      4,
+      7
     ],
     "levels": [
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "ci",
-          "value": 1
-        }
-      },
-      {
-        "effect": {
-          "type": "on_win_bonus",
-          "style": "ci",
-          "value": 1
-        }
-      },
-      {
-        "effect": {
-          "type": "on_win_bonus",
-          "style": "ci",
           "value": 2
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "ci",
+          "value": 3
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "ci",
+          "value": 5
         }
       }
     ]
@@ -66,29 +66,29 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      6,
-      10
+      4,
+      7
     ],
     "levels": [
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "lian",
-          "value": 1
-        }
-      },
-      {
-        "effect": {
-          "type": "on_win_bonus",
-          "style": "lian",
-          "value": 1
-        }
-      },
-      {
-        "effect": {
-          "type": "on_win_bonus",
-          "style": "lian",
           "value": 2
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "lian",
+          "value": 3
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "lian",
+          "value": 5
         }
       }
     ]
@@ -97,24 +97,17 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      6,
-      10
+      4,
+      7
     ],
     "levels": [
       {
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "xue": 2
-          }
-        }
-      },
-      {
-        "effect": {
-          "type": "attr_flat",
-          "attrs": {
             "xue": 3
-          }
+          },
+          "value": 3
         }
       },
       {
@@ -122,7 +115,17 @@ window.GAME_TALENT_UPGRADE = {
           "type": "attr_flat",
           "attrs": {
             "xue": 4
-          }
+          },
+          "value": 4
+        }
+      },
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "xue": 6
+          },
+          "value": 6
         }
       }
     ]
@@ -131,8 +134,8 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      6,
-      10
+      4,
+      7
     ],
     "levels": [
       {
@@ -171,9 +174,9 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
@@ -214,33 +217,12 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      6,
+      9,
+      13,
+      18
     ],
     "levels": [
-      {
-        "effect": {
-          "type": "dice_pattern",
-          "pattern": "six",
-          "value": 0.05
-        }
-      },
-      {
-        "effect": {
-          "type": "dice_pattern",
-          "pattern": "six",
-          "value": 0.06
-        }
-      },
-      {
-        "effect": {
-          "type": "dice_pattern",
-          "pattern": "six",
-          "value": 0.07
-        }
-      },
       {
         "effect": {
           "type": "dice_pattern",
@@ -254,6 +236,32 @@ window.GAME_TALENT_UPGRADE = {
           "pattern": "six",
           "value": 0.1
         }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 0.12
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 0.14
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 0.16,
+          "reward": {
+            "type": "fragment",
+            "value": 1,
+            "perMatch": false
+          }
+        }
       }
     ]
   },
@@ -261,9 +269,9 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
@@ -304,18 +312,10 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      6,
-      10
+      4,
+      7
     ],
     "levels": [
-      {
-        "effect": {
-          "type": "attr_flat",
-          "attrs": {
-            "xue": 2
-          }
-        }
-      },
       {
         "effect": {
           "type": "attr_flat",
@@ -331,6 +331,14 @@ window.GAME_TALENT_UPGRADE = {
             "xue": 4
           }
         }
+      },
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "xue": 5
+          }
+        }
       }
     ]
   },
@@ -338,8 +346,8 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      6,
-      10
+      4,
+      7
     ],
     "levels": [
       {
@@ -390,47 +398,60 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "legend",
     "maxLevel": 6,
     "upCost": [
-      9,
-      13,
-      18,
-      24,
-      31
+      7,
+      10,
+      14,
+      19,
+      25
     ],
     "levels": [
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 0.55
+          "ratio": 0.8
         }
       },
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 0.7
+          "ratio": 0.9,
+          "revealIntent": true
         }
       },
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 0.85
+          "ratio": 1,
+          "revealIntent": true
         }
       },
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1
+          "ratio": 1,
+          "revealIntent": true,
+          "synergyPct": 0.04
         }
       },
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1.15
+          "ratio": 1.1,
+          "revealIntent": true,
+          "synergyPct": 0.04,
+          "themeFlat": 0.04
         }
       },
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1.3
+          "ratio": 1.2,
+          "revealIntent": true,
+          "synergyPct": 0.04,
+          "themeFlat": 0.04,
+          "convertPct": 0.5,
+          "revealWeakness": true,
+          "convertWeakness": true
         }
       }
     ]
@@ -439,25 +460,11 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
-      {
-        "effect": {
-          "type": "on_win_bonus",
-          "style": "shi",
-          "value": 2
-        }
-      },
-      {
-        "effect": {
-          "type": "on_win_bonus",
-          "style": "shi",
-          "value": 2
-        }
-      },
       {
         "effect": {
           "type": "on_win_bonus",
@@ -470,6 +477,20 @@ window.GAME_TALENT_UPGRADE = {
           "type": "on_win_bonus",
           "style": "shi",
           "value": 4
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "shi",
+          "value": 5
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "shi",
+          "value": 7
         }
       }
     ]
@@ -478,25 +499,11 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
-      {
-        "effect": {
-          "type": "on_win_bonus",
-          "style": "ci",
-          "value": 2
-        }
-      },
-      {
-        "effect": {
-          "type": "on_win_bonus",
-          "style": "ci",
-          "value": 2
-        }
-      },
       {
         "effect": {
           "type": "on_win_bonus",
@@ -509,6 +516,20 @@ window.GAME_TALENT_UPGRADE = {
           "type": "on_win_bonus",
           "style": "ci",
           "value": 4
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "ci",
+          "value": 5
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "ci",
+          "value": 7
         }
       }
     ]
@@ -517,25 +538,11 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
-      {
-        "effect": {
-          "type": "on_win_bonus",
-          "style": "lian",
-          "value": 2
-        }
-      },
-      {
-        "effect": {
-          "type": "on_win_bonus",
-          "style": "lian",
-          "value": 2
-        }
-      },
       {
         "effect": {
           "type": "on_win_bonus",
@@ -549,6 +556,20 @@ window.GAME_TALENT_UPGRADE = {
           "style": "lian",
           "value": 4
         }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "lian",
+          "value": 5
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "lian",
+          "value": 7
+        }
       }
     ]
   },
@@ -556,26 +577,12 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      6,
+      9,
+      13,
+      18
     ],
     "levels": [
-      {
-        "effect": {
-          "type": "comeback",
-          "threshold": 12,
-          "value": 0.12
-        }
-      },
-      {
-        "effect": {
-          "type": "comeback",
-          "threshold": 13,
-          "value": 0.14
-        }
-      },
       {
         "effect": {
           "type": "comeback",
@@ -596,6 +603,20 @@ window.GAME_TALENT_UPGRADE = {
           "threshold": 16,
           "value": 0.2
         }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "threshold": 17,
+          "value": 0.22
+        }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "threshold": 18,
+          "value": 0.24
+        }
       }
     ]
   },
@@ -603,10 +624,10 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      6,
+      9,
+      13,
+      18
     ],
     "levels": [
       {
@@ -695,47 +716,53 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "legend",
     "maxLevel": 6,
     "upCost": [
-      9,
-      13,
-      18,
-      24,
-      31
+      7,
+      10,
+      14,
+      19,
+      25
     ],
     "levels": [
       {
         "effect": {
           "type": "palace_pct",
-          "value": 0.03
+          "value": 0.15,
+          "startInspiration": 4
         }
       },
       {
         "effect": {
           "type": "palace_pct",
-          "value": 0.04
+          "value": 0.18,
+          "startInspiration": 4
         }
       },
       {
         "effect": {
           "type": "palace_pct",
-          "value": 0.05
+          "value": 0.21,
+          "startInspiration": 5
         }
       },
       {
         "effect": {
           "type": "palace_pct",
-          "value": 0.06
+          "value": 0.24,
+          "startInspiration": 6
         }
       },
       {
         "effect": {
           "type": "palace_pct",
-          "value": 0.07
+          "value": 0.27,
+          "startInspiration": 7
         }
       },
       {
         "effect": {
           "type": "palace_pct",
-          "value": 0.08
+          "value": 0.3,
+          "startInspiration": 8
         }
       }
     ]
@@ -744,9 +771,9 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
@@ -807,36 +834,36 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
         "effect": {
-          "type": "copy_affinity",
-          "ratio": 0.7
+          "type": "borrow_signature",
+          "fraction": 0.3
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "copy_affinity",
-          "ratio": 0.85
+          "type": "borrow_signature",
+          "fraction": 0.45
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "copy_affinity",
-          "ratio": 1
+          "type": "borrow_signature",
+          "fraction": 0.6
         },
         "cost": 3
       },
       {
         "effect": {
-          "type": "copy_affinity",
-          "ratio": 1.15
+          "type": "borrow_signature",
+          "fraction": 0.75
         },
         "cost": 3
       }
@@ -846,10 +873,10 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      6,
+      9,
+      13,
+      18
     ],
     "levels": [
       {
@@ -913,10 +940,10 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      6,
+      9,
+      13,
+      18
     ],
     "levels": [
       {
@@ -965,16 +992,18 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
         "effect": {
           "type": "extra_dice_chain",
           "compare": "not_lower",
-          "value": 0.04
+          "value": 0.14,
+          "cost": 2,
+          "refund": 1
         },
         "cost": 2
       },
@@ -982,7 +1011,9 @@ window.GAME_TALENT_UPGRADE = {
         "effect": {
           "type": "extra_dice_chain",
           "compare": "not_lower",
-          "value": 0.06
+          "value": 0.18,
+          "cost": 2,
+          "refund": 1
         },
         "cost": 2
       },
@@ -990,17 +1021,21 @@ window.GAME_TALENT_UPGRADE = {
         "effect": {
           "type": "extra_dice_chain",
           "compare": "not_lower",
-          "value": 0.08
+          "value": 0.22,
+          "cost": 1,
+          "refund": 1
         },
-        "cost": 2
+        "cost": 1
       },
       {
         "effect": {
           "type": "extra_dice_chain",
           "compare": "not_lower",
-          "value": 0.1
+          "value": 0.28,
+          "cost": 1,
+          "refund": 2
         },
-        "cost": 2
+        "cost": 1
       }
     ]
   },
@@ -1008,11 +1043,11 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "legend",
     "maxLevel": 6,
     "upCost": [
-      9,
-      13,
-      18,
-      24,
-      31
+      7,
+      10,
+      14,
+      19,
+      25
     ],
     "levels": [
       {
@@ -1183,9 +1218,9 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
@@ -1230,36 +1265,39 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      6,
-      10
+      4,
+      7
     ],
     "levels": [
       {
         "effect": {
           "type": "planned_dice",
-          "baseCost": 5,
+          "baseCost": 4,
           "costStep": 2,
-          "maxValue": 6
+          "maxValue": 6,
+          "cost": 4
         },
-        "cost": 5
+        "cost": 4
       },
       {
         "effect": {
           "type": "planned_dice",
-          "baseCost": 5,
-          "costStep": 2,
-          "maxValue": 6
+          "baseCost": 3,
+          "costStep": 1,
+          "maxValue": 6,
+          "cost": 3
         },
-        "cost": 5
+        "cost": 3
       },
       {
         "effect": {
           "type": "planned_dice",
-          "baseCost": 5,
-          "costStep": 2,
-          "maxValue": 6
+          "baseCost": 2,
+          "costStep": 0,
+          "maxValue": 6,
+          "cost": 2
         },
-        "cost": 5
+        "cost": 2
       }
     ]
   },
@@ -1267,26 +1305,26 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      6,
-      10
+      4,
+      7
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_on_win",
-          "value": 1
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_on_win",
-          "value": 1
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_on_win",
           "value": 2
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_on_win",
+          "value": 3
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_on_win",
+          "value": 4
         }
       }
     ]
@@ -1295,26 +1333,26 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      6,
-      10
+      4,
+      7
     ],
     "levels": [
       {
         "effect": {
           "type": "draw_bonus",
-          "value": 1
+          "value": 3
         }
       },
       {
         "effect": {
           "type": "draw_bonus",
-          "value": 1
+          "value": 4
         }
       },
       {
         "effect": {
           "type": "draw_bonus",
-          "value": 2
+          "value": 6
         }
       }
     ]
@@ -1323,33 +1361,41 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
         "effect": {
-          "type": "insp_on_talent",
-          "value": 1
+          "type": "insp_turn_regen",
+          "value": 1,
+          "thresholdRatio": 0.5,
+          "onTalent": 2
         }
       },
       {
         "effect": {
-          "type": "insp_on_talent",
-          "value": 1
+          "type": "insp_turn_regen",
+          "value": 1,
+          "thresholdRatio": 0.6,
+          "onTalent": 2
         }
       },
       {
         "effect": {
-          "type": "insp_on_talent",
-          "value": 2
+          "type": "insp_turn_regen",
+          "value": 2,
+          "thresholdRatio": 0.6,
+          "onTalent": 3
         }
       },
       {
         "effect": {
-          "type": "insp_on_talent",
-          "value": 3
+          "type": "insp_turn_regen",
+          "value": 2,
+          "thresholdRatio": 0.7,
+          "onTalent": 4
         }
       }
     ]
@@ -1358,37 +1404,41 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
         "effect": {
           "type": "style_pct",
           "style": "shi",
-          "value": 0.04
+          "value": 0.1,
+          "singleDieBonus": 0
         }
       },
       {
         "effect": {
           "type": "style_pct",
           "style": "shi",
-          "value": 0.0533
+          "value": 0.12,
+          "singleDieBonus": 0.02
         }
       },
       {
         "effect": {
           "type": "style_pct",
           "style": "shi",
-          "value": 0.0667
+          "value": 0.15,
+          "singleDieBonus": 0.03
         }
       },
       {
         "effect": {
           "type": "style_pct",
           "style": "shi",
-          "value": 0.08
+          "value": 0.18,
+          "singleDieBonus": 0.05
         }
       }
     ]
@@ -1397,37 +1447,47 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
         "effect": {
           "type": "theme_pct",
           "theme": "yongwu",
-          "value": 0.05
+          "value": 0.15
         }
       },
       {
         "effect": {
           "type": "theme_pct",
           "theme": "yongwu",
-          "value": 0.0667
+          "value": 0.18
         }
       },
       {
         "effect": {
           "type": "theme_pct",
           "theme": "yongwu",
-          "value": 0.0833
+          "value": 0.22,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
         }
       },
       {
         "effect": {
           "type": "theme_pct",
           "theme": "yongwu",
-          "value": 0.1
+          "value": 0.25,
+          "reward": {
+            "type": "inspiration",
+            "value": 2,
+            "perMatch": false
+          }
         }
       }
     ]
@@ -1436,23 +1496,11 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
-      {
-        "effect": {
-          "type": "streak_mult",
-          "value": 0.2
-        }
-      },
-      {
-        "effect": {
-          "type": "streak_mult",
-          "value": 0.3
-        }
-      },
       {
         "effect": {
           "type": "streak_mult",
@@ -1464,6 +1512,18 @@ window.GAME_TALENT_UPGRADE = {
           "type": "streak_mult",
           "value": 0.5
         }
+      },
+      {
+        "effect": {
+          "type": "streak_mult",
+          "value": 0.65
+        }
+      },
+      {
+        "effect": {
+          "type": "streak_mult",
+          "value": 0.8
+        }
       }
     ]
   },
@@ -1471,40 +1531,40 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      6,
+      9,
+      13,
+      18
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_floor",
-          "value": 6
+          "value": 16
         }
       },
       {
         "effect": {
           "type": "insp_floor",
-          "value": 7
+          "value": 18
         }
       },
       {
         "effect": {
           "type": "insp_floor",
-          "value": 8
+          "value": 20
         }
       },
       {
         "effect": {
           "type": "insp_floor",
-          "value": 9
+          "value": 22
         }
       },
       {
         "effect": {
           "type": "insp_floor",
-          "value": 10
+          "value": 24
         }
       }
     ]
@@ -1513,40 +1573,45 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      6,
+      9,
+      13,
+      18
     ],
     "levels": [
       {
         "effect": {
           "type": "lucky_six",
-          "mult": 1.18
+          "mult": 1.25
         }
       },
       {
         "effect": {
           "type": "lucky_six",
-          "mult": 1.2225
-        }
-      },
-      {
-        "effect": {
-          "type": "lucky_six",
-          "mult": 1.265
-        }
-      },
-      {
-        "effect": {
-          "type": "lucky_six",
-          "mult": 1.3075
+          "mult": 1.3
         }
       },
       {
         "effect": {
           "type": "lucky_six",
           "mult": 1.35
+        }
+      },
+      {
+        "effect": {
+          "type": "lucky_six",
+          "mult": 1.42
+        }
+      },
+      {
+        "effect": {
+          "type": "lucky_six",
+          "mult": 1.5,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
         }
       }
     ]
@@ -1555,45 +1620,45 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      6,
+      9,
+      13,
+      18
     ],
     "levels": [
       {
         "effect": {
           "type": "comeback",
-          "value": 0.08,
-          "threshold": 10
-        }
-      },
-      {
-        "effect": {
-          "type": "comeback",
-          "value": 0.1,
-          "threshold": 10
-        }
-      },
-      {
-        "effect": {
-          "type": "comeback",
           "value": 0.12,
-          "threshold": 11
+          "threshold": 12
         }
       },
       {
         "effect": {
           "type": "comeback",
           "value": 0.14,
-          "threshold": 11
+          "threshold": 13
         }
       },
       {
         "effect": {
           "type": "comeback",
           "value": 0.16,
-          "threshold": 12
+          "threshold": 14
+        }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "value": 0.2,
+          "threshold": 16
+        }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "value": 0.24,
+          "threshold": 18
         }
       }
     ]
@@ -1602,45 +1667,50 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      6,
+      9,
+      13,
+      18
     ],
     "levels": [
       {
         "effect": {
           "type": "armory_pct",
-          "step": 4,
-          "value": 0.02
+          "step": 3,
+          "value": 0.04,
+          "cap": 0.12
         }
       },
       {
         "effect": {
           "type": "armory_pct",
           "step": 3,
-          "value": 0.025
+          "value": 0.05,
+          "cap": 0.15
         }
       },
       {
         "effect": {
           "type": "armory_pct",
           "step": 3,
-          "value": 0.03
+          "value": 0.06,
+          "cap": 0.18
         }
       },
       {
         "effect": {
           "type": "armory_pct",
-          "step": 3,
-          "value": 0.035
+          "step": 2,
+          "value": 0.04,
+          "cap": 0.2
         }
       },
       {
         "effect": {
           "type": "armory_pct",
-          "step": 3,
-          "value": 0.04
+          "step": 2,
+          "value": 0.05,
+          "cap": 0.25
         }
       }
     ]
@@ -1649,33 +1719,37 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
         "effect": {
           "type": "study_bonus",
-          "value": 1
+          "value": 2,
+          "nextBattlePct": 0.04
         }
       },
       {
         "effect": {
           "type": "study_bonus",
-          "value": 1
+          "value": 3,
+          "nextBattlePct": 0.06
         }
       },
       {
         "effect": {
           "type": "study_bonus",
-          "value": 1
+          "value": 4,
+          "nextBattlePct": 0.08
         }
       },
       {
         "effect": {
           "type": "study_bonus",
-          "value": 2
+          "value": 5,
+          "nextBattlePct": 0.08
         }
       }
     ]
@@ -1684,40 +1758,50 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      6,
+      9,
+      13,
+      18
     ],
     "levels": [
       {
         "effect": {
           "type": "palace_insp",
-          "value": 1
+          "value": 3,
+          "startValue": 4,
+          "scorePct": 0
         }
       },
       {
         "effect": {
           "type": "palace_insp",
-          "value": 1
+          "value": 3,
+          "startValue": 5,
+          "scorePct": 0.02
         }
       },
       {
         "effect": {
           "type": "palace_insp",
-          "value": 2
+          "value": 4,
+          "startValue": 6,
+          "scorePct": 0.04
         }
       },
       {
         "effect": {
           "type": "palace_insp",
-          "value": 3
+          "value": 4,
+          "startValue": 7,
+          "scorePct": 0.06
         }
       },
       {
         "effect": {
           "type": "palace_insp",
-          "value": 4
+          "value": 5,
+          "startValue": 8,
+          "scorePct": 0.08
         }
       }
     ]
@@ -1726,33 +1810,37 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_turn_regen",
-          "value": 1
+          "value": 1,
+          "thresholdRatio": 0.5
         }
       },
       {
         "effect": {
           "type": "insp_turn_regen",
-          "value": 1
+          "value": 1,
+          "thresholdRatio": 0.6
         }
       },
       {
         "effect": {
           "type": "insp_turn_regen",
-          "value": 2
+          "value": 2,
+          "thresholdRatio": 0.6
         }
       },
       {
         "effect": {
           "type": "insp_turn_regen",
-          "value": 2
+          "value": 2,
+          "thresholdRatio": 0.7
         }
       }
     ]
@@ -1761,37 +1849,37 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_on_quiz",
-          "value": 1,
-          "maxTriggers": 2
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_on_quiz",
-          "value": 1,
-          "maxTriggers": 2
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_on_quiz",
-          "value": 1,
-          "maxTriggers": 3
+          "value": 2,
+          "maxTriggers": 4
         }
       },
       {
         "effect": {
           "type": "insp_on_quiz",
           "value": 2,
-          "maxTriggers": 4
+          "maxTriggers": 5
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_on_quiz",
+          "value": 3,
+          "maxTriggers": 5
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_on_quiz",
+          "value": 3,
+          "maxTriggers": 6
         }
       }
     ]
@@ -1800,50 +1888,50 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      6,
+      9,
+      13,
+      18
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_battle_recover",
-          "value": 1,
-          "threshold": 12,
-          "maxTriggers": 2
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_battle_recover",
-          "value": 1,
-          "threshold": 13,
-          "maxTriggers": 2
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_battle_recover",
-          "value": 1,
-          "threshold": 14,
-          "maxTriggers": 3
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_battle_recover",
-          "value": 1,
-          "threshold": 15,
-          "maxTriggers": 3
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_battle_recover",
-          "value": 2,
+          "value": 3,
           "threshold": 16,
+          "maxTriggers": 3
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_battle_recover",
+          "value": 3,
+          "threshold": 18,
+          "maxTriggers": 3
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_battle_recover",
+          "value": 3,
+          "threshold": 20,
           "maxTriggers": 4
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_battle_recover",
+          "value": 4,
+          "threshold": 20,
+          "maxTriggers": 4
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_battle_recover",
+          "value": 4,
+          "threshold": 22,
+          "maxTriggers": 5
         }
       }
     ]
@@ -1852,45 +1940,50 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      6,
+      9,
+      13,
+      18
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_max",
-          "value": 4,
-          "group": "inspiration_capacity"
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_max",
-          "value": 5,
-          "group": "inspiration_capacity"
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_max",
-          "value": 6,
-          "group": "inspiration_capacity"
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_max",
-          "value": 7,
-          "group": "inspiration_capacity"
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_max",
           "value": 8,
-          "group": "inspiration_capacity"
+          "group": "inspiration_capacity",
+          "fillRatio": 0.5
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 10,
+          "group": "inspiration_capacity",
+          "fillRatio": 0.5
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 12,
+          "group": "inspiration_capacity",
+          "fillRatio": 0.75
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 14,
+          "group": "inspiration_capacity",
+          "fillRatio": 0.75
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 16,
+          "group": "inspiration_capacity",
+          "fillRatio": 1
         }
       }
     ]
@@ -1899,53 +1992,59 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "legend",
     "maxLevel": 6,
     "upCost": [
-      9,
-      13,
-      18,
-      24,
-      31
+      7,
+      10,
+      14,
+      19,
+      25
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_max",
-          "value": 5,
-          "group": "inspiration_capacity"
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_max",
-          "value": 6,
-          "group": "inspiration_capacity"
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_max",
-          "value": 8,
-          "group": "inspiration_capacity"
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_max",
-          "value": 10,
-          "group": "inspiration_capacity"
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_max",
-          "value": 12,
-          "group": "inspiration_capacity"
-        }
-      },
-      {
-        "effect": {
-          "type": "insp_max",
           "value": 14,
-          "group": "inspiration_capacity"
+          "group": "inspiration_capacity",
+          "fillRatio": 0.5
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 16,
+          "group": "inspiration_capacity",
+          "fillRatio": 0.5
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 18,
+          "group": "inspiration_capacity",
+          "fillRatio": 0.6
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 22,
+          "group": "inspiration_capacity",
+          "fillRatio": 0.7
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 25,
+          "group": "inspiration_capacity",
+          "fillRatio": 0.8
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 28,
+          "group": "inspiration_capacity",
+          "fillRatio": 1
         }
       }
     ]
@@ -1954,39 +2053,15 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "single",
-          "value": 0.08,
-          "reward": {
-            "type": "insight",
-            "value": 1,
-            "perMatch": false
-          }
-        }
-      },
-      {
-        "effect": {
-          "type": "dice_pattern",
-          "pattern": "single",
-          "value": 0.1,
-          "reward": {
-            "type": "insight",
-            "value": 1,
-            "perMatch": false
-          }
-        }
-      },
-      {
-        "effect": {
-          "type": "dice_pattern",
-          "pattern": "single",
           "value": 0.12,
           "reward": {
             "type": "insight",
@@ -1999,10 +2074,34 @@ window.GAME_TALENT_UPGRADE = {
         "effect": {
           "type": "dice_pattern",
           "pattern": "single",
-          "value": 0.12,
+          "value": 0.15,
+          "reward": {
+            "type": "insight",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "single",
+          "value": 0.18,
           "reward": {
             "type": "insight",
             "value": 2,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "single",
+          "value": 0.24,
+          "reward": {
+            "type": "insight",
+            "value": 3,
             "perMatch": false
           }
         }
@@ -2013,9 +2112,9 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
@@ -2076,9 +2175,9 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
@@ -2115,41 +2214,41 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
         "effect": {
           "type": "manuscript_pct",
           "step": 2,
-          "value": 0.02,
-          "cap": 0.1
-        }
-      },
-      {
-        "effect": {
-          "type": "manuscript_pct",
-          "step": 2,
-          "value": 0.025,
-          "cap": 0.1
-        }
-      },
-      {
-        "effect": {
-          "type": "manuscript_pct",
-          "step": 2,
-          "value": 0.025,
-          "cap": 0.125
-        }
-      },
-      {
-        "effect": {
-          "type": "manuscript_pct",
-          "step": 2,
           "value": 0.03,
           "cap": 0.15
+        }
+      },
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 0.035,
+          "cap": 0.16
+        }
+      },
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 0.04,
+          "cap": 0.18
+        }
+      },
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 0.05,
+          "cap": 0.2
         }
       }
     ]
@@ -2158,9 +2257,9 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      5,
+      8,
+      12
     ],
     "levels": [
       {
@@ -2217,17 +2316,17 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      6,
+      9,
+      13,
+      18
     ],
     "levels": [
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0,
+          "value": 0.08,
           "reward": {
             "type": "fragment",
             "value": 1,
@@ -2239,19 +2338,7 @@ window.GAME_TALENT_UPGRADE = {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0,
-          "reward": {
-            "type": "fragment",
-            "value": 1.25,
-            "perMatch": false
-          }
-        }
-      },
-      {
-        "effect": {
-          "type": "dice_pattern",
-          "pattern": "six",
-          "value": 0,
+          "value": 0.1,
           "reward": {
             "type": "fragment",
             "value": 1.5,
@@ -2263,10 +2350,10 @@ window.GAME_TALENT_UPGRADE = {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0,
+          "value": 0.12,
           "reward": {
             "type": "fragment",
-            "value": 1.75,
+            "value": 2,
             "perMatch": false
           }
         }
@@ -2275,10 +2362,22 @@ window.GAME_TALENT_UPGRADE = {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0,
+          "value": 0.14,
           "reward": {
             "type": "fragment",
-            "value": 2,
+            "value": 2.5,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 0.16,
+          "reward": {
+            "type": "fragment",
+            "value": 3,
             "perMatch": false
           }
         }
@@ -2289,53 +2388,59 @@ window.GAME_TALENT_UPGRADE = {
     "quality": "legend",
     "maxLevel": 6,
     "upCost": [
-      9,
-      13,
-      18,
-      24,
-      31
+      7,
+      10,
+      14,
+      19,
+      25
     ],
     "levels": [
       {
         "effect": {
           "type": "reincarnate",
           "inspThreshold": 40,
-          "attrRatio": 0.8
+          "attrRatio": 0.8,
+          "startInspiration": 8
         }
       },
       {
         "effect": {
           "type": "reincarnate",
           "inspThreshold": 36,
-          "attrRatio": 0.84
+          "attrRatio": 0.84,
+          "startInspiration": 8
         }
       },
       {
         "effect": {
           "type": "reincarnate",
           "inspThreshold": 32,
-          "attrRatio": 0.88
+          "attrRatio": 0.88,
+          "startInspiration": 10
         }
       },
       {
         "effect": {
           "type": "reincarnate",
           "inspThreshold": 28,
-          "attrRatio": 0.92
+          "attrRatio": 0.92,
+          "startInspiration": 10
         }
       },
       {
         "effect": {
           "type": "reincarnate",
           "inspThreshold": 24,
-          "attrRatio": 0.96
+          "attrRatio": 0.96,
+          "startInspiration": 12
         }
       },
       {
         "effect": {
           "type": "reincarnate",
           "inspThreshold": 20,
-          "attrRatio": 1
+          "attrRatio": 1,
+          "startInspiration": 12
         }
       }
     ]

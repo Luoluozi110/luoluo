@@ -6,7 +6,7 @@ const root = resolve('feihuaqi-playable/config');
 const arrayOptional = new Set(['album', 'synergies']);
 const keys = [
   ...globalThis.FeihuaConfigContract.REQUIRED_CONFIG_KEYS,
-  'album', 'synergies', 'npc-mechanics', 'talent-upgrade', 'narrative'
+  'album', 'synergies', 'npc-mechanics', 'talent-upgrade', 'narrative', 'sidequest-talents'
 ];
 const config = {};
 

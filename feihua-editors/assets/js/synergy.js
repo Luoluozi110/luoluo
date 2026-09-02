@@ -13,19 +13,30 @@
   const C = global.Common;
   const STYLE_NAME = { shi: "诗", ci: "词", lian: "联", any: "任意体" };
 
-  const SYN_EFFECT_TYPES = ["syn_pct", "on_win_bonus", "dice_plus", "crit", "comeback", "insp_battle_recover", "style_switch_pct", "manuscript_pct", "streak_pct", "palace_insp", "insp_on_quiz"];
+  const SYN_EFFECT_TYPES = ["syn_pct", "style_pct", "theme_pct", "palace_pct", "on_win_bonus", "dice_plus", "dice_pattern", "extra_dice_pct", "crit", "comeback", "battle_history_pct", "armory_pct", "study_bonus", "insp_on_win", "insp_turn_regen", "insp_battle_recover", "style_switch_pct", "manuscript_pct", "streak_pct", "palace_insp", "insp_on_quiz", "restraint_pct"];
   const SYN_EFFECT_LABELS = {
     syn_pct: "全局得分加成（整局论战得分 +X%）",
+    style_pct: "指定文体得分加成",
+    theme_pct: "指定题材得分加成",
+    palace_pct: "殿试得分加成",
     on_win_bonus: "以某体获胜时额外 +属性（呼应羁绊导向）",
     dice_plus: "灵感骰 +N（创作波动更稳健）",
+    dice_pattern: "骰组形态触发（六点/对子/递增/总点）",
+    extra_dice_pct: "每枚追加骰得分加成",
     crit: "暴击（概率触发得分倍率）",
     comeback: "逆境得分（灵感低于阈值时 +X%）",
+    battle_history_pct: "依据上一场结果得分",
+    armory_pct: "按持有文心数成长",
+    study_bonus: "败/平研习补偿",
+    insp_on_win: "胜利回复灵感",
+    insp_turn_regen: "低灵感回合回复",
     insp_battle_recover: "战后回灵感（低于阈值，限次数）",
     style_switch_pct: "换体得分（与上一场不同文体时 +X%）",
     manuscript_pct: "稿本成长（每若干稿页 +X%，有上限）",
     streak_pct: "连捷得分（同文风连胜达到次数时 +X%）",
     palace_insp: "殿试蓄能（每场开场回复灵感）",
-    insp_on_quiz: "答题回灵感（每局限次数）"
+    insp_on_quiz: "答题回灵感（每局限次数）",
+    restraint_pct: "藏锋得分（未发动论战主动文心时 +X%）"
   };
 
   const state = { list: [], editIndex: -1, form: null, _ready: false };
@@ -33,26 +44,41 @@
   /* ---------------- 效果（默认 / 归一化） ---------------- */
   function defaultEffect(type) {
     if (type === "syn_pct") return { type, value: 0.05 };
+    if (type === "style_pct") return { type, style: "shi", value: 0.08 };
+    if (type === "theme_pct") return { type, theme: "shanshui", value: 0.08 };
+    if (type === "palace_pct") return { type, value: 0.08 };
     if (type === "on_win_bonus") return { type, style: "any", value: 1 };
     if (type === "dice_plus") return { type, value: 1 };
+    if (type === "dice_pattern") return { type, pattern: "six", value: 0.08 };
+    if (type === "extra_dice_pct") return { type, value: 0.03, firstCostDiscount: 0 };
     if (type === "crit") return { type, chance: 0.12, mult: 1.4 };
     if (type === "comeback") return { type, threshold: 14, value: 0.05 };
+    if (type === "battle_history_pct") return { type, result: "nonwin", value: 0.08 };
+    if (type === "armory_pct") return { type, step: 4, value: 0.03, cap: 0.15 };
+    if (type === "study_bonus") return { type, value: 2, nextBattlePct: 0.08 };
+    if (type === "insp_on_win") return { type, value: 2 };
+    if (type === "insp_turn_regen") return { type, value: 2, thresholdRatio: 0.6 };
     if (type === "insp_battle_recover") return { type, threshold: 14, value: 2, maxTriggers: 2 };
     if (type === "style_switch_pct") return { type, value: 0.06, insight: 1 };
     if (type === "manuscript_pct") return { type, step: 2, value: 0.01, cap: 0.06 };
     if (type === "streak_pct") return { type, minStreak: 2, value: 0.05 };
     if (type === "palace_insp") return { type, value: 2 };
     if (type === "insp_on_quiz") return { type, value: 1, maxTriggers: 3 };
+    if (type === "restraint_pct") return { type, value: 0.08 };
     return { type, value: 0.05 };
   }
   function normalizeEffect(eff) {
     eff = eff || {};
     const type = SYN_EFFECT_TYPES.includes(eff.type) ? eff.type : "syn_pct";
-    const out = { type };
+    const out = { ...eff, type };
     if (type === "syn_pct") out.value = Number(eff.value) || 0;
-    else if (type === "on_win_bonus") {
+    else if (["style_pct", "on_win_bonus"].includes(type)) {
       out.style = ["shi", "ci", "lian", "any"].includes(eff.style) ? eff.style : "any";
       out.value = Number(eff.value) || 0;
+    }
+    else if (["theme_pct", "palace_pct", "extra_dice_pct", "battle_history_pct", "study_bonus", "insp_on_win", "insp_turn_regen", "dice_pattern", "armory_pct", "restraint_pct"].includes(type)) {
+      if (eff.value != null) out.value = Number(eff.value) || 0;
+      else delete out.value;
     }
     else if (type === "dice_plus") out.value = Number(eff.value) || 0;
     else if (type === "crit") { out.chance = Number(eff.chance) || 0; out.mult = Number(eff.mult) || 0; }
@@ -63,6 +89,17 @@
     else if (type === "streak_pct") { out.minStreak = Number(eff.minStreak) || 0; out.value = Number(eff.value) || 0; }
     else if (type === "palace_insp") out.value = Number(eff.value) || 0;
     else if (type === "insp_on_quiz") { out.value = Number(eff.value) || 0; out.maxTriggers = Number(eff.maxTriggers) || 0; }
+    out.effectId = String(eff.effectId || '').trim();
+    out.stackGroup = String(eff.stackGroup || '').trim();
+    // 旧版云端数据可能没有 stackMode；缺省与“字段被编辑器补写”为两件事。
+    // 只有云端明确提供该字段时才归一化，避免拉取后因补写默认值触发整模块误报。
+    if (Object.prototype.hasOwnProperty.call(eff, 'stackMode')) {
+      out.stackMode = ['add', 'max', 'replace'].includes(eff.stackMode) ? eff.stackMode : 'add';
+    } else {
+      delete out.stackMode;
+    }
+    if (!out.effectId) delete out.effectId;
+    if (!out.stackGroup) delete out.stackGroup;
     return out;
   }
   const talentName = id => (C.TALENTS && C.TALENTS[id]) ? C.TALENTS[id] : id;
@@ -94,7 +131,9 @@
   /* ---------------- 规范化 ---------------- */
   function normalize(s) {
     s = s || {};
+    const out = s && typeof s === "object" && !Array.isArray(s) ? JSON.parse(JSON.stringify(s)) : {};
     return {
+      ...out,
       id: String(s.id || "").trim(),
       name: String(s.name || "").trim(),
       desc: String(s.desc || "").trim(),
@@ -132,6 +171,8 @@
       else if (["comeback", "style_switch_pct", "manuscript_pct", "streak_pct"].includes(ef.type) && !(Number(ef.value) > 0)) errors.push("第 " + (i + 1) + " 条效果加成须 > 0");
       else if (["insp_battle_recover", "palace_insp", "insp_on_quiz"].includes(ef.type) && !(Number(ef.value) > 0)) errors.push("第 " + (i + 1) + " 条灵感回复须 > 0");
     });
+    const effectIds = s.effects.map(e => e.effectId).filter(Boolean);
+    if (new Set(effectIds).size !== effectIds.length) errors.push("同一羁绊内 effectId 不可重复");
     return { ok: errors.length === 0, errors };
   }
   function validateAll() {
@@ -143,16 +184,27 @@
     if (!ef || !ef.type) return "（无效果）";
     switch (ef.type) {
       case "syn_pct": return "论战得分 +" + Math.round((ef.value || 0) * 100) + "%";
+      case "style_pct": return (STYLE_NAME[ef.style] || ef.style) + "体得分 +" + Math.round((ef.value || 0) * 100) + "%";
+      case "theme_pct": return "指定题材得分 +" + Math.round((ef.value || 0) * 100) + "%";
+      case "palace_pct": return "殿试得分 +" + Math.round((ef.value || 0) * 100) + "%";
       case "on_win_bonus": return "以" + (STYLE_NAME[ef.style] || ef.style) + "出战获胜 +" + (ef.value || 0);
       case "dice_plus": return "灵感骰 +" + (ef.value || 0);
+      case "dice_pattern": return "骰组「" + (ef.pattern || 'six') + "」触发 +" + Math.round((ef.value || 0) * 100) + "%";
+      case "extra_dice_pct": return "每枚追加骰 +" + Math.round((ef.value || 0) * 100) + "%";
       case "crit": return Math.round((ef.chance || 0) * 100) + "% 概率得分 ×" + (ef.mult || 0);
       case "comeback": return "灵感≤" + (ef.threshold || 0) + "时得分 +" + Math.round((ef.value || 0) * 100) + "%";
+      case "battle_history_pct": return "上一场未胜时得分 +" + Math.round((ef.value || 0) * 100) + "%";
+      case "armory_pct": return "每 " + (ef.step || 4) + " 枚文心 +" + Math.round((ef.value || 0) * 100) + "%（上限 " + Math.round((ef.cap || 0) * 100) + "%）";
+      case "study_bonus": return "败/平研习 +" + (ef.value || 0);
+      case "insp_on_win": return "获胜回复 " + (ef.value || 0) + " 灵感";
+      case "insp_turn_regen": return "低灵感时每回合回复 " + (ef.value || 0);
       case "insp_battle_recover": return "战后灵感≤" + (ef.threshold || 0) + "回复 " + (ef.value || 0) + "（限 " + (ef.maxTriggers || 0) + " 次）";
       case "style_switch_pct": return "换体时得分 +" + Math.round((ef.value || 0) * 100) + "%、心得 +" + (ef.insight || 0);
       case "manuscript_pct": return "每 " + (ef.step || 0) + " 稿页得分 +" + Math.round((ef.value || 0) * 100) + "%（最多 " + Math.round((ef.cap || 0) * 100) + "%）";
       case "streak_pct": return "连捷 " + (ef.minStreak || 0) + " 场后得分 +" + Math.round((ef.value || 0) * 100) + "%";
       case "palace_insp": return "殿试每场灵感 +" + (ef.value || 0);
       case "insp_on_quiz": return "有效答题灵感 +" + (ef.value || 0) + "（限 " + (ef.maxTriggers || 0) + " 次）";
+      case "restraint_pct": return "未发动论战主动文心时得分 +" + Math.round((ef.value || 0) * 100) + "%";
       default: return ef.type;
     }
   }
@@ -220,6 +272,16 @@
   function effParamsHtml(ef) {
     if (ef.type === "syn_pct")
       return `<label>比例（0.05 = 5%）<input type="number" class="syn-val" value="${ef.value || 0}" step="0.01" min="0"/></label>`;
+    if (ef.type === "style_pct")
+      return `<label>文体<select class="syn-style">${["shi", "ci", "lian", "any"].map(s => `<option value="${s}" ${s === ef.style ? "selected" : ""}>${STYLE_NAME[s]}</option>`).join("")}</select></label><label>得分比例<input type="number" class="syn-val" value="${ef.value || 0}" step="0.01" min="0"/></label>`;
+    if (["theme_pct", "palace_pct", "extra_dice_pct", "battle_history_pct", "study_bonus", "insp_on_win", "insp_turn_regen", "armory_pct", "restraint_pct"].includes(ef.type)) {
+      const extra = ef.type === 'armory_pct' ? `<label>每几枚<input type="number" class="syn-step" value="${ef.step || 4}" step="1" min="1"/></label><label>上限<input type="number" class="syn-cap" value="${ef.cap || 0.15}" step="0.01" min="0"/></label>`
+        : ef.type === 'insp_turn_regen' ? `<label>触发比例<input type="number" class="syn-threshold-ratio" value="${ef.thresholdRatio || 0.6}" step="0.05" min="0" max="1"/></label>`
+        : ef.type === 'study_bonus' ? `<label>下场得分<input type="number" class="syn-next-pct" value="${ef.nextBattlePct || 0}" step="0.01" min="0"/></label>` : '';
+      return `<label>${['study_bonus','insp_on_win','insp_turn_regen'].includes(ef.type) ? '数值' : '比例'}<input type="number" class="syn-val" value="${ef.value || 0}" step="0.01" min="0"/></label>${extra}`;
+    }
+    if (ef.type === "dice_pattern")
+      return `<label>骰组模式<select class="syn-pattern">${['six','pair','all_distinct','low_then_high','ascending','first_last_equal','low_and_high','single','all_high','total','exact_total','total_multiple','total_tiers','extremes'].map(p => `<option value="${p}" ${p === ef.pattern ? 'selected' : ''}>${p}</option>`).join('')}</select></label><label>得分比例<input type="number" class="syn-val" value="${ef.value || 0}" step="0.01" min="0"/></label>`;
     if (ef.type === "on_win_bonus")
       return `<label>出战体<select class="syn-style">${["shi", "ci", "lian", "any"].map(s => `<option value="${s}" ${s === ef.style ? "selected" : ""}>${STYLE_NAME[s]}</option>`).join("")}</select></label>
               <label>额外 +值<input type="number" class="syn-val" value="${ef.value || 0}" step="1" min="0"/></label>`;
@@ -257,6 +319,11 @@
       <div class="syn-eff-row" data-i="${i}">
         <select class="syn-eff-type">${SYN_EFFECT_TYPES.map(t => `<option value="${t}" ${t === ef.type ? "selected" : ""}>${SYN_EFFECT_LABELS[t]}</option>`).join("")}</select>
         ${effParamsHtml(ef)}
+        <label>效果 ID<input class="syn-effect-id" value="${C.esc(ef.effectId || '')}" placeholder="如 S01-E1"/></label>
+        <label>叠加组<input class="syn-stack-group" value="${C.esc(ef.stackGroup || '')}" placeholder="如 synergy-score"/></label>
+        <label>叠加<select class="syn-stack-mode">${['add','max','replace'].map(x => `<option value="${x}" ${x === (ef.stackMode || 'add') ? 'selected' : ''}>${x}</option>`).join('')}</select></label>
+        <label style="grid-column:1/-1">高级条件 when（JSON）<textarea class="syn-when-json" rows="2" placeholder='{"themes":["yongwu"],"inspirationRatioMin":0.6}'>${C.esc(ef.when ? JSON.stringify(ef.when) : '')}</textarea></label>
+        <label style="grid-column:1/-1">触发奖励 reward（JSON）<textarea class="syn-reward-json" rows="2" placeholder='{"type":"inspiration","value":2,"perMatch":false}'>${C.esc(ef.reward ? JSON.stringify(ef.reward) : '')}</textarea></label>
         <button class="opt-del syn-eff-del" title="删除效果">×</button>
       </div>`).join("") + `<button class="btn sm opt-add syn-eff-add">＋ 添加效果</button>`;
   }
@@ -290,7 +357,11 @@
     return {
       id: form.id.trim(), name: form.name.trim(), desc: form.desc.trim(),
       members: form.members.slice(),
-      effects: form.effects.map(normalizeEffect)
+      effects: form.effects.map((effect, i) => {
+        const out = normalizeEffect(effect);
+        if (!out.effectId) out.effectId = `${form.id.trim() || 'SXX'}-E${i + 1}`;
+        return out;
+      })
     };
   }
   function saveEditor() {
@@ -298,6 +369,8 @@
     state.form.id = document.getElementById("syn-id").value;
     state.form.name = document.getElementById("syn-name").value;
     state.form.desc = document.getElementById("syn-desc").value;
+    const invalid = document.querySelector("#synOverlay :invalid");
+    if (invalid) { invalid.reportValidity(); return; }
     const s = toSynergy(state.form);
     const { ok, errors } = validate(s, state.list, state.editIndex);
     const msg = document.getElementById("synMsg");
@@ -438,6 +511,23 @@
     } else if (t.classList.contains("syn-min-streak")) {
       const i = Number(t.closest(".syn-eff-row").dataset.i);
       state.form.effects[i].minStreak = Number(t.value) || 0;
+    } else if (t.classList.contains("syn-pattern")) {
+      state.form.effects[Number(t.closest(".syn-eff-row").dataset.i)].pattern = t.value;
+    } else if (t.classList.contains("syn-effect-id")) {
+      state.form.effects[Number(t.closest(".syn-eff-row").dataset.i)].effectId = t.value.trim();
+    } else if (t.classList.contains("syn-stack-group")) {
+      state.form.effects[Number(t.closest(".syn-eff-row").dataset.i)].stackGroup = t.value.trim();
+    } else if (t.classList.contains("syn-stack-mode")) {
+      state.form.effects[Number(t.closest(".syn-eff-row").dataset.i)].stackMode = t.value;
+    } else if (t.classList.contains("syn-threshold-ratio")) {
+      state.form.effects[Number(t.closest(".syn-eff-row").dataset.i)].thresholdRatio = Number(t.value) || 0;
+    } else if (t.classList.contains("syn-next-pct")) {
+      state.form.effects[Number(t.closest(".syn-eff-row").dataset.i)].nextBattlePct = Number(t.value) || 0;
+    } else if (t.classList.contains("syn-when-json") || t.classList.contains("syn-reward-json")) {
+      const i = Number(t.closest(".syn-eff-row").dataset.i);
+      const key = t.classList.contains("syn-when-json") ? 'when' : 'reward';
+      try { if (t.value.trim()) state.form.effects[i][key] = JSON.parse(t.value); else delete state.form.effects[i][key]; t.setCustomValidity(''); }
+      catch (_) { t.setCustomValidity('请输入有效 JSON'); }
     }
   }
 

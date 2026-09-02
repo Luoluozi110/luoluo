@@ -1,6 +1,6 @@
 /** modals.js —— 题卡 / 奇遇卡 / 文心卡 / 支线选择 / 天象 / 名胜 */
-import { ATTR_NAMES } from '../engine/rules.js';
-import { PASSIVE_MAX, ACTIVE_MAX } from '../engine/game.js';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260831firstrun1';
+import { PASSIVE_MAX, ACTIVE_MAX } from '../engine/game.js?v=20260902wenxinbonds1';
 import { LANDMARK_ART, EVENT_VIGNETTE, QUIZ_MARK } from './svg.js';
 import { createCountdown } from './timer.js';
 import { play } from './audio.js';
@@ -32,6 +32,15 @@ const NARRATIVE_DEFAULTS = {
       title: '论战六步',
       text: '① 遭遇：先看对手是否有招牌与破绽\n② 审题：确认题目题材，并留意当朝风潮\n③ 选文体：看属性底盘与本体专精\n④ 选风格：看题材、文风和连捷加成\n⑤ 掷灵感骰：决定临场发挥，可花灵感追加\n⑥ 算分对决：逐项揭示格律、意象、立意、骰子和修正\n\n记住：先看题，再选体；先算资源，再决定要不要追加。',
       button: '开始第一场论战'
+    }
+  },
+  onboarding: {
+    intro: {
+      title: '入 门 卷',
+      text: '你初次踏上科场，先以「入门卷」护持：前几场对手更温和，首战即便落败，也有师友点拨替你补回灵感。\n\n这是为新手准备的受控试炼——输赢都照常记录，资源代价也照常，但你能在看懂论战之后，再进入标准难度。\n\n随时可在右上角菜单关闭入门卷；关闭后立刻按标准规则对局。',
+      button: '开始体验',
+      close: '我已是老手，关闭入门卷',
+      closeConfirm: '关闭后，本局剩余对局将立即按标准难度进行，且不再有首败点拨。\n仍可随时重开新局，重新体验入门卷。'
     }
   },
   prologue: {
@@ -402,12 +411,113 @@ export class Modals {
   }
 
   /* ---------------------------------------------------- 文心卡 */
-  async showTalentGain(t) {
+  _synergyView(sy) {
+    const configured = (this.cfg.synergies || []).find(item => item.id === (typeof sy === 'string' ? sy : (sy && sy.id)));
+    const full = typeof sy === 'string' ? configured : { ...(configured || {}), ...(sy || {}), effects: (sy && sy.effects) || (configured && configured.effects) || [] };
+    if (!full) return null;
+    const held = new Set(this.game && this.game.s
+      ? [...(this.game.s.passive || []), ...(this.game.s.active || [])].map(t => t.id)
+      : []);
+    const members = (full.members || []).map(member => {
+      const id = typeof member === 'string' ? member : member.id;
+      const configured = this.cfg.talentById && this.cfg.talentById.get(id);
+      return {
+        id,
+        name: (typeof member === 'object' && member.name) || (configured && configured.name) || id,
+        owned: typeof member === 'object' && member.owned != null ? !!member.owned : held.has(id)
+      };
+    });
+    const missing = Array.isArray(full.missing)
+      ? full.missing.slice()
+      : members.filter(member => !member.owned).map(member => member.name);
+    return {
+      ...full,
+      members,
+      missing,
+      active: full.active != null ? !!full.active : missing.length === 0,
+      effects: Array.isArray(full.effects) ? full.effects : []
+    };
+  }
+
+  _synergyCardHtml(sy) {
+    const view = this._synergyView(sy);
+    if (!view) return '';
+    const status = view.active ? '已激活' : (view.missing.length === 1 ? `还差「${view.missing[0]}」` : `还差 ${view.missing.length} 枚`);
+    const members = view.members.map(member => `<span class="bond-member ${member.owned ? 'owned' : 'missing'}">${member.owned ? '●' : '○'} ${esc(member.name)}</span>`).join('<span class="bond-plus">＋</span>');
+    const effects = view.effects.length
+      ? view.effects.map(effect => esc(synergyEffectText(effect))).join('<br>')
+      : esc(view.desc || '同时持有全部成员后自动生效');
+    return `<section class="wenxin-bond-card ${view.active ? 'active' : ''}">
+      <div class="bond-card-head"><b>✦ ${esc(view.name)}</b><span>${esc(status)}</span></div>
+      <div class="bond-members">${members}</div>
+      <div class="bond-effect"><strong>羁绊效果</strong>${effects}</div>
+      ${view.desc ? `<p>${esc(view.desc)}</p>` : ''}
+    </section>`;
+  }
+
+  _talentSynergyHtml(talentId) {
+    const related = (this.cfg.synergies || []).filter(sy => (sy.members || []).includes(talentId));
+    if (!related.length) return '<div class="wenxin-bond-empty">暂无相关羁绊</div>';
+    return `<div class="wenxin-bond-section">
+      <div class="up-next-h">相关羁绊 · ${related.length} 组</div>
+      <div class="wenxin-bond-list">${related.map(sy => this._synergyCardHtml(sy)).join('')}</div>
+    </div>`;
+  }
+
+  showSynergyDetail(sy) {
+    const view = this._synergyView(sy);
+    if (!view) return Promise.resolve();
+    const ov = this.open(`<div class="modal scroll-frame paper synergy-detail-modal">
+      <div class="mtitle"><h2>${esc(view.name)}</h2><span class="mtag">文心羁绊</span></div>
+      <hr class="hr-ink"/>
+      <div class="wenxin-bond-list">${this._synergyCardHtml(view)}</div>
+      <div class="dianggu" style="margin-top:12px;color:var(--mo-3)">同时持有全部成员后自动激活；替换掉任一成员会自然解除。</div>
+      <div class="btn-row"><button class="btn btn-primary" data-ok>知道了</button></div>
+    </div>`, 'synergy-detail');
+    return new Promise(resolve => ov.querySelector('[data-ok]').addEventListener('click', () => { this.close(ov); resolve(); }));
+  }
+
+  showSynergyCatalog() {
+    const held = new Set(this.game && this.game.s
+      ? [...(this.game.s.passive || []), ...(this.game.s.active || [])].map(t => t.id)
+      : []);
+    const related = (this.cfg.synergies || []).map(sy => ({
+      sy,
+      held: (sy.members || []).filter(id => held.has(id)).length
+    })).filter(item => item.held > 0).sort((a, b) => {
+      const aActive = a.held === (a.sy.members || []).length;
+      const bActive = b.held === (b.sy.members || []).length;
+      return Number(bActive) - Number(aActive) || b.held - a.held || String(a.sy.id).localeCompare(String(b.sy.id));
+    });
+    const active = related.filter(item => item.held === (item.sy.members || []).length).length;
+    const body = related.length
+      ? related.map(item => this._synergyCardHtml(item.sy)).join('')
+      : '<div class="wenxin-bond-empty">获得第一枚文心后，这里会列出与它相关的全部羁绊。</div>';
+    const ov = this.open(`<div class="modal scroll-frame paper synergy-catalog-modal">
+      <div class="mtitle"><h2>羁绊图谱</h2><span class="mtag">已激活 ${active} · 可追寻 ${related.length}</span></div>
+      <hr class="hr-ink"/>
+      <div class="dianggu" style="margin-bottom:10px">从右侧文心栏随时回看组成、缺失成员与完整效果；点击单枚文心也会只显示与它相关的羁绊。</div>
+      <div class="wenxin-bond-list">${body}</div>
+      <div class="btn-row"><button class="btn btn-primary" data-ok>收起图谱</button></div>
+    </div>`, 'synergy-catalog');
+    return new Promise(resolve => ov.querySelector('[data-ok]').addEventListener('click', () => { this.close(ov); resolve(); }));
+  }
+
+  async showTalentGain(t, meta = {}) {
+    const level = Math.max(1, Number(meta.level) || 1);
+    const maxLevel = Math.max(level, Number(meta.maxLevel) || level);
+    const hints = Array.isArray(meta.synergies) ? meta.synergies : [];
+    const synergyHtml = hints.length ? `<div class="wenxin-bond-section gain-bonds">
+      <div class="up-next-h">可构成羁绊 · ${hints.length} 组</div>
+      <div class="wenxin-bond-list">${hints.map(h => this._synergyCardHtml(h)).join('')}</div>
+    </div>` : '';
     const ov = this.open(`
       <div class="talent-card paper ${t.kind === 'active' ? 'act' : ''}">
-        <div class="kind">${t.kind === 'active' ? `主动文心　消耗灵感 ${t.cost || 1}` : '被动文心　常驻生效'}</div>
+        <div class="kind">${t.kind === 'active' ? `主动文心　消耗灵感 ${t.cost || 1}` : '被动文心　常驻生效'}　·　Lv ${level}/${maxLevel}</div>
         <h3>${esc(t.name)}</h3>
+        <div class="up-next-h" style="color:var(--zhu);margin-bottom:8px">✦ 已按当前等级完整生效</div>
         <div class="efx">${talentEffectText(t)}</div>
+        ${synergyHtml}
         <div class="dianggu">${esc(personalize(t.text || '', this.playerName))}</div>
         <div class="dianggu" style="margin-top:10px;color:var(--mo-3)">获得后可在右侧“文心”栏查看；点击已有文心，可查看当前等级、下一级效果与升级所需灵感。</div>
         <div style="text-align:center;margin-top:16px"><button class="btn btn-primary" data-ok>收入囊中</button></div>
@@ -444,6 +554,7 @@ export class Modals {
         ? `主动文心　消耗灵感 ${current.cost != null ? current.cost : 1}`
         : '被动文心　常驻生效';
       const lvlLine = up ? `　·　${QLABEL[up.quality] || up.quality}　Lv ${level}/${max}` : '';
+      const synergyHtml = this._talentSynergyHtml(id);
 
       let nextHtml = '';
       let btnHtml = `<div class="btn-row"><button class="btn btn-ink" data-ok>知道了</button></div>`;
@@ -474,6 +585,7 @@ export class Modals {
           <div class="kind">${kindLine}${lvlLine}</div>
           <h3>${esc(current.name)}${up ? `　<span class="lvbadge">Lv ${level}/${max}</span>` : ''}</h3>
           <div class="efx">${talentEffectText(current)}</div>
+          ${synergyHtml}
           ${nextHtml}
           <div class="dianggu">${esc(personalize(current.text || '', this.playerName))}</div>
           <div class="dianggu" style="margin-top:10px;color:var(--mo-3)">升级只消耗灵感；主动文心需在论战中发动，被动文心会常驻生效。</div>
@@ -618,10 +730,12 @@ export class Modals {
     const route = journal.route || {};
     const state = journal.state || {};
     const rows = (journal.choices || []).map(choice => `<div class="dianggu" style="margin-top:8px;text-align:left">${esc(choice.actId || '行路')}：${esc(choice.axis || choice.optionId || '未定')}</div>`).join('') || '<div class="dianggu">尚未落笔。</div>';
+    const guides = Array.isArray(journal.guides) ? journal.guides : [];
+    const guideText = guides.length ? `<div class="dianggu" style="margin-top:10px;text-align:left"><b>同行引路</b>：${guides.map(npc => `${esc(npc.name)}·${esc(npc.title || '')}`).join('；')}<br/>${guides.map(npc => esc(npc.text || '')).filter(Boolean).join(' ')}</div>` : '';
     const offer = Array.isArray(journal.talentOffer) ? journal.talentOffer : [];
     const offerText = offer.length ? `<div class="dianggu" style="margin-top:10px;text-align:left"><b>行路凝心候选</b>：${offer.map(t => esc(t.name)).join('、')}<br/>${state.talentClaimedId ? '已收入一枚限定文心。' : (state.talentOfferExpired ? '候选已随终战散去。' : `可于任一名胜支付 ${Number(state.talentClaimCost) || 6} 灵感领取一枚。`)}</div>` : '';
     return new Promise(resolve => {
-      const ov = this.open(`<div class="modal scroll-frame paper" style="width:min(560px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center"><div class="kind">行 卷</div><div class="title-ink" style="font-size:34px">${esc(route.name || '未入支线')}</div><hr class="hr-ink"/><div style="color:var(--mo-2)">当前幕次：${esc(state.stage || 'none')}　功业：${Number(state.merit) || 0}</div>${rows}${offerText}<div class="btn-row"><button class="btn btn-primary" data-ok>合卷</button></div></div>`, 'sidequest-journal');
+      const ov = this.open(`<div class="modal scroll-frame paper" style="width:min(560px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center"><div class="kind">行 卷</div><div class="title-ink" style="font-size:34px">${esc(route.name || '未入支线')}</div><hr class="hr-ink"/><div style="color:var(--mo-2)">当前幕次：${esc(state.stage || 'none')}　功业：${Number(state.merit) || 0}</div>${guideText}${rows}${offerText}<div class="btn-row"><button class="btn btn-primary" data-ok>合卷</button></div></div>`, 'sidequest-journal');
       ov.querySelector('[data-ok]').addEventListener('click', () => { this.close(ov); resolve(); });
     });
   }
@@ -842,7 +956,7 @@ export class Modals {
         <div style="font-size:17px;line-height:2">${laps} 圈科举路已尽，今登金殿。<br/>
           主考官出题 ${sweepN} 道：<b>${themeLabels.join('</b>、<b>')}</b>${isSpiral ? '，一场定榜。' : '，须连场应对。'}<br/>
           <span style="color:var(--zhu)">${isSpiral ? '此场取胜' : `${sweepN} 场全胜`}，可得「${esc((jb || {}).name || '金榜题名')}」圆满分 +${sweepScore}。</span></div>
-        ${sideQuestFinal ? `<div class="dianggu" style="margin-top:12px;text-align:left"><b>行卷 · ${esc(sideQuestFinal.route.name)}</b><br/>${sideQuestFinal.state.finalChoice === 'carry' ? `携道赴问：本场作品得分将获得路线功业加成。` : '放下此道：你以从容进入终问。'}</div>` : ''}
+        ${sideQuestFinal ? `<div class="dianggu" style="margin-top:12px;text-align:left"><b>行卷 · ${esc(sideQuestFinal.route.name)}</b><br/>${sideQuestFinal.state.finalChoice === 'carry' ? `携道赴问：本场作品得分将获得路线功业加成。` : '放下此道：你以从容进入终问。'}${sideQuestFinal.primaryNpc ? `<br/>主考：${esc(sideQuestFinal.primaryNpc.name)} · ${esc(sideQuestFinal.primaryNpc.title || '')}` : ''}${sideQuestFinal.secondaryNpc ? `<br/>副考：${esc(sideQuestFinal.secondaryNpc.name)} · ${esc(sideQuestFinal.secondaryNpc.title || '')}` : ''}</div>` : ''}
         ${String(inkSummary || '').trim() ? `<div class="dianggu" style="margin-top:12px;text-align:left">${esc(String(inkSummary).trim())}</div>` : ''}
         ${questionCards ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">殿 试 三 问</div>${questionCards}` : ''}
         ${echoCards ? `<div style="margin-top:14px;font-size:14px;letter-spacing:.16em;color:var(--mo-2)">旧 选 回 声</div>${echoCards}` : ''}
@@ -976,6 +1090,66 @@ export class Modals {
       ov.querySelector('[data-back]').addEventListener('click', () => finish(null));
     });
   }
+
+  /** 入门卷说明：开局一次，向新手解释受控试炼；提供「关闭入门卷」入口。 */
+  async showOnboardingIntro() {
+    const N = narrativeOf(this.cfg);
+    const o = (N.onboarding && N.onboarding.intro) || {};
+    const title = o.title || '入 门 卷';
+    const text = o.text || '你初次踏上科场，先以「入门卷」护持：前几场对手更温和，首战即便落败，也有师友点拨替你补回灵感。';
+    const btn = o.button || '开始体验';
+    const close = o.close || '我已是老手，关闭入门卷';
+    const ov = this.open(`
+      <div class="modal scroll-frame paper ob-intro" style="width:min(600px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
+        <div class="kind">新 手 护 持</div>
+        <div class="title-ink" style="font-size:36px;text-align:center">${esc(title)}</div>
+        <hr class="hr-ink"/>
+        <div class="stage-story" style="font-size:15.5px;line-height:2;letter-spacing:.03em;text-align:left;white-space:pre-line">${esc(text)}</div>
+        <div class="btn-row" style="margin-top:16px">
+          <button class="btn btn-ink" data-close-ob>${esc(close)}</button>
+          <button class="btn btn-primary" data-ok>${esc(btn)}</button>
+        </div>
+      </div>`, 'ob-intro');
+    play('stage');
+    const choice = await new Promise(r => {
+      ov.querySelector('[data-ok]').addEventListener('click', () => { this.close(ov); r('ok'); });
+      ov.querySelector('[data-close-ob]').addEventListener('click', () => { this.close(ov); r('close'); });
+    });
+    if (this.game && this.game.s && this.game.s.onboarding) {
+      this.game.s.onboarding.introSeen = true;
+      if (choice === 'close') {
+        this.game.s.onboarding.disabledByPlayer = true;
+        this.game.onForceSave?.();
+        this.game.ui?.onState?.(this.game.s);
+      }
+    }
+    return choice;
+  }
+
+  /** 设置菜单中的「关闭入门卷」确认。 */
+  confirmCloseOnboarding() {
+    if (!this.game || !this.game.s || !this.game.s.onboarding) return;
+    const N = narrativeOf(this.cfg);
+    const o = (N.onboarding && N.onboarding.intro) || {};
+    const confirmText = o.closeConfirm || '关闭后，本局剩余对局将立即按标准难度进行，且不再有首败点拨。';
+    const ov = this.open(`
+      <div class="modal scroll-frame paper ob-confirm" style="width:min(460px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));text-align:center">
+        <div class="mtitle"><h2>关闭入门卷</h2></div>
+        <hr class="hr-ink"/>
+        <p style="font-size:15px;line-height:1.95;color:var(--mo-2);white-space:pre-line">${esc(confirmText)}</p>
+        <div class="btn-row" style="margin-top:14px">
+          <button class="btn btn-ink" data-cancel>再想想</button>
+          <button class="btn btn-primary" data-confirm>确认关闭</button>
+        </div>
+      </div>`, 'ob-confirm');
+    ov.querySelector('[data-cancel]').addEventListener('click', () => this.close(ov));
+    ov.querySelector('[data-confirm]').addEventListener('click', () => {
+      this.game.s.onboarding.disabledByPlayer = true;
+      this.game.onForceSave?.();
+      this.game.ui?.onState?.(this.game.s);
+      this.close(ov);
+    });
+  }
 }
 
 /* ------------------------------------------------------- 文本化 */
@@ -1016,7 +1190,7 @@ export function talentEffectText(t) {
       const discount = Number(e.firstCostDiscount) || 0;
       return discount ? `首枚追加少耗 ${discount} 灵感；${pct}` : pct;
     }
-    case 'extra_dice_chain': return `支付首枚续掷后自动续得第二枚骰；若自动骰不低于首枚续骰，得分 +${Math.round((e.value || 0) * 100)}%`;
+    case 'extra_dice_chain': return `支付首枚续掷后自动续得第二枚骰；若自动骰不低于首枚续骰，得分 +${Math.round((e.value || 0) * 100)}%${e.refund ? `，并返还 ${e.refund} 灵感` : ''}`;
     case 'dice_transform':
       if (e.mode === 'first_floor') return `本场首枚灵感骰最低视为 ${e.floor || 4} 点，并禁止追加骰${e.value ? `；得分 +${Math.round(e.value * 100)}%` : ''}`;
       if (e.mode === 'polarize') return `至少两枚骰时，将最左最低骰化为 1、最右最高骰化为 6${e.value ? `；得分 +${Math.round(e.value * 100)}%` : ''}`;
@@ -1045,12 +1219,14 @@ export function talentEffectText(t) {
       }
       return s;
     }
+    case 'syn_pct': return `论战得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'battle_history_pct': return e.condition === 'repeat_style' ? `沿用上一场文体，得分 +${Math.round((e.value || 0) * 100)}%${e.previousWinBonus ? `；上场获胜再 +${Math.round(e.previousWinBonus * 100)}%` : ''}` : e.condition === 'switch_style' ? `换用上一场不同文体，得分 +${Math.round((e.value || 0) * 100)}%${e.previousNonWinBonus ? `；上场未胜再 +${Math.round(e.previousNonWinBonus * 100)}%` : ''}` : `上一场平或负，得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'weakness_reward': return `首次命中对手公开破绽：${e.reward && e.reward.value ? `灵感 +${e.reward.value}` : ''}${e.value ? `；得分 +${Math.round(e.value * 100)}%` : ''}`;
     case 'seal_signature': return `支付灵感封住对手本场招牌；自身得分 ${Math.round((e.penalty || 0) * 100)}%`;
     case 'dice_commitment': return e.condition === 'none_paid' ? `本场不购买追加骰，得分 +${Math.round((e.value || 0) * 100)}%` : `本场恰购买一枚追加骰，得分 +${Math.round((e.value || 0) * 100)}%${e.firstCostDiscount ? `；首枚追加少耗 ${e.firstCostDiscount} 灵感` : ''}`;
     case 'restraint_pct': return `本场未发动主动文心，得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'style_switch_pct': return `换用不同于上一场的文体：得分 +${Math.round((e.value || 0) * 100)}%，心得 +${e.insight || 0}`;
+    case 'streak_pct': return `同文风连捷达到 ${e.minStreak || 2} 场，得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'manuscript_pct': return `每持有 ${e.step || 2} 页稿本，得分 +${Math.round((e.value || 0) * 100)}%（上限 ${Math.round((e.cap || 0) * 100)}%）`;
     case 'copy_affinity': {
       const r = e.ratio != null ? e.ratio : 0.6;
@@ -1070,23 +1246,40 @@ export function talentEffectText(t) {
     case 'insp_on_win': return `每场论战取胜，灵感 +${e.value || 0}`;
     case 'draw_bonus': return `平分秋色时，出战文体额外 +${e.value || 0}`;
     case 'insp_on_talent': return `每获得一枚新文心，灵感 +${e.value || 0}`;
-    case 'style_pct': return `以${S[e.style] || e.style}出战，得分 +${Math.round((e.value || 0) * 100)}%`;
-    case 'theme_pct': return `指定题材出战，得分 +${Math.round((e.value || 0) * 100)}%`;
+    case 'style_pct': return `以${S[e.style] || e.style}出战，得分 +${Math.round((e.value || 0) * 100)}%${e.singleDieBonus ? `；仅用一骰再 +${Math.round(e.singleDieBonus * 100)}%` : ''}`;
+    case 'theme_pct': return `指定题材出战，得分 +${Math.round((e.value || 0) * 100)}%${e.reward ? `；触发后获得 ${e.reward.value || 0} ${e.reward.type || ''}` : ''}`;
     case 'streak_mult': return `气势连捷收益 ×${(1 + (e.value || 0)).toFixed(2)}`;
     case 'insp_floor': return `每场结算后灵感至少为 ${e.value || 0}`;
     case 'lucky_six': return `任一灵感骰掷出六点，本场得分 ×${e.mult || 0}`;
     case 'comeback': return `灵感 ≤${e.threshold || 0} 时，本场得分 +${Math.round((e.value || 0) * 100)}%`;
-    case 'armory_pct': return `每拥有 ${e.step || 0} 枚文心，六维算分属性 +${Math.round((e.value || 0) * 100)}%`;
-    case 'study_bonus': return `败/平研习补偿属性额外 +${e.value || 0}`;
-    case 'palace_insp': return `殿试每场开场，灵感 +${e.value || 0}`;
+    case 'armory_pct': return `每拥有 ${e.step || 0} 枚文心，六维算分属性 +${Math.round((e.value || 0) * 100)}%${e.cap ? `（上限 ${Math.round(e.cap * 100)}%）` : ''}`;
+    case 'study_bonus': return `败/平研习补偿属性额外 +${e.value || 0}${e.nextBattlePct ? `；下一场得分 +${Math.round(e.nextBattlePct * 100)}%` : ''}`;
+    case 'palace_insp': return `殿试每场开场，灵感 +${e.value || 0}${e.startValue ? `；入场先 +${e.startValue}` : ''}`;
     case 'start_insp': return `获得时，灵感一次性 +${e.value || 0}`;
-    case 'insp_turn_regen': return `持有时，每回合开始恢复灵感 +${e.value || 0}`;
+    case 'insp_turn_regen': return `持有时，每回合开始恢复灵感 +${e.value || 0}${e.thresholdRatio ? `（低于上限 ${Math.round(e.thresholdRatio * 100)}% 时）` : ''}${e.onTalent ? `；新得文心时 +${e.onTalent}` : ''}`;
     case 'insp_on_quiz': return `答对/完成抉择额外 +${e.value || 0} 灵感（每局最多 ${e.maxTriggers || 0} 次）`;
     case 'insp_battle_recover': return `战后灵感 ≤${e.threshold || 0} 时恢复 ${e.value || 0}（每局最多 ${e.maxTriggers || 0} 次）`;
-    case 'insp_max': return `获得时，本局灵感上限永久 +${e.value || 0}（同类扩容互斥）`;
-    case 'reincarnate': return `殿试结算时若剩余灵感 ≥ ${Number(e.inspThreshold) || 0}，下一局继承本局属性的 ${Math.round((Number(e.attrRatio) || 0) * 100)}%，并保留此文心与当前等级`;
+    case 'insp_max': return `获得时，本局灵感上限永久 +${e.value || 0}${e.fillRatio ? `，并立即补充扩容量的 ${Math.round(e.fillRatio * 100)}%` : ''}（同类扩容互斥）`;
+    case 'reincarnate': return `${e.startInspiration ? `获得时灵感 +${e.startInspiration}；` : ''}殿试结算时若剩余灵感 ≥ ${Number(e.inspThreshold) || 0}，下一局继承本局属性的 ${Math.round((Number(e.attrRatio) || 0) * 100)}%，并保留此文心与当前等级`;
     default: return t.desc || '效果由配置定义';
   }
+}
+
+/** 羁绊详情使用：沿用文心效果文案，并把发动条件补成可查询的完整句子。 */
+export function synergyEffectText(effect) {
+  const e = effect || {};
+  let text = talentEffectText({ effect: e, desc: e.type || '羁绊效果' });
+  const when = e.when || {};
+  const conditions = [];
+  if (Array.isArray(when.styles) && when.styles.length) conditions.push(`限${when.styles.map(style => ({shi:'诗',ci:'词',lian:'联'}[style] || style)).join('、')}体`);
+  if (Array.isArray(when.themes) && when.themes.length) conditions.push(`限${when.themes.join('、')}题材`);
+  if (Array.isArray(when.phases) && when.phases.length) conditions.push(`限${when.phases.join('、')}阶段`);
+  if (when.inspirationRatioMin != null) conditions.push(`灵感至少为上限 ${Math.round(Number(when.inspirationRatioMin) * 100)}%`);
+  if (when.inspirationRatioMax != null) conditions.push(`灵感不高于上限 ${Math.round(Number(when.inspirationRatioMax) * 100)}%`);
+  if (Array.isArray(when.usedTalents) && when.usedTalents.length) conditions.push(`需发动${when.usedTalents.map(id => `「${id}」`).join('、')}`);
+  if (Array.isArray(when.usedAnyTalents) && when.usedAnyTalents.length) conditions.push('需发动指定主动文心之一');
+  if (conditions.length) text += `（${conditions.join('；')}）`;
+  return text;
 }
 
 export function skyEffectText(card) {
@@ -1103,6 +1296,26 @@ export function skyEffectText(card) {
 }
 
 /** 传说卡全屏金色粒子 */
+/**
+ * 入门卷·师友点拨复盘卡（P1/P2）。只使用玩家已看见的公开信息，不泄露隐藏意图。
+ * 在战斗结算 verdict 阶段由 battle.js 注入到对决台。
+ * @param {object} out 结算结果（out.mech?.wea?.hit 为公开结算信息，用于措辞降级）
+ */
+export function mentorAidCardHTML(out = {}) {
+  const hit = !!(out && out.mech && out.mech.wea && out.mech.wea.hit);
+  const lossLine = hit
+    ? '本场已命中对手公开破绽，惜乎整体仍逊一筹。'
+    : '本场主要失分：未充分借对手公开破绽之力。';
+  return `
+    <div class="ob-review-card">
+      <div class="ob-rc-title">师 友 点 拨</div>
+      <div class="ob-rc-body">此战虽败，你已经有所领悟。</div>
+      <div class="ob-rc-gains">师友替你补回灵感 <b>2</b></div>
+      <div class="ob-rc-loss">${esc(lossLine)}</div>
+      <div class="ob-rc-next">下一场先查看对手研判（公开破绽），再决定是否追加灵感骰。</div>
+    </div>`;
+}
+
 export function goldBurst(ov, n = 60) {
   const box = document.createElement('div');
   box.className = 'gold-particles';
