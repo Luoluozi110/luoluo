@@ -56,7 +56,10 @@ window.GAME_NPCS = [
             "noAntiRepeat": true,
             "description": "本场准备使用诗体"
           }
-        }
+        },
+        "difficultyRole": "tutorial",
+        "beginnerWeight": 100,
+        "standardWeight": 100
       },
       {
         "id": "chen_yanqiu",
@@ -106,7 +109,10 @@ window.GAME_NPCS = [
             "noAntiRepeat": true,
             "description": "本场准备使用词体"
           }
-        }
+        },
+        "difficultyRole": "tutorial",
+        "beginnerWeight": 100,
+        "standardWeight": 100
       },
       {
         "id": "wu_shuang_er",
@@ -150,7 +156,10 @@ window.GAME_NPCS = [
             "noAntiRepeat": true,
             "description": "本场准备使用联体"
           }
-        }
+        },
+        "difficultyRole": "tutorial",
+        "beginnerWeight": 100,
+        "standardWeight": 100
       },
       {
         "id": "sun_a_niu",
@@ -189,7 +198,10 @@ window.GAME_NPCS = [
             "bottom": 0.85,
             "description": "本场求稳，降低波动"
           }
-        }
+        },
+        "difficultyRole": "tutorial",
+        "beginnerWeight": 100,
+        "standardWeight": 100
       },
       {
         "id": "qian_xiao_yi",
@@ -232,7 +244,10 @@ window.GAME_NPCS = [
             "historyAware": true,
             "description": "本场准备沿用上一场路数"
           }
-        }
+        },
+        "difficultyRole": "basic",
+        "beginnerWeight": 100,
+        "standardWeight": 100
       },
       {
         "id": "li_mo_tong",
@@ -280,7 +295,10 @@ window.GAME_NPCS = [
             "bottom": 0.82,
             "description": "本场随先生所尚的文风试笔"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "shen_sui_feng",
@@ -318,7 +336,10 @@ window.GAME_NPCS = [
             "bottom": 0.8,
             "description": "本场顺应当朝风潮，以得势文风行文"
           }
-        }
+        },
+        "difficultyRole": "elite",
+        "beginnerWeight": 0,
+        "standardWeight": 15
       },
       {
         "id": "npc_tongsheng_1",
@@ -364,7 +385,10 @@ window.GAME_NPCS = [
             "bi",
             "xue"
           ]
-        }
+        },
+        "difficultyRole": "basic",
+        "beginnerWeight": 100,
+        "standardWeight": 100
       }
     ],
     "balanceVersion": 2,
@@ -419,7 +443,10 @@ window.GAME_NPCS = [
             "bottom": 0.8,
             "description": "本场求稳，降低波动"
           }
-        }
+        },
+        "difficultyRole": "basic",
+        "beginnerWeight": 100,
+        "standardWeight": 100
       },
       {
         "id": "huang_ming_yuan",
@@ -462,7 +489,10 @@ window.GAME_NPCS = [
             "bottom": 0.8,
             "description": "本场准备使用词体"
           }
-        }
+        },
+        "difficultyRole": "basic",
+        "beginnerWeight": 100,
+        "standardWeight": 100
       },
       {
         "id": "lin_qingzhai",
@@ -505,7 +535,10 @@ window.GAME_NPCS = [
             "historyAware": true,
             "description": "本场仍偏好联体"
           }
-        }
+        },
+        "difficultyRole": "basic",
+        "beginnerWeight": 100,
+        "standardWeight": 100
       },
       {
         "id": "zhao_wen_bin",
@@ -548,7 +581,10 @@ window.GAME_NPCS = [
             "historyAware": true,
             "description": "本场沿用你上一场路数"
           }
-        }
+        },
+        "difficultyRole": "basic",
+        "beginnerWeight": 100,
+        "standardWeight": 100
       },
       {
         "id": "zheng_shu_yu",
@@ -597,7 +633,10 @@ window.GAME_NPCS = [
             "bottom": 0.8,
             "description": "准备仿你近日常用路数"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "wang_han_sheng",
@@ -644,7 +683,10 @@ window.GAME_NPCS = [
             "bottom": 0.8,
             "description": "本场留心你的主动文心，待其发动再作应答"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "xie_lian_cheng",
@@ -684,7 +726,10 @@ window.GAME_NPCS = [
             "bottom": 0.78,
             "description": "本场专审重复骰面，待你落笔露瑕"
           }
-        }
+        },
+        "difficultyRole": "elite",
+        "beginnerWeight": 0,
+        "standardWeight": 15
       },
       {
         "id": "gu_qing_shang",
@@ -727,7 +772,10 @@ window.GAME_NPCS = [
             "bottom": 0.78,
             "description": "本场稳守成卷，邀你以一枚追加骰破势"
           }
-        }
+        },
+        "difficultyRole": "elite",
+        "beginnerWeight": 0,
+        "standardWeight": 15
       }
     ],
     "balanceVersion": 2,
@@ -788,7 +836,10 @@ window.GAME_NPCS = [
             "bottom": 0.78,
             "description": "正常应战；若玩家追加骰，则争先强攻"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "su_mingzhe",
@@ -834,7 +885,10 @@ window.GAME_NPCS = [
             "bottom": 0.78,
             "description": "准备模仿你近日常用路数"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "lu_yun_ting",
@@ -877,7 +931,10 @@ window.GAME_NPCS = [
             "bottom": 0.78,
             "description": "本场准备使用联体，以对仗相迎"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "han_shi_chang",
@@ -916,7 +973,10 @@ window.GAME_NPCS = [
             "bottom": 0.78,
             "description": "本场求稳，严守章法"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "tang_ji_qing",
@@ -966,7 +1026,10 @@ window.GAME_NPCS = [
             "bottom": 0.78,
             "description": "本场专审对偶章法，静候你骰组露出规整痕迹"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "bai_wen_yuan",
@@ -1015,7 +1078,10 @@ window.GAME_NPCS = [
             "bottom": 0.78,
             "description": "准备仿你近日常用路数，相机转锋"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "cui_wu_jiu",
@@ -1052,7 +1118,10 @@ window.GAME_NPCS = [
             "bottom": 0.75,
             "description": "本场紧盯主动文心的起落，伺机问锋"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "npc_juren_1",
@@ -1102,7 +1171,10 @@ window.GAME_NPCS = [
             "shi",
             "ci"
           ]
-        }
+        },
+        "difficultyRole": "basic",
+        "beginnerWeight": 100,
+        "standardWeight": 100
       }
     ],
     "balanceVersion": 2,
@@ -1165,7 +1237,10 @@ window.GAME_NPCS = [
             "bottom": 0.75,
             "description": "准备稳稿压人"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "si_ma_wen",
@@ -1209,7 +1284,10 @@ window.GAME_NPCS = [
             "bottom": 0.75,
             "description": "本场准备使用词体"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "shang_guan_ming",
@@ -1258,7 +1336,10 @@ window.GAME_NPCS = [
             "bottom": 0.75,
             "description": "准备仿你近日常用路数"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "xia_hou_jin",
@@ -1297,7 +1378,10 @@ window.GAME_NPCS = [
             "bottom": 0.75,
             "description": "本场求稳，严守翰苑章法"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "mu_rong_yu",
@@ -1340,7 +1424,10 @@ window.GAME_NPCS = [
             "historyAware": true,
             "description": "本场沿用你上一场路数"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "yuwen_yuan",
@@ -1406,7 +1493,10 @@ window.GAME_NPCS = [
             "bottom": 0.75,
             "description": "重立意，倾向哲理或沉郁"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       }
     ],
     "balanceVersion": 2,
@@ -1473,7 +1563,10 @@ window.GAME_NPCS = [
             "bottom": 0.75,
             "description": "已根据上一场战况调整策略"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "li_xue_shi",
@@ -1524,7 +1617,10 @@ window.GAME_NPCS = [
             "bottom": 0.75,
             "description": "本场准备使用词体，以声律取胜"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "zhao_da_ru",
@@ -1566,7 +1662,10 @@ window.GAME_NPCS = [
             "bottom": 0.76,
             "description": "本场先明守势经义，邀你以追加骰破其成规"
           }
-        }
+        },
+        "difficultyRole": "advanced",
+        "beginnerWeight": 20,
+        "standardWeight": 100
       },
       {
         "id": "kang_er_yu",
@@ -1618,7 +1717,10 @@ window.GAME_NPCS = [
             "bottom": 0.85,
             "description": "本场准备使用联力体"
           }
-        }
+        },
+        "difficultyRole": "basic",
+        "beginnerWeight": 10,
+        "standardWeight": 10
       }
     ],
     "isFinal": true,
@@ -1664,7 +1766,10 @@ window.GAME_NPCS = [
             "xue",
             "si"
           ]
-        }
+        },
+        "difficultyRole": "basic",
+        "beginnerWeight": 0,
+        "standardWeight": 0
       }
     ]
   }

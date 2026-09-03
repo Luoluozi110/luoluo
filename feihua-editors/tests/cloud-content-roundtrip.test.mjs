@@ -37,6 +37,22 @@ assert.deepEqual(
   '云端工程经过编辑器导入/导出后不得改写任何模块'
 );
 
+const incomingNpc = cloudProject.npcs.flatMap(tier => tier.npcs || []).find(npc => npc.difficultyRole);
+const appliedNpc = applied.npcs.flatMap(tier => tier.npcs || []).find(npc => npc.id === incomingNpc.id);
+assert.deepEqual(
+  {
+    difficultyRole: appliedNpc.difficultyRole,
+    beginnerWeight: appliedNpc.beginnerWeight,
+    standardWeight: appliedNpc.standardWeight
+  },
+  {
+    difficultyRole: incomingNpc.difficultyRole,
+    beginnerWeight: incomingNpc.beginnerWeight,
+    standardWeight: incomingNpc.standardWeight
+  },
+  'NPC 入门难度角色及双模式权重必须无损往返'
+);
+
 // 浏览器可能曾发布/拉取过更高版本；显式从云端拉取时，云端版本必须覆盖本地游标。
 window.Common.markCurrentDataVersion(cloudProject._version + 7);
 assert.equal(window.Common.buildProject()._version, cloudProject._version + 7, '测试前本地版本游标高于云端');
