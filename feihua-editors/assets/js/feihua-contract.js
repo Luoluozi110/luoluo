@@ -138,6 +138,23 @@ const INK_TAGS = new Set(INK_AXES.flat());
       });
     }
 
+    // 支线限定文心会在 normalizeConfig 阶段并入主文心池，但 loadConfig 会先执行契约校验。
+    // 因此引用校验必须同时认识独立配置中的文心，否则这些文心永远无法进入羁绊 members。
+    const sideTalents = isObj(cfg['sidequest-talents']) && Array.isArray(cfg['sidequest-talents'].talents)
+      ? cfg['sidequest-talents'].talents : [];
+    sideTalents.forEach((t, i) => {
+      const p = `sidequest-talents.talents[${i}]`;
+      if (!isObj(t)) { add(p, '必须是对象'); return; }
+      if (!text(t.id)) add(`${p}.id`, '必须是非空字符串');
+      else if (talentIds.has(t.id)) {
+        const mirrored = Array.isArray(cfg.talents) && cfg.talents.some(main => main && main.id === t.id && main.source === 'sidequest');
+        if (!mirrored) add(`${p}.id`, `文心 ID 重复：${t.id}`, 'duplicate_id');
+      } else talentIds.add(t.id);
+      if (!text(t.name)) add(`${p}.name`, '必须是非空字符串');
+      if (!['passive', 'active'].includes(t.kind)) add(`${p}.kind`, '必须是 passive 或 active');
+      if (!isObj(t.effect) || !text(t.effect.type)) add(`${p}.effect`, '必须包含 effect.type');
+    });
+
     if ('questions' in cfg) {
       uniqueIds(cfg.questions, 'questions');
       if (Array.isArray(cfg.questions)) cfg.questions.forEach((q, i) => {
@@ -249,7 +266,7 @@ const INK_TAGS = new Set(INK_AXES.flat());
     }
 
     if ('synergies' in cfg && Array.isArray(cfg.synergies)) {
-      const allowed = new Set(['syn_pct','style_pct','theme_pct','palace_pct','on_win_bonus','dice_plus','dice_pattern','extra_dice_pct','crit','comeback','battle_history_pct','armory_pct','study_bonus','insp_on_win','insp_turn_regen','insp_battle_recover','style_switch_pct','manuscript_pct','streak_pct','palace_insp','insp_on_quiz']);
+      const allowed = new Set(['syn_pct','style_pct','theme_pct','palace_pct','on_win_bonus','dice_plus','dice_pattern','extra_dice_pct','crit','comeback','battle_history_pct','armory_pct','study_bonus','insp_on_win','insp_turn_regen','insp_battle_recover','style_switch_pct','manuscript_pct','streak_pct','palace_insp','insp_on_quiz','restraint_pct']);
       cfg.synergies.forEach((sy, i) => {
         const p = `synergies[${i}]`;
         if (!Array.isArray(sy.members) || sy.members.length < 2) add(`${p}.members`, '羁绊至少需要两枚成员文心');

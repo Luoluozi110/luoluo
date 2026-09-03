@@ -34,6 +34,9 @@ const { document, localStorage } = window;
 const oldTalents = (window.GAME_TALENTS || []).filter(t => !['T034', 'T035', 'T036', 'T037', 'T038', 'T039', 'T040', 'TA08', 'T041', 'T042', 'T043', 'TA09', 'T044', 'T045', 'T046', 'TA10', 'T047', 'T048', 'T049', 'TA11'].includes(t.id));
 oldTalents.push({ id: 'T041', name: '抱柱之信', kind: 'passive', text: '', effect: { type: 'on_win_bonus', style: 'shi', value: 1 } });
 localStorage.setItem('feihua_editors_v1_talents', JSON.stringify(oldTalents));
+// 模拟新增羁绊部署前的旧缓存：只有 S01—S25；初始化时必须补齐 S26—S48。
+const oldSynergies = (window.GAME_SYNERGIES || []).filter(sy => Number(String(sy.id || '').replace(/^S/, '')) <= 25);
+localStorage.setItem('feihua_editors_v1_synergies', JSON.stringify(oldSynergies));
 // 同时模拟旧天象缓存：SK07 已发布到官方种子，但旧缓存尚未出现。
 const oldSky = (window.GAME_SKY || []).filter(card => card.id !== 'SK07');
 localStorage.setItem('feihua_editors_v1_sky', JSON.stringify(oldSky));
@@ -290,7 +293,9 @@ const affData = window.AFFINITY.get ? window.AFFINITY.get() : (window.GAME_AFFIN
 const themeN = (affData.themes || []).length, mannerN = (affData.manners || []).length;
 const affCells = document.querySelectorAll('#afflist select.aff-cell').length;
 ok(affCells === themeN * mannerN, `相性矩阵 ${themeN}×${mannerN}=${themeN * mannerN} 格下拉`, affCells);
-ok(document.querySelectorAll('#synlist .q-card').length === 25, '羁绊列表 25 条', document.querySelectorAll('#synlist .q-card').length);
+ok(document.querySelectorAll('#synlist .q-card').length === 48, '羁绊列表 48 条', document.querySelectorAll('#synlist .q-card').length);
+ok(window.SYNERGY.get().some(sy => sy.id === 'S26'), '旧羁绊缓存自动补齐 S26—S48', window.SYNERGY.get().length);
+ok(document.querySelector('#synlist')?.textContent.includes('抱柱之信'), '新增羁绊显示支线文心名称而非裸 ID', document.querySelector('#synlist')?.textContent);
 ok(document.querySelectorAll('#boardlist .board-card').length === 192 && window.BOARD.get().layout === 'concentric_spiral' && window.BOARD.get().mainRing.length === 192 && window.BOARD.get().rings.map(r => r.cells.length).join(',') === '72,64,56', '三圈地图列表 192 格（72/64/56）', document.querySelectorAll('#boardlist .board-card').length);
 // 张数随种子自适应（云端独有的 SK07 已并入 config/sky.json）
 const skyN = (window.GAME_SKY || []).length;

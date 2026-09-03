@@ -1,6 +1,6 @@
 {
   "_type": "feihua-content",
-  "_version": 16,
+  "_version": 17,
   "questions": [
     {
       "id": "Q0001",
@@ -3239,7 +3239,7 @@
       "id": "T001",
       "name": "斗酒诗百篇",
       "kind": "passive",
-      "text": "「李白斗酒诗百篇，长安市上酒家眠。」——杜甫《饮中八仙歌》。以诗出战获胜时，诗力额外 +1。",
+      "text": "「李白斗酒诗百篇，长安市上酒家眠。」——杜甫《饮中八仙歌》。以诗出战获胜时，诗力额外 +2。",
       "effect": {
         "type": "on_win_bonus",
         "style": "shi",
@@ -3251,7 +3251,7 @@
       "id": "T002",
       "name": "倚声填词",
       "kind": "passive",
-      "text": "词本倚声而作，先有腔调后有文字。填词日久，声律入骨——以词出战获胜时，词力额外 +1。",
+      "text": "词本倚声而作，先有腔调后有文字。填词日久，声律入骨——以词出战获胜时，词力额外 +2。",
       "effect": {
         "type": "on_win_bonus",
         "style": "ci",
@@ -3263,7 +3263,7 @@
       "id": "T003",
       "name": "对对如流",
       "kind": "passive",
-      "text": "属对之才，出口成双。相传解缙幼时应对如流，一座皆惊——以联出战获胜时，联力额外 +1。",
+      "text": "属对之才，出口成双。相传解缙幼时应对如流，一座皆惊——以联出战获胜时，联力额外 +2。",
       "effect": {
         "type": "on_win_bonus",
         "style": "lian",
@@ -3275,7 +3275,7 @@
       "id": "T004",
       "name": "博览",
       "kind": "passive",
-      "text": "「读书破万卷，下笔如有神。」——杜甫《奉赠韦左丞丈二十二韵》。腹笥既广，学力常驻 +2。",
+      "text": "「读书破万卷，下笔如有神。」——杜甫《奉赠韦左丞丈二十二韵》。腹笥既广，学力常驻 +3。",
       "effect": {
         "type": "attr_flat",
         "attrs": {
@@ -3316,7 +3316,7 @@
       "id": "T007",
       "name": "梦笔生花",
       "kind": "passive",
-      "text": "五代王仁裕《开元天宝遗事》载：李白少时梦所用之笔头上生花，此后天才赡逸，名闻天下。每枚最终为 6 点的灵感骰令作品得分 +5%。",
+      "text": "五代王仁裕《开元天宝遗事》载：李白少时梦所用之笔头上生花，此后天才赡逸，名闻天下。每枚最终为 6 点的灵感骰令作品得分 +8%。",
       "effect": {
         "type": "dice_pattern",
         "pattern": "six",
@@ -3339,11 +3339,11 @@
       "id": "T009",
       "name": "囊萤映雪",
       "kind": "passive",
-      "text": "晋人车胤囊萤照读，孙康映雪读书。贫不废学，学力常驻 +2。",
+      "text": "晋人车胤囊萤照读，孙康映雪读书。贫不废学，学力常驻 +3。",
       "effect": {
         "type": "attr_flat",
         "attrs": {
-          "xue": 2
+          "xue": 3
         }
       }
     },
@@ -3379,7 +3379,7 @@
       "id": "T012",
       "name": "李杜文章",
       "kind": "passive",
-      "text": "「李杜文章在，光焰万丈长。」——韩愈《调张籍》。以诗出战获胜时，诗力额外 +2。需先有「浪漫主义」倾向。",
+      "text": "「李杜文章在，光焰万丈长。」——韩愈《调张籍》。以诗出战获胜时，诗力额外 +3。需先有「浪漫主义」倾向。",
       "effect": {
         "type": "on_win_bonus",
         "style": "shi",
@@ -3390,7 +3390,7 @@
       "id": "T013",
       "name": "凡有井水处",
       "kind": "passive",
-      "text": "南宋叶梦得《避暑录话》载：凡有井水饮处，即能歌柳词。以词出战获胜时，词力额外 +2。需先有「婉约派」倾向 ×2。",
+      "text": "南宋叶梦得《避暑录话》载：凡有井水饮处，即能歌柳词。以词出战获胜时，词力额外 +3。需先有「婉约派」倾向 ×2。",
       "effect": {
         "type": "on_win_bonus",
         "style": "ci",
@@ -3401,7 +3401,7 @@
       "id": "T014",
       "name": "铁板铜琶",
       "kind": "passive",
-      "text": "俞文豹《吹剑续录》载幕士评东坡词：须关西大汉，执铁板，唱「大江东去」。以联出战获胜时，联力额外 +2。需先有「豪放派」倾向。",
+      "text": "俞文豹《吹剑续录》载幕士评东坡词：须关西大汉，执铁板，唱「大江东去」。以联出战获胜时，联力额外 +3。需先有「豪放派」倾向。",
       "effect": {
         "type": "on_win_bonus",
         "style": "lian",
@@ -3412,11 +3412,11 @@
       "id": "T015",
       "name": "不平则鸣",
       "kind": "passive",
-      "text": "「大凡物不得其平则鸣。」——韩愈《送孟东野序》。灵感不高于 12 时，胸中块垒尽发，本场得分 +12%。需先有「哲思派」倾向。",
+      "text": "「大凡物不得其平则鸣。」——韩愈《送孟东野序》。灵感不高于 14 时，胸中块垒尽发，本场得分 +16%。需先有「哲思派」倾向。",
       "effect": {
         "type": "comeback",
-        "threshold": 12,
-        "value": 0.12
+        "threshold": 14,
+        "value": 0.16
       }
     },
     {
@@ -3443,7 +3443,7 @@
       "id": "T099",
       "name": "三元及第",
       "kind": "passive",
-      "text": "解元、会元、状元连中三元，本朝数百年不过数人。图鉴「连中三元」解锁后可装配：殿试三场得分各 +5%。",
+      "text": "解元、会元、状元连中三元，本朝数百年不过数人。图鉴「连中三元」解锁后可装配：殿试三场得分各 +15%，并于入场时恢复 4 灵感。",
       "effect": {
         "type": "palace_pct",
         "value": 0.15,
@@ -3582,7 +3582,7 @@
       "id": "T017",
       "name": "春风得意",
       "kind": "passive",
-      "text": "孟郊《登科后》：「春风得意马蹄疾，一日看尽长安花。」少年得志，意气风发——每场论战取胜，灵感 +1。",
+      "text": "孟郊《登科后》：「春风得意马蹄疾，一日看尽长安花。」少年得志，意气风发——每场论战取胜，灵感 +2。",
       "effect": {
         "type": "insp_on_win",
         "value": 2
@@ -3592,17 +3592,17 @@
       "id": "T018",
       "name": "曲水流觞",
       "kind": "passive",
-      "text": "王羲之《兰亭集序》载：引以为流觞曲水，列坐其次。雅集唱和，从容不迫——与对手平分秋色时，出战文体额外 +1。",
+      "text": "王羲之《兰亭集序》载：引以为流觞曲水，列坐其次。雅集唱和，从容不迫——与对手平分秋色时，出战文体额外 +3。",
       "effect": {
         "type": "draw_bonus",
-        "value": 2
+        "value": 3
       }
     },
     {
       "id": "T019",
       "name": "洛阳纸贵",
       "kind": "passive",
-      "text": "《晋书·左思传》：洛阳为之纸贵。一篇既出，士林争传，声名回响不断——持有时，每个回合开始恢复 1 点灵感。",
+      "text": "《晋书·左思传》：洛阳为之纸贵。一篇既出，士林争传，声名回响不断——灵感低于上限 50% 时，每回合恢复 1；每获得一枚新文心再恢复 2。",
       "effect": {
         "type": "insp_turn_regen",
         "value": 1,
@@ -3614,7 +3614,7 @@
       "id": "T020",
       "name": "诗骨嶙峋",
       "kind": "passive",
-      "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。诗乃风骨所寄，以诗出战，格调天然高出一筹——得分常驻 +6%。",
+      "text": "「为人性僻耽佳句，语不惊人死不休。」——杜甫《江上值水如海势聊短述》。诗乃风骨所寄，以诗出战，作品得分常驻 +10%。",
       "effect": {
         "type": "style_pct",
         "style": "shi",
@@ -3626,7 +3626,7 @@
       "id": "T021",
       "name": "咏物通灵",
       "kind": "passive",
-      "text": "「体物之工，穷情写貌。」咏物一题，体察入微，形神兼备——出战「咏物」题材时得分 +8%。",
+      "text": "「体物之工，穷情写貌。」咏物一题，体察入微，形神兼备——出战「咏物」题材时得分 +15%。",
       "effect": {
         "type": "theme_pct",
         "theme": "yongwu",
@@ -3647,7 +3647,7 @@
       "id": "T023",
       "name": "退笔成冢",
       "kind": "passive",
-      "text": "智永居永欣寺三十年，临书不退，笔头委积，埋之为冢——积学既深，虽江郎才尽亦有余勇。每场结算后灵感补足至 10，不致骤然封笔。",
+      "text": "智永居永欣寺三十年，临书不退，笔头委积，埋之为冢——积学既深，虽江郎才尽亦有余勇。每场结算后灵感补足至 16，不致骤然封笔。",
       "effect": {
         "type": "insp_floor",
         "value": 16
@@ -3657,11 +3657,10 @@
       "id": "T024",
       "name": "六六大顺",
       "kind": "passive",
-      "text": "「六」者，顺也。灵感骰若掷出六点，灵思沛然，本场得分 ×1.3。",
+      "text": "「六」者，顺也。灵感骰若掷出六点，灵思沛然，本场得分 ×1.25。",
       "effect": {
         "type": "lucky_six",
-        "mult": 1.18,
-        "value": 1.25
+        "mult": 1.25
       }
     },
     {
@@ -3691,7 +3690,7 @@
       "id": "T027",
       "name": "转益多师",
       "kind": "passive",
-      "text": "杜甫《戏为六绝句》：转益多师是汝师。败于名家而有所悟，平局亦能取法——「败中有得」「平分秋色」的补偿属性额外 +1。",
+      "text": "杜甫《戏为六绝句》：转益多师是汝师。败于名家而有所悟，平局亦能取法——「败中有得」「平分秋色」的补偿属性额外 +2，下一场得分 +4%。",
       "effect": {
         "type": "study_bonus",
         "value": 2,
@@ -3702,7 +3701,7 @@
       "id": "T028",
       "name": "金殿对策",
       "kind": "passive",
-      "text": "殿试策问，临轩而试。金殿之上从容奏对——殿试每场开场，灵感 +3。",
+      "text": "殿试策问，临轩而试。金殿之上从容奏对——进入殿试先恢复 4 灵感，殿试每场开场再恢复 3。",
       "effect": {
         "type": "palace_insp",
         "value": 3,
@@ -3725,7 +3724,7 @@
       "id": "T030",
       "name": "活水源头",
       "kind": "passive",
-      "text": "朱熹《观书有感》：“问渠那得清如许？为有源头活水来。”每次答对考题或完成创作抉择，灵感额外 +1；每局最多触发 4 次。",
+      "text": "朱熹《观书有感》：“问渠那得清如许？为有源头活水来。”每次答对考题或完成创作抉择，灵感额外 +2；每局最多触发 4 次。",
       "effect": {
         "type": "insp_on_quiz",
         "value": 2,
@@ -3740,7 +3739,7 @@
       "id": "T031",
       "name": "枯木逢春",
       "kind": "passive",
-      "text": "枯木经霜，春来更发新枝。每场论战全部结算后，若灵感不高于 14，则恢复 2 点；每局最多触发 3 次。",
+      "text": "枯木经霜，春来更发新枝。每场论战全部结算后，若灵感不高于 16，则恢复 3 点；每局最多触发 3 次。",
       "effect": {
         "type": "insp_battle_recover",
         "value": 3,
@@ -3757,7 +3756,7 @@
       "id": "T032",
       "name": "蓄水成渊",
       "kind": "passive",
-      "text": "涓流不拒，积而成渊。获得时，本局灵感上限永久 +6；与「海纳百川」互斥，且扩容只结算一次。",
+      "text": "涓流不拒，积而成渊。获得时，本局灵感上限永久 +8，并补充 4 灵感；与「海纳百川」互斥，且扩容只结算一次。",
       "effect": {
         "type": "insp_max",
         "value": 8,
@@ -3775,7 +3774,7 @@
       "id": "T033",
       "name": "海纳百川",
       "kind": "passive",
-      "text": "《文心雕龙》言“操千曲而后晓声，观千剑而后识器”。获得时，本局灵感上限永久 +10；与「蓄水成渊」互斥，且扩容只结算一次。",
+      "text": "《文心雕龙》言“操千曲而后晓声，观千剑而后识器”。获得时，本局灵感上限永久 +14，并补充 7 灵感；与「蓄水成渊」互斥，且扩容只结算一次。",
       "effect": {
         "type": "insp_max",
         "value": 14,
@@ -3793,7 +3792,7 @@
       "id": "T035",
       "name": "删繁就简",
       "kind": "passive",
-      "text": "郑板桥题画有言：删繁就简三秋树，领异标新二月花。只以一枚灵感骰收笔时，作品得分 +8%，战后心得额外 +1。",
+      "text": "郑板桥题画有言：删繁就简三秋树，领异标新二月花。只以一枚灵感骰收笔时，作品得分 +12%，战后心得额外 +1。",
       "effect": {
         "type": "dice_pattern",
         "pattern": "single",
@@ -3837,12 +3836,12 @@
       "id": "T038",
       "name": "落笔成章",
       "kind": "passive",
-      "text": "胸中已有篇章，落笔自见经营。每持有 2 页稿本，作品得分 +2%，最多 +10%。",
+      "text": "胸中已有篇章，落笔自见经营。每持有 2 页稿本，作品得分 +3%，最多 +15%。",
       "effect": {
         "type": "manuscript_pct",
         "step": 2,
-        "value": 0.02,
-        "cap": 0.1
+        "value": 0.03,
+        "cap": 0.15
       }
     },
     {
@@ -3865,7 +3864,7 @@
       "id": "T040",
       "name": "妙手偶得",
       "kind": "passive",
-      "text": "陆游诗云：文章本天成，妙手偶得之。本场首次出现最终为 6 点的灵感骰时，额外沉淀 1 份残页（每场一次）。",
+      "text": "陆游诗云：文章本天成，妙手偶得之。本场首次出现最终为 6 点的灵感骰时，作品得分 +8%，并额外沉淀 1 份残页（每场一次）。",
       "effect": {
         "type": "dice_pattern",
         "pattern": "six",
@@ -4211,14 +4210,6 @@
           "effect": {
             "type": "attr_flat",
             "attrs": {
-              "xue": 2
-            }
-          }
-        },
-        {
-          "effect": {
-            "type": "attr_flat",
-            "attrs": {
               "xue": 3
             }
           }
@@ -4228,6 +4219,14 @@
             "type": "attr_flat",
             "attrs": {
               "xue": 4
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "attr_flat",
+            "attrs": {
+              "xue": 5
             }
           }
         }
@@ -4477,20 +4476,6 @@
         {
           "effect": {
             "type": "comeback",
-            "threshold": 12,
-            "value": 0.12
-          }
-        },
-        {
-          "effect": {
-            "type": "comeback",
-            "threshold": 13,
-            "value": 0.14
-          }
-        },
-        {
-          "effect": {
-            "type": "comeback",
             "threshold": 14,
             "value": 0.16
           }
@@ -4507,6 +4492,20 @@
             "type": "comeback",
             "threshold": 16,
             "value": 0.2
+          }
+        },
+        {
+          "effect": {
+            "type": "comeback",
+            "threshold": 17,
+            "value": 0.22
+          }
+        },
+        {
+          "effect": {
+            "type": "comeback",
+            "threshold": 18,
+            "value": 0.24
           }
         }
       ]
@@ -5231,19 +5230,19 @@
         {
           "effect": {
             "type": "draw_bonus",
-            "value": 2
-          }
-        },
-        {
-          "effect": {
-            "type": "draw_bonus",
             "value": 3
           }
         },
         {
           "effect": {
             "type": "draw_bonus",
-            "value": 5
+            "value": 4
+          }
+        },
+        {
+          "effect": {
+            "type": "draw_bonus",
+            "value": 6
           }
         }
       ]
@@ -5473,36 +5472,31 @@
         {
           "effect": {
             "type": "lucky_six",
-            "mult": 1.18,
-            "value": 1.25
+            "mult": 1.25
           }
         },
         {
           "effect": {
             "type": "lucky_six",
-            "mult": 1.2225,
-            "value": 1.3
+            "mult": 1.3
           }
         },
         {
           "effect": {
             "type": "lucky_six",
-            "mult": 1.265,
-            "value": 1.35
+            "mult": 1.35
           }
         },
         {
           "effect": {
             "type": "lucky_six",
-            "mult": 1.3075,
-            "value": 1.42
+            "mult": 1.42
           }
         },
         {
           "effect": {
             "type": "lucky_six",
-            "mult": 1.35,
-            "value": 1.5,
+            "mult": 1.5,
             "reward": {
               "type": "inspiration",
               "value": 1,
@@ -6119,32 +6113,32 @@
           "effect": {
             "type": "manuscript_pct",
             "step": 2,
-            "value": 0.02,
-            "cap": 0.1
-          }
-        },
-        {
-          "effect": {
-            "type": "manuscript_pct",
-            "step": 2,
-            "value": 0.025,
-            "cap": 0.1
-          }
-        },
-        {
-          "effect": {
-            "type": "manuscript_pct",
-            "step": 2,
-            "value": 0.025,
-            "cap": 0.125
-          }
-        },
-        {
-          "effect": {
-            "type": "manuscript_pct",
-            "step": 2,
             "value": 0.03,
             "cap": 0.15
+          }
+        },
+        {
+          "effect": {
+            "type": "manuscript_pct",
+            "step": 2,
+            "value": 0.035,
+            "cap": 0.16
+          }
+        },
+        {
+          "effect": {
+            "type": "manuscript_pct",
+            "step": 2,
+            "value": 0.04,
+            "cap": 0.18
+          }
+        },
+        {
+          "effect": {
+            "type": "manuscript_pct",
+            "step": 2,
+            "value": 0.05,
+            "cap": 0.2
           }
         }
       ]
@@ -8212,11 +8206,11 @@
     {
       "id": "S01",
       "name": "诗酒剑气",
-      "desc": "诗势与梦笔交映：诗体得分 +10%；出现六点再 +6%。",
       "members": [
         "T001",
         "T007"
       ],
+      "desc": "诗势与梦笔交映：诗体得分 +10%；出现六点再 +6%。",
       "effects": [
         {
           "effectId": "S01-E1",
@@ -8239,11 +8233,11 @@
     {
       "id": "S02",
       "name": "倚声双绝",
-      "desc": "倚声入骨：词体得分 +8%；以词获胜时词力额外 +3。",
       "members": [
         "T002",
         "T006"
       ],
+      "desc": "倚声入骨：词体得分 +8%；以词获胜时词力额外 +3。",
       "effects": [
         {
           "effectId": "S02-E1",
@@ -8266,11 +8260,11 @@
     {
       "id": "S03",
       "name": "联坛霸才",
-      "desc": "机锋不拘：联体得分 +10%；三枚及以上点数各异再 +8%。",
       "members": [
         "T003",
         "T010"
       ],
+      "desc": "机锋不拘：联体得分 +10%；三枚及以上点数各异再 +8%。",
       "effects": [
         {
           "effectId": "S03-E1",
@@ -8294,11 +8288,11 @@
     {
       "id": "S04",
       "name": "思涌笔健",
-      "desc": "多骰得分 +3%；骰面先低后高时再 +16%，首枚额外骰费用 -1。",
       "members": [
         "T016",
         "T005"
       ],
+      "desc": "多骰得分 +3%；骰面先低后高时再 +16%，首枚额外骰费用 -1。",
       "effects": [
         {
           "effectId": "S04-E1",
@@ -8321,11 +8315,11 @@
     {
       "id": "S05",
       "name": "通儒蕴藉",
-      "desc": "学养深厚：论战得分 +8%；有效答题回复 1 灵感（每局 3 次）。",
       "members": [
         "T004",
         "T009"
       ],
+      "desc": "学养深厚：论战得分 +8%；有效答题回复 1 灵感（每局 3 次）。",
       "effects": [
         {
           "effectId": "S05-E1",
@@ -8347,11 +8341,11 @@
     {
       "id": "S06",
       "name": "文运亨通",
-      "desc": "获胜回复 2 灵感；上一场未胜时，本场得分 +8%。",
       "members": [
         "T017",
         "T018"
       ],
+      "desc": "获胜回复 2 灵感；上一场未胜时，本场得分 +8%。",
       "effects": [
         {
           "effectId": "S06-E1",
@@ -8373,11 +8367,11 @@
     {
       "id": "S07",
       "name": "梦笔泉涌",
-      "desc": "出现六点得分 +6%；骰面严格递增时再 +16%。",
       "members": [
         "T007",
         "T016"
       ],
+      "desc": "出现六点得分 +6%；骰面严格递增时再 +16%。",
       "effects": [
         {
           "effectId": "S07-E1",
@@ -8400,11 +8394,11 @@
     {
       "id": "S08",
       "name": "笔墨相宣",
-      "desc": "笔力与思力交润，论战得分 +10%。",
       "members": [
         "T006",
         "T008"
       ],
+      "desc": "笔力与思力交润，论战得分 +10%。",
       "effects": [
         {
           "effectId": "S08-E1",
@@ -8418,11 +8412,11 @@
     {
       "id": "S09",
       "name": "洛阳才调",
-      "desc": "灵感不低于上限 60% 时，论战得分 +10%。",
       "members": [
         "T017",
         "T019"
       ],
+      "desc": "灵感不低于上限 60% 时，论战得分 +10%。",
       "effects": [
         {
           "effectId": "S09-E1",
@@ -8439,11 +8433,11 @@
     {
       "id": "S10",
       "name": "梦花偶得",
-      "desc": "出现六点时得分 +10%，并获得 1 页稿本。",
       "members": [
         "T007",
         "T040"
       ],
+      "desc": "出现六点时得分 +10%，并获得 1 页稿本。",
       "effects": [
         {
           "effectId": "S10-E1",
@@ -8463,11 +8457,11 @@
     {
       "id": "S11",
       "name": "七步珠玑",
-      "desc": "骰点总和为 7 的倍数时，得分 +16%，并获得 2 点心得。",
       "members": [
         "TA01",
         "T036"
       ],
+      "desc": "骰点总和为 7 的倍数时，得分 +16%，并获得 2 点心得。",
       "effects": [
         {
           "effectId": "S11-E1",
@@ -8488,11 +8482,11 @@
     {
       "id": "S12",
       "name": "绝处逢春",
-      "desc": "灵感不高于 16 时得分 +14%；战后回复 3 灵感（每局 3 次）。",
       "members": [
         "T025",
         "T031"
       ],
+      "desc": "灵感不高于 16 时得分 +14%；战后回复 3 灵感（每局 3 次）。",
       "effects": [
         {
           "effectId": "S12-E1",
@@ -8516,11 +8510,11 @@
     {
       "id": "S13",
       "name": "换笔成章",
-      "desc": "换用文体时得分 +14%，并获得 2 点心得。",
       "members": [
         "T037",
         "TA02"
       ],
+      "desc": "换用文体时得分 +14%，并获得 2 点心得。",
       "effects": [
         {
           "effectId": "S13-E1",
@@ -8535,11 +8529,11 @@
     {
       "id": "S14",
       "name": "稿本生辉",
-      "desc": "每 2 页稿本得分 +3%，最多 +18%。",
       "members": [
         "T038",
         "T040"
       ],
+      "desc": "每 2 页稿本得分 +3%，最多 +18%。",
       "effects": [
         {
           "effectId": "S14-E1",
@@ -8555,11 +8549,11 @@
     {
       "id": "S15",
       "name": "连捷成章",
-      "desc": "同文体连捷 2 场后得分 +14%；出现对子回复 2 灵感。",
       "members": [
         "T039",
         "T022"
       ],
+      "desc": "同文体连捷 2 场后得分 +14%；出现对子回复 2 灵感。",
       "effects": [
         {
           "effectId": "S15-E1",
@@ -8587,11 +8581,11 @@
     {
       "id": "S16",
       "name": "殿前蓄势",
-      "desc": "殿试每场回复 4 灵感，入场时先回复 5 灵感；殿试得分 +8%。",
       "members": [
         "T028",
         "T099"
       ],
+      "desc": "殿试每场回复 4 灵感，入场时先回复 5 灵感；殿试得分 +8%。",
       "effects": [
         {
           "effectId": "S16-E1",
@@ -8613,11 +8607,11 @@
     {
       "id": "S17",
       "name": "问学相长",
-      "desc": "有效答题回复 2 灵感（每局 5 次）。",
       "members": [
         "T030",
         "T009"
       ],
+      "desc": "有效答题回复 2 灵感（每局 5 次）。",
       "effects": [
         {
           "effectId": "S17-E1",
@@ -8632,11 +8626,11 @@
     {
       "id": "S18",
       "name": "诗胆雄心",
-      "desc": "以诗出战且选择勇武时得分 +18%，触发后获得 1 页稿本。",
       "members": [
         "T020",
         "T021"
       ],
+      "desc": "以诗出战且选择勇武时得分 +18%，触发后获得 1 页稿本。",
       "effects": [
         {
           "effectId": "S18-E1",
@@ -8661,11 +8655,11 @@
     {
       "id": "S19",
       "name": "六曜回响",
-      "desc": "使用指定文心后，出现六点得分 +16%，并回复 1 灵感。",
       "members": [
         "T024",
         "TA07"
       ],
+      "desc": "使用指定文心后，出现六点得分 +16%，并回复 1 灵感。",
       "effects": [
         {
           "effectId": "S19-E1",
@@ -8690,11 +8684,11 @@
     {
       "id": "S20",
       "name": "连掷成势",
-      "desc": "使用任一连骰文心后，总点≥12 得分 +12%，≥16 得分 +22%，并回复 2 灵感。",
       "members": [
         "TA05",
         "TA06"
       ],
+      "desc": "使用任一连骰文心后，总点≥12 得分 +12%，≥16 得分 +22%，并回复 2 灵感。",
       "effects": [
         {
           "effectId": "S20-E1",
@@ -8729,11 +8723,11 @@
     {
       "id": "S21",
       "name": "鉴古知今",
-      "desc": "游学心得 +2；上一场未胜时本场得分 +12%。",
       "members": [
         "T011",
         "T027"
       ],
+      "desc": "游学心得 +2；上一场未胜时本场得分 +12%。",
       "effects": [
         {
           "effectId": "S21-E1",
@@ -8756,11 +8750,11 @@
     {
       "id": "S22",
       "name": "百炼归真",
-      "desc": "每 4 点兵器属性令得分 +3%，最多 +15%。",
       "members": [
         "T026",
         "T034"
       ],
+      "desc": "每 4 点兵器属性令得分 +3%，最多 +15%。",
       "effects": [
         {
           "effectId": "S22-E1",
@@ -8776,11 +8770,11 @@
     {
       "id": "S23",
       "name": "源流不息",
-      "desc": "回合开始时若灵感低于 60%，回复 2 灵感。",
       "members": [
         "T032",
         "T029"
       ],
+      "desc": "回合开始时若灵感低于 60%，回复 2 灵感。",
       "effects": [
         {
           "effectId": "S23-E1",
@@ -8795,11 +8789,11 @@
     {
       "id": "S24",
       "name": "诗魁殿声",
-      "desc": "殿试以诗出战时得分 +18%；以诗获胜时诗力 +3。",
       "members": [
         "T099",
         "T012"
       ],
+      "desc": "殿试以诗出战时得分 +18%；以诗获胜时诗力 +3。",
       "effects": [
         {
           "effectId": "S24-E1",
@@ -8826,11 +8820,11 @@
     {
       "id": "S25",
       "name": "词联双璧",
-      "desc": "在词、联之间换体时得分 +16%，并获得 2 点心得。",
       "members": [
         "T013",
         "T014"
       ],
+      "desc": "在词、联之间换体时得分 +16%，并获得 2 点心得。",
       "effects": [
         {
           "effectId": "S25-E1",
@@ -8845,6 +8839,532 @@
               "lian"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "S26",
+      "name": "守诺成势",
+      "members": [
+        "T041",
+        "T022",
+        "T039"
+      ],
+      "desc": "守诺与连捷彼此应和：同文风连捷达到 2 场后，作品得分 +10%。",
+      "effects": [
+        {
+          "effectId": "S26-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "streak_pct",
+          "value": 0.1,
+          "minStreak": 2
+        }
+      ]
+    },
+    {
+      "id": "S27",
+      "name": "江湖换境",
+      "members": [
+        "T042",
+        "T037",
+        "TA02"
+      ],
+      "desc": "转身换境，旧意新辞：换用不同文体时得分 +12%，心得 +2。",
+      "effects": [
+        {
+          "effectId": "S27-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "style_switch_pct",
+          "value": 0.12,
+          "insight": 2
+        }
+      ]
+    },
+    {
+      "id": "S28",
+      "name": "知己知彼",
+      "members": [
+        "T043",
+        "T011",
+        "T027"
+      ],
+      "desc": "识人亦能自省：上一场未胜时本场得分 +10%；败或平的研习额外 +1，下一场再 +6%。",
+      "effects": [
+        {
+          "effectId": "S28-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "battle_history_pct",
+          "value": 0.1,
+          "condition": "previous_nonwin"
+        },
+        {
+          "effectId": "S28-E2",
+          "stackGroup": "synergy-growth",
+          "stackMode": "max",
+          "type": "study_bonus",
+          "value": 1,
+          "nextBattlePct": 0.06
+        }
+      ]
+    },
+    {
+      "id": "S29",
+      "name": "临渊止戈",
+      "members": [
+        "TA09",
+        "T015",
+        "T025"
+      ],
+      "desc": "绝境中解剑止戈：发动「杯酒解剑」且灵感不高于 16 时，本场得分 +14%。",
+      "effects": [
+        {
+          "effectId": "S29-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "comeback",
+          "value": 0.14,
+          "threshold": 16,
+          "when": {
+            "usedTalents": [
+              "TA09"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "S30",
+      "name": "藏锋守简",
+      "members": [
+        "T044",
+        "T035",
+        "T023"
+      ],
+      "desc": "一骰收笔，守简蓄锋：仅用一枚骰时得分 +12%，并恢复 1 灵感。",
+      "effects": [
+        {
+          "effectId": "S30-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "dice_pattern",
+          "value": 0.12,
+          "pattern": "single",
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "S31",
+      "name": "轻骑生变",
+      "members": [
+        "T045",
+        "T005",
+        "T010"
+      ],
+      "desc": "轻骑追笔，低开高走：首骰低、续骰高时得分 +14%。",
+      "effects": [
+        {
+          "effectId": "S31-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "dice_pattern",
+          "value": 0.14,
+          "pattern": "low_then_high",
+          "lowMax": 2,
+          "nextHighMin": 5
+        }
+      ]
+    },
+    {
+      "id": "S32",
+      "name": "残烽回春",
+      "members": [
+        "T046",
+        "T018",
+        "T031"
+      ],
+      "desc": "失意之后仍有烽火：上一场未胜时本场得分 +8%；战后灵感不高于 18 时恢复 3（每局 3 次）。",
+      "effects": [
+        {
+          "effectId": "S32-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "battle_history_pct",
+          "value": 0.08,
+          "condition": "previous_nonwin"
+        },
+        {
+          "effectId": "S32-E2",
+          "stackGroup": "synergy-recovery",
+          "stackMode": "max",
+          "type": "insp_battle_recover",
+          "threshold": 18,
+          "value": 3,
+          "maxTriggers": 3
+        }
+      ]
+    },
+    {
+      "id": "S33",
+      "name": "成竹列阵",
+      "members": [
+        "TA10",
+        "T032",
+        "T029"
+      ],
+      "desc": "胸有成竹，临阵不乱：发动「背水列阵」时本场得分 +10%。",
+      "effects": [
+        {
+          "effectId": "S33-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "syn_pct",
+          "value": 0.1,
+          "when": {
+            "usedTalents": [
+              "TA10"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "S34",
+      "name": "坐忘定局",
+      "members": [
+        "T047",
+        "T008",
+        "TA08"
+      ],
+      "desc": "谋篇而不妄动：本场不发动论战主动文心时，作品得分 +10%。",
+      "effects": [
+        {
+          "effectId": "S34-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "restraint_pct",
+          "value": 0.1
+        }
+      ]
+    },
+    {
+      "id": "S35",
+      "name": "梦蝶偶得",
+      "members": [
+        "T048",
+        "T007",
+        "T040"
+      ],
+      "desc": "梦中首尾相照：骰组首尾同点时得分 +12%，并得 1 份残页。",
+      "effects": [
+        {
+          "effectId": "S35-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "dice_pattern",
+          "value": 0.12,
+          "pattern": "first_last_equal",
+          "minDice": 2,
+          "reward": {
+            "type": "fragment",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "S36",
+      "name": "黑白惊锋",
+      "members": [
+        "T049",
+        "TA03",
+        "TA07"
+      ],
+      "desc": "黑白两极相激：骰组同时有低点与高点时得分 +14%，并恢复 1 灵感。",
+      "effects": [
+        {
+          "effectId": "S36-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "dice_pattern",
+          "value": 0.14,
+          "pattern": "low_and_high",
+          "lowMax": 2,
+          "highMin": 5,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "S37",
+      "name": "斩妄惊雷",
+      "members": [
+        "TA11",
+        "TA04",
+        "T024"
+      ],
+      "desc": "斩妄见真后六曜惊雷：发动「斩妄见真」且骰组出现六点时，得分 +12%。",
+      "effects": [
+        {
+          "effectId": "S37-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "dice_pattern",
+          "value": 0.12,
+          "pattern": "six",
+          "when": {
+            "usedTalents": [
+              "TA11"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "S38",
+      "name": "酒酣文章",
+      "members": [
+        "T001",
+        "T012"
+      ],
+      "desc": "酒酣诗胆壮，李杜文章长：以诗出战得分 +8%。",
+      "effects": [
+        {
+          "effectId": "S38-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "style_pct",
+          "value": 0.08,
+          "style": "shi"
+        }
+      ]
+    },
+    {
+      "id": "S39",
+      "name": "声传井巷",
+      "members": [
+        "T002",
+        "T013"
+      ],
+      "desc": "倚声入巷，清唱相传：以词获胜时词力额外 +2。",
+      "effects": [
+        {
+          "effectId": "S39-E1",
+          "stackGroup": "synergy-growth",
+          "stackMode": "max",
+          "type": "on_win_bonus",
+          "style": "ci",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "S40",
+      "name": "联珠铿锵",
+      "members": [
+        "T003",
+        "T014"
+      ],
+      "desc": "出口成对，铁板铿锵：以联出战得分 +8%。",
+      "effects": [
+        {
+          "effectId": "S40-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "style_pct",
+          "value": 0.08,
+          "style": "lian"
+        }
+      ]
+    },
+    {
+      "id": "S41",
+      "name": "腹笥五车",
+      "members": [
+        "T004",
+        "T026"
+      ],
+      "desc": "博览积为五车：每持有 3 枚文心，六维算分属性 +2%，最多 +6%。",
+      "effects": [
+        {
+          "effectId": "S41-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "armory_pct",
+          "value": 0.02,
+          "step": 3,
+          "cap": 0.06
+        }
+      ]
+    },
+    {
+      "id": "S42",
+      "name": "七步一气",
+      "members": [
+        "TA01",
+        "TA05"
+      ],
+      "desc": "七步之间一气成篇：发动「一气呵成」且总点为 7 的倍数时，得分 +10%。",
+      "effects": [
+        {
+          "effectId": "S42-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "dice_pattern",
+          "value": 0.1,
+          "pattern": "total_multiple",
+          "multiple": 7,
+          "when": {
+            "usedTalents": [
+              "TA05"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "S43",
+      "name": "高吟珠落",
+      "members": [
+        "TA06",
+        "T036"
+      ],
+      "desc": "字字珠玑，倚马高吟：发动「倚马可待」时，总点 12 得分 +8%，总点 16 得分 +14%。",
+      "effects": [
+        {
+          "effectId": "S43-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "dice_pattern",
+          "value": 0,
+          "pattern": "total_tiers",
+          "tiers": [
+            {
+              "threshold": 16,
+              "value": 0.14
+            },
+            {
+              "threshold": 12,
+              "value": 0.08
+            }
+          ],
+          "when": {
+            "usedTalents": [
+              "TA06"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "S44",
+      "name": "洛水活源",
+      "members": [
+        "T019",
+        "T030"
+      ],
+      "desc": "活水流入洛阳纸：有效答题额外恢复 1 灵感，每局最多 4 次。",
+      "effects": [
+        {
+          "effectId": "S44-E1",
+          "stackGroup": "synergy-recovery",
+          "stackMode": "max",
+          "type": "insp_on_quiz",
+          "value": 1,
+          "maxTriggers": 4
+        }
+      ]
+    },
+    {
+      "id": "S45",
+      "name": "诗骨成章",
+      "members": [
+        "T020",
+        "T038"
+      ],
+      "desc": "诗骨落为成章稿本：以诗出战时，每 2 页稿本得分 +2%，最多 +12%。",
+      "effects": [
+        {
+          "effectId": "S45-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "manuscript_pct",
+          "value": 0.02,
+          "step": 2,
+          "cap": 0.12,
+          "when": {
+            "styles": [
+              "shi"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "S46",
+      "name": "咏物珠玑",
+      "members": [
+        "T021",
+        "T036"
+      ],
+      "desc": "体物入微，字字有光：出战咏物题材时得分 +12%。",
+      "effects": [
+        {
+          "effectId": "S46-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "theme_pct",
+          "value": 0.12,
+          "theme": "yongwu"
+        }
+      ]
+    },
+    {
+      "id": "S47",
+      "name": "殿纳百川",
+      "members": [
+        "T028",
+        "T033"
+      ],
+      "desc": "百川入殿，策问从容：进入殿试先恢复 3 灵感，每场开场再恢复 2。",
+      "effects": [
+        {
+          "effectId": "S47-E1",
+          "stackGroup": "synergy-palace",
+          "stackMode": "max",
+          "type": "palace_insp",
+          "value": 2,
+          "startValue": 3
+        }
+      ]
+    },
+    {
+      "id": "S48",
+      "name": "传灯成卷",
+      "members": [
+        "T034",
+        "T033"
+      ],
+      "desc": "海纳旧学，传灯成卷：殿试每场得分 +12%。",
+      "effects": [
+        {
+          "effectId": "S48-E1",
+          "stackGroup": "synergy-resonance-v2",
+          "stackMode": "max",
+          "type": "palace_pct",
+          "value": 0.12
         }
       ]
     }
@@ -16706,11 +17226,35 @@
   },
   "sidequest-talents": {
     "version": 1,
+    "offers": {
+      "jianghu": {
+        "守义": "T041",
+        "权变": "T042",
+        "common": "T043",
+        "active": "TA09"
+      },
+      "biansai": {
+        "守土": "T044",
+        "出奇": "T045",
+        "common": "T046",
+        "active": "TA10"
+      },
+      "qiuxian": {
+        "留世": "T048",
+        "忘机": "T047",
+        "common": "T049",
+        "active": "TA11"
+      }
+    },
     "talents": [
       {
         "id": "T041",
         "name": "抱柱之信",
         "kind": "passive",
+        "source": "sidequest",
+        "routeId": "jianghu",
+        "axis": "守义",
+        "quality": "rare",
         "text": "一诺既出，风雨不改。连续沿用上一场文体时作品得分提高；若上一场已经获胜，守诺之势更盛。",
         "effect": {
           "type": "battle_history_pct",
@@ -16718,16 +17262,16 @@
           "value": 0.05,
           "previousWinBonus": 0.03,
           "stackGroup": "style_history"
-        },
-        "source": "sidequest",
-        "routeId": "jianghu",
-        "axis": "守义",
-        "quality": "rare"
+        }
       },
       {
         "id": "T042",
         "name": "相忘江湖",
         "kind": "passive",
+        "source": "sidequest",
+        "routeId": "jianghu",
+        "axis": "权变",
+        "quality": "rare",
         "text": "旧招已尽，便还彼此一片江湖。换用不同文体时得分提高；上一场未胜，转身之力更强。",
         "effect": {
           "type": "battle_history_pct",
@@ -16735,97 +17279,98 @@
           "value": 0.05,
           "previousNonWinBonus": 0.03,
           "stackGroup": "style_history"
-        },
-        "source": "sidequest",
-        "routeId": "jianghu",
-        "axis": "权变",
-        "quality": "rare"
+        }
       },
       {
         "id": "T043",
         "name": "风尘知己",
         "kind": "passive",
-        "text": "风尘满面，仍有人一眼认出你未说出口的招数。每场首次命中对手破绽时，恢复灵感并获得少量得分。",
+        "source": "sidequest",
+        "routeId": "jianghu",
+        "axis": "common",
+        "quality": "epic",
+        "text": "风尘满面，仍有人一眼认出你未说出口的招数。每场首次命中对手破绽时，作品得分 +4%，并恢复 1 灵感。",
         "effect": {
           "type": "weakness_reward",
-          "value": 0,
+          "value": 0.04,
           "reward": {
             "type": "inspiration",
             "value": 1,
             "perMatch": false
           }
-        },
-        "source": "sidequest",
-        "routeId": "jianghu",
-        "axis": "common",
-        "quality": "epic"
+        }
       },
       {
         "id": "TA09",
         "name": "杯酒解剑",
         "kind": "active",
+        "source": "sidequest",
+        "routeId": "jianghu",
+        "axis": "active",
+        "quality": "epic",
+        "cost": 3,
         "text": "且把兵刃挂在楼外。支付灵感，封住对手本场招牌；你也要放下几分锋芒。",
         "effect": {
           "type": "seal_signature",
           "penalty": -0.08
-        },
-        "cost": 3,
-        "source": "sidequest",
-        "routeId": "jianghu",
-        "axis": "active",
-        "quality": "epic"
+        }
       },
       {
         "id": "T044",
         "name": "坚壁清野",
         "kind": "passive",
+        "source": "sidequest",
+        "routeId": "biansai",
+        "axis": "守土",
+        "quality": "rare",
         "text": "城中每一粒粮，都要留到真正需要的时候。本场不购买追加灵感骰，作品得分提高。",
         "effect": {
           "type": "dice_commitment",
           "condition": "none_paid",
           "value": 0.07
-        },
-        "source": "sidequest",
-        "routeId": "biansai",
-        "axis": "守土",
-        "quality": "rare"
+        }
       },
       {
         "id": "T045",
         "name": "轻骑出塞",
         "kind": "passive",
+        "source": "sidequest",
+        "routeId": "biansai",
+        "axis": "出奇",
+        "quality": "rare",
         "text": "轻骑只争一线，不与大军纠缠。首枚追加骰少耗灵感；本场恰好购买一枚追加骰，得分提高。",
         "effect": {
           "type": "dice_commitment",
           "condition": "exactly_one_paid",
           "firstCostDiscount": 1,
           "value": 0.07
-        },
-        "source": "sidequest",
-        "routeId": "biansai",
-        "axis": "出奇",
-        "quality": "rare"
+        }
       },
       {
         "id": "T046",
         "name": "孤烽照夜",
         "kind": "passive",
+        "source": "sidequest",
+        "routeId": "biansai",
+        "axis": "common",
+        "quality": "epic",
         "text": "城外没有援军，远处却还有一座烽燧未灭。上一场平或负时，下一场作品得分提高。",
         "effect": {
           "type": "battle_history_pct",
           "condition": "previous_nonwin",
           "value": 0.08,
           "stackGroup": "result_history"
-        },
-        "source": "sidequest",
-        "routeId": "biansai",
-        "axis": "common",
-        "quality": "epic"
+        }
       },
       {
         "id": "TA10",
         "name": "背水列阵",
         "kind": "active",
+        "source": "sidequest",
+        "routeId": "biansai",
+        "axis": "active",
+        "quality": "epic",
+        "cost": 3,
         "text": "身后只有一水，再无回旋余地。首骰获得保底与得分加成，但本场不能追加灵感骰。",
         "effect": {
           "type": "dice_transform",
@@ -16833,31 +17378,30 @@
           "floor": 4,
           "value": 0.03,
           "noExtraDice": true
-        },
-        "cost": 3,
-        "source": "sidequest",
-        "routeId": "biansai",
-        "axis": "active",
-        "quality": "epic"
+        }
       },
       {
         "id": "T047",
         "name": "坐忘",
         "kind": "passive",
+        "source": "sidequest",
+        "routeId": "qiuxian",
+        "axis": "忘机",
+        "quality": "rare",
         "text": "堕肢体，黜聪明，离形去知。本场不发动主动文心，作品得分提高。",
         "effect": {
           "type": "restraint_pct",
           "value": 0.07
-        },
-        "source": "sidequest",
-        "routeId": "qiuxian",
-        "axis": "忘机",
-        "quality": "rare"
+        }
       },
       {
         "id": "T048",
         "name": "庄周梦蝶",
         "kind": "passive",
+        "source": "sidequest",
+        "routeId": "qiuxian",
+        "axis": "留世",
+        "quality": "rare",
         "text": "不知周之梦为蝴蝶，还是蝴蝶之梦为周。骰组首尾同点时，作品得分提高。",
         "effect": {
           "type": "dice_pattern",
@@ -16865,16 +17409,16 @@
           "minDice": 2,
           "firstCostDiscount": 1,
           "value": 0.12
-        },
-        "source": "sidequest",
-        "routeId": "qiuxian",
-        "axis": "留世",
-        "quality": "rare"
+        }
       },
       {
         "id": "T049",
         "name": "知白守黑",
         "kind": "passive",
+        "source": "sidequest",
+        "routeId": "qiuxian",
+        "axis": "common",
+        "quality": "epic",
         "text": "知其白，守其黑，为天下式。骰组同时留下低点与高点时，得分提高并恢复灵感。",
         "effect": {
           "type": "dice_pattern",
@@ -16887,28 +17431,24 @@
             "value": 1,
             "perMatch": false
           }
-        },
-        "source": "sidequest",
-        "routeId": "qiuxian",
-        "axis": "common",
-        "quality": "epic"
+        }
       },
       {
         "id": "TA11",
         "name": "斩妄见真",
         "kind": "active",
-        "text": "妄念不在幽暗处，恰藏在似是而非之间。将最低骰化为一、最高骰化为六，并获得少量得分。",
+        "source": "sidequest",
+        "routeId": "qiuxian",
+        "axis": "active",
+        "quality": "epic",
+        "cost": 3,
+        "text": "妄念不在幽暗处，恰藏在似是而非之间。将最低骰化为一、最高骰化为六，并令本场作品得分 +6%。",
         "effect": {
           "type": "dice_transform",
           "mode": "polarize",
           "minDice": 2,
-          "value": 0
-        },
-        "cost": 3,
-        "source": "sidequest",
-        "routeId": "qiuxian",
-        "axis": "active",
-        "quality": "epic"
+          "value": 0.06
+        }
       }
     ],
     "upgrades": {
@@ -17019,28 +17559,6 @@
           {
             "effect": {
               "type": "weakness_reward",
-              "value": 0,
-              "reward": {
-                "type": "inspiration",
-                "value": 1,
-                "perMatch": false
-              }
-            }
-          },
-          {
-            "effect": {
-              "type": "weakness_reward",
-              "value": 0.02,
-              "reward": {
-                "type": "inspiration",
-                "value": 1,
-                "perMatch": false
-              }
-            }
-          },
-          {
-            "effect": {
-              "type": "weakness_reward",
               "value": 0.04,
               "reward": {
                 "type": "inspiration",
@@ -17052,7 +17570,29 @@
           {
             "effect": {
               "type": "weakness_reward",
-              "value": 0.04,
+              "value": 0.06,
+              "reward": {
+                "type": "inspiration",
+                "value": 1,
+                "perMatch": false
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "weakness_reward",
+              "value": 0.08,
+              "reward": {
+                "type": "inspiration",
+                "value": 1,
+                "perMatch": false
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "weakness_reward",
+              "value": 0.1,
               "reward": {
                 "type": "inspiration",
                 "value": 2,
@@ -17063,7 +17603,7 @@
           {
             "effect": {
               "type": "weakness_reward",
-              "value": 0.06,
+              "value": 0.12,
               "reward": {
                 "type": "inspiration",
                 "value": 2,
@@ -17084,39 +17624,39 @@
         ],
         "levels": [
           {
+            "cost": 3,
             "effect": {
               "type": "seal_signature",
               "penalty": -0.08
-            },
-            "cost": 3
+            }
           },
           {
+            "cost": 3,
             "effect": {
               "type": "seal_signature",
               "penalty": -0.06
-            },
-            "cost": 3
+            }
           },
           {
+            "cost": 3,
             "effect": {
               "type": "seal_signature",
               "penalty": -0.04
-            },
-            "cost": 3
+            }
           },
           {
+            "cost": 3,
             "effect": {
               "type": "seal_signature",
               "penalty": -0.02
-            },
-            "cost": 3
+            }
           },
           {
+            "cost": 2,
             "effect": {
               "type": "seal_signature",
               "penalty": 0
-            },
-            "cost": 2
+            }
           }
         ]
       },
@@ -17265,54 +17805,54 @@
         ],
         "levels": [
           {
+            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "first_floor",
               "floor": 4,
               "value": 0.03,
               "noExtraDice": true
-            },
-            "cost": 3
+            }
           },
           {
+            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "first_floor",
               "floor": 4,
               "value": 0.05,
               "noExtraDice": true
-            },
-            "cost": 3
+            }
           },
           {
+            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "first_floor",
               "floor": 4,
               "value": 0.07,
               "noExtraDice": true
-            },
-            "cost": 3
+            }
           },
           {
+            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "first_floor",
               "floor": 5,
               "value": 0.09,
               "noExtraDice": true
-            },
-            "cost": 3
+            }
           },
           {
+            "cost": 2,
             "effect": {
               "type": "dice_transform",
               "mode": "first_floor",
               "floor": 5,
               "value": 0.11,
               "noExtraDice": true
-            },
-            "cost": 2
+            }
           }
         ]
       },
@@ -17491,71 +18031,51 @@
         ],
         "levels": [
           {
-            "effect": {
-              "type": "dice_transform",
-              "mode": "polarize",
-              "minDice": 2,
-              "value": 0
-            },
-            "cost": 3
-          },
-          {
-            "effect": {
-              "type": "dice_transform",
-              "mode": "polarize",
-              "minDice": 2,
-              "value": 0.03
-            },
-            "cost": 3
-          },
-          {
+            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "polarize",
               "minDice": 2,
               "value": 0.06
-            },
-            "cost": 3
+            }
           },
           {
+            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "polarize",
               "minDice": 2,
-              "value": 0.09
-            },
-            "cost": 3
+              "value": 0.08
+            }
           },
           {
+            "cost": 3,
+            "effect": {
+              "type": "dice_transform",
+              "mode": "polarize",
+              "minDice": 2,
+              "value": 0.1
+            }
+          },
+          {
+            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "polarize",
               "minDice": 2,
               "value": 0.12
-            },
-            "cost": 2
+            }
+          },
+          {
+            "cost": 2,
+            "effect": {
+              "type": "dice_transform",
+              "mode": "polarize",
+              "minDice": 2,
+              "value": 0.15
+            }
           }
         ]
-      }
-    },
-    "offers": {
-      "jianghu": {
-        "守义": "T041",
-        "权变": "T042",
-        "common": "T043",
-        "active": "TA09"
-      },
-      "biansai": {
-        "守土": "T044",
-        "出奇": "T045",
-        "common": "T046",
-        "active": "TA10"
-      },
-      "qiuxian": {
-        "留世": "T048",
-        "忘机": "T047",
-        "common": "T049",
-        "active": "TA11"
       }
     }
   }

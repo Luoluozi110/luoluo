@@ -25,8 +25,8 @@ const get = id => structuredClone(cfg.talentById.get(id));
 function game() { const g = new Game(cfg, ui, () => 0); g.push = () => {}; g.start('bowen', { name: '' }); return g; }
 function score(g, label = '羁绊校验') { return g.resolveBattle(g.createSession({ npc: foe, label }), 'ci', 'zheli', [4]); }
 
-assert.equal(cfg.synergies.length, 25, '羁绊已扩充至 25 组');
-assert.deepEqual(cfg.synergies.slice(-8).map(s => s.id), ['S18','S19','S20','S21','S22','S23','S24','S25'], '阶段 C 的八组新羁绊已进入游戏配置');
+assert.equal(cfg.synergies.length, 48, '羁绊已扩充至 48 组');
+for (const id of ['S18','S19','S20','S21','S22','S23','S24','S25']) assert.ok(cfg.synergies.some(sy => sy.id === id), `阶段 C 羁绊 ${id} 仍在游戏配置`);
 
 {
   const g = game();
@@ -57,6 +57,7 @@ assert.deepEqual(cfg.synergies.slice(-8).map(s => s.id), ['S18','S19','S20','S21
   assert.match(score(g, '连捷成章').selfCalc.items[4].detail, /羁绊·连捷成章·连捷 \+14%/, '连捷羁绊只在达成连胜门槛后生效');
 }
 
-const editorSeed = fs.readFileSync(path.resolve(ROOT, '..', 'feihua-editors', 'assets', 'js', 'seed-synergies.js'), 'utf8');
+const editorSeed = fs.readFileSync(path.resolve(ROOT, 'feihua-editors', 'assets', 'js', 'seed-synergies.js'), 'utf8');
 for (const id of ['S18','S19','S20','S21','S22','S23','S24','S25']) assert.match(editorSeed, new RegExp(`"id": "${id}"`), `${id} 已同步至编辑器种子`);
+for (const id of ['S26','S30','S34','S38','S42','S48']) assert.match(editorSeed, new RegExp(`"id": "${id}"`), `${id} 已同步至编辑器种子`);
 console.log('synergy-effects.test.mjs: 多路线文心羁绊与编辑器同步 ✓');

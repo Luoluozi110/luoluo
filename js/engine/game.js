@@ -1665,7 +1665,15 @@ export class Game {
     have.add(talent.id);
     return (this.cfg.synergies || []).filter(sy => (sy.members || []).includes(talent.id)).map(sy => {
       const missing = (sy.members || []).filter(id => !have.has(id));
-      return { name: sy.name, active: !missing.length, missing: missing.map(id => this.cfg.talentById.get(id)?.name || id) };
+      return {
+        id: sy.id,
+        name: sy.name,
+        desc: sy.desc || '',
+        active: !missing.length,
+        members: (sy.members || []).map(id => ({ id, name: this.cfg.talentById.get(id)?.name || id, owned: have.has(id) })),
+        missing: missing.map(id => this.cfg.talentById.get(id)?.name || id),
+        effects: (sy.effects || []).map(ef => JSON.parse(JSON.stringify(ef)))
+      };
     });
   }
 
@@ -3196,6 +3204,9 @@ export class Game {
           const last = s.battle && s.battle.lastResult;
           if ((ef.result === 'nonwin' || ef.condition === 'previous_nonwin') && ['draw','loss','lose'].includes(last)) pct.push({ source:'synergy', stackGroup:ef.stackGroup, stackMode:ef.stackMode, label:`${label}·鉴古`, value:Number(ef.value)||0 });
         }
+        else if (ef.type === 'restraint_pct' && !(session.usedActive || []).length) {
+          pct.push({ source:'synergy', stackGroup:ef.stackGroup, stackMode:ef.stackMode, label:`${label}·藏锋`, value:Number(ef.value)||0 });
+        }
         else if (ef.type === 'comeback' && s.inspiration <= (Number(ef.threshold) || 12)) pct.push({ source: 'synergy', stackGroup: ef.stackGroup, stackMode: ef.stackMode, label: `${label}·逆境`, value: Number(ef.value) || 0 });
         else if (ef.type === 'streak_pct' && (Number(s.affStreak && s.affStreak.n) || 0) >= (Number(ef.minStreak) || 2)) pct.push({ source: 'synergy', stackGroup: ef.stackGroup, stackMode: ef.stackMode, label: `${label}·连捷`, value: Number(ef.value) || 0 });
         else if (ef.type === 'style_switch_pct' && session.lastStyle && session.lastStyle !== style) {
@@ -3218,8 +3229,20 @@ export class Game {
           else if (ef.pattern === 'all_distinct') hit = dicePips.length >= (Number(ef.minDice) || 3) && new Set(dicePips).size === dicePips.length ? 1 : 0;
           else if (ef.pattern === 'low_then_high') hit = rawDicePips.length >= 2 && rawDicePips[0] <= (Number(ef.lowMax) || 2) && rawDicePips[1] >= (Number(ef.nextHighMin) || 5) ? 1 : 0;
           else if (ef.pattern === 'ascending') hit = dicePips.length >= 3 && dicePips.every((v, i) => !i || v > dicePips[i - 1]) ? 1 : 0;
+          else if (ef.pattern === 'first_last_equal') hit = dicePips.length >= Math.max(2, Number(ef.minDice) || 2) && dicePips[0] === dicePips[dicePips.length - 1] ? 1 : 0;
+          else if (ef.pattern === 'low_and_high') hit = dicePips.some(v => v <= (Number(ef.lowMax) || 2)) && dicePips.some(v => v >= (Number(ef.highMin) || 5)) ? 1 : 0;
+          else if (ef.pattern === 'single') hit = dicePips.length === 1 ? 1 : 0;
+          else if (ef.pattern === 'all_high') hit = dicePips.length > 0 && dicePips.every(v => v >= (Number(ef.minPip) || 4)) ? 1 : 0;
           else if (ef.pattern === 'pair') hit = new Set(dicePips).size < dicePips.length ? 1 : 0;
+          else if (ef.pattern === 'total') hit = totalPips >= (Number(ef.threshold) || 12) ? 1 : 0;
+          else if (ef.pattern === 'exact_total') hit = dicePips.length === Math.max(2, Number(ef.diceCount) || 2) && totalPips === (Number(ef.total) || 7) ? 1 : 0;
           else if (ef.pattern === 'total_multiple') hit = totalPips % Math.max(1, Number(ef.multiple ?? ef.divisor) || 7) === 0 ? 1 : 0;
+          else if (ef.pattern === 'extremes') {
+            const high = dicePips.filter(v => v >= (Number(ef.highMin) || 5)).length;
+            const low = dicePips.filter(v => v <= (Number(ef.lowMax) || 2)).length;
+            hit = high + low;
+            value = high * (Number(ef.highValue) || 0) + low * (Number(ef.lowValue) || 0);
+          }
           else if (ef.pattern === 'total_tiers') {
             const tier = (ef.tiers || []).slice().sort((a,b) => Number(b.threshold ?? b.min) - Number(a.threshold ?? a.min)).find(x => totalPips >= Number(x.threshold ?? x.min));
             if (tier) { hit = 1; value = Number(tier.value) || 0; }

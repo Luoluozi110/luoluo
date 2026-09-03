@@ -562,15 +562,46 @@
 }
 
 /* ==================================================== 文心羁绊 */
-.syn-list { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.syn-h { width: 100%; font-size: 11px; letter-spacing: .2em; color: var(--mo-3); }
+.syn-tools { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 7px; color: var(--mo-3); font-size: 10px; letter-spacing: .08em; }
+.syn-tools button { border: 1px solid rgba(140,104,48,.36); border-radius: 999px; background: rgba(255,250,231,.76); color: var(--mo-2); font: inherit; letter-spacing: 0; padding: 2px 7px; cursor: pointer; }
+.syn-tools button:hover, .syn-tools button:focus-visible { color: var(--zhu); border-color: rgba(150,45,35,.55); outline: none; }
+.syn-list { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.syn-empty { color: var(--mo-3); font-size: 10px; }
 .syn-chip {
-  display: inline-block; font-size: 12px; letter-spacing: .08em; color: #5a3d12;
+  appearance: none; display: inline-block; font-family: var(--font-kai); font-size: 12px; letter-spacing: .08em; color: #5a3d12;
   background: linear-gradient(180deg, #f7ecc9, #ecd9a6); border: 1px solid #c9a94f;
   border-radius: 999px; padding: 2px 10px;
-  box-shadow: 0 0 10px rgba(201,169,79,.4); animation: spinCard .5s var(--ease-back) both;
+  box-shadow: 0 0 10px rgba(201,169,79,.4); animation: spinCard .5s var(--ease-back) both; cursor: pointer;
 }
-.syn-chip:hover { filter: brightness(1.05); }
+.syn-chip:hover, .syn-chip:focus-visible { filter: brightness(1.05); outline: 2px solid rgba(150,45,35,.32); outline-offset: 2px; }
+
+.synergy-detail-modal { width: min(620px, calc(100vw - var(--safe-left) - var(--safe-right) - 24px)); }
+.synergy-catalog-modal { width: min(760px, calc(100vw - var(--safe-left) - var(--safe-right) - 24px)); }
+.wenxin-bond-section { margin: 12px 0 4px; }
+.wenxin-bond-list { display: grid; gap: 9px; max-height: min(44vh, 420px); overflow: auto; padding: 2px 4px 2px 1px; scrollbar-gutter: stable; }
+.gain-bonds .wenxin-bond-list { max-height: min(30vh, 280px); }
+.wenxin-bond-card { border: 1px solid rgba(139,107,52,.25); border-radius: 10px; background: rgba(255,252,237,.72); padding: 10px 11px; text-align: left; box-shadow: inset 0 1px 0 rgba(255,255,255,.75); }
+.wenxin-bond-card.active { border-color: rgba(183,132,31,.72); background: linear-gradient(150deg, rgba(255,249,218,.94), rgba(245,226,168,.72)); box-shadow: 0 0 12px rgba(201,169,79,.22), inset 0 1px 0 #fff; }
+.bond-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; color: var(--mo-2); }
+.bond-card-head b { color: #6d4912; font-size: 15px; letter-spacing: .08em; }
+.bond-card-head span { flex: none; color: var(--mo-3); font-size: 11px; }
+.wenxin-bond-card.active .bond-card-head span { color: var(--zhu); font-weight: 700; }
+.bond-members { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 8px; font-size: 12px; line-height: 1.45; }
+.bond-member { border-radius: 999px; padding: 2px 7px; border: 1px solid rgba(110,96,67,.22); background: rgba(255,255,255,.55); }
+.bond-member.owned { color: #6b4b17; border-color: rgba(190,139,42,.48); }
+.bond-member.missing { color: var(--mo-3); border-style: dashed; }
+.bond-plus { color: rgba(89,72,43,.45); }
+.bond-effect { margin-top: 8px; color: var(--mo-2); font-size: 12.5px; line-height: 1.7; }
+.bond-effect strong { display: inline-block; margin-right: 7px; color: var(--zhu); font-size: 11px; letter-spacing: .1em; }
+.wenxin-bond-card p { margin: 5px 0 0; color: var(--mo-3); font-size: 11.5px; line-height: 1.55; }
+.wenxin-bond-empty { border: 1px dashed rgba(120,100,70,.32); border-radius: 8px; color: var(--mo-3); padding: 12px; text-align: center; font-size: 12px; }
+
+@media (max-width: 600px) {
+  .synergy-detail-modal, .synergy-catalog-modal { width: calc(100vw - var(--safe-left) - var(--safe-right) - 16px); }
+  .wenxin-bond-list { max-height: min(46dvh, 390px); }
+  .bond-card-head { align-items: flex-start; }
+  .bond-members { gap: 4px; }
+}
 
 /* ==================================================== 战斗台 */
 #battleStage {
@@ -1756,8 +1787,6 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 .ob-review-card .ob-rc-gains { margin-top: 6px; font-size: 14px; color: var(--jin); font-weight: 600; }
 .ob-review-card .ob-rc-loss { margin-top: 4px; font-size: 13px; color: var(--mo-2); line-height: 1.7; }
 .ob-review-card .ob-rc-next { margin-top: 4px; font-size: 12.5px; color: var(--mo-3); line-height: 1.7; }
-
-
 /* 游戏前主菜单：与选流派共用宣纸全屏层，但职责独立。 */
 .main-menu-shell, .guide-shell {
   width: min(700px, calc(100vw - var(--safe-left) - var(--safe-right) - 32px));

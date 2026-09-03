@@ -1,6 +1,5 @@
 /* 支线限定内容种子：路线 NPC 与文心统一由游戏配置同步。 */
-// 专属 NPC 不进入普通 NPC 池；这是第三幕/终局的独立配置块。
-window.GAME_SIDEQUEST_NPCS = {
+// 专属 NPC 不进入普通 NPC 池；这是第三幕/终局的独立配置块。window.GAME_SIDEQUEST_NPCS = {
   "version": 1,
   "routes": {
     "jianghu": {
@@ -1051,10 +1050,10 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "jianghu",
     "axis": "common",
     "quality": "epic",
-    "text": "风尘满面，仍有人一眼认出你未说出口的招数。每场首次命中对手破绽时，恢复灵感并获得少量得分。",
+    "text": "风尘满面，仍有人一眼认出你未说出口的招数。每场首次命中对手破绽时，作品得分 +4%，并恢复 1 灵感。",
     "effect": {
       "type": "weakness_reward",
-      "value": 0,
+      "value": 0.04,
       "reward": {
         "type": "inspiration",
         "value": 1,
@@ -1204,12 +1203,12 @@ window.GAME_SIDEQUEST_TALENTS = [
     "axis": "active",
     "quality": "epic",
     "cost": 3,
-    "text": "妄念不在幽暗处，恰藏在似是而非之间。将最低骰化为一、最高骰化为六，并获得少量得分。",
+    "text": "妄念不在幽暗处，恰藏在似是而非之间。将最低骰化为一、最高骰化为六，并令本场作品得分 +6%。",
     "effect": {
       "type": "dice_transform",
       "mode": "polarize",
       "minDice": 2,
-      "value": 0
+      "value": 0.06
     }
   }
 ];
@@ -1321,28 +1320,6 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "weakness_reward",
-          "value": 0,
-          "reward": {
-            "type": "inspiration",
-            "value": 1,
-            "perMatch": false
-          }
-        }
-      },
-      {
-        "effect": {
-          "type": "weakness_reward",
-          "value": 0.02,
-          "reward": {
-            "type": "inspiration",
-            "value": 1,
-            "perMatch": false
-          }
-        }
-      },
-      {
-        "effect": {
-          "type": "weakness_reward",
           "value": 0.04,
           "reward": {
             "type": "inspiration",
@@ -1354,7 +1331,29 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "weakness_reward",
-          "value": 0.04,
+          "value": 0.06,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "weakness_reward",
+          "value": 0.08,
+          "reward": {
+            "type": "inspiration",
+            "value": 1,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "weakness_reward",
+          "value": 0.1,
           "reward": {
             "type": "inspiration",
             "value": 2,
@@ -1365,7 +1364,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "weakness_reward",
-          "value": 0.06,
+          "value": 0.12,
           "reward": {
             "type": "inspiration",
             "value": 2,
@@ -1798,24 +1797,6 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "type": "dice_transform",
           "mode": "polarize",
           "minDice": 2,
-          "value": 0
-        }
-      },
-      {
-        "cost": 3,
-        "effect": {
-          "type": "dice_transform",
-          "mode": "polarize",
-          "minDice": 2,
-          "value": 0.03
-        }
-      },
-      {
-        "cost": 3,
-        "effect": {
-          "type": "dice_transform",
-          "mode": "polarize",
-          "minDice": 2,
           "value": 0.06
         }
       },
@@ -1825,7 +1806,25 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "type": "dice_transform",
           "mode": "polarize",
           "minDice": 2,
-          "value": 0.09
+          "value": 0.08
+        }
+      },
+      {
+        "cost": 3,
+        "effect": {
+          "type": "dice_transform",
+          "mode": "polarize",
+          "minDice": 2,
+          "value": 0.1
+        }
+      },
+      {
+        "cost": 3,
+        "effect": {
+          "type": "dice_transform",
+          "mode": "polarize",
+          "minDice": 2,
+          "value": 0.12
         }
       },
       {
@@ -1834,7 +1833,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "type": "dice_transform",
           "mode": "polarize",
           "minDice": 2,
-          "value": 0.12
+          "value": 0.15
         }
       }
     ]

@@ -17,6 +17,6 @@ assert.doesNotMatch(app, /const narrativeBlock =/, '旧卷末余音不再作为�
 assert.match(css, /\.chapter-line-choice:focus-visible/, '键盘焦点必须清晰可见');
 assert.match(css, /@media \(max-width: 560px\)[\s\S]*\.chapter-line-choices \{ grid-template-columns:1fr;/, '窄屏候选改为单列');
 assert.match(album, /sum\.endScroll/, '成绩图必须读取终局行卷');
-assert.match(html, /20260902endscroll1/, '入口缓存版本必须更新');
+assert.match(html, /20260903wenxinbonds2/, '入口缓存版本必须更新');
 
 console.log('end-scroll-ui.test.mjs: 默认选择、键盘焦点、响应式、结算与成绩图接线全部通过');

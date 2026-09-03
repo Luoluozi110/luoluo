@@ -1,6 +1,6 @@
 /** modals.js —— 题卡 / 奇遇卡 / 文心卡 / 支线选择 / 天象 / 名胜 */
 import { ATTR_NAMES } from '../engine/rules.js?v=20260831firstrun1';
-import { PASSIVE_MAX, ACTIVE_MAX } from '../engine/game.js?v=20260902endscroll1';
+import { PASSIVE_MAX, ACTIVE_MAX } from '../engine/game.js?v=20260903wenxinbonds2';
 import { LANDMARK_ART, EVENT_VIGNETTE, QUIZ_MARK } from './svg.js';
 import { createCountdown } from './timer.js';
 import { play } from './audio.js';
@@ -445,13 +445,106 @@ export class Modals {
   }
 
   /* ---------------------------------------------------- 文心卡 */
+  _synergyView(sy) {
+    const configured = (this.cfg.synergies || []).find(item => item.id === (typeof sy === 'string' ? sy : (sy && sy.id)));
+    const full = typeof sy === 'string' ? configured : { ...(configured || {}), ...(sy || {}), effects: (sy && sy.effects) || (configured && configured.effects) || [] };
+    if (!full) return null;
+    const held = new Set(this.game && this.game.s
+      ? [...(this.game.s.passive || []), ...(this.game.s.active || [])].map(t => t.id)
+      : []);
+    const members = (full.members || []).map(member => {
+      const id = typeof member === 'string' ? member : member.id;
+      const configured = this.cfg.talentById && this.cfg.talentById.get(id);
+      return {
+        id,
+        name: (typeof member === 'object' && member.name) || (configured && configured.name) || id,
+        owned: typeof member === 'object' && member.owned != null ? !!member.owned : held.has(id)
+      };
+    });
+    const missing = Array.isArray(full.missing)
+      ? full.missing.slice()
+      : members.filter(member => !member.owned).map(member => member.name);
+    return {
+      ...full,
+      members,
+      missing,
+      active: full.active != null ? !!full.active : missing.length === 0,
+      effects: Array.isArray(full.effects) ? full.effects : []
+    };
+  }
+
+  _synergyCardHtml(sy) {
+    const view = this._synergyView(sy);
+    if (!view) return '';
+    const status = view.active ? '已激活' : (view.missing.length === 1 ? `还差「${view.missing[0]}」` : `还差 ${view.missing.length} 枚`);
+    const members = view.members.map(member => `<span class="bond-member ${member.owned ? 'owned' : 'missing'}">${member.owned ? '●' : '○'} ${esc(member.name)}</span>`).join('<span class="bond-plus">＋</span>');
+    const effects = view.effects.length
+      ? view.effects.map(effect => esc(synergyEffectText(effect))).join('<br>')
+      : esc(view.desc || '同时持有全部成员后自动生效');
+    return `<section class="wenxin-bond-card ${view.active ? 'active' : ''}">
+      <div class="bond-card-head"><b>✦ ${esc(view.name)}</b><span>${esc(status)}</span></div>
+      <div class="bond-members">${members}</div>
+      <div class="bond-effect"><strong>羁绊效果</strong>${effects}</div>
+      ${view.desc ? `<p>${esc(view.desc)}</p>` : ''}
+    </section>`;
+  }
+
+  _talentSynergyHtml(talentId) {
+    const related = (this.cfg.synergies || []).filter(sy => (sy.members || []).includes(talentId));
+    if (!related.length) return '<div class="wenxin-bond-empty">暂无相关羁绊</div>';
+    return `<div class="wenxin-bond-section">
+      <div class="up-next-h">相关羁绊 · ${related.length} 组</div>
+      <div class="wenxin-bond-list">${related.map(sy => this._synergyCardHtml(sy)).join('')}</div>
+    </div>`;
+  }
+
+  showSynergyDetail(sy) {
+    const view = this._synergyView(sy);
+    if (!view) return Promise.resolve();
+    const ov = this.open(`<div class="modal scroll-frame paper synergy-detail-modal">
+      <div class="mtitle"><h2>${esc(view.name)}</h2><span class="mtag">文心羁绊</span></div>
+      <hr class="hr-ink"/>
+      <div class="wenxin-bond-list">${this._synergyCardHtml(view)}</div>
+      <div class="dianggu" style="margin-top:12px;color:var(--mo-3)">同时持有全部成员后自动激活；替换掉任一成员会自然解除。</div>
+      <div class="btn-row"><button class="btn btn-primary" data-ok>知道了</button></div>
+    </div>`, 'synergy-detail');
+    return new Promise(resolve => ov.querySelector('[data-ok]').addEventListener('click', () => { this.close(ov); resolve(); }));
+  }
+
+  showSynergyCatalog() {
+    const held = new Set(this.game && this.game.s
+      ? [...(this.game.s.passive || []), ...(this.game.s.active || [])].map(t => t.id)
+      : []);
+    const related = (this.cfg.synergies || []).map(sy => ({
+      sy,
+      held: (sy.members || []).filter(id => held.has(id)).length
+    })).filter(item => item.held > 0).sort((a, b) => {
+      const aActive = a.held === (a.sy.members || []).length;
+      const bActive = b.held === (b.sy.members || []).length;
+      return Number(bActive) - Number(aActive) || b.held - a.held || String(a.sy.id).localeCompare(String(b.sy.id));
+    });
+    const active = related.filter(item => item.held === (item.sy.members || []).length).length;
+    const body = related.length
+      ? related.map(item => this._synergyCardHtml(item.sy)).join('')
+      : '<div class="wenxin-bond-empty">获得第一枚文心后，这里会列出与它相关的全部羁绊。</div>';
+    const ov = this.open(`<div class="modal scroll-frame paper synergy-catalog-modal">
+      <div class="mtitle"><h2>羁绊图谱</h2><span class="mtag">已激活 ${active} · 可追寻 ${related.length}</span></div>
+      <hr class="hr-ink"/>
+      <div class="dianggu" style="margin-bottom:10px">从右侧文心栏随时回看组成、缺失成员与完整效果；点击单枚文心也会只显示与它相关的羁绊。</div>
+      <div class="wenxin-bond-list">${body}</div>
+      <div class="btn-row"><button class="btn btn-primary" data-ok>收起图谱</button></div>
+    </div>`, 'synergy-catalog');
+    return new Promise(resolve => ov.querySelector('[data-ok]').addEventListener('click', () => { this.close(ov); resolve(); }));
+  }
+
   async showTalentGain(t, meta = {}) {
     const level = Math.max(1, Number(meta.level) || 1);
     const maxLevel = Math.max(level, Number(meta.maxLevel) || level);
     const hints = Array.isArray(meta.synergies) ? meta.synergies : [];
-    const synergyHtml = hints.length ? `<div class="dianggu" style="margin-top:10px">${hints.map(h => h.active
-      ? `<b style="color:var(--zhu)">✦ 已激活羁绊：${esc(h.name)}</b>`
-      : `羁绊「${esc(h.name)}」还差：${h.missing.map(esc).join('、')}`).join('<br>')}</div>` : '';
+    const synergyHtml = hints.length ? `<div class="wenxin-bond-section gain-bonds">
+      <div class="up-next-h">可构成羁绊 · ${hints.length} 组</div>
+      <div class="wenxin-bond-list">${hints.map(h => this._synergyCardHtml(h)).join('')}</div>
+    </div>` : '';
     const ov = this.open(`
       <div class="talent-card paper ${t.kind === 'active' ? 'act' : ''}">
         <div class="kind">${t.kind === 'active' ? `主动文心　消耗灵感 ${t.cost || 1}` : '被动文心　常驻生效'}　·　Lv ${level}/${maxLevel}</div>
@@ -495,6 +588,7 @@ export class Modals {
         ? `主动文心　消耗灵感 ${current.cost != null ? current.cost : 1}`
         : '被动文心　常驻生效';
       const lvlLine = up ? `　·　${QLABEL[up.quality] || up.quality}　Lv ${level}/${max}` : '';
+      const synergyHtml = this._talentSynergyHtml(id);
 
       let nextHtml = '';
       let btnHtml = `<div class="btn-row"><button class="btn btn-ink" data-ok>知道了</button></div>`;
@@ -525,6 +619,7 @@ export class Modals {
           <div class="kind">${kindLine}${lvlLine}</div>
           <h3>${esc(current.name)}${up ? `　<span class="lvbadge">Lv ${level}/${max}</span>` : ''}</h3>
           <div class="efx">${talentEffectText(current)}</div>
+          ${synergyHtml}
           ${nextHtml}
           <div class="dianggu">${esc(personalize(current.text || '', this.playerName))}</div>
           <div class="dianggu" style="margin-top:10px;color:var(--mo-3)">升级只消耗灵感；主动文心需在论战中发动，被动文心会常驻生效。</div>
@@ -1166,12 +1261,14 @@ export function talentEffectText(t) {
       }
       return s;
     }
+    case 'syn_pct': return `论战得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'battle_history_pct': return e.condition === 'repeat_style' ? `沿用上一场文体，得分 +${Math.round((e.value || 0) * 100)}%${e.previousWinBonus ? `；上场获胜再 +${Math.round(e.previousWinBonus * 100)}%` : ''}` : e.condition === 'switch_style' ? `换用上一场不同文体，得分 +${Math.round((e.value || 0) * 100)}%${e.previousNonWinBonus ? `；上场未胜再 +${Math.round(e.previousNonWinBonus * 100)}%` : ''}` : `上一场平或负，得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'weakness_reward': return `首次命中对手公开破绽：${e.reward && e.reward.value ? `灵感 +${e.reward.value}` : ''}${e.value ? `；得分 +${Math.round(e.value * 100)}%` : ''}`;
     case 'seal_signature': return `支付灵感封住对手本场招牌；自身得分 ${Math.round((e.penalty || 0) * 100)}%`;
     case 'dice_commitment': return e.condition === 'none_paid' ? `本场不购买追加骰，得分 +${Math.round((e.value || 0) * 100)}%` : `本场恰购买一枚追加骰，得分 +${Math.round((e.value || 0) * 100)}%${e.firstCostDiscount ? `；首枚追加少耗 ${e.firstCostDiscount} 灵感` : ''}`;
     case 'restraint_pct': return `本场未发动主动文心，得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'style_switch_pct': return `换用不同于上一场的文体：得分 +${Math.round((e.value || 0) * 100)}%，心得 +${e.insight || 0}`;
+    case 'streak_pct': return `同文风连捷达到 ${e.minStreak || 2} 场，得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'manuscript_pct': return `每持有 ${e.step || 2} 页稿本，得分 +${Math.round((e.value || 0) * 100)}%（上限 ${Math.round((e.cap || 0) * 100)}%）`;
     case 'copy_affinity': {
       const r = e.ratio != null ? e.ratio : 0.6;
@@ -1208,6 +1305,23 @@ export function talentEffectText(t) {
     case 'reincarnate': return `${e.startInspiration ? `获得时灵感 +${e.startInspiration}；` : ''}殿试结算时若剩余灵感 ≥ ${Number(e.inspThreshold) || 0}，下一局继承本局属性的 ${Math.round((Number(e.attrRatio) || 0) * 100)}%，并保留此文心与当前等级`;
     default: return t.desc || '效果由配置定义';
   }
+}
+
+/** 羁绊详情使用：沿用文心效果文案，并把发动条件补成可查询的完整句子。 */
+export function synergyEffectText(effect) {
+  const e = effect || {};
+  let text = talentEffectText({ effect: e, desc: e.type || '羁绊效果' });
+  const when = e.when || {};
+  const conditions = [];
+  if (Array.isArray(when.styles) && when.styles.length) conditions.push(`限${when.styles.map(style => ({shi:'诗',ci:'词',lian:'联'}[style] || style)).join('、')}体`);
+  if (Array.isArray(when.themes) && when.themes.length) conditions.push(`限${when.themes.join('、')}题材`);
+  if (Array.isArray(when.phases) && when.phases.length) conditions.push(`限${when.phases.join('、')}阶段`);
+  if (when.inspirationRatioMin != null) conditions.push(`灵感至少为上限 ${Math.round(Number(when.inspirationRatioMin) * 100)}%`);
+  if (when.inspirationRatioMax != null) conditions.push(`灵感不高于上限 ${Math.round(Number(when.inspirationRatioMax) * 100)}%`);
+  if (Array.isArray(when.usedTalents) && when.usedTalents.length) conditions.push(`需发动${when.usedTalents.map(id => `「${id}」`).join('、')}`);
+  if (Array.isArray(when.usedAnyTalents) && when.usedAnyTalents.length) conditions.push('需发动指定主动文心之一');
+  if (conditions.length) text += `（${conditions.join('；')}）`;
+  return text;
 }
 
 export function skyEffectText(card) {

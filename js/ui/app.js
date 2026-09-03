@@ -3,12 +3,12 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260902endscroll1';
-import { Game, Reincarnate } from '../engine/game.js?v=20260902endscroll1';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260903wenxinbonds2';
+import { Game, Reincarnate } from '../engine/game.js?v=20260903wenxinbonds2';
 import { BoardView } from './board.js?v=20260831firstrun1';
-import { Hud, radarSVG } from './hud.js?v=20260831firstrun1';
+import { Hud, radarSVG } from './hud.js?v=20260903wenxinbonds2';
 // 奇遇属性收益在 20260823eventattrs1 起于选择前完整展示；独立版本键避免旧模块缓存继续省略属性。
-import { Modals, talentEffectText } from './modals.js?v=20260902endscroll1';
+import { Modals, talentEffectText } from './modals.js?v=20260903wenxinbonds2';
 import { BattleStage } from './battle.js?v=20260831firstrun1';
 import { AlbumUI } from './album.js?v=20260902endscroll1';
 import { CodexUI } from './codex.js?v=20260831firstrun1';
@@ -150,6 +150,7 @@ async function ensureGameUi() {
     hud = new Hud($('#hud'));
     if (cfg.inspiration && cfg.inspiration.lowWarning) hud.lowWarning = cfg.inspiration.lowWarning;
     hud.onTalent = t => modals.showTalentDetail(t);
+    hud.onSynergy = sy => sy ? modals.showSynergyDetail(sy) : modals.showSynergyCatalog();
     hud.onSideQuest = () => { if (game && typeof game.sideQuestJournal === 'function') modals.showSideQuestJournal(game.sideQuestJournal()); };
     hud.onRoll(onRoll);
     hud.onPlan(onPlan);
@@ -586,7 +587,7 @@ function makeUi() {
       hud.recordChange({ kind: 'inspiration-max', value: real, reason });
     },
     recordLog: entry => hud.recordLog(entry),
-    showTalentGain: t => modals.showTalentGain(t),
+    showTalentGain: (t, meta) => modals.showTalentGain(t, meta),
     askReplaceTalent: (t, list) => modals.askReplaceTalent(t, list),
     onState(s) { hud.render(s, game); updateOnboardingBadge(s); },
     skyExpired(card) { hud.toast(`${card.name} 之效已散`); },

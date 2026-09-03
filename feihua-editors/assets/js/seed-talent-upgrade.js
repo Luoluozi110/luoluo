@@ -1,5 +1,4 @@
-/* 游戏 config/talent-upgrade.json 的编辑器种子，由配置同步生成。 */
-window.GAME_TALENT_UPGRADE = {
+/* 游戏 config/talent-upgrade.json 的编辑器种子，由配置同步生成。 */window.GAME_TALENT_UPGRADE = {
   "T001": {
     "quality": "common",
     "maxLevel": 3,
@@ -320,14 +319,6 @@ window.GAME_TALENT_UPGRADE = {
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "xue": 2
-          }
-        }
-      },
-      {
-        "effect": {
-          "type": "attr_flat",
-          "attrs": {
             "xue": 3
           }
         }
@@ -337,6 +328,14 @@ window.GAME_TALENT_UPGRADE = {
           "type": "attr_flat",
           "attrs": {
             "xue": 4
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "xue": 5
           }
         }
       }
@@ -586,20 +585,6 @@ window.GAME_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "comeback",
-          "threshold": 12,
-          "value": 0.12
-        }
-      },
-      {
-        "effect": {
-          "type": "comeback",
-          "threshold": 13,
-          "value": 0.14
-        }
-      },
-      {
-        "effect": {
-          "type": "comeback",
           "threshold": 14,
           "value": 0.16
         }
@@ -616,6 +601,20 @@ window.GAME_TALENT_UPGRADE = {
           "type": "comeback",
           "threshold": 16,
           "value": 0.2
+        }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "threshold": 17,
+          "value": 0.22
+        }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "threshold": 18,
+          "value": 0.24
         }
       }
     ]
@@ -1340,19 +1339,19 @@ window.GAME_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "draw_bonus",
-          "value": 2
-        }
-      },
-      {
-        "effect": {
-          "type": "draw_bonus",
           "value": 3
         }
       },
       {
         "effect": {
           "type": "draw_bonus",
-          "value": 5
+          "value": 4
+        }
+      },
+      {
+        "effect": {
+          "type": "draw_bonus",
+          "value": 6
         }
       }
     ]
@@ -1582,36 +1581,31 @@ window.GAME_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "lucky_six",
-          "mult": 1.18,
-          "value": 1.25
+          "mult": 1.25
         }
       },
       {
         "effect": {
           "type": "lucky_six",
-          "mult": 1.2225,
-          "value": 1.3
+          "mult": 1.3
         }
       },
       {
         "effect": {
           "type": "lucky_six",
-          "mult": 1.265,
-          "value": 1.35
+          "mult": 1.35
         }
       },
       {
         "effect": {
           "type": "lucky_six",
-          "mult": 1.3075,
-          "value": 1.42
+          "mult": 1.42
         }
       },
       {
         "effect": {
           "type": "lucky_six",
-          "mult": 1.35,
-          "value": 1.5,
+          "mult": 1.5,
           "reward": {
             "type": "inspiration",
             "value": 1,
@@ -2228,32 +2222,32 @@ window.GAME_TALENT_UPGRADE = {
         "effect": {
           "type": "manuscript_pct",
           "step": 2,
-          "value": 0.02,
-          "cap": 0.1
-        }
-      },
-      {
-        "effect": {
-          "type": "manuscript_pct",
-          "step": 2,
-          "value": 0.025,
-          "cap": 0.1
-        }
-      },
-      {
-        "effect": {
-          "type": "manuscript_pct",
-          "step": 2,
-          "value": 0.025,
-          "cap": 0.125
-        }
-      },
-      {
-        "effect": {
-          "type": "manuscript_pct",
-          "step": 2,
           "value": 0.03,
           "cap": 0.15
+        }
+      },
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 0.035,
+          "cap": 0.16
+        }
+      },
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 0.04,
+          "cap": 0.18
+        }
+      },
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 0.05,
+          "cap": 0.2
         }
       }
     ]

@@ -87,7 +87,7 @@ console.log('== 稳健、换体、稿本与高点章法均有独立反馈 ==');
   assert.ok(detail.includes('文心·删繁就简 +12%'), '单骰路线获得强反馈');
   assert.ok(detail.includes('文心·字字珠玑 +10%'), '全高路线获得得分反馈');
   assert.ok(detail.includes('文心·触类旁通·换体 +8%'), '换文体路线获得得分反馈');
-  assert.ok(detail.includes('文心·落笔成章·稿本6页 +6%'), '稿本资源转为战斗收益');
+  assert.ok(detail.includes('文心·落笔成章·稿本6页 +9%'), '强化后的稿本资源转为战斗收益');
   assert.equal(out.talentTriggers.find(t => t.id === 'T035').reward.type, 'insight', '删繁就简回流心得');
   assert.equal(out.talentTriggers.find(t => t.id === 'T036').reward.type, 'fragment', '字字珠玑回流残页');
 }

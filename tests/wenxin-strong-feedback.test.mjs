@@ -20,7 +20,7 @@ for (const talent of talents) {
   for (let i = 1; i < up.levels.length; i++) assert.notDeepEqual(up.levels[i].effect, up.levels[i - 1].effect, `${talent.id} Lv${i + 1} 不是空升级`);
 }
 
-assert.equal(synergies.length, 25, '阶段 C 共 25 组羁绊');
+assert.equal(synergies.length, 48, '羁绊扩充后共 48 组');
 for (const sy of synergies) {
   assert.ok(sy.members.length >= 2, `${sy.id} 至少两名成员`);
   const ids = sy.effects.map(e => e.effectId);
@@ -29,8 +29,8 @@ for (const sy of synergies) {
   assert.ok(sy.effects.every(e => ['add','max','replace'].includes(e.stackMode)), `${sy.id} 叠加模式合法`);
 }
 
-const editor = fs.readFileSync(path.resolve(ROOT, '..', 'feihua-editors', 'assets', 'js', 'synergy.js'), 'utf8');
-for (const token of ['dice_pattern','style_pct','theme_pct','palace_pct','battle_history_pct','armory_pct','study_bonus','insp_on_win','insp_turn_regen','syn-effect-id','syn-when-json','syn-reward-json']) {
+const editor = fs.readFileSync(path.resolve(ROOT, 'feihua-editors', 'assets', 'js', 'synergy.js'), 'utf8');
+for (const token of ['dice_pattern','style_pct','theme_pct','palace_pct','battle_history_pct','armory_pct','study_bonus','insp_on_win','insp_turn_regen','restraint_pct','syn-effect-id','syn-when-json','syn-reward-json']) {
   assert.ok(editor.includes(token), `羁绊编辑器支持 ${token}`);
 }
 console.log('wenxin-strong-feedback.test.mjs: 阶段 A/B/C 配置与编辑器契约 ✓');
