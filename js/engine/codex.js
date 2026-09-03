@@ -95,7 +95,16 @@ export function loadCodex() {
   }
 }
 
+/**
+ * 教学局静默开关：tutorial 教学局期间的图鉴（对手/文心/羁绊/天象/战绩/认知/等级）一律不落跨局库，
+ * 避免演练局的遭遇污染正式图鉴。由 app.js 在教学局创建/恢复/结束时设置；默认 false（正式局不受影响）。
+ */
+let _silent = false;
+export function setCodexSilent(on) { _silent = !!on; }
+export function codexSilent() { return _silent; }
+
 export function saveCodex(c) {
+  if (_silent) return c;   // 教学局：任何图鉴持久化都忽略（读库仍走 loadCodex，本局内不展示假增量）
   const s = normalizeCodex(c);
   if (!hasLS()) { memoryCodex = s; return s; }
   try {

@@ -822,7 +822,7 @@ export class Game {
   /* ---------------------------------------------------------- 开局 */
   /**
    * @param {string} schoolId
-   * @param {object} [opts] - { loadout: 图鉴装配卡数组, name: 玩家自起之名 }
+   * @param {object} [opts] - { loadout: 图鉴装配卡数组, name: 玩家自起之名, tutorial: 是否入门卷教学局 }
    */
   start(schoolId, opts = {}) {
     const cfg = this.cfg;
@@ -860,6 +860,8 @@ export class Game {
 
     this.s = {
       school,
+      // 运行类型：tutorial=true 为入门卷教学局——强制开启教学提示、写独立存档槽、不提交跨局进度。
+      tutorial: opts.tutorial === true,
       schoolState: this.createSchoolState(school),
       playerName,
       attrs,
@@ -1091,6 +1093,8 @@ export class Game {
   }
 
   recordAlbumBattle(out) {
+    // 教学局不推进传世名篇的跨局养成进度（演练不记名篇成长）
+    if (this.s && this.s.tutorial) return [];
     const ids = Array.isArray(this.s.loadout) ? this.s.loadout : [];
     if (!ids.length) return [];
     const store = Album.loadStore();
@@ -1488,11 +1492,11 @@ export class Game {
     for (const sy of afterSyn) {
       if (!beforeIds.has(sy.id)) {
         this.ui.toast(`✦ 文心羁绊达成 · ${sy.name}！${sy.desc}`);
-        Codex.recordSynergy(sy.id);   // 图鉴：记录已达成的羁绊（跨局累计收集）
+        if (!s.tutorial) Codex.recordSynergy(sy.id);   // 图鉴：记录已达成的羁绊（教学局不计入跨局收集）
       }
     }
 
-    Codex.recordTalent(talent.id);   // 图鉴：记录已获得的文心（跨局累计）
+    if (!s.tutorial) Codex.recordTalent(talent.id);   // 图鉴：记录已获得的文心（教学局不计入跨局收集）
     if (!opts.inherited && s.tutorialState && !s.tutorialState.talentSeen) {
       s.tutorialState.talentSeen = true;
     }
@@ -2720,6 +2724,8 @@ export class Game {
       isHiddenFinal: !!opts.isHiddenFinal,
       // 入门卷上下文（仅本场会话持有，不参与存档）：供 settleBattle 判定梯度阶段、首败点拨与战斗计数。
       onboardingContext: opts.onboardingContext || null,
+      // 教学局标记（入门卷教学局）：UI 据此展示「完整六步/算分讲解」，不被入门卷降噪梯度折叠。
+      tutorialRun: this.s.tutorial === true,
       // 殿试跨场适应层数（若本场为殿试且这是机制主考官）：供 UI 出「场间评语」
       palaceLayers: (() => {
         if (!opts.isPalace || !(npc && npc.mech)) return 0;
@@ -3631,9 +3637,10 @@ export class Game {
     schoolState.settledBattleIds = [...(schoolState.settledBattleIds || []), battleId].slice(-40);
 
     // 图鉴：累计该对手的胜/平/负战绩（跨局留存，供「图鉴阁·对手详情」展示胜率）
+    // 教学局不写跨局战绩/认知，避免新手在演练局的遭遇污染正式图鉴。
     const n0 = session.npc;
     const foeId = stableFoeId(n0);
-    if (n0 && n0.name) {
+    if (!s.tutorial && n0 && n0.name) {
       Codex.recordFoeResult(foeId, n0.name, out.result);
       // 图鉴认知升级（未识→相识→察意→破招）：本场命中破绽则推进「破招」认知
       const mechHit = !!(out.mech && out.mech.wea && out.mech.wea.hit);
@@ -4204,8 +4211,15 @@ export class Game {
     summary.state = s;
     // 入门卷标记：供结算页说明与排行榜过滤（入门卷成绩不进入竞技榜）。
     summary.onboardingRun = !!(s.onboarding && s.onboarding.enabled);
-    Object.assign(summary, this.commitAlbum(summary));
-    // 流派熟练度：结算后按本局结果累加（完成即加、通关/文宗额外）
+    summary.tutorialRun = s.tutorial === true;   // 教学局标记：结算页据此展示演练结论，不落跨局进度
+    if (!s.tutorial) {
+      // 教学局跳过以下所有跨局持久化：图鉴名篇收集、流派造诣、排行榜提交。
+      Object.assign(summary, this.commitAlbum(summary));
+    } else {
+      summary.newUnlocks = summary.newUnlocks || [];
+      summary.albumStore = null;
+    }
+    // 流派熟练度：结算后按本局结果累加（完成即加、通关/文宗额外）（教学局不累计）
     try {
       const st = s;
       const runForMastery = {
@@ -4213,18 +4227,20 @@ export class Game {
         wenzong: !!(summary.grade && summary.grade.id === 'wenzong'),
         schoolId: st.school && st.school.id
       };
-      const mres = Album.addMasteryXp(
-        Album.loadStore(), runForMastery.schoolId, runForMastery
-      );
-      if (mres) {
-        summary.mastery = mres;
-        if (mres.leveledUp) this.push(`流派造诣精进：${Album.masteryLevelName(mres.after.level)}！`);
+      if (!st.tutorial) {
+        const mres = Album.addMasteryXp(
+          Album.loadStore(), runForMastery.schoolId, runForMastery
+        );
+        if (mres) {
+          summary.mastery = mres;
+          if (mres.leveledUp) this.push(`流派造诣精进：${Album.masteryLevelName(mres.after.level)}！`);
+        }
       }
     } catch (e) { /* 熟练度累计失败不阻断结算 */ }
     summary.crossRun = this.crossRunSummary(summary);
     // 通关（金榜题名）→ 提交分数到云端排行榜（解耦：由 app.js 注入 onVictory）。
     // 第三参透传 summary，便于 onVictory 按 onboardingRun 过滤入门卷成绩。
-    if (['jinbang', 'taoyuan', 'secret_loss'].includes(summary.reason) && typeof this.onVictory === 'function') {
+    if (['jinbang', 'taoyuan', 'secret_loss'].includes(summary.reason) && typeof this.onVictory === 'function' && !s.tutorial) {
       try { this.onVictory((s.playerName || '无名氏'), summary.total, summary); } catch (_) { /* 提交失败不阻断结算 */ }
     }
     await this.ui.showResult(summary);

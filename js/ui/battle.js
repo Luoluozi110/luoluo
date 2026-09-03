@@ -117,9 +117,11 @@ export class BattleStage {
     const panel = el.querySelector('#btPanel');
 
     // 入门卷降噪梯度：首场只给一条节点提示，不弹六步长说明；二场保留推荐标签，三场起折叠。
+    // 入门卷降噪梯度：首场只给一条节点提示，不弹六步长说明；二场保留推荐标签，三场起折叠。
+    // 教学局（入门卷教学局）例外：tutorialRun=true 时首战也完整展示六步讲解，不折叠。
     const obCtx = session.onboardingContext;
     const obActive = !!obCtx;
-    const obFirst = obActive && !obCtx.isGate && (Number(obCtx.battleCount) || 0) === 0;
+    const obFirst = obActive && !session.tutorialRun && !obCtx.isGate && (Number(obCtx.battleCount) || 0) === 0;
     const showGenericTutorial = session.tutorialFirstBattle && !obFirst;
 
     /* 首次论战先讲清六步流程，随后才进入遭遇，避免教学被倒计时打断。 */

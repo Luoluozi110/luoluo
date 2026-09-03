@@ -19,7 +19,8 @@ import { normalizePoetryState } from './end-scroll.js?v=20260902endscroll1';
 
 export const RUN_SAVE_KEY = 'feihua_run_save';               // 自动存档槽（每回合结束）
 export const RUN_SAVE_MANUAL_KEY = 'feihua_run_save_manual'; // 手动存档槽（菜单「保存当前进度」）
-export const RUN_SAVE_VERSION = 9;
+export const RUN_SAVE_TUTORIAL_KEY = 'feihua_run_save_tutorial'; // 教学局存档槽（入门卷专用，与正式对局隔离）
+export const RUN_SAVE_VERSION = 9;   // 记号不递增：tutorial 为可选增量字段，旧 v9 档读入时缺省即正式局
 export const SAVE_WARN_BYTES = 3 * 1024 * 1024;              // 体积预警阈值 3MB
 
 const LOG_MAX = 200;   // 超过则截断
@@ -62,7 +63,7 @@ const STATE_KEYS = [
   'lap', 'routeIndex', 'ringId', 'phaseGateSeen', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
   'quiz', 'choiceHistory', 'narrativeState', 'poetryState', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
   'sideQuest',
-  'zeitgeist', 'prologueSeen', 'tutorialState', 'onboarding', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
+  'zeitgeist', 'prologueSeen', 'tutorial', 'tutorialState', 'onboarding', 'affStreak', 'synergies', 'talentState', 'npcMech', 'loadout', 'titles',
   'talentLevels', 'schoolState', 'abilityState', 'albumState', 'secretFinal', 'over', 'reachedEnd', 'endReason', 'log'
 ];
 
@@ -230,6 +231,9 @@ export function serializeRun(game) {
         break;
       case 'loadout':
         state.loadout = idsOf(v);
+        break;
+      case 'tutorial':
+        state.tutorial = v === true;   // 教学局标记缺省为 false（正式局），保证读档语义一致
         break;
       case 'log': {
         const log = Array.isArray(v) ? v : [];
@@ -553,11 +557,13 @@ export function deserializeRun(rawObj, cfg) {
 /* ------------------------------------------------ 读写与降级 */
 
 /**
- * 写存档。返回 { ok, where, bytes, tooBig }
+ * 写存档。tutorial=true 时写入教学局独立槽（入门卷教学局与正式对局存档互相隔离）。
+ * 返回 { ok, where, bytes, tooBig }
  *   where: 'local' | 'session' | 'memory' | null
  *   tooBig: 体积超过 SAVE_WARN_BYTES 时 true（仍尝试写入）
  */
-export function saveRun(game, slot = RUN_SAVE_KEY) {
+export function saveRun(game, slot = RUN_SAVE_KEY, { tutorial = false } = {}) {
+  if (tutorial) slot = RUN_SAVE_TUTORIAL_KEY;
   const obj = serializeRun(game);
   if (!obj) return { ok: false, where: null, bytes: 0, tooBig: false };
   let text;
@@ -613,33 +619,45 @@ export function replaceRun(rawObj, slot = RUN_SAVE_KEY) {
   return { ok: true, where: 'memory', bytes, tooBig };
 }
 
-/** 读取「最佳可用存档」：手动槽优先，其次自动槽。返回 { obj, slot } 或 null */
-export function loadBestRun() {
-  const m = loadRun(RUN_SAVE_MANUAL_KEY);
-  if (m && !m.__corrupt && m.state && !m.state.over) return { obj: m, slot: RUN_SAVE_MANUAL_KEY };
-  const a = loadRun(RUN_SAVE_KEY);
-  if (a && !a.__corrupt && a.state && !a.state.over) return { obj: a, slot: RUN_SAVE_KEY };
-  // 手动槽存在但已结束/损坏时，返回它以便 UI 提示
-  if (m && m.__corrupt) return { obj: m, slot: RUN_SAVE_MANUAL_KEY };
-  if (a && a.__corrupt) return { obj: a, slot: RUN_SAVE_KEY };
-  return null;
+/** 该存档对象是否为教学局（入门卷）存档 */
+export function isTutorialSave(r) {
+  return !!(r && r.state && r.state.tutorial);
 }
 
-/** 是否有可继续的存档（任一槽位、未结束、未损坏） */
-export function hasRun() {
-  const best = loadBestRun();
+/**
+ * 读取「最佳可用存档」：手动槽优先，其次自动槽。返回 { obj, slot } 或 null
+ * tutorial=true 时只读教学局独立槽（入门卷「继续教学」专用）；缺省只读正式局双槽。
+ */
+export function loadBestRun({ tutorial = false } = {}) {
+  const slots = tutorial ? [RUN_SAVE_TUTORIAL_KEY] : [RUN_SAVE_MANUAL_KEY, RUN_SAVE_KEY];
+  let m = null;
+  for (const slot of slots) {
+    const r = loadRun(slot);
+    if (!r || r.__corrupt) { if (!m) m = r && r.__corrupt ? { obj: r, slot } : m; continue; }
+    if (!r.state || r.state.over) continue;
+    return { obj: r, slot };
+  }
+  // 手动槽存在但已结束/损坏时返回它以便 UI 提示（正式局路径维持 v9 语义）
+  return m;
+}
+
+/** 是否有可继续的存档（tutorial=true 只看教学局槽；缺省只看正式局双槽） */
+export function hasRun({ tutorial = false } = {}) {
+  const best = loadBestRun({ tutorial });
   return !!(best && best.obj && !best.obj.__corrupt);
 }
 
-/** 列出各槽位摘要，供菜单/主菜单展示 */
-export function listRuns() {
+/** 列出各槽位摘要，供菜单/主菜单展示（tutorial=true 只列教学局槽） */
+export function listRuns({ tutorial = false } = {}) {
+  const slots = tutorial ? [RUN_SAVE_TUTORIAL_KEY] : [RUN_SAVE_MANUAL_KEY, RUN_SAVE_KEY];
   const out = [];
-  for (const slot of [RUN_SAVE_MANUAL_KEY, RUN_SAVE_KEY]) {
+  for (const slot of slots) {
     const r = loadRun(slot);
     if (!r || r.__corrupt || !r.state) continue;
     out.push({
       slot,
-      manual: slot === RUN_SAVE_MANUAL_KEY,
+      manual: slot === RUN_SAVE_MANUAL_KEY || slot === RUN_SAVE_TUTORIAL_KEY,
+      tutorial: isTutorialSave(r) || tutorial,
       savedAt: Number(r.savedAt) || 0,
       turn: Number(r.state.turn) || 0,
       lap: Number(r.state.lap) || 1,
