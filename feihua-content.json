@@ -1,6 +1,6 @@
 {
   "_type": "feihua-content",
-  "_version": 17,
+  "_version": 18,
   "questions": [
     {
       "id": "Q0001",
@@ -6346,6 +6346,9 @@
           "id": "zhou_xiaoman",
           "name": "周小满",
           "title": "蒙学童子",
+          "difficultyRole": "tutorial",
+          "beginnerWeight": 100,
+          "standardWeight": 100,
           "attrs": {
             "shi": 11,
             "ci": 5,
@@ -6389,15 +6392,15 @@
               "description": "本场准备使用诗体"
             }
           },
-          "style": "shi",
-          "difficultyRole": "tutorial",
-          "beginnerWeight": 100,
-          "standardWeight": 100
+          "style": "shi"
         },
         {
           "id": "chen_yanqiu",
           "name": "陈砚秋",
           "title": "村塾学子",
+          "difficultyRole": "tutorial",
+          "beginnerWeight": 100,
+          "standardWeight": 100,
           "attrs": {
             "shi": 5,
             "ci": 11,
@@ -6442,15 +6445,15 @@
               "description": "本场准备使用词体"
             }
           },
-          "style": "ci",
-          "difficultyRole": "tutorial",
-          "beginnerWeight": 100,
-          "standardWeight": 100
+          "style": "ci"
         },
         {
           "id": "wu_shuang_er",
           "name": "吴双儿",
           "title": "启蒙幼童",
+          "difficultyRole": "tutorial",
+          "beginnerWeight": 100,
+          "standardWeight": 100,
           "attrs": {
             "shi": 5,
             "ci": 4,
@@ -6489,15 +6492,15 @@
               "description": "本场准备使用联体"
             }
           },
-          "style": "lian",
-          "difficultyRole": "tutorial",
-          "beginnerWeight": 100,
-          "standardWeight": 100
+          "style": "lian"
         },
         {
           "id": "sun_a_niu",
           "name": "孙阿牛",
           "title": "私塾蒙童",
+          "difficultyRole": "tutorial",
+          "beginnerWeight": 100,
+          "standardWeight": 100,
           "attrs": {
             "shi": 5,
             "ci": 5,
@@ -6531,15 +6534,15 @@
               "description": "本场求稳，降低波动"
             }
           },
-          "style": "bi",
-          "difficultyRole": "tutorial",
-          "beginnerWeight": 100,
-          "standardWeight": 100
+          "style": "bi"
         },
         {
           "id": "qian_xiao_yi",
           "name": "钱小乙",
           "title": "初学蒙生",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100,
           "attrs": {
             "shi": 5,
             "ci": 4,
@@ -6577,15 +6580,15 @@
               "description": "本场准备沿用上一场路数"
             }
           },
-          "style": "xue",
-          "difficultyRole": "basic",
-          "beginnerWeight": 100,
-          "standardWeight": 100
+          "style": "xue"
         },
         {
           "id": "li_mo_tong",
           "name": "李墨童",
           "title": "开蒙学童",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 4,
             "ci": 5,
@@ -6628,16 +6631,16 @@
               "xue"
             ]
           },
-          "style": "si",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "si"
         },
         {
           "id": "shen_sui_feng",
           "name": "沈随风",
           "title": "县学秀才",
           "focusAttr": "xue",
+          "difficultyRole": "elite",
+          "beginnerWeight": 0,
+          "standardWeight": 15,
           "attrs": {
             "shi": 10,
             "ci": 15,
@@ -6669,15 +6672,15 @@
               "description": "本场顺应当朝风潮，以得势文风行文"
             }
           },
-          "style": "ci",
-          "difficultyRole": "elite",
-          "beginnerWeight": 0,
-          "standardWeight": 15
+          "style": "ci"
         },
         {
           "id": "npc_tongsheng_1",
           "name": "胡丹阳",
           "title": "枕月观云",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100,
           "attrs": {
             "shi": 5,
             "ci": 5,
@@ -6718,10 +6721,7 @@
               "xue"
             ]
           },
-          "style": "si",
-          "difficultyRole": "basic",
-          "beginnerWeight": 100,
-          "standardWeight": 100
+          "style": "si"
         }
       ],
       "range": [
@@ -6743,6 +6743,9 @@
           "id": "zhang_xiucai",
           "name": "张秀才",
           "title": "庠序生员",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100,
           "attrs": {
             "shi": 17,
             "ci": 11,
@@ -6776,15 +6779,15 @@
               "description": "本场求稳，降低波动"
             }
           },
-          "style": "shi",
-          "difficultyRole": "basic",
-          "beginnerWeight": 100,
-          "standardWeight": 100
+          "style": "shi"
         },
         {
           "id": "huang_ming_yuan",
           "name": "黄明远",
           "title": "县学秀才",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100,
           "attrs": {
             "shi": 8,
             "ci": 17,
@@ -6822,15 +6825,15 @@
               "description": "本场准备使用词体"
             }
           },
-          "style": "ci",
-          "difficultyRole": "basic",
-          "beginnerWeight": 100,
-          "standardWeight": 100
+          "style": "ci"
         },
         {
           "id": "lin_qingzhai",
           "name": "林清斋",
           "title": "儒学生员",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100,
           "attrs": {
             "shi": 8,
             "ci": 11,
@@ -6868,15 +6871,15 @@
               "description": "本场仍偏好联体"
             }
           },
-          "style": "lian",
-          "difficultyRole": "basic",
-          "beginnerWeight": 100,
-          "standardWeight": 100
+          "style": "lian"
         },
         {
           "id": "zhao_wen_bin",
           "name": "赵文彬",
           "title": "府学秀才",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100,
           "attrs": {
             "shi": 8,
             "ci": 8,
@@ -6914,15 +6917,15 @@
               "description": "本场沿用你上一场路数"
             }
           },
-          "style": "bi",
-          "difficultyRole": "basic",
-          "beginnerWeight": 100,
-          "standardWeight": 100
+          "style": "bi"
         },
         {
           "id": "zheng_shu_yu",
           "name": "郑书玉",
           "title": "廪膳生员",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 11,
             "ci": 8,
@@ -6966,15 +6969,15 @@
               "description": "准备仿你近日常用路数"
             }
           },
-          "style": "xue",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "xue"
         },
         {
           "id": "wang_han_sheng",
           "name": "王翰生",
           "title": "邑庠秀才",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 8,
             "ci": 11,
@@ -7016,16 +7019,16 @@
               "xue"
             ]
           },
-          "style": "si",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "si"
         },
         {
           "id": "xie_lian_cheng",
           "name": "谢连城",
           "title": "贡院举人",
           "focusAttr": "bi",
+          "difficultyRole": "elite",
+          "beginnerWeight": 0,
+          "standardWeight": 15,
           "attrs": {
             "shi": 17,
             "ci": 17,
@@ -7059,16 +7062,16 @@
               "description": "本场专审重复骰面，待你落笔露瑕"
             }
           },
-          "style": "lian",
-          "difficultyRole": "elite",
-          "beginnerWeight": 0,
-          "standardWeight": 15
+          "style": "lian"
         },
         {
           "id": "gu_qing_shang",
           "name": "顾清商",
           "title": "会试举人",
           "focusAttr": "si",
+          "difficultyRole": "elite",
+          "beginnerWeight": 0,
+          "standardWeight": 15,
           "attrs": {
             "shi": 18,
             "ci": 28,
@@ -7105,10 +7108,7 @@
               "description": "本场稳守成卷，邀你以一枚追加骰破势"
             }
           },
-          "style": "ci",
-          "difficultyRole": "elite",
-          "beginnerWeight": 0,
-          "standardWeight": 15
+          "style": "ci"
         }
       ],
       "range": [
@@ -7130,6 +7130,9 @@
           "id": "fan_jieyuan",
           "name": "范解元",
           "title": "乡试解元",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 30,
             "ci": 17,
@@ -7169,15 +7172,15 @@
               "description": "正常应战；若玩家追加骰，则争先强攻"
             }
           },
-          "style": "shi",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "shi"
         },
         {
           "id": "su_mingzhe",
           "name": "苏明哲",
           "title": "公车举人",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 16,
             "ci": 30,
@@ -7218,15 +7221,15 @@
               "description": "准备模仿你近日常用路数"
             }
           },
-          "style": "ci",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "ci"
         },
         {
           "id": "lu_yun_ting",
           "name": "陆云亭",
           "title": "鹿鸣宴客",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 16,
             "ci": 17,
@@ -7264,15 +7267,15 @@
               "description": "本场准备使用联体，以对仗相迎"
             }
           },
-          "style": "lian",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "lian"
         },
         {
           "id": "han_shi_chang",
           "name": "韩世昌",
           "title": "乙榜举人",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 16,
             "ci": 16,
@@ -7306,15 +7309,15 @@
               "description": "本场求稳，严守章法"
             }
           },
-          "style": "bi",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "bi"
         },
         {
           "id": "tang_ji_qing",
           "name": "唐季卿",
           "title": "孝廉举人",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 17,
             "ci": 16,
@@ -7359,15 +7362,15 @@
               "si"
             ]
           },
-          "style": "xue",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "xue"
         },
         {
           "id": "bai_wen_yuan",
           "name": "白文渊",
           "title": "秋闱中式",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 16,
             "ci": 17,
@@ -7411,16 +7414,16 @@
               "description": "准备仿你近日常用路数，相机转锋"
             }
           },
-          "style": "si",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "si"
         },
         {
           "id": "cui_wu_jiu",
           "name": "崔无咎",
           "title": "监察进士",
           "focusAttr": "si",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 24,
             "ci": 22,
@@ -7451,16 +7454,16 @@
               "description": "本场紧盯主动文心的起落，伺机问锋"
             }
           },
-          "style": "shi",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "shi"
         },
         {
           "id": "npc_juren_1",
           "name": "江嫄",
           "title": "一叶舟主",
           "focusAttr": "lian",
+          "difficultyRole": "basic",
+          "beginnerWeight": 100,
+          "standardWeight": 100,
           "attrs": {
             "shi": 21,
             "ci": 21,
@@ -7504,10 +7507,7 @@
               "ci"
             ]
           },
-          "style": "lian",
-          "difficultyRole": "basic",
-          "beginnerWeight": 100,
-          "standardWeight": 100
+          "style": "lian"
         }
       ],
       "range": [
@@ -7529,6 +7529,9 @@
           "id": "ouyang_han",
           "name": "欧阳翰",
           "title": "殿前进士",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 37,
             "ci": 21,
@@ -7570,15 +7573,15 @@
               "description": "准备稳稿压人"
             }
           },
-          "style": "shi",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "shi"
         },
         {
           "id": "si_ma_wen",
           "name": "司马文",
           "title": "同进士出身",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 22,
             "ci": 37,
@@ -7617,15 +7620,15 @@
               "description": "本场准备使用词体"
             }
           },
-          "style": "ci",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "ci"
         },
         {
           "id": "shang_guan_ming",
           "name": "上官明",
           "title": "进士及第",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 21,
             "ci": 21,
@@ -7669,15 +7672,15 @@
               "description": "准备仿你近日常用路数"
             }
           },
-          "style": "lian",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "lian"
         },
         {
           "id": "xia_hou_jin",
           "name": "夏侯瑾",
           "title": "翰林庶吉士",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 21,
             "ci": 21,
@@ -7711,15 +7714,15 @@
               "description": "本场求稳，严守翰苑章法"
             }
           },
-          "style": "bi",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "bi"
         },
         {
           "id": "mu_rong_yu",
           "name": "慕容玉",
           "title": "赐进士出身",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 22,
             "ci": 21,
@@ -7757,15 +7760,15 @@
               "description": "本场沿用你上一场路数"
             }
           },
-          "style": "xue",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "xue"
         },
         {
           "id": "yuwen_yuan",
           "name": "宇文渊",
           "title": "甲科进士",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 21,
             "ci": 22,
@@ -7826,10 +7829,7 @@
               "xue"
             ]
           },
-          "style": "si",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "si"
         }
       ],
       "range": [
@@ -7851,6 +7851,9 @@
           "id": "wang_shilang",
           "name": "王侍郎",
           "title": "礼部侍郎",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 51,
             "ci": 25,
@@ -7896,15 +7899,15 @@
               "description": "已根据上一场战况调整策略"
             }
           },
-          "style": "shi",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "shi"
         },
         {
           "id": "li_xue_shi",
           "name": "李学士",
           "title": "翰林学士",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 27,
             "ci": 51,
@@ -7950,15 +7953,15 @@
               "description": "本场准备使用词体，以声律取胜"
             }
           },
-          "style": "ci",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "ci"
         },
         {
           "id": "zhao_da_ru",
           "name": "赵大儒",
           "title": "国子监祭酒",
+          "difficultyRole": "advanced",
+          "beginnerWeight": 20,
+          "standardWeight": 100,
           "attrs": {
             "shi": 25,
             "ci": 25,
@@ -7995,16 +7998,16 @@
               "description": "本场先明守势经义，邀你以追加骰破其成规"
             }
           },
-          "style": "bi",
-          "difficultyRole": "advanced",
-          "beginnerWeight": 20,
-          "standardWeight": 100
+          "style": "bi"
         },
         {
           "id": "kang_er_yu",
           "name": "康尔玉",
           "title": "联圣有继",
           "weight": 10,
+          "difficultyRole": "basic",
+          "beginnerWeight": 10,
+          "standardWeight": 10,
           "attrs": {
             "shi": 23,
             "ci": 23,
@@ -8050,10 +8053,7 @@
               "ci"
             ]
           },
-          "style": "lian",
-          "difficultyRole": "basic",
-          "beginnerWeight": 10,
-          "standardWeight": 10
+          "style": "lian"
         }
       ],
       "range": [
@@ -8081,6 +8081,9 @@
           "name": "陈之微",
           "title": "桃花仙人",
           "weight": 0,
+          "difficultyRole": "basic",
+          "beginnerWeight": 0,
+          "standardWeight": 0,
           "attrs": {
             "shi": 50,
             "ci": 50,
@@ -8099,10 +8102,7 @@
               "xue",
               "si"
             ]
-          },
-          "difficultyRole": "basic",
-          "beginnerWeight": 0,
-          "standardWeight": 0
+          }
         }
       ],
       "isHiddenFinal": true,
@@ -13927,7 +13927,8 @@
         "type": "attr_pct",
         "attr": "lian",
         "value": 0.15
-      }
+      },
+      "icon": "🌈"
     }
   ],
   "album": [
@@ -17226,35 +17227,11 @@
   },
   "sidequest-talents": {
     "version": 1,
-    "offers": {
-      "jianghu": {
-        "守义": "T041",
-        "权变": "T042",
-        "common": "T043",
-        "active": "TA09"
-      },
-      "biansai": {
-        "守土": "T044",
-        "出奇": "T045",
-        "common": "T046",
-        "active": "TA10"
-      },
-      "qiuxian": {
-        "留世": "T048",
-        "忘机": "T047",
-        "common": "T049",
-        "active": "TA11"
-      }
-    },
     "talents": [
       {
         "id": "T041",
         "name": "抱柱之信",
         "kind": "passive",
-        "source": "sidequest",
-        "routeId": "jianghu",
-        "axis": "守义",
-        "quality": "rare",
         "text": "一诺既出，风雨不改。连续沿用上一场文体时作品得分提高；若上一场已经获胜，守诺之势更盛。",
         "effect": {
           "type": "battle_history_pct",
@@ -17262,16 +17239,16 @@
           "value": 0.05,
           "previousWinBonus": 0.03,
           "stackGroup": "style_history"
-        }
+        },
+        "source": "sidequest",
+        "routeId": "jianghu",
+        "axis": "守义",
+        "quality": "rare"
       },
       {
         "id": "T042",
         "name": "相忘江湖",
         "kind": "passive",
-        "source": "sidequest",
-        "routeId": "jianghu",
-        "axis": "权变",
-        "quality": "rare",
         "text": "旧招已尽，便还彼此一片江湖。换用不同文体时得分提高；上一场未胜，转身之力更强。",
         "effect": {
           "type": "battle_history_pct",
@@ -17279,16 +17256,16 @@
           "value": 0.05,
           "previousNonWinBonus": 0.03,
           "stackGroup": "style_history"
-        }
+        },
+        "source": "sidequest",
+        "routeId": "jianghu",
+        "axis": "权变",
+        "quality": "rare"
       },
       {
         "id": "T043",
         "name": "风尘知己",
         "kind": "passive",
-        "source": "sidequest",
-        "routeId": "jianghu",
-        "axis": "common",
-        "quality": "epic",
         "text": "风尘满面，仍有人一眼认出你未说出口的招数。每场首次命中对手破绽时，作品得分 +4%，并恢复 1 灵感。",
         "effect": {
           "type": "weakness_reward",
@@ -17298,79 +17275,78 @@
             "value": 1,
             "perMatch": false
           }
-        }
+        },
+        "source": "sidequest",
+        "routeId": "jianghu",
+        "axis": "common",
+        "quality": "epic"
       },
       {
         "id": "TA09",
         "name": "杯酒解剑",
         "kind": "active",
-        "source": "sidequest",
-        "routeId": "jianghu",
-        "axis": "active",
-        "quality": "epic",
-        "cost": 3,
         "text": "且把兵刃挂在楼外。支付灵感，封住对手本场招牌；你也要放下几分锋芒。",
         "effect": {
           "type": "seal_signature",
           "penalty": -0.08
-        }
+        },
+        "cost": 3,
+        "source": "sidequest",
+        "routeId": "jianghu",
+        "axis": "active",
+        "quality": "epic"
       },
       {
         "id": "T044",
         "name": "坚壁清野",
         "kind": "passive",
-        "source": "sidequest",
-        "routeId": "biansai",
-        "axis": "守土",
-        "quality": "rare",
         "text": "城中每一粒粮，都要留到真正需要的时候。本场不购买追加灵感骰，作品得分提高。",
         "effect": {
           "type": "dice_commitment",
           "condition": "none_paid",
           "value": 0.07
-        }
+        },
+        "source": "sidequest",
+        "routeId": "biansai",
+        "axis": "守土",
+        "quality": "rare"
       },
       {
         "id": "T045",
         "name": "轻骑出塞",
         "kind": "passive",
-        "source": "sidequest",
-        "routeId": "biansai",
-        "axis": "出奇",
-        "quality": "rare",
         "text": "轻骑只争一线，不与大军纠缠。首枚追加骰少耗灵感；本场恰好购买一枚追加骰，得分提高。",
         "effect": {
           "type": "dice_commitment",
           "condition": "exactly_one_paid",
           "firstCostDiscount": 1,
           "value": 0.07
-        }
+        },
+        "source": "sidequest",
+        "routeId": "biansai",
+        "axis": "出奇",
+        "quality": "rare"
       },
       {
         "id": "T046",
         "name": "孤烽照夜",
         "kind": "passive",
-        "source": "sidequest",
-        "routeId": "biansai",
-        "axis": "common",
-        "quality": "epic",
         "text": "城外没有援军，远处却还有一座烽燧未灭。上一场平或负时，下一场作品得分提高。",
         "effect": {
           "type": "battle_history_pct",
           "condition": "previous_nonwin",
           "value": 0.08,
           "stackGroup": "result_history"
-        }
+        },
+        "source": "sidequest",
+        "routeId": "biansai",
+        "axis": "common",
+        "quality": "epic"
       },
       {
         "id": "TA10",
         "name": "背水列阵",
         "kind": "active",
-        "source": "sidequest",
-        "routeId": "biansai",
-        "axis": "active",
-        "quality": "epic",
-        "cost": 3,
         "text": "身后只有一水，再无回旋余地。首骰获得保底与得分加成，但本场不能追加灵感骰。",
         "effect": {
           "type": "dice_transform",
@@ -17378,30 +17354,31 @@
           "floor": 4,
           "value": 0.03,
           "noExtraDice": true
-        }
+        },
+        "cost": 3,
+        "source": "sidequest",
+        "routeId": "biansai",
+        "axis": "active",
+        "quality": "epic"
       },
       {
         "id": "T047",
         "name": "坐忘",
         "kind": "passive",
-        "source": "sidequest",
-        "routeId": "qiuxian",
-        "axis": "忘机",
-        "quality": "rare",
         "text": "堕肢体，黜聪明，离形去知。本场不发动主动文心，作品得分提高。",
         "effect": {
           "type": "restraint_pct",
           "value": 0.07
-        }
+        },
+        "source": "sidequest",
+        "routeId": "qiuxian",
+        "axis": "忘机",
+        "quality": "rare"
       },
       {
         "id": "T048",
         "name": "庄周梦蝶",
         "kind": "passive",
-        "source": "sidequest",
-        "routeId": "qiuxian",
-        "axis": "留世",
-        "quality": "rare",
         "text": "不知周之梦为蝴蝶，还是蝴蝶之梦为周。骰组首尾同点时，作品得分提高。",
         "effect": {
           "type": "dice_pattern",
@@ -17409,16 +17386,16 @@
           "minDice": 2,
           "firstCostDiscount": 1,
           "value": 0.12
-        }
+        },
+        "source": "sidequest",
+        "routeId": "qiuxian",
+        "axis": "留世",
+        "quality": "rare"
       },
       {
         "id": "T049",
         "name": "知白守黑",
         "kind": "passive",
-        "source": "sidequest",
-        "routeId": "qiuxian",
-        "axis": "common",
-        "quality": "epic",
         "text": "知其白，守其黑，为天下式。骰组同时留下低点与高点时，得分提高并恢复灵感。",
         "effect": {
           "type": "dice_pattern",
@@ -17431,24 +17408,28 @@
             "value": 1,
             "perMatch": false
           }
-        }
+        },
+        "source": "sidequest",
+        "routeId": "qiuxian",
+        "axis": "common",
+        "quality": "epic"
       },
       {
         "id": "TA11",
         "name": "斩妄见真",
         "kind": "active",
-        "source": "sidequest",
-        "routeId": "qiuxian",
-        "axis": "active",
-        "quality": "epic",
-        "cost": 3,
         "text": "妄念不在幽暗处，恰藏在似是而非之间。将最低骰化为一、最高骰化为六，并令本场作品得分 +6%。",
         "effect": {
           "type": "dice_transform",
           "mode": "polarize",
           "minDice": 2,
           "value": 0.06
-        }
+        },
+        "cost": 3,
+        "source": "sidequest",
+        "routeId": "qiuxian",
+        "axis": "active",
+        "quality": "epic"
       }
     ],
     "upgrades": {
@@ -17624,39 +17605,39 @@
         ],
         "levels": [
           {
-            "cost": 3,
             "effect": {
               "type": "seal_signature",
               "penalty": -0.08
-            }
+            },
+            "cost": 3
           },
           {
-            "cost": 3,
             "effect": {
               "type": "seal_signature",
               "penalty": -0.06
-            }
+            },
+            "cost": 3
           },
           {
-            "cost": 3,
             "effect": {
               "type": "seal_signature",
               "penalty": -0.04
-            }
+            },
+            "cost": 3
           },
           {
-            "cost": 3,
             "effect": {
               "type": "seal_signature",
               "penalty": -0.02
-            }
+            },
+            "cost": 3
           },
           {
-            "cost": 2,
             "effect": {
               "type": "seal_signature",
               "penalty": 0
-            }
+            },
+            "cost": 2
           }
         ]
       },
@@ -17805,54 +17786,54 @@
         ],
         "levels": [
           {
-            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "first_floor",
               "floor": 4,
               "value": 0.03,
               "noExtraDice": true
-            }
+            },
+            "cost": 3
           },
           {
-            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "first_floor",
               "floor": 4,
               "value": 0.05,
               "noExtraDice": true
-            }
+            },
+            "cost": 3
           },
           {
-            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "first_floor",
               "floor": 4,
               "value": 0.07,
               "noExtraDice": true
-            }
+            },
+            "cost": 3
           },
           {
-            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "first_floor",
               "floor": 5,
               "value": 0.09,
               "noExtraDice": true
-            }
+            },
+            "cost": 3
           },
           {
-            "cost": 2,
             "effect": {
               "type": "dice_transform",
               "mode": "first_floor",
               "floor": 5,
               "value": 0.11,
               "noExtraDice": true
-            }
+            },
+            "cost": 2
           }
         ]
       },
@@ -18031,51 +18012,71 @@
         ],
         "levels": [
           {
-            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "polarize",
               "minDice": 2,
               "value": 0.06
-            }
+            },
+            "cost": 3
           },
           {
-            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "polarize",
               "minDice": 2,
               "value": 0.08
-            }
+            },
+            "cost": 3
           },
           {
-            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "polarize",
               "minDice": 2,
               "value": 0.1
-            }
+            },
+            "cost": 3
           },
           {
-            "cost": 3,
             "effect": {
               "type": "dice_transform",
               "mode": "polarize",
               "minDice": 2,
               "value": 0.12
-            }
+            },
+            "cost": 3
           },
           {
-            "cost": 2,
             "effect": {
               "type": "dice_transform",
               "mode": "polarize",
               "minDice": 2,
               "value": 0.15
-            }
+            },
+            "cost": 2
           }
         ]
+      }
+    },
+    "offers": {
+      "jianghu": {
+        "守义": "T041",
+        "权变": "T042",
+        "common": "T043",
+        "active": "TA09"
+      },
+      "biansai": {
+        "守土": "T044",
+        "出奇": "T045",
+        "common": "T046",
+        "active": "TA10"
+      },
+      "qiuxian": {
+        "留世": "T048",
+        "忘机": "T047",
+        "common": "T049",
+        "active": "TA11"
       }
     }
   }
