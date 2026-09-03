@@ -1757,3 +1757,71 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 .ob-review-card .ob-rc-loss { margin-top: 4px; font-size: 13px; color: var(--mo-2); line-height: 1.7; }
 .ob-review-card .ob-rc-next { margin-top: 4px; font-size: 12.5px; color: var(--mo-3); line-height: 1.7; }
 
+
+/* 游戏前主菜单：与选流派共用宣纸全屏层，但职责独立。 */
+.main-menu-shell, .guide-shell {
+  width: min(700px, calc(100vw - var(--safe-left) - var(--safe-right) - 32px));
+  max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 32px);
+  margin-block: auto;
+  overflow: auto;
+  border-radius: 16px;
+}
+.main-menu-shell { text-align: center; }
+.main-menu-brand {
+  color: var(--zhu); font-size: 17px; letter-spacing: .48em; margin-left: .48em;
+}
+.main-menu-title { margin: 5px 0 0; font-size: clamp(28px, 5vw, 44px); text-align: center; }
+.main-menu-lead, .guide-lead {
+  margin: 8px auto 0; max-width: 38em; color: var(--mo-2); line-height: 1.8; letter-spacing: .08em;
+}
+.main-menu-primary {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+  width: min(540px, 100%); margin: 24px auto 0;
+}
+.main-menu-item {
+  width: 100%; min-height: 74px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 5px; line-height: 1.3;
+}
+.main-menu-item:first-child { grid-column: 1 / -1; }
+.main-menu-item span { font-size: 19px; }
+.main-menu-item small { font-size: 11px; letter-spacing: .04em; opacity: .82; line-height: 1.5; }
+.main-menu-item:disabled small { opacity: .7; }
+.main-menu-secondary {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 9px;
+  margin-top: 22px; padding-top: 16px; border-top: 1px dashed rgba(120,100,70,.34);
+}
+.school-screen-nav { display: flex; justify-content: flex-start; margin-bottom: 8px; }
+
+.guide-shell { position: relative; }
+.guide-back { position: sticky; top: 0; z-index: 2; }
+.guide-title { margin: 8px 0 0; text-align: center; font-size: clamp(27px, 5vw, 40px); }
+.guide-lead { text-align: center; }
+.guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
+.guide-grid section, .help-sections section {
+  padding: 14px 15px; border: 1px solid rgba(120,100,70,.28); border-radius: 10px;
+  background: rgba(255,250,232,.56);
+}
+.guide-grid b, .help-sections b { color: var(--zhu); letter-spacing: .1em; }
+.guide-grid p, .help-sections p { margin: 7px 0 0; color: var(--mo-2); line-height: 1.75; }
+.guide-note, .main-menu-modal-note {
+  margin-top: 16px; color: var(--mo-3); text-align: center; font-size: var(--text-meta); line-height: 1.7;
+}
+.main-menu-modal { width: min(520px, calc(100vw - var(--safe-left) - var(--safe-right) - 24px)); }
+.help-modal { width: min(680px, calc(100vw - var(--safe-left) - var(--safe-right) - 24px)); }
+.help-sections { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 14px 0; }
+.help-sections section { padding: 11px 12px; }
+
+@media (max-width: 560px) {
+  .main-menu-shell, .guide-shell { width: min(100%, 420px); padding: 21px 17px; }
+  .main-menu-primary, .guide-grid, .help-sections { grid-template-columns: 1fr; }
+  .main-menu-item:first-child { grid-column: auto; }
+  .main-menu-item { min-height: 66px; }
+  .main-menu-secondary .btn { flex: 1 1 calc(50% - 9px); min-width: 0; }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .main-menu-shell, .guide-shell { margin-block: 0; max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 18px); }
+  .main-menu-primary { grid-template-columns: repeat(5, minmax(112px, 1fr)); width: max-content; max-width: 100%; overflow-x: auto; }
+  .main-menu-item:first-child { grid-column: auto; }
+  .main-menu-item { min-height: 62px; padding-inline: 12px; }
+}
