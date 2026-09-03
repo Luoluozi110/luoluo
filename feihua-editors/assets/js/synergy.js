@@ -87,7 +87,11 @@
     else if (type === "style_switch_pct") { out.value = Number(eff.value) || 0; out.insight = Number(eff.insight) || 0; }
     else if (type === "manuscript_pct") { out.step = Number(eff.step) || 0; out.value = Number(eff.value) || 0; out.cap = Number(eff.cap) || 0; }
     else if (type === "streak_pct") { out.minStreak = Number(eff.minStreak) || 0; out.value = Number(eff.value) || 0; }
-    else if (type === "palace_insp") out.value = Number(eff.value) || 0;
+    else if (type === "palace_insp") {
+      out.value = Number(eff.value) || 0;
+      if (Number(eff.startValue) > 0) out.startValue = Number(eff.startValue);
+      else delete out.startValue;
+    }
     else if (type === "insp_on_quiz") { out.value = Number(eff.value) || 0; out.maxTriggers = Number(eff.maxTriggers) || 0; }
     out.effectId = String(eff.effectId || '').trim();
     out.stackGroup = String(eff.stackGroup || '').trim();
@@ -169,7 +173,8 @@
       else if (ef.type === "dice_plus" && !(Number(ef.value) > 0)) errors.push("第 " + (i + 1) + " 条 dice_plus 的 value 须 > 0");
       else if (ef.type === "crit" && !(Number(ef.chance) > 0)) errors.push("第 " + (i + 1) + " 条 crit 的 chance 须 > 0");
       else if (["comeback", "style_switch_pct", "manuscript_pct", "streak_pct"].includes(ef.type) && !(Number(ef.value) > 0)) errors.push("第 " + (i + 1) + " 条效果加成须 > 0");
-      else if (["insp_battle_recover", "palace_insp", "insp_on_quiz"].includes(ef.type) && !(Number(ef.value) > 0)) errors.push("第 " + (i + 1) + " 条灵感回复须 > 0");
+      else if (ef.type === "palace_insp" && !(Number(ef.value) > 0 || Number(ef.startValue) > 0)) errors.push("第 " + (i + 1) + " 条殿试灵感回复须 > 0");
+      else if (["insp_battle_recover", "insp_on_quiz"].includes(ef.type) && !(Number(ef.value) > 0)) errors.push("第 " + (i + 1) + " 条灵感回复须 > 0");
     });
     const effectIds = s.effects.map(e => e.effectId).filter(Boolean);
     if (new Set(effectIds).size !== effectIds.length) errors.push("同一羁绊内 effectId 不可重复");
@@ -202,7 +207,7 @@
       case "style_switch_pct": return "换体时得分 +" + Math.round((ef.value || 0) * 100) + "%、心得 +" + (ef.insight || 0);
       case "manuscript_pct": return "每 " + (ef.step || 0) + " 稿页得分 +" + Math.round((ef.value || 0) * 100) + "%（最多 " + Math.round((ef.cap || 0) * 100) + "%）";
       case "streak_pct": return "连捷 " + (ef.minStreak || 0) + " 场后得分 +" + Math.round((ef.value || 0) * 100) + "%";
-      case "palace_insp": return "殿试每场灵感 +" + (ef.value || 0);
+      case "palace_insp": return ef.startValue ? "进入殿试灵感 +" + ef.startValue + (ef.value ? "；每场再 +" + ef.value : "") : "殿试开场灵感 +" + (ef.value || 0);
       case "insp_on_quiz": return "有效答题灵感 +" + (ef.value || 0) + "（限 " + (ef.maxTriggers || 0) + " 次）";
       case "restraint_pct": return "未发动论战主动文心时得分 +" + Math.round((ef.value || 0) * 100) + "%";
       default: return ef.type;
@@ -308,7 +313,7 @@
       return `<label>连捷场数<input type="number" class="syn-min-streak" value="${ef.minStreak || 0}" step="1" min="1"/></label>
               <label>得分比例<input type="number" class="syn-val" value="${ef.value || 0}" step="0.01" min="0"/></label>`;
     if (ef.type === "palace_insp")
-      return `<label>每场回复<input type="number" class="syn-val" value="${ef.value || 0}" step="1" min="0"/></label>`;
+      return `<label>进入殿试回复<input type="number" class="syn-start-value" value="${ef.startValue || 0}" step="1" min="0"/></label><label>每场回复（旧多场兼容）<input type="number" class="syn-val" value="${ef.value || 0}" step="1" min="0"/></label>`;
     if (ef.type === "insp_on_quiz")
       return `<label>每次回复<input type="number" class="syn-val" value="${ef.value || 0}" step="1" min="0"/></label>
               <label>每局次数<input type="number" class="syn-max-triggers" value="${ef.maxTriggers || 0}" step="1" min="1"/></label>`;
@@ -487,6 +492,9 @@
     } else if (t.classList.contains("syn-val")) {
       const i = Number(t.closest(".syn-eff-row").dataset.i);
       state.form.effects[i].value = Number(t.value) || 0;
+    } else if (t.classList.contains("syn-start-value")) {
+      const i = Number(t.closest(".syn-eff-row").dataset.i);
+      state.form.effects[i].startValue = Number(t.value) || 0;
     } else if (t.classList.contains("syn-chance")) {
       const i = Number(t.closest(".syn-eff-row").dataset.i);
       state.form.effects[i].chance = Number(t.value) || 0;

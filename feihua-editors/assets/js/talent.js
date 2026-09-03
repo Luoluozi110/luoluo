@@ -113,7 +113,12 @@
     else if (type === "insp_on_win" || type === "draw_bonus" || type === "insp_on_talent") { out.value = Number(eff.value) || 0; }
     else if (type === "style_pct") { out.style = ["shi", "ci", "lian", "any"].includes(eff.style) ? eff.style : "shi"; out.value = Number(eff.value) || 0; }
     else if (type === "theme_pct") { out.theme = THEMES.includes(eff.theme) ? eff.theme : "yongwu"; out.value = Number(eff.value) || 0; }
-    else if (type === "streak_mult" || type === "insp_floor" || type === "study_bonus" || type === "palace_insp" || type === "start_insp" || type === "insp_turn_regen") { out.value = Number(eff.value) || 0; }
+    else if (type === "palace_insp") {
+      out.value = Number(eff.value) || 0;
+      if (Number(eff.startValue) > 0) out.startValue = Number(eff.startValue);
+      else delete out.startValue;
+    }
+    else if (type === "streak_mult" || type === "insp_floor" || type === "study_bonus" || type === "start_insp" || type === "insp_turn_regen") { out.value = Number(eff.value) || 0; }
     else if (type === "insp_on_quiz") { out.value = Number(eff.value) || 0; out.maxTriggers = Math.max(1, Number(eff.maxTriggers) || 1); }
     else if (type === "insp_battle_recover") { out.value = Number(eff.value) || 0; out.threshold = Math.max(0, Number(eff.threshold) || 0); out.maxTriggers = Math.max(1, Number(eff.maxTriggers) || 1); }
     else if (type === "insp_max") { out.value = Number(eff.value) || 0; out.group = String(eff.group || "inspiration_capacity"); }
@@ -345,7 +350,10 @@
     else if (["insp_on_win", "draw_bonus", "insp_on_talent"].includes(t.effect.type)) {
       if (!(Number(t.effect.value) > 0)) errors.push(t.effect.type + " 的 value 须 > 0");
     }
-    else if (["style_pct", "theme_pct", "streak_mult", "insp_floor", "study_bonus", "palace_insp", "start_insp", "insp_turn_regen", "insp_on_quiz", "insp_battle_recover", "insp_max"].includes(t.effect.type)) {
+    else if (t.effect.type === "palace_insp") {
+      if (!(Number(t.effect.value) > 0 || Number(t.effect.startValue) > 0)) errors.push("palace_insp 须提供入殿或开场灵感回复");
+    }
+    else if (["style_pct", "theme_pct", "streak_mult", "insp_floor", "study_bonus", "start_insp", "insp_turn_regen", "insp_on_quiz", "insp_battle_recover", "insp_max"].includes(t.effect.type)) {
       if (!(Number(t.effect.value) > 0)) errors.push(t.effect.type + " 的 value 须 > 0");
       if (["insp_on_quiz", "insp_battle_recover"].includes(t.effect.type) && !(Number(t.effect.maxTriggers) >= 1)) errors.push(t.effect.type + " 的 maxTriggers 须 ≥ 1");
       if (t.effect.type === "insp_battle_recover" && !(Number(t.effect.threshold) >= 0)) errors.push("insp_battle_recover 的 threshold 须 ≥ 0");
@@ -442,7 +450,7 @@
       case "crit": return Math.round((eff.chance || 0) * 100) + "% 概率得分 ×" + (eff.mult || 0);
       case "copy_affinity": return "复制对手所选风格的相性加成";
       case "dice_mult": return "普通灵感骰每点乘区 +" + (eff.value || 0) + "%";
-      case "palace_pct": return "殿试三场得分 +" + Math.round((eff.value || 0) * 100) + "%";
+      case "palace_pct": return "殿试作品得分 +" + Math.round((eff.value || 0) * 100) + "%";
       case "fixed_dice": return "灵感波动锁定为固定 +" + (eff.value || 0);
       case "planned_dice": return "可指定下次灵感骰为 1—" + (eff.maxValue || 6) + " 点；本局每次使用消耗递增（首用 " + (eff.baseCost || 5) + "，每次 +" + (eff.costStep || 2) + "）";
       case "unlock_lian": return "解锁「联圣流」";
@@ -467,7 +475,7 @@
       case "comeback": return "灵感 ≤ " + (eff.threshold || 12) + " 的绝境中，本场得分 +" + Math.round((eff.value || 0) * 100) + "%";
       case "armory_pct": return "每拥有 " + (eff.step || 3) + " 枚文心，算分属性 +" + Math.round((eff.value || 0) * 100) + "%";
       case "study_bonus": return "「败中有得」「平分秋色」补偿属性额外 +" + (eff.value || 0);
-      case "palace_insp": return "殿试每场开场，灵感 +" + (eff.value || 0);
+      case "palace_insp": return eff.startValue ? "进入殿试，灵感 +" + eff.startValue + (eff.value ? "；每场开场再 +" + eff.value : "") : "殿试开场，灵感 +" + (eff.value || 0);
       case "start_insp": return "获得此文心时，灵感一次性 +" + (eff.value || 0);
       case "insp_turn_regen": return "持有时，每回合开始恢复灵感 +" + (eff.value || 0);
       case "insp_on_quiz": return "答对/完成抉择额外 +" + (eff.value || 0) + " 灵感（每局最多 " + (eff.maxTriggers || 0) + " 次）";
@@ -675,8 +683,11 @@
           <input type="number" class="tal-value" value="${pct}" step="1" min="0"/></div>
       </div>`;
     }
-    if (type === "study_bonus" || type === "palace_insp" || type === "start_insp" || type === "insp_turn_regen" || type === "insp_max") {
-      const lbl = type === "study_bonus" ? "败/平补偿属性额外 +" : type === "palace_insp" ? "殿试每场开场灵感 +" : type === "start_insp" ? "获得时灵感一次性 +" : type === "insp_turn_regen" ? "持有时每回合开始恢复 +" : "本局灵感上限永久 +";
+    if (type === "palace_insp") {
+      return `<div class="row2"><div class="field" style="margin:0"><label>进入殿试恢复灵感</label><input type="number" class="tal-palace-start" value="${eff.startValue || 0}" step="1" min="0"/></div><div class="field" style="margin:0"><label>每场开场额外恢复（旧多场兼容）</label><input type="number" class="tal-value" value="${eff.value || 0}" step="1" min="0"/></div></div>`;
+    }
+    if (type === "study_bonus" || type === "start_insp" || type === "insp_turn_regen" || type === "insp_max") {
+      const lbl = type === "study_bonus" ? "败/平补偿属性额外 +" : type === "start_insp" ? "获得时灵感一次性 +" : type === "insp_turn_regen" ? "持有时每回合开始恢复 +" : "本局灵感上限永久 +";
       return `<div class="field" style="margin:6px 0"><label>${lbl}</label>
         <input type="number" class="tal-value" value="${eff.value || 0}" step="1" min="0"/></div>`;
     }
@@ -1216,6 +1227,7 @@
         // 百分比类效果：编辑器填整数百分比，引擎存小数（6 → 0.06）
         eff.value = PCT_VALUE_TYPES.includes(eff.type) ? (Number(t.value) || 0) / 100 : (Number(t.value) || 0);
       }
+      else if (t.classList.contains("tal-palace-start")) eff.startValue = Math.max(0, Number(t.value) || 0);
       else if (t.classList.contains("tal-chance")) eff.chance = Number(t.value) || 0;
       else if (t.classList.contains("tal-mult")) eff.mult = Number(t.value) || 0;
       else if (t.classList.contains("tal-threshold")) eff.threshold = Number(t.value) || 0;

@@ -1242,7 +1242,7 @@ export function talentEffectText(t) {
     case 'crit': return `${Math.round((e.chance || 0) * 100)}% 概率神来之笔，得分 ×${e.mult}`;
     case 'attr_flat': return Object.entries(e.attrs || {}).map(([k, v]) => `${ATTR_NAMES[k]} +${v}`).join('　');
     case 'unlock_lian': return '解除联力 8 点门槛';
-    case 'palace_pct': return `殿试每场得分 +${Math.round((e.value || 0) * 100)}%`;
+    case 'palace_pct': return `殿试作品得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'insp_on_win': return `每场论战取胜，灵感 +${e.value || 0}`;
     case 'draw_bonus': return `平分秋色时，出战文体额外 +${e.value || 0}`;
     case 'insp_on_talent': return `每获得一枚新文心，灵感 +${e.value || 0}`;
@@ -1254,7 +1254,9 @@ export function talentEffectText(t) {
     case 'comeback': return `灵感 ≤${e.threshold || 0} 时，本场得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'armory_pct': return `每拥有 ${e.step || 0} 枚文心，六维算分属性 +${Math.round((e.value || 0) * 100)}%${e.cap ? `（上限 ${Math.round(e.cap * 100)}%）` : ''}`;
     case 'study_bonus': return `败/平研习补偿属性额外 +${e.value || 0}${e.nextBattlePct ? `；下一场得分 +${Math.round(e.nextBattlePct * 100)}%` : ''}`;
-    case 'palace_insp': return `殿试每场开场，灵感 +${e.value || 0}${e.startValue ? `；入场先 +${e.startValue}` : ''}`;
+    case 'palace_insp': return e.startValue
+      ? `进入殿试，灵感 +${e.startValue}${e.value ? `；每场开场再 +${e.value}` : ''}`
+      : `殿试开场，灵感 +${e.value || 0}`;
     case 'start_insp': return `获得时，灵感一次性 +${e.value || 0}`;
     case 'insp_turn_regen': return `持有时，每回合开始恢复灵感 +${e.value || 0}${e.thresholdRatio ? `（低于上限 ${Math.round(e.thresholdRatio * 100)}% 时）` : ''}${e.onTalent ? `；新得文心时 +${e.onTalent}` : ''}`;
     case 'insp_on_quiz': return `答对/完成抉择额外 +${e.value || 0} 灵感（每局最多 ${e.maxTriggers || 0} 次）`;

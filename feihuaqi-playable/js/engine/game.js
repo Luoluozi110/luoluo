@@ -4048,7 +4048,7 @@ export class Game {
         s.battle.loss += (n - i); s.battle.streak = 0; s.palaceDone += (n - i);
         break;
       }
-      // 文心「金殿对策」：殿试每场开场灵感 +value
+      // 旧多场配置仍兼容按场回复；现行单场配置把总量放在 startValue，于入殿时一次结算。
       for (const t of (s.passive || [])) {
         const ef = t.effect || {};
         if (ef.type === 'palace_insp') this.addInspiration(Number(ef.value) || 0, `文心·${t.name}`);

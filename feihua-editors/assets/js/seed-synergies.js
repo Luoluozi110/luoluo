@@ -382,15 +382,15 @@ window.GAME_SYNERGIES = [
       "T028",
       "T099"
     ],
-    "desc": "殿试每场回复 4 灵感，入场时先回复 5 灵感；殿试得分 +8%。",
+    "desc": "殿试入场时恢复 17 灵感；殿试作品得分 +8%。",
     "effects": [
       {
         "effectId": "S16-E1",
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "palace_insp",
-        "value": 4,
-        "startValue": 5
+        "value": 0,
+        "startValue": 17
       },
       {
         "effectId": "S16-E2",
@@ -590,7 +590,7 @@ window.GAME_SYNERGIES = [
       "T099",
       "T012"
     ],
-    "desc": "殿试以诗出战时得分 +18%；以诗获胜时诗力 +3。",
+    "desc": "殿试以诗出战时，作品得分 +24%。",
     "effects": [
       {
         "effectId": "S24-E1",
@@ -608,9 +608,13 @@ window.GAME_SYNERGIES = [
         "effectId": "S24-E2",
         "stackGroup": "synergy-score",
         "stackMode": "add",
-        "type": "on_win_bonus",
-        "style": "shi",
-        "value": 3
+        "type": "palace_pct",
+        "value": 0.06,
+        "when": {
+          "styles": [
+            "shi"
+          ]
+        }
       }
     ]
   },
@@ -1135,15 +1139,15 @@ window.GAME_SYNERGIES = [
       "T028",
       "T033"
     ],
-    "desc": "百川入殿，策问从容：进入殿试先恢复 3 灵感，每场开场再恢复 2。",
+    "desc": "百川入殿，策问从容：进入殿试时恢复 9 灵感。",
     "effects": [
       {
         "effectId": "S47-E1",
         "stackGroup": "synergy-palace",
         "stackMode": "max",
         "type": "palace_insp",
-        "value": 2,
-        "startValue": 3
+        "value": 0,
+        "startValue": 9
       }
     ]
   },
@@ -1154,7 +1158,7 @@ window.GAME_SYNERGIES = [
       "T034",
       "T033"
     ],
-    "desc": "海纳旧学，传灯成卷：殿试每场得分 +12%。",
+    "desc": "海纳旧学，传灯成卷：殿试作品得分 +12%。",
     "effects": [
       {
         "effectId": "S48-E1",

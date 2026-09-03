@@ -1767,40 +1767,40 @@ window.GAME_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "palace_insp",
-          "value": 3,
-          "startValue": 4,
+          "value": 0,
+          "startValue": 13,
           "scorePct": 0
         }
       },
       {
         "effect": {
           "type": "palace_insp",
-          "value": 3,
-          "startValue": 5,
+          "value": 0,
+          "startValue": 14,
           "scorePct": 0.02
         }
       },
       {
         "effect": {
           "type": "palace_insp",
-          "value": 4,
-          "startValue": 6,
+          "value": 0,
+          "startValue": 18,
           "scorePct": 0.04
         }
       },
       {
         "effect": {
           "type": "palace_insp",
-          "value": 4,
-          "startValue": 7,
+          "value": 0,
+          "startValue": 19,
           "scorePct": 0.06
         }
       },
       {
         "effect": {
           "type": "palace_insp",
-          "value": 5,
-          "startValue": 8,
+          "value": 0,
+          "startValue": 23,
           "scorePct": 0.08
         }
       }

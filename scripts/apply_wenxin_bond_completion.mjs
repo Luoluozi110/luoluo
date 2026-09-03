@@ -123,8 +123,8 @@ const add = [
   { id:'S44', name:'洛水活源', members:['T019','T030'], desc:'活水流入洛阳纸：有效答题额外恢复 1 灵感，每局最多 4 次。', effects:[{effectId:'S44-E1',stackGroup:'synergy-recovery',stackMode:'max',type:'insp_on_quiz',value:1,maxTriggers:4}] },
   { id:'S45', name:'诗骨成章', members:['T020','T038'], desc:'诗骨落为成章稿本：以诗出战时，每 2 页稿本得分 +2%，最多 +12%。', effects:[score('S45','manuscript_pct',.02,{step:2,cap:.12,when:{styles:['shi']}})] },
   { id:'S46', name:'咏物珠玑', members:['T021','T036'], desc:'体物入微，字字有光：出战咏物题材时得分 +12%。', effects:[score('S46','theme_pct',.12,{theme:'yongwu'})] },
-  { id:'S47', name:'殿纳百川', members:['T028','T033'], desc:'百川入殿，策问从容：进入殿试先恢复 3 灵感，每场开场再恢复 2。', effects:[{effectId:'S47-E1',stackGroup:'synergy-palace',stackMode:'max',type:'palace_insp',value:2,startValue:3}] },
-  { id:'S48', name:'传灯成卷', members:['T034','T033'], desc:'海纳旧学，传灯成卷：殿试每场得分 +12%。', effects:[score('S48','palace_pct',.12)] }
+  { id:'S47', name:'殿纳百川', members:['T028','T033'], desc:'百川入殿，策问从容：进入殿试时恢复 9 灵感。', effects:[{effectId:'S47-E1',stackGroup:'synergy-palace',stackMode:'max',type:'palace_insp',value:0,startValue:9}] },
+  { id:'S48', name:'传灯成卷', members:['T034','T033'], desc:'海纳旧学，传灯成卷：殿试作品得分 +12%。', effects:[score('S48','palace_pct',.12)] }
 ];
 
 const newIds = new Set(add.map(s => s.id));

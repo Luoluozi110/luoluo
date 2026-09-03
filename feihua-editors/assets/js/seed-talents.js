@@ -208,7 +208,7 @@ window.GAME_TALENTS = [
     "id": "T099",
     "name": "三元及第",
     "kind": "passive",
-    "text": "解元、会元、状元连中三元，本朝数百年不过数人。图鉴「连中三元」解锁后可装配：殿试三场得分各 +15%，并于入场时恢复 4 灵感。",
+    "text": "解元、会元、状元连中三元，本朝数百年不过数人。图鉴「连中三元」解锁后可装配：殿试作品得分 +15%，并于入场时恢复 4 灵感。",
     "effect": {
       "type": "palace_pct",
       "value": 0.15,
@@ -466,11 +466,11 @@ window.GAME_TALENTS = [
     "id": "T028",
     "name": "金殿对策",
     "kind": "passive",
-    "text": "殿试策问，临轩而试。金殿之上从容奏对——进入殿试先恢复 4 灵感，殿试每场开场再恢复 3。",
+    "text": "殿试策问，临轩而试。金殿之上从容奏对——进入殿试时恢复 13 灵感。",
     "effect": {
       "type": "palace_insp",
-      "value": 3,
-      "startValue": 4,
+      "value": 0,
+      "startValue": 13,
       "scorePct": 0
     }
   },
