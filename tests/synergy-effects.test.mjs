@@ -25,7 +25,7 @@ const get = id => structuredClone(cfg.talentById.get(id));
 function game() { const g = new Game(cfg, ui, () => 0); g.push = () => {}; g.start('bowen', { name: '' }); return g; }
 function score(g, label = '羁绊校验') { return g.resolveBattle(g.createSession({ npc: foe, label }), 'ci', 'zheli', [4]); }
 
-assert.equal(cfg.synergies.length, 48, '羁绊已扩充至 48 组');
+assert.equal(cfg.synergies.length, 74, '羁绊已扩充至 74 组，其中 62 条为独立双文心羁绊');
 for (const id of ['S18','S19','S20','S21','S22','S23','S24','S25']) assert.ok(cfg.synergies.some(sy => sy.id === id), `阶段 C 羁绊 ${id} 仍在游戏配置`);
 
 {

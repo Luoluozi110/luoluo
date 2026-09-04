@@ -28,6 +28,10 @@ assert.match(overlay.textContent, /一鼓作气/);
 assert.match(overlay.textContent, /同声相应/);
 assert.match(overlay.textContent, /同文风连捷达到 2 场，得分 \+10%/);
 assert.match(overlay.textContent, /还差「同声相应」/);
+assert.match(overlay.textContent, /抱柱长歌/);
+assert.match(overlay.textContent, /梦回旧章/);
+assert.match(overlay.textContent, /庄周梦蝶/);
+assert.match(overlay.textContent, /至少两枚骰且首尾同点/);
 overlay.querySelector('[data-ok]').click();
 await closed;
 await new Promise(resolve => setTimeout(resolve, 230));
@@ -48,5 +52,22 @@ assert.match(overlay.textContent, /还差「同声相应」/);
 overlay.querySelector('[data-ok]').click();
 await closed;
 
-console.log('wenxin-bond-ui.test.mjs: 获得弹窗与右侧羁绊图谱查询 ✓');
+await new Promise(resolve => setTimeout(resolve, 230));
+const pairHints = cfg.synergies.filter(sy => sy.members.length === 2 && sy.members.includes('T041')).map(sy => ({
+  ...sy, active:false, missing:sy.members.filter(id => id !== 'T041').map(id => cfg.talentById.get(id).name),
+  members:sy.members.map(id => ({ id, name:cfg.talentById.get(id).name, owned:id === 'T041' }))
+}));
+closed = modals.showTalentGain(cfg.talentById.get('T041'), { level:1, maxLevel:4, synergies:pairHints });
+overlay = document.querySelector('.talent-card').closest('.overlay');
+assert.match(overlay.textContent, /可构成羁绊 · 2 组/);
+for (const hint of pairHints) {
+  assert.ok(overlay.textContent.includes(hint.name), '获得弹窗逐条展示独立羁绊名称');
+  assert.ok(overlay.textContent.includes('还差「' + hint.missing[0] + '」'), '每条双文心羁绊只需另一枚不同文心');
+}
+assert.match(overlay.textContent, /同文风连捷达到 2 场/);
+assert.match(overlay.textContent, /首尾同点/);
+overlay.querySelector('[data-ok]').click();
+await closed;
+
+console.log('wenxin-bond-ui.test.mjs: 获得弹窗与右侧图谱均能分别查询两条独立羁绊的组成、缺项与效果 ✓');
 dom.window.close();

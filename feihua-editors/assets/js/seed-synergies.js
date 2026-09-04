@@ -1163,5 +1163,572 @@
         "value": 0.12
       }
     ]
+  },
+  {
+    "id": "S49",
+    "name": "抱柱长歌",
+    "members": [
+      "T041",
+      "T022"
+    ],
+    "desc": "信守旧调，长歌不辍：同文风连捷达到 2 场后，得分 +6%。",
+    "effects": [
+      {
+        "effectId": "S49-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "streak_pct",
+        "minStreak": 2,
+        "value": 0.06
+      }
+    ]
+  },
+  {
+    "id": "S50",
+    "name": "梦回旧章",
+    "members": [
+      "T041",
+      "T048"
+    ],
+    "desc": "首尾相照，如赴旧约：至少两枚骰且首尾同点时，得分 +6%。",
+    "effects": [
+      {
+        "effectId": "S50-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "pattern": "first_last_equal",
+        "minDice": 2,
+        "value": 0.06
+      }
+    ]
+  },
+  {
+    "id": "S51",
+    "name": "双蝶和鸣",
+    "members": [
+      "T048",
+      "T039"
+    ],
+    "desc": "双蝶和鸣：骰组出现同点时，得分 +6%，并回复 1 灵感。",
+    "effects": [
+      {
+        "effectId": "S51-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "pattern": "pair",
+        "value": 0.06,
+        "reward": {
+          "type": "inspiration",
+          "value": 1,
+          "perMatch": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "S52",
+    "name": "江湖转益",
+    "members": [
+      "T042",
+      "T037"
+    ],
+    "desc": "换境亦换笔：换用不同文体时，得分 +8%，心得 +1。",
+    "effects": [
+      {
+        "effectId": "S52-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "style_switch_pct",
+        "value": 0.08,
+        "insight": 1
+      }
+    ]
+  },
+  {
+    "id": "S53",
+    "name": "换骨忘形",
+    "members": [
+      "T042",
+      "TA02"
+    ],
+    "desc": "不拘旧形：发动「夺胎换骨」且换用不同文体时，得分 +10%。",
+    "effects": [
+      {
+        "effectId": "S53-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "style_switch_pct",
+        "value": 0.1,
+        "insight": 0,
+        "when": {
+          "usedTalents": [
+            "TA02"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "S54",
+    "name": "识人观微",
+    "members": [
+      "T043",
+      "T011"
+    ],
+    "desc": "知己知人，见微知著：出战怀古题材时，得分 +8%。",
+    "effects": [
+      {
+        "effectId": "S54-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "theme_pct",
+        "theme": "huaigu",
+        "value": 0.08
+      }
+    ]
+  },
+  {
+    "id": "S55",
+    "name": "知己问学",
+    "members": [
+      "T043",
+      "T027"
+    ],
+    "desc": "知己相勉，失意亦有所得：败或平后的研习额外 +1，下一场得分 +4%。",
+    "effects": [
+      {
+        "effectId": "S55-E1",
+        "stackGroup": "synergy-growth",
+        "stackMode": "max",
+        "type": "study_bonus",
+        "value": 1,
+        "nextBattlePct": 0.04
+      }
+    ]
+  },
+  {
+    "id": "S56",
+    "name": "解剑长鸣",
+    "members": [
+      "TA09",
+      "T015"
+    ],
+    "desc": "解剑仍有不平声：发动「杯酒解剑」且灵感不高于 16 时，得分 +10%。",
+    "effects": [
+      {
+        "effectId": "S56-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "comeback",
+        "threshold": 16,
+        "value": 0.1,
+        "when": {
+          "usedTalents": [
+            "TA09"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "S57",
+    "name": "破釜止戈",
+    "members": [
+      "TA09",
+      "T025"
+    ],
+    "desc": "破釜不必争刃：发动「杯酒解剑」时，得分 +6%。",
+    "effects": [
+      {
+        "effectId": "S57-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "syn_pct",
+        "value": 0.06,
+        "when": {
+          "usedTalents": [
+            "TA09"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "S58",
+    "name": "清野收笔",
+    "members": [
+      "T044",
+      "T035"
+    ],
+    "desc": "一笔收束，清野守简：仅用一枚骰时，得分 +8%。",
+    "effects": [
+      {
+        "effectId": "S58-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "pattern": "single",
+        "value": 0.08
+      }
+    ]
+  },
+  {
+    "id": "S59",
+    "name": "坚壁藏墨",
+    "members": [
+      "T044",
+      "T023"
+    ],
+    "desc": "惜墨固守，留力后篇：仅用一枚骰时，结算回复 1 灵感。",
+    "effects": [
+      {
+        "effectId": "S59-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "pattern": "single",
+        "value": 0,
+        "reward": {
+          "type": "inspiration",
+          "value": 1,
+          "perMatch": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "S60",
+    "name": "轻骑急就",
+    "members": [
+      "T045",
+      "T005"
+    ],
+    "desc": "轻骑破局，急智翻盘：首骰不高于 2、第二枚骰不低于 5 时，得分 +8%。",
+    "effects": [
+      {
+        "effectId": "S60-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "pattern": "low_then_high",
+        "lowMax": 2,
+        "nextHighMin": 5,
+        "value": 0.08
+      }
+    ]
+  },
+  {
+    "id": "S61",
+    "name": "天马行军",
+    "members": [
+      "T045",
+      "T010"
+    ],
+    "desc": "轻骑不循旧辙：至少两枚骰且点数各异时，得分 +6%。",
+    "effects": [
+      {
+        "effectId": "S61-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "pattern": "all_distinct",
+        "minDice": 2,
+        "value": 0.06
+      }
+    ]
+  },
+  {
+    "id": "S62",
+    "name": "曲水续灯",
+    "members": [
+      "T046",
+      "T018"
+    ],
+    "desc": "曲水再举杯，孤灯不熄：上一场未胜时，本场得分 +6%。",
+    "effects": [
+      {
+        "effectId": "S62-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "battle_history_pct",
+        "result": "nonwin",
+        "value": 0.06
+      }
+    ]
+  },
+  {
+    "id": "S63",
+    "name": "孤烽新绿",
+    "members": [
+      "T046",
+      "T031"
+    ],
+    "desc": "烽火照新绿：战后灵感不高于 18 时，回复 2 灵感，每局最多 3 次。",
+    "effects": [
+      {
+        "effectId": "S63-E1",
+        "stackGroup": "synergy-recovery",
+        "stackMode": "max",
+        "type": "insp_battle_recover",
+        "threshold": 18,
+        "value": 2,
+        "maxTriggers": 3
+      }
+    ]
+  },
+  {
+    "id": "S64",
+    "name": "渊深列阵",
+    "members": [
+      "TA10",
+      "T032"
+    ],
+    "desc": "蓄深而后列阵：发动「背水列阵」且灵感不低于上限 50% 时，得分 +8%。",
+    "effects": [
+      {
+        "effectId": "S64-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "syn_pct",
+        "value": 0.08,
+        "when": {
+          "usedTalents": [
+            "TA10"
+          ],
+          "inspirationRatioMin": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "S65",
+    "name": "成竹稳锋",
+    "members": [
+      "TA10",
+      "T029"
+    ],
+    "desc": "胸中有成竹，临阵锋不乱：发动「背水列阵」且每枚骰均不低于 4 时，得分 +6%。",
+    "effects": [
+      {
+        "effectId": "S65-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "pattern": "all_high",
+        "minPip": 4,
+        "value": 0.06,
+        "when": {
+          "usedTalents": [
+            "TA10"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "S66",
+    "name": "静中推敲",
+    "members": [
+      "T047",
+      "T008"
+    ],
+    "desc": "静中推敲，不妄动笔：本场未发动论战主动文心时，得分 +6%。",
+    "effects": [
+      {
+        "effectId": "S66-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "restraint_pct",
+        "value": 0.06
+      }
+    ]
+  },
+  {
+    "id": "S67",
+    "name": "坐忘留白",
+    "members": [
+      "T047",
+      "TA08"
+    ],
+    "desc": "谋篇留白，心有余裕：灵感不低于上限 60% 时，得分 +6%。",
+    "effects": [
+      {
+        "effectId": "S67-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "syn_pct",
+        "value": 0.06,
+        "when": {
+          "inspirationRatioMin": 0.6
+        }
+      }
+    ]
+  },
+  {
+    "id": "S68",
+    "name": "白黑有声",
+    "members": [
+      "T049",
+      "TA03"
+    ],
+    "desc": "白黑相激，奇声自起：骰组同时出现不高于 2 的低点与不低于 5 的高点时，得分 +8%。",
+    "effects": [
+      {
+        "effectId": "S68-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "pattern": "low_and_high",
+        "lowMax": 2,
+        "highMin": 5,
+        "value": 0.08
+      }
+    ]
+  },
+  {
+    "id": "S69",
+    "name": "点墨分明",
+    "members": [
+      "T049",
+      "TA07"
+    ],
+    "desc": "点铁成金，黑白分明：发动「点铁成金」且出现六点时，得分 +8%。",
+    "effects": [
+      {
+        "effectId": "S69-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "pattern": "six",
+        "value": 0.08,
+        "when": {
+          "usedTalents": [
+            "TA07"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "S70",
+    "name": "见真惊雨",
+    "members": [
+      "TA11",
+      "TA04"
+    ],
+    "desc": "斩妄见真，落笔惊雨：发动「斩妄见真」且出现六点时，得分 +8%。",
+    "effects": [
+      {
+        "effectId": "S70-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "pattern": "six",
+        "value": 0.08,
+        "when": {
+          "usedTalents": [
+            "TA11"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "S71",
+    "name": "斩妄六顺",
+    "members": [
+      "TA11",
+      "T024"
+    ],
+    "desc": "去妄存真，六曜回息：发动「斩妄见真」且出现六点时，结算回复 1 灵感。",
+    "effects": [
+      {
+        "effectId": "S71-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "pattern": "six",
+        "value": 0,
+        "when": {
+          "usedTalents": [
+            "TA11"
+          ]
+        },
+        "reward": {
+          "type": "inspiration",
+          "value": 1,
+          "perMatch": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "S72",
+    "name": "孤愤惊辞",
+    "members": [
+      "T015",
+      "TA03"
+    ],
+    "desc": "孤愤化作惊人辞：灵感不高于 14 时，得分 +8%。",
+    "effects": [
+      {
+        "effectId": "S72-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "comeback",
+        "threshold": 14,
+        "value": 0.08
+      }
+    ]
+  },
+  {
+    "id": "S73",
+    "name": "退笔留白",
+    "members": [
+      "T023",
+      "T035"
+    ],
+    "desc": "退笔留白，简中得悟：仅用一枚骰时，得分 +6%，心得 +1。",
+    "effects": [
+      {
+        "effectId": "S73-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "pattern": "single",
+        "value": 0.06,
+        "reward": {
+          "type": "insight",
+          "value": 1,
+          "perMatch": false
+        }
+      }
+    ]
+  },
+  {
+    "id": "S74",
+    "name": "谋篇惊风",
+    "members": [
+      "TA08",
+      "TA04"
+    ],
+    "desc": "谋定而后落笔：发动「笔落惊风雨」且出现六点时，得分 +8%。",
+    "effects": [
+      {
+        "effectId": "S74-E1",
+        "stackGroup": "synergy-resonance-v2",
+        "stackMode": "max",
+        "type": "dice_pattern",
+        "pattern": "six",
+        "value": 0.08,
+        "when": {
+          "usedTalents": [
+            "TA04"
+          ]
+        }
+      }
+    ]
   }
 ];

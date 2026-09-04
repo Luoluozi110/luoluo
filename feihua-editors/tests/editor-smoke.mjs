@@ -34,8 +34,10 @@ const { document, localStorage } = window;
 const oldTalents = (window.GAME_TALENTS || []).filter(t => !['T034', 'T035', 'T036', 'T037', 'T038', 'T039', 'T040', 'TA08', 'T041', 'T042', 'T043', 'TA09', 'T044', 'T045', 'T046', 'TA10', 'T047', 'T048', 'T049', 'TA11'].includes(t.id));
 oldTalents.push({ id: 'T041', name: '抱柱之信', kind: 'passive', text: '', effect: { type: 'on_win_bonus', style: 'shi', value: 1 } });
 localStorage.setItem('feihua_editors_v1_talents', JSON.stringify(oldTalents));
-// 模拟新增羁绊部署前的旧缓存：只有 S01—S25；初始化时必须补齐 S26—S48。
-const oldSynergies = (window.GAME_SYNERGIES || []).filter(sy => Number(String(sy.id || '').replace(/^S/, '')) <= 25);
+// 同时覆盖最早的 25 条缓存与上次部署的 48 条缓存；只补齐缺项，不覆盖用户编辑。
+const oldSynergyLimit = Number(process.env.EDITOR_OLD_SYNERGY_LIMIT) || 48;
+const oldSynergies = JSON.parse(JSON.stringify((window.GAME_SYNERGIES || []).filter(sy => Number(String(sy.id || '').replace(/^S/, '')) <= oldSynergyLimit)));
+oldSynergies.find(sy => sy.id === 'S01').name = '用户自定义诗酒剑气';
 localStorage.setItem('feihua_editors_v1_synergies', JSON.stringify(oldSynergies));
 // 同时模拟旧天象缓存：SK07 已发布到官方种子，但旧缓存尚未出现。
 const oldSky = (window.GAME_SKY || []).filter(card => card.id !== 'SK07');
@@ -293,8 +295,10 @@ const affData = window.AFFINITY.get ? window.AFFINITY.get() : (window.GAME_AFFIN
 const themeN = (affData.themes || []).length, mannerN = (affData.manners || []).length;
 const affCells = document.querySelectorAll('#afflist select.aff-cell').length;
 ok(affCells === themeN * mannerN, `相性矩阵 ${themeN}×${mannerN}=${themeN * mannerN} 格下拉`, affCells);
-ok(document.querySelectorAll('#synlist .q-card').length === 48, '羁绊列表 48 条', document.querySelectorAll('#synlist .q-card').length);
-ok(window.SYNERGY.get().some(sy => sy.id === 'S26'), '旧羁绊缓存自动补齐 S26—S48', window.SYNERGY.get().length);
+ok(document.querySelectorAll('#synlist .q-card').length === 74, '羁绊列表 74 条', document.querySelectorAll('#synlist .q-card').length);
+ok(window.SYNERGY.get().some(sy => sy.id === 'S26') && window.SYNERGY.get().some(sy => sy.id === 'S74'), '旧羁绊缓存自动补齐至 S74', window.SYNERGY.get().length);
+ok(window.SYNERGY.get().find(sy => sy.id === 'S01').name === '用户自定义诗酒剑气', '补齐独立羁绊时保留用户修改');
+ok(JSON.parse(localStorage.getItem('feihua_editors_v1_synergies')).length === 74, '新增独立羁绊自动持久化到旧缓存');
 ok(document.querySelector('#synlist')?.textContent.includes('抱柱之信'), '新增羁绊显示支线文心名称而非裸 ID', document.querySelector('#synlist')?.textContent);
 ok(document.querySelectorAll('#boardlist .board-card').length === 192 && window.BOARD.get().layout === 'concentric_spiral' && window.BOARD.get().mainRing.length === 192 && window.BOARD.get().rings.map(r => r.cells.length).join(',') === '72,64,56', '三圈地图列表 192 格（72/64/56）', document.querySelectorAll('#boardlist .board-card').length);
 // 张数随种子自适应（云端独有的 SK07 已并入 config/sky.json）
@@ -364,6 +368,22 @@ console.log('[4] 羁绊：编辑改名 → 保存 → state + localStorage');
   ok(window.SYNERGY.get()[0].name === '冒烟测试羁绊名', '羁绊名写入 state', window.SYNERGY.get()[0].name);
   const saved = JSON.parse(localStorage.getItem('feihua_editors_v1_synergies'));
   ok(saved[0].name === '冒烟测试羁绊名', '羁绊名持久化 localStorage');
+}
+
+console.log('[4.1] 新增双文心羁绊：两名成员 → 编辑效果 → 保存往返');
+{
+  const index = window.SYNERGY.get().findIndex(sy => sy.id === 'S49');
+  click(document.querySelector(`#synlist [data-edit="${index}"]`));
+  ok(document.getElementById('synTitle').textContent === '编辑羁绊 · S49', 'S49 可打开编辑');
+  ok(document.querySelectorAll('#synMemberChips .syn-chip').length === 2, '新增羁绊明确展示两名成员');
+  ok(document.getElementById('synMembers').textContent.includes('抱柱之信') && document.getElementById('synMembers').textContent.includes('一鼓作气'), '两名成员显示真实名称');
+  const valueInput = document.querySelector('#synEffectBox .syn-val');
+  valueInput.value = '0.07';
+  fire(valueInput, 'input');
+  click(document.getElementById('synSave'));
+  const saved = JSON.parse(localStorage.getItem('feihua_editors_v1_synergies')).find(sy => sy.id === 'S49');
+  ok(saved.effects[0].value === 0.07 && saved.effects[0].minStreak === 2, '新增羁绊的得分与触发条件保存往返');
+  ok(saved.members.join(',') === 'T041,T022', '编辑后仍仅需两枚文心');
 }
 
 console.log('[5] 地图：编辑格子名 → 保存 → state + localStorage');

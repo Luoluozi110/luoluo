@@ -20,7 +20,7 @@ for (const talent of talents) {
   for (let i = 1; i < up.levels.length; i++) assert.notDeepEqual(up.levels[i].effect, up.levels[i - 1].effect, `${talent.id} Lv${i + 1} 不是空升级`);
 }
 
-assert.equal(synergies.length, 48, '羁绊扩充后共 48 组');
+assert.equal(synergies.length, 74, '羁绊扩充后共 74 组');
 for (const sy of synergies) {
   assert.ok(sy.members.length >= 2, `${sy.id} 至少两名成员`);
   const ids = sy.effects.map(e => e.effectId);

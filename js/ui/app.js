@@ -3,7 +3,7 @@
  * 并实现 game.js 所需的 ui 适配器接口，
  * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
  */
-import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260903wenxinbonds2';
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260904pairbonds1';
 import { Game, Reincarnate } from '../engine/game.js?v=20260903wenxinbonds2';
 import { BoardView } from './board.js?v=20260831firstrun1';
 import { Hud, radarSVG } from './hud.js?v=20260903wenxinbonds2';
