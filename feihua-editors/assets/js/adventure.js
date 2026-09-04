@@ -86,7 +86,7 @@
     const isOldSeed = raw && raw.length === OLD_EVENT_SEED_IDS.size &&
       raw.every(e => OLD_EVENT_SEED_IDS.has(e.id));
     if (!raw || isOldSeed) {
-      // 首次打开或仍停留在示例种子：载入游戏真实奇遇（41 条），并持久化。
+      // 首次打开或仍停留在示例种子：载入游戏完整官方奇遇，并持久化。
       const base = (window.GAME_EVENTS && window.GAME_EVENTS.length) ? window.GAME_EVENTS : SEED;
       state.events = base.map(normalizeEvent);
       C.store("events", state.events);
@@ -99,7 +99,7 @@
   }
 
   // 官方新增奇遇 ID 列表（发布新奇遇时补充；同步桌面 seed-events.js 后也会自动带入）。
-  const BACKFILL_EVENT_IDS = ["E042"];
+  const BACKFILL_EVENT_IDS = ["E042", "E043", "E044", "E045", "E046", "E047", "E048", "E049", "E050", "E051", "E052", "E053", "E054", "E055", "E056", "E057", "E058", "E059", "E060", "E061", "E062"];
   function backfillOfficialEvents() {
     const seed = (window.GAME_EVENTS || []);
     const byId = new Map(state.events.map(e => [e.id, e]));
@@ -306,7 +306,7 @@
       <div class="row2" style="margin-top:8px">
         <div class="field" style="margin:0"><label>灵感变化（当前）</label>
           <input type="number" class="eff-insp" value="${eff.inspiration || 0}" step="1"/></div>
-        <div class="field" style="margin:0"><label>灵感上限 +N（永久）</label>
+        <div class="field" style="margin:0"><label>灵感上限 +N（本局，不自动回满）</label>
           <input type="number" class="eff-insp-max" value="${eff.inspirationMax || 0}" step="1" min="0"/></div>
       </div>
       <div class="row2" style="margin-top:8px">
