@@ -135,8 +135,8 @@ function replaceEditorSeed(file, name, value) {
   fs.writeFileSync(file, `${source.slice(0, jsonStart)}${JSON.stringify(value, null, 2)}${source.slice(end)}`, 'utf8');
 }
 
-// 云端工程是正式配置的完整镜像。显式列出它能覆盖的每一块，避免某个
-// 编辑器未触及的比例字段继续停留在旧的小数单位。
+// 正式配置和云端工程各自保留其内容来源；云端工程可能已经由编辑器发布了
+// 更晚的文案或参数，因此迁移只转换单位，绝不能用本地配置反向覆盖它。
 const names = [
   'questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity',
   'synergies', 'board', 'sky', 'album', 'schools', 'grades', 'narrative',
@@ -147,30 +147,34 @@ if (Number(read(path.join(CONFIG, 'attrs.json')).numericVersion) !== 2) throw ne
 scaleProject(cfg);
 for (const [name, value] of Object.entries(cfg)) write(path.join(CONFIG, `${name}.json`), value);
 
-const editor = path.join(ROOT, 'feihua-editors', 'assets', 'js');
-for (const [file, name, value] of [
-  ['seed-sky.js', 'GAME_SKY', cfg.sky],
-  ['seed-npcs.js', 'GAME_NPCS', cfg.npcs],
-  ['seed-talents.js', 'GAME_TALENTS', cfg.talents],
-  ['seed-talent-upgrade.js', 'GAME_TALENT_UPGRADE', cfg['talent-upgrade']],
-  ['seed-synergies.js', 'GAME_SYNERGIES', cfg.synergies],
-  ['seed-copy.js', 'GAME_SCHOOLS', cfg.schools],
-  ['seed-copy.js', 'GAME_GRADES', cfg.grades],
-  ['seed-sidequests.js', 'GAME_SIDEQUEST_NPCS', cfg['sidequest-npcs']],
-  ['seed-sidequests.js', 'GAME_SIDEQUEST_TALENTS', cfg['sidequest-talents'].talents],
-  ['seed-sidequests.js', 'GAME_SIDEQUEST_TALENT_UPGRADE', cfg['sidequest-talents'].upgrades]
-]) replaceEditorSeed(path.join(editor, file), name, value);
-
 const contentFile = path.join(ROOT, 'feihua-content.json');
 const content = read(contentFile);
 if (Number(content.numericVersion) !== 2) throw new Error('云端工程不是 numericVersion=2。');
 const contentBefore = JSON.stringify(content);
-for (const name of names) {
-  // npc-mechanics 不是当前编辑器工程字段，仍在正式配置中保留；其余字段
-  // 全部按同一份已迁移配置写入云端工程，保证覆盖后单位没有分叉。
-  if (name !== 'npc-mechanics') content[name] = cfg[name];
-}
+scaleProject(content);
 content.numericVersion = 2;
+const editor = path.join(ROOT, 'feihua-editors', 'assets', 'js');
+const editorSource = content;
+for (const [file, name, value] of [
+  ['seed-questions.js', 'GAME_QUESTIONS', editorSource.questions],
+  ['seed-events.js', 'GAME_EVENTS', editorSource.events],
+  ['seed-talents.js', 'GAME_TALENTS', editorSource.talents],
+  ['seed-talent-upgrade.js', 'GAME_TALENT_UPGRADE', editorSource['talent-upgrade']],
+  ['seed-npcs.js', 'GAME_NPCS', editorSource.npcs],
+  ['seed-affinity.js', 'GAME_AFFINITY', editorSource.affinity],
+  ['seed-synergies.js', 'GAME_SYNERGIES', editorSource.synergies],
+  ['seed-board.js', 'GAME_BOARD', editorSource.board],
+  ['seed-sky.js', 'GAME_SKY', editorSource.sky],
+  ['seed-album.js', 'GAME_ALBUM', editorSource.album],
+  ['seed-copy.js', 'GAME_SCHOOLS', editorSource.schools],
+  ['seed-copy.js', 'GAME_GRADES', editorSource.grades],
+  ['seed-copy.js', 'GAME_NARRATIVE', editorSource.narrative],
+  ['seed-sidequests.js', 'GAME_SIDEQUESTS', editorSource.sidequests],
+  ['seed-sidequests.js', 'GAME_SIDEQUEST_NPCS', editorSource['sidequest-npcs']],
+  ['seed-sidequests.js', 'GAME_SIDEQUEST_TALENTS', editorSource['sidequest-talents'].talents],
+  ['seed-sidequests.js', 'GAME_SIDEQUEST_TALENT_UPGRADE', editorSource['sidequest-talents'].upgrades],
+  ['seed-sidequests.js', 'GAME_SIDEQUEST_TALENT_OFFERS', editorSource['sidequest-talents'].offers]
+]) replaceEditorSeed(path.join(editor, file), name, value);
 if (JSON.stringify(content) !== contentBefore) {
   content._version = (Number(content._version) || 1) + 1;
   write(contentFile, content);

@@ -58,7 +58,7 @@ window.GAME_AFFINITY = {
     "qingya.shanshui": 1200,
     "qingya.biansai": -800,
     "qingya.huaigu": 0,
-    "qingya.jieling": 600,
+    "qingya.jieling": 1200,
     "chenyu.yongwu": 600,
     "chenyu.songbie": 600,
     "chenyu.shanshui": 0,

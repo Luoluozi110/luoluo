@@ -168,6 +168,7 @@ window.GAME_SKY = [
       "type": "attr_pct",
       "attr": "lian",
       "value": 1500
-    }
+    },
+    "icon": "🌈"
   }
 ];

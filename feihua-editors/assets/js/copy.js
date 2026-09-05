@@ -143,6 +143,10 @@
     const v = value == null ? "" : String(value);
     return `<textarea class="copy-field" data-path="${C.esc(path)}" rows="${rows || 2}" placeholder="${C.esc(placeholder || "")}">${C.esc(v)}</textarea>`;
   }
+  function jsonField(path, value, rows, placeholder) {
+    const json = JSON.stringify(value && typeof value === "object" ? value : {}, null, 2);
+    return `<textarea class="copy-json-field" data-json-path="${C.esc(path)}" rows="${rows || 16}" spellcheck="false" placeholder="${C.esc(placeholder || "{}")} ">${C.esc(json)}</textarea>`;
+  }
 
   function renderStats() {
     const el = document.getElementById("copyStatStrip");
@@ -152,7 +156,7 @@
       `<div class="stat"><b>${state.schools.length}</b><span>流派文案</span></div>` +
       `<div class="stat"><b>${(state.grades.grades || []).length}</b><span>段位档</span></div>` +
       `<div class="stat"><b>${Object.keys(state.grades.comments || {}).length}</b><span>维度评语</span></div>` +
-      `<div class="stat"><b>5</b><span>叙事弹窗组</span></div>` +
+      `<div class="stat"><b>6</b><span>叙事文案组</span></div>` +
       `<div class="stat"><b>${issues}</b><span>校验问题</span></div>`;
   }
 
@@ -234,8 +238,8 @@
       ? Object.values(s).map(v => v && typeof v === "object" ? nv(v) : String(v || "")).join(" ")
       : String(s || "");
     const nvNames = (N.stageChange && N.stageChange.names) || {};
-    const narrativeMatch = !q || "叙事弹窗".includes(q) || "开局".includes(q) || "阶段切换".includes(q) || "序章".includes(q) || "文风".includes(q) || "晋阶".includes(q) || "会试圈".includes(q) || "隐藏终圈".includes(q) || "桃源".includes(q)
-      || [N.prologue, N.zeitgeist, N.stageChange, N.lap2Intro, N.hiddenFinal].some(s => s && nv(s).toLowerCase().includes(q))
+    const narrativeMatch = !q || "叙事弹窗".includes(q) || "终局成卷".includes(q) || "开局".includes(q) || "阶段切换".includes(q) || "序章".includes(q) || "文风".includes(q) || "晋阶".includes(q) || "会试圈".includes(q) || "隐藏终圈".includes(q) || "桃源".includes(q)
+      || [N.prologue, N.zeitgeist, N.stageChange, N.lap2Intro, N.hiddenFinal, N.endScroll].some(s => s && nv(s).toLowerCase().includes(q))
       || Object.values(nvNames).join(" ").toLowerCase().includes(q);
     if (narrativeMatch) {
       const prologueCard = `
@@ -289,8 +293,13 @@
           <label class="copy-lbl">失败·正文</label>${field("narrative.hiddenFinal.defeat.text", D.text, 6, "终圈失败但保留金榜的文案")}
           <label class="copy-lbl">失败·按钮</label>${field("narrative.hiddenFinal.defeat.button", D.button, 1, "记下此问")}
         </div></div>`;
-      html.push(`<h4 class="copy-group">叙事弹窗文案（narrative.json · 开局 / 阶段 / 隐藏终圈）</h4>`
-        + prologueCard + zeitgeistCard + stageCard + lap2Card + hiddenCard);
+      const endScrollCard = `
+        <div class="q-card"><div class="meta"><span class="q-id">endScroll</span><span class="badge r-common">终局成卷（章节句 / 标题 / 尾印）</span></div><div class="q-main">
+          <div class="hint">本块决定终局成卷的章节句、标题候选、结局尾印与回退文案。结构会直接被游戏读取；请在 JSON 保持有效后再离开输入框。</div>
+          <label class="copy-lbl">终局成卷文案 JSON</label>${jsonField("narrative.endScroll", N.endScroll, 28, '{"chapterLines":[],"titles":[],"endings":{}}')}
+        </div></div>`;
+      html.push(`<h4 class="copy-group">叙事文案（narrative.json · 开局 / 阶段 / 隐藏终圈 / 终局成卷）</h4>`
+        + prologueCard + zeitgeistCard + stageCard + lap2Card + hiddenCard + endScrollCard);
     }
 
     list.innerHTML = html.join("");
@@ -392,6 +401,20 @@
         setByPath(state, t.dataset.path, t.value);
         clearTimeout(saveTimer);
         saveTimer = setTimeout(save, 400);
+      }
+    });
+    if (list) list.addEventListener("change", e => {
+      const t = e.target;
+      if (!t || !t.dataset || !t.dataset.jsonPath) return;
+      try {
+        const value = JSON.parse(t.value);
+        if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("必须是 JSON 对象");
+        setByPath(state, t.dataset.jsonPath, value);
+        save();
+        C.toast("终局成卷文案已保存");
+      } catch (error) {
+        C.toast("终局成卷 JSON 未保存：" + (error.message || "格式错误"));
+        t.focus();
       }
     });
     const search = document.getElementById("copyFSearch");
