@@ -31,7 +31,7 @@
           "signature": {
             "name": "盟约先声",
             "template": "sig_declared_stance",
-            "pct": 0.08
+            "pct": 800
           },
           "weakness": {
             "name": "对策破锋",
@@ -39,15 +39,15 @@
             "counter": {
               "oath": "change_style"
             },
-            "retention": 0.2,
-            "playerBonus": 0.04
+            "retention": 2000,
+            "playerBonus": 400
           },
           "intent": {
             "template": "int_declared_stance",
             "stance": "oath",
             "style": "lian",
-            "bias": 1.25,
-            "bottom": 0.76,
+            "bias": 12500,
+            "bottom": 7600,
             "description": "先明盟约，再以联体聚众声"
           }
         }
@@ -74,7 +74,7 @@
               "signature": {
                 "name": "盟誓先声",
                 "template": "sig_declared_stance",
-                "pct": 0.1
+                "pct": 1000
               },
               "weakness": {
                 "name": "换式辨义",
@@ -82,15 +82,15 @@
                 "counter": {
                   "oath": "change_style"
                 },
-                "retention": 0.2,
-                "playerBonus": 0.04
+                "retention": 2000,
+                "playerBonus": 400
               },
               "intent": {
                 "template": "int_declared_stance",
                 "stance": "oath",
                 "style": "shi",
-                "bias": 1.25,
-                "bottom": 0.76,
+                "bias": 12500,
+                "bottom": 7600,
                 "description": "守义之诺，须以异体辨其真伪"
               }
             }
@@ -114,20 +114,20 @@
               "signature": {
                 "name": "权衡先声",
                 "template": "sig_declared_stance",
-                "pct": 0.1
+                "pct": 1000
               },
               "weakness": {
                 "name": "藏锋守拙",
                 "template": "wea_hold_active_talent",
-                "retention": 0.2,
-                "playerBonus": 0.04
+                "retention": 2000,
+                "playerBonus": 400
               },
               "intent": {
                 "template": "int_declared_stance",
                 "stance": "expedience",
                 "style": "ci",
-                "bias": 1.25,
-                "bottom": 0.76,
+                "bias": 12500,
+                "bottom": 7600,
                 "description": "权变之策，留意你是否借文心取巧"
               }
             }
@@ -151,7 +151,7 @@
               "signature": {
                 "name": "两难先声",
                 "template": "sig_declared_stance",
-                "pct": 0.08
+                "pct": 800
               },
               "weakness": {
                 "name": "一骰破锋",
@@ -159,15 +159,15 @@
                 "counter": {
                   "balance": "one_extra"
                 },
-                "retention": 0.2,
-                "playerBonus": 0.04
+                "retention": 2000,
+                "playerBonus": 400
               },
               "intent": {
                 "template": "int_declared_stance",
                 "stance": "balance",
                 "style": "lian",
-                "bias": 1.25,
-                "bottom": 0.76,
+                "bias": 12500,
+                "bottom": 7600,
                 "description": "两难并陈，恰以一枚追加骰破其势"
               }
             }
@@ -210,14 +210,14 @@
           "weakness": {
             "name": "压卷破阵",
             "template": "wea_crushing_win",
-            "threshold": 0.18,
+            "threshold": 1800,
             "refund": 1
           },
           "intent": {
             "template": "int_preferred_style",
             "style": "bi",
-            "bias": 1.3,
-            "bottom": 0.75,
+            "bias": 13000,
+            "bottom": 7500,
             "description": "以笔力稳守军令"
           }
         }
@@ -251,14 +251,14 @@
                 "name": "一骰破锋",
                 "template": "wea_limited_extra_dice",
                 "maxExtraDice": 1,
-                "retention": 0.2,
-                "playerBonus": 0.04
+                "retention": 2000,
+                "playerBonus": 400
               },
               "intent": {
                 "template": "int_steady",
                 "style": "bi",
-                "bias": 1.25,
-                "bottom": 0.76,
+                "bias": 12500,
+                "bottom": 7600,
                 "description": "守土之策，稳守待破"
               }
             }
@@ -297,8 +297,8 @@
                 "template": "int_pattern_hunt",
                 "pattern": "pair",
                 "style": "lian",
-                "bias": 1.25,
-                "bottom": 0.76,
+                "bias": 12500,
+                "bottom": 7600,
                 "description": "出奇之策，候你追加骰露出破绽"
               }
             }
@@ -322,7 +322,7 @@
               "signature": {
                 "name": "并陈先声",
                 "template": "sig_declared_stance",
-                "pct": 0.08
+                "pct": 800
               },
               "weakness": {
                 "name": "一骰破锋",
@@ -330,15 +330,15 @@
                 "counter": {
                   "balance": "one_extra"
                 },
-                "retention": 0.2,
-                "playerBonus": 0.04
+                "retention": 2000,
+                "playerBonus": 400
               },
               "intent": {
                 "template": "int_declared_stance",
                 "stance": "balance",
                 "style": "shi",
-                "bias": 1.25,
-                "bottom": 0.76,
+                "bias": 12500,
+                "bottom": 7600,
                 "description": "守土与出奇并陈，明示你以一骰破势"
               }
             }
@@ -375,20 +375,20 @@
           "signature": {
             "name": "天门一问",
             "template": "sig_declared_stance",
-            "pct": 0.08
+            "pct": 800
           },
           "weakness": {
             "name": "藏锋守拙",
             "template": "wea_hold_active_talent",
-            "retention": 0.2,
-            "playerBonus": 0.04
+            "retention": 2000,
+            "playerBonus": 400
           },
           "intent": {
             "template": "int_declared_stance",
             "stance": "ask",
             "style": "ci",
-            "bias": 1.25,
-            "bottom": 0.76,
+            "bias": 12500,
+            "bottom": 7600,
             "description": "天门只问一字，先看你如何藏锋"
           }
         }
@@ -415,19 +415,19 @@
               "signature": {
                 "name": "尘念加税",
                 "template": "sig_active_talent_tax",
-                "pct": 0.1
+                "pct": 1000
               },
               "weakness": {
                 "name": "藏锋守拙",
                 "template": "wea_hold_active_talent",
-                "retention": 0.2,
-                "playerBonus": 0.04
+                "retention": 2000,
+                "playerBonus": 400
               },
               "intent": {
                 "template": "int_preferred_style",
                 "style": "ci",
-                "bias": 1.25,
-                "bottom": 0.76,
+                "bias": 12500,
+                "bottom": 7600,
                 "description": "留世之念最易借文心起势"
               }
             }
@@ -452,7 +452,7 @@
                 "name": "审律见妄",
                 "template": "sig_dice_pattern_hunt",
                 "pattern": "pair",
-                "pct": 0.1
+                "pct": 1000
               },
               "weakness": {
                 "name": "异骰忘机",
@@ -460,15 +460,15 @@
                 "counter": {
                   "forget": "different_dice"
                 },
-                "retention": 0.2,
-                "playerBonus": 0.04
+                "retention": 2000,
+                "playerBonus": 400
               },
               "intent": {
                 "template": "int_declared_stance",
                 "stance": "forget",
                 "style": "ci",
-                "bias": 1.25,
-                "bottom": 0.76,
+                "bias": 12500,
+                "bottom": 7600,
                 "description": "忘机之境，以至少两枚不同骰面破其审律"
               }
             }
@@ -492,7 +492,7 @@
               "signature": {
                 "name": "镜中先声",
                 "template": "sig_declared_stance",
-                "pct": 0.08
+                "pct": 800
               },
               "weakness": {
                 "name": "两端照见",
@@ -500,15 +500,15 @@
                 "counter": {
                   "mirror": "low_and_high"
                 },
-                "retention": 0.2,
-                "playerBonus": 0.04
+                "retention": 2000,
+                "playerBonus": 400
               },
               "intent": {
                 "template": "int_declared_stance",
                 "stance": "mirror",
                 "style": "shi",
-                "bias": 1.25,
-                "bottom": 0.76,
+                "bias": 12500,
+                "bottom": 7600,
                 "description": "镜中留与忘并现，以低高两端骰照破其问"
               }
             }
@@ -620,7 +620,7 @@ window.GAME_SIDEQUESTS = {
               "axis": "守义",
               "effect": {
                 "attrs": {
-                  "bi": 1
+                  "bi": 10
                 }
               }
             },
@@ -631,7 +631,7 @@ window.GAME_SIDEQUESTS = {
               "axis": "权变",
               "effect": {
                 "attrs": {
-                  "xue": 1
+                  "xue": 10
                 }
               }
             }
@@ -648,8 +648,8 @@ window.GAME_SIDEQUESTS = {
               "resultText": "你替故友受下众目，也把这一笔代价留给了自己。",
               "axis": "守义",
               "effect": {
-                "inspiration": -2,
-                "nextBattlePct": 0.1
+                "inspiration": -20,
+                "nextBattlePct": 1000
               }
             },
             {
@@ -658,7 +658,7 @@ window.GAME_SIDEQUESTS = {
               "resultText": "你让义字之外的是非也见了光。",
               "axis": "权变",
               "effect": {
-                "inspiration": 2
+                "inspiration": 20
               }
             }
           ]
@@ -670,12 +670,12 @@ window.GAME_SIDEQUESTS = {
         "title": "江湖名士",
         "style": "shi",
         "attrs": {
-          "shi": 26,
-          "ci": 22,
-          "lian": 20,
-          "bi": 22,
-          "xue": 24,
-          "si": 23
+          "shi": 260,
+          "ci": 220,
+          "lian": 200,
+          "bi": 220,
+          "xue": 240,
+          "si": 230
         }
       }
     },
@@ -777,7 +777,7 @@ window.GAME_SIDEQUESTS = {
               "axis": "守土",
               "effect": {
                 "attrs": {
-                  "xue": 1
+                  "xue": 10
                 }
               }
             },
@@ -788,7 +788,7 @@ window.GAME_SIDEQUESTS = {
               "axis": "出奇",
               "effect": {
                 "attrs": {
-                  "bi": 1
+                  "bi": 10
                 }
               }
             }
@@ -805,7 +805,7 @@ window.GAME_SIDEQUESTS = {
               "resultText": "你把粮留在城中，也把这个决定的重量留在心里。",
               "axis": "守土",
               "effect": {
-                "inspiration": 2
+                "inspiration": 20
               }
             },
             {
@@ -814,8 +814,8 @@ window.GAME_SIDEQUESTS = {
               "resultText": "你让轻骑越过夜色，把希望押在速度与胆识上。",
               "axis": "出奇",
               "effect": {
-                "inspiration": -2,
-                "nextBattlePct": 0.1
+                "inspiration": -20,
+                "nextBattlePct": 1000
               }
             }
           ]
@@ -827,12 +827,12 @@ window.GAME_SIDEQUESTS = {
         "title": "行营判官",
         "style": "lian",
         "attrs": {
-          "shi": 23,
-          "ci": 20,
-          "lian": 27,
-          "bi": 24,
-          "xue": 25,
-          "si": 25
+          "shi": 230,
+          "ci": 200,
+          "lian": 270,
+          "bi": 240,
+          "xue": 250,
+          "si": 250
         }
       }
     },
@@ -935,7 +935,7 @@ window.GAME_SIDEQUESTS = {
               "axis": "留世",
               "effect": {
                 "attrs": {
-                  "bi": 1
+                  "bi": 10
                 }
               }
             },
@@ -946,7 +946,7 @@ window.GAME_SIDEQUESTS = {
               "axis": "忘机",
               "effect": {
                 "attrs": {
-                  "si": 1
+                  "si": 10
                 }
               }
             }
@@ -963,8 +963,8 @@ window.GAME_SIDEQUESTS = {
               "resultText": "你没有把痛苦当作污点，而把它带进了下一段路。",
               "axis": "留世",
               "effect": {
-                "inspiration": -2,
-                "nextBattlePct": 0.1
+                "inspiration": -20,
+                "nextBattlePct": 1000
               }
             },
             {
@@ -973,7 +973,7 @@ window.GAME_SIDEQUESTS = {
               "resultText": "你借来片刻空明，也承认这不是最后的回答。",
               "axis": "忘机",
               "effect": {
-                "inspiration": 2
+                "inspiration": 20
               }
             }
           ]
@@ -985,25 +985,25 @@ window.GAME_SIDEQUESTS = {
         "title": "镜中客",
         "style": "ci",
         "attrs": {
-          "shi": 21,
-          "ci": 27,
-          "lian": 21,
-          "bi": 24,
-          "xue": 23,
-          "si": 27
+          "shi": 210,
+          "ci": 270,
+          "lian": 210,
+          "bi": 240,
+          "xue": 230,
+          "si": 270
         }
       }
     }
   ],
   "final": {
-    "carryCost": 2,
+    "carryCost": 20,
     "scorePctByMerit": {
-      "1": 0.06,
-      "2": 0.1
+      "1": 600,
+      "2": 1000
     },
     "releaseInspirationByMerit": {
-      "1": 2,
-      "2": 4
+      "1": 20,
+      "2": 40
     }
   }
 };
@@ -1020,8 +1020,8 @@ window.GAME_SIDEQUEST_TALENTS = [
     "effect": {
       "type": "battle_history_pct",
       "condition": "repeat_style",
-      "value": 0.05,
-      "previousWinBonus": 0.03,
+      "value": 500,
+      "previousWinBonus": 300,
       "stackGroup": "style_history"
     }
   },
@@ -1037,8 +1037,8 @@ window.GAME_SIDEQUEST_TALENTS = [
     "effect": {
       "type": "battle_history_pct",
       "condition": "switch_style",
-      "value": 0.05,
-      "previousNonWinBonus": 0.03,
+      "value": 500,
+      "previousNonWinBonus": 300,
       "stackGroup": "style_history"
     }
   },
@@ -1053,10 +1053,10 @@ window.GAME_SIDEQUEST_TALENTS = [
     "text": "风尘满面，仍有人一眼认出你未说出口的招数。每场首次命中对手破绽时，作品得分 +4%，并恢复 1 灵感。",
     "effect": {
       "type": "weakness_reward",
-      "value": 0.04,
+      "value": 400,
       "reward": {
         "type": "inspiration",
-        "value": 1,
+        "value": 10,
         "perMatch": false
       }
     }
@@ -1069,11 +1069,11 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "jianghu",
     "axis": "active",
     "quality": "epic",
-    "cost": 3,
+    "cost": 30,
     "text": "且把兵刃挂在楼外。支付灵感，封住对手本场招牌；你也要放下几分锋芒。",
     "effect": {
       "type": "seal_signature",
-      "penalty": -0.08
+      "penalty": -800
     }
   },
   {
@@ -1088,7 +1088,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "effect": {
       "type": "dice_commitment",
       "condition": "none_paid",
-      "value": 0.07
+      "value": 700
     }
   },
   {
@@ -1103,8 +1103,8 @@ window.GAME_SIDEQUEST_TALENTS = [
     "effect": {
       "type": "dice_commitment",
       "condition": "exactly_one_paid",
-      "firstCostDiscount": 1,
-      "value": 0.07
+      "firstCostDiscount": 10,
+      "value": 700
     }
   },
   {
@@ -1119,7 +1119,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "effect": {
       "type": "battle_history_pct",
       "condition": "previous_nonwin",
-      "value": 0.08,
+      "value": 800,
       "stackGroup": "result_history"
     }
   },
@@ -1131,13 +1131,13 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "biansai",
     "axis": "active",
     "quality": "epic",
-    "cost": 3,
+    "cost": 30,
     "text": "身后只有一水，再无回旋余地。首骰获得保底与得分加成，但本场不能追加灵感骰。",
     "effect": {
       "type": "dice_transform",
       "mode": "first_floor",
       "floor": 4,
-      "value": 0.03,
+      "value": 300,
       "noExtraDice": true
     }
   },
@@ -1152,7 +1152,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "text": "堕肢体，黜聪明，离形去知。本场不发动主动文心，作品得分提高。",
     "effect": {
       "type": "restraint_pct",
-      "value": 0.07
+      "value": 700
     }
   },
   {
@@ -1168,8 +1168,8 @@ window.GAME_SIDEQUEST_TALENTS = [
       "type": "dice_pattern",
       "pattern": "first_last_equal",
       "minDice": 2,
-      "firstCostDiscount": 1,
-      "value": 0.12
+      "firstCostDiscount": 10,
+      "value": 1200
     }
   },
   {
@@ -1186,10 +1186,10 @@ window.GAME_SIDEQUEST_TALENTS = [
       "pattern": "low_and_high",
       "lowMax": 2,
       "highMin": 5,
-      "value": 0.12,
+      "value": 1200,
       "reward": {
         "type": "inspiration",
-        "value": 1,
+        "value": 10,
         "perMatch": false
       }
     }
@@ -1202,13 +1202,13 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "qiuxian",
     "axis": "active",
     "quality": "epic",
-    "cost": 3,
+    "cost": 30,
     "text": "妄念不在幽暗处，恰藏在似是而非之间。将最低骰化为一、最高骰化为六，并令本场作品得分 +6%。",
     "effect": {
       "type": "dice_transform",
       "mode": "polarize",
       "minDice": 2,
-      "value": 0.06
+      "value": 600
     }
   }
 ];
@@ -1217,17 +1217,17 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      70,
+      110,
+      160
     ],
     "levels": [
       {
         "effect": {
           "type": "battle_history_pct",
           "condition": "repeat_style",
-          "value": 0.05,
-          "previousWinBonus": 0.03,
+          "value": 500,
+          "previousWinBonus": 300,
           "stackGroup": "style_history"
         }
       },
@@ -1235,8 +1235,8 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         "effect": {
           "type": "battle_history_pct",
           "condition": "repeat_style",
-          "value": 0.06,
-          "previousWinBonus": 0.04,
+          "value": 600,
+          "previousWinBonus": 400,
           "stackGroup": "style_history"
         }
       },
@@ -1244,8 +1244,8 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         "effect": {
           "type": "battle_history_pct",
           "condition": "repeat_style",
-          "value": 0.07,
-          "previousWinBonus": 0.05,
+          "value": 700,
+          "previousWinBonus": 500,
           "stackGroup": "style_history"
         }
       },
@@ -1253,8 +1253,8 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         "effect": {
           "type": "battle_history_pct",
           "condition": "repeat_style",
-          "value": 0.08,
-          "previousWinBonus": 0.06,
+          "value": 800,
+          "previousWinBonus": 600,
           "stackGroup": "style_history"
         }
       }
@@ -1264,17 +1264,17 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      70,
+      110,
+      160
     ],
     "levels": [
       {
         "effect": {
           "type": "battle_history_pct",
           "condition": "switch_style",
-          "value": 0.05,
-          "previousNonWinBonus": 0.03,
+          "value": 500,
+          "previousNonWinBonus": 300,
           "stackGroup": "style_history"
         }
       },
@@ -1282,8 +1282,8 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         "effect": {
           "type": "battle_history_pct",
           "condition": "switch_style",
-          "value": 0.06,
-          "previousNonWinBonus": 0.04,
+          "value": 600,
+          "previousNonWinBonus": 400,
           "stackGroup": "style_history"
         }
       },
@@ -1291,8 +1291,8 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         "effect": {
           "type": "battle_history_pct",
           "condition": "switch_style",
-          "value": 0.07,
-          "previousNonWinBonus": 0.05,
+          "value": 700,
+          "previousNonWinBonus": 500,
           "stackGroup": "style_history"
         }
       },
@@ -1300,8 +1300,8 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         "effect": {
           "type": "battle_history_pct",
           "condition": "switch_style",
-          "value": 0.08,
-          "previousNonWinBonus": 0.06,
+          "value": 800,
+          "previousNonWinBonus": 600,
           "stackGroup": "style_history"
         }
       }
@@ -1311,19 +1311,19 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      80,
+      120,
+      170,
+      230
     ],
     "levels": [
       {
         "effect": {
           "type": "weakness_reward",
-          "value": 0.04,
+          "value": 400,
           "reward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -1331,10 +1331,10 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "weakness_reward",
-          "value": 0.06,
+          "value": 600,
           "reward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -1342,10 +1342,10 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "weakness_reward",
-          "value": 0.08,
+          "value": 800,
           "reward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -1353,10 +1353,10 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "weakness_reward",
-          "value": 0.1,
+          "value": 1000,
           "reward": {
             "type": "inspiration",
-            "value": 2,
+            "value": 20,
             "perMatch": false
           }
         }
@@ -1364,10 +1364,10 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
       {
         "effect": {
           "type": "weakness_reward",
-          "value": 0.12,
+          "value": 1200,
           "reward": {
             "type": "inspiration",
-            "value": 2,
+            "value": 20,
             "perMatch": false
           }
         }
@@ -1378,42 +1378,42 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      80,
+      120,
+      170,
+      230
     ],
     "levels": [
       {
-        "cost": 3,
+        "cost": 30,
         "effect": {
           "type": "seal_signature",
-          "penalty": -0.08
+          "penalty": -800
         }
       },
       {
-        "cost": 3,
+        "cost": 30,
         "effect": {
           "type": "seal_signature",
-          "penalty": -0.06
+          "penalty": -600
         }
       },
       {
-        "cost": 3,
+        "cost": 30,
         "effect": {
           "type": "seal_signature",
-          "penalty": -0.04
+          "penalty": -400
         }
       },
       {
-        "cost": 3,
+        "cost": 30,
         "effect": {
           "type": "seal_signature",
-          "penalty": -0.02
+          "penalty": -200
         }
       },
       {
-        "cost": 2,
+        "cost": 20,
         "effect": {
           "type": "seal_signature",
           "penalty": 0
@@ -1425,37 +1425,37 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      70,
+      110,
+      160
     ],
     "levels": [
       {
         "effect": {
           "type": "dice_commitment",
           "condition": "none_paid",
-          "value": 0.07
+          "value": 700
         }
       },
       {
         "effect": {
           "type": "dice_commitment",
           "condition": "none_paid",
-          "value": 0.09
+          "value": 900
         }
       },
       {
         "effect": {
           "type": "dice_commitment",
           "condition": "none_paid",
-          "value": 0.11
+          "value": 1100
         }
       },
       {
         "effect": {
           "type": "dice_commitment",
           "condition": "none_paid",
-          "value": 0.13
+          "value": 1300
         }
       }
     ]
@@ -1464,41 +1464,41 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      70,
+      110,
+      160
     ],
     "levels": [
       {
         "effect": {
           "type": "dice_commitment",
           "condition": "exactly_one_paid",
-          "firstCostDiscount": 1,
-          "value": 0.07
+          "firstCostDiscount": 10,
+          "value": 700
         }
       },
       {
         "effect": {
           "type": "dice_commitment",
           "condition": "exactly_one_paid",
-          "firstCostDiscount": 1,
-          "value": 0.09
+          "firstCostDiscount": 10,
+          "value": 900
         }
       },
       {
         "effect": {
           "type": "dice_commitment",
           "condition": "exactly_one_paid",
-          "firstCostDiscount": 2,
-          "value": 0.11
+          "firstCostDiscount": 20,
+          "value": 1100
         }
       },
       {
         "effect": {
           "type": "dice_commitment",
           "condition": "exactly_one_paid",
-          "firstCostDiscount": 2,
-          "value": 0.13
+          "firstCostDiscount": 20,
+          "value": 1300
         }
       }
     ]
@@ -1507,17 +1507,17 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      80,
+      120,
+      170,
+      230
     ],
     "levels": [
       {
         "effect": {
           "type": "battle_history_pct",
           "condition": "previous_nonwin",
-          "value": 0.08,
+          "value": 800,
           "stackGroup": "result_history"
         }
       },
@@ -1525,7 +1525,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         "effect": {
           "type": "battle_history_pct",
           "condition": "previous_nonwin",
-          "value": 0.1,
+          "value": 1000,
           "stackGroup": "result_history"
         }
       },
@@ -1533,7 +1533,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         "effect": {
           "type": "battle_history_pct",
           "condition": "previous_nonwin",
-          "value": 0.12,
+          "value": 1200,
           "stackGroup": "result_history"
         }
       },
@@ -1541,7 +1541,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         "effect": {
           "type": "battle_history_pct",
           "condition": "previous_nonwin",
-          "value": 0.14,
+          "value": 1400,
           "stackGroup": "result_history"
         }
       },
@@ -1549,7 +1549,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         "effect": {
           "type": "battle_history_pct",
           "condition": "previous_nonwin",
-          "value": 0.16,
+          "value": 1600,
           "stackGroup": "result_history"
         }
       }
@@ -1559,59 +1559,59 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      80,
+      120,
+      170,
+      230
     ],
     "levels": [
       {
-        "cost": 3,
+        "cost": 30,
         "effect": {
           "type": "dice_transform",
           "mode": "first_floor",
           "floor": 4,
-          "value": 0.03,
+          "value": 300,
           "noExtraDice": true
         }
       },
       {
-        "cost": 3,
+        "cost": 30,
         "effect": {
           "type": "dice_transform",
           "mode": "first_floor",
           "floor": 4,
-          "value": 0.05,
+          "value": 500,
           "noExtraDice": true
         }
       },
       {
-        "cost": 3,
+        "cost": 30,
         "effect": {
           "type": "dice_transform",
           "mode": "first_floor",
           "floor": 4,
-          "value": 0.07,
+          "value": 700,
           "noExtraDice": true
         }
       },
       {
-        "cost": 3,
+        "cost": 30,
         "effect": {
           "type": "dice_transform",
           "mode": "first_floor",
           "floor": 5,
-          "value": 0.09,
+          "value": 900,
           "noExtraDice": true
         }
       },
       {
-        "cost": 2,
+        "cost": 20,
         "effect": {
           "type": "dice_transform",
           "mode": "first_floor",
           "floor": 5,
-          "value": 0.11,
+          "value": 1100,
           "noExtraDice": true
         }
       }
@@ -1621,33 +1621,33 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      70,
+      110,
+      160
     ],
     "levels": [
       {
         "effect": {
           "type": "restraint_pct",
-          "value": 0.07
+          "value": 700
         }
       },
       {
         "effect": {
           "type": "restraint_pct",
-          "value": 0.09
+          "value": 900
         }
       },
       {
         "effect": {
           "type": "restraint_pct",
-          "value": 0.11
+          "value": 1100
         }
       },
       {
         "effect": {
           "type": "restraint_pct",
-          "value": 0.13
+          "value": 1300
         }
       }
     ]
@@ -1656,9 +1656,9 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      7,
-      11,
-      16
+      70,
+      110,
+      160
     ],
     "levels": [
       {
@@ -1666,8 +1666,8 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "type": "dice_pattern",
           "pattern": "first_last_equal",
           "minDice": 2,
-          "firstCostDiscount": 1,
-          "value": 0.12
+          "firstCostDiscount": 10,
+          "value": 1200
         }
       },
       {
@@ -1675,8 +1675,8 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "type": "dice_pattern",
           "pattern": "first_last_equal",
           "minDice": 2,
-          "firstCostDiscount": 1,
-          "value": 0.15
+          "firstCostDiscount": 10,
+          "value": 1500
         }
       },
       {
@@ -1684,8 +1684,8 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "type": "dice_pattern",
           "pattern": "first_last_equal",
           "minDice": 2,
-          "firstCostDiscount": 2,
-          "value": 0.18
+          "firstCostDiscount": 20,
+          "value": 1800
         }
       },
       {
@@ -1693,8 +1693,8 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "type": "dice_pattern",
           "pattern": "first_last_equal",
           "minDice": 2,
-          "firstCostDiscount": 2,
-          "value": 0.21
+          "firstCostDiscount": 20,
+          "value": 2100
         }
       }
     ]
@@ -1703,10 +1703,10 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      80,
+      120,
+      170,
+      230
     ],
     "levels": [
       {
@@ -1715,10 +1715,10 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "pattern": "low_and_high",
           "lowMax": 2,
           "highMin": 5,
-          "value": 0.12,
+          "value": 1200,
           "reward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -1729,10 +1729,10 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "pattern": "low_and_high",
           "lowMax": 2,
           "highMin": 5,
-          "value": 0.15,
+          "value": 1500,
           "reward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -1743,10 +1743,10 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "pattern": "low_and_high",
           "lowMax": 2,
           "highMin": 5,
-          "value": 0.18,
+          "value": 1800,
           "reward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -1757,10 +1757,10 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "pattern": "low_and_high",
           "lowMax": 2,
           "highMin": 5,
-          "value": 0.21,
+          "value": 2100,
           "reward": {
             "type": "inspiration",
-            "value": 2,
+            "value": 20,
             "perMatch": false
           }
         }
@@ -1771,10 +1771,10 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "pattern": "low_and_high",
           "lowMax": 2,
           "highMin": 5,
-          "value": 0.24,
+          "value": 2400,
           "reward": {
             "type": "inspiration",
-            "value": 2,
+            "value": 20,
             "perMatch": false
           }
         }
@@ -1785,55 +1785,55 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      8,
-      12,
-      17,
-      23
+      80,
+      120,
+      170,
+      230
     ],
     "levels": [
       {
-        "cost": 3,
+        "cost": 30,
         "effect": {
           "type": "dice_transform",
           "mode": "polarize",
           "minDice": 2,
-          "value": 0.06
+          "value": 600
         }
       },
       {
-        "cost": 3,
+        "cost": 30,
         "effect": {
           "type": "dice_transform",
           "mode": "polarize",
           "minDice": 2,
-          "value": 0.08
+          "value": 800
         }
       },
       {
-        "cost": 3,
+        "cost": 30,
         "effect": {
           "type": "dice_transform",
           "mode": "polarize",
           "minDice": 2,
-          "value": 0.1
+          "value": 1000
         }
       },
       {
-        "cost": 3,
+        "cost": 30,
         "effect": {
           "type": "dice_transform",
           "mode": "polarize",
           "minDice": 2,
-          "value": 0.12
+          "value": 1200
         }
       },
       {
-        "cost": 2,
+        "cost": 20,
         "effect": {
           "type": "dice_transform",
           "mode": "polarize",
           "minDice": 2,
-          "value": 0.15
+          "value": 1500
         }
       }
     ]

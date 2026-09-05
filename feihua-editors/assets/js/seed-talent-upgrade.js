@@ -3,29 +3,29 @@
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      4,
-      7
+      40,
+      70
     ],
     "levels": [
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "shi",
-          "value": 2
+          "value": 20
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "shi",
-          "value": 3
+          "value": 30
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "shi",
-          "value": 5
+          "value": 50
         }
       }
     ]
@@ -34,29 +34,29 @@
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      4,
-      7
+      40,
+      70
     ],
     "levels": [
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "ci",
-          "value": 2
+          "value": 20
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "ci",
-          "value": 3
+          "value": 30
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "ci",
-          "value": 5
+          "value": 50
         }
       }
     ]
@@ -65,29 +65,29 @@
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      4,
-      7
+      40,
+      70
     ],
     "levels": [
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "lian",
-          "value": 2
+          "value": 20
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "lian",
-          "value": 3
+          "value": 30
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "lian",
-          "value": 5
+          "value": 50
         }
       }
     ]
@@ -96,35 +96,35 @@
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      4,
-      7
+      40,
+      70
     ],
     "levels": [
       {
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "xue": 3
+            "xue": 30
           },
-          "value": 3
+          "value": 30
         }
       },
       {
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "xue": 4
+            "xue": 40
           },
-          "value": 4
+          "value": 40
         }
       },
       {
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "xue": 6
+            "xue": 60
           },
-          "value": 6
+          "value": 60
         }
       }
     ]
@@ -133,8 +133,8 @@
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      4,
-      7
+      40,
+      70
     ],
     "levels": [
       {
@@ -143,8 +143,8 @@
           "pattern": "low_then_high",
           "lowMax": 2,
           "nextHighMin": 5,
-          "value": 0.1,
-          "conditionalFirstCostDiscount": 2
+          "value": 1000,
+          "conditionalFirstCostDiscount": 20
         }
       },
       {
@@ -153,8 +153,8 @@
           "pattern": "low_then_high",
           "lowMax": 2,
           "nextHighMin": 5,
-          "value": 0.16,
-          "conditionalFirstCostDiscount": 3
+          "value": 1600,
+          "conditionalFirstCostDiscount": 30
         }
       },
       {
@@ -163,8 +163,8 @@
           "pattern": "low_then_high",
           "lowMax": 3,
           "nextHighMin": 5,
-          "value": 0.22,
-          "conditionalFirstCostDiscount": 3
+          "value": 2200,
+          "conditionalFirstCostDiscount": 30
         }
       }
     ]
@@ -173,16 +173,16 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "bi": 3
+            "bi": 30
           }
         }
       },
@@ -190,7 +190,7 @@
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "bi": 4
+            "bi": 40
           }
         }
       },
@@ -198,7 +198,7 @@
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "bi": 5
+            "bi": 50
           }
         }
       },
@@ -206,7 +206,7 @@
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "bi": 6
+            "bi": 60
           }
         }
       }
@@ -216,48 +216,48 @@
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      6,
-      9,
-      13,
-      18
+      60,
+      90,
+      130,
+      180
     ],
     "levels": [
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.08
+          "value": 800
         }
       },
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.1
+          "value": 1000
         }
       },
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.12
+          "value": 1200
         }
       },
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.14
+          "value": 1400
         }
       },
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.16,
+          "value": 1600,
           "reward": {
             "type": "fragment",
-            "value": 1,
+            "value": 1000,
             "perMatch": false
           }
         }
@@ -268,16 +268,16 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "si": 3
+            "si": 30
           }
         }
       },
@@ -285,7 +285,7 @@
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "si": 4
+            "si": 40
           }
         }
       },
@@ -293,7 +293,7 @@
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "si": 5
+            "si": 50
           }
         }
       },
@@ -301,7 +301,7 @@
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "si": 6
+            "si": 60
           }
         }
       }
@@ -311,15 +311,15 @@
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      4,
-      7
+      40,
+      70
     ],
     "levels": [
       {
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "xue": 3
+            "xue": 30
           }
         }
       },
@@ -327,7 +327,7 @@
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "xue": 4
+            "xue": 40
           }
         }
       },
@@ -335,7 +335,7 @@
         "effect": {
           "type": "attr_flat",
           "attrs": {
-            "xue": 5
+            "xue": 50
           }
         }
       }
@@ -345,8 +345,8 @@
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      4,
-      7
+      40,
+      70
     ],
     "levels": [
       {
@@ -354,11 +354,11 @@
           "type": "dice_pattern",
           "pattern": "all_distinct",
           "minDice": 3,
-          "value": 0.15,
-          "firstCostDiscount": 2,
+          "value": 1500,
+          "firstCostDiscount": 20,
           "reward": {
             "type": "fragment",
-            "value": 0.5,
+            "value": 500,
             "perMatch": false
           }
         }
@@ -368,11 +368,11 @@
           "type": "dice_pattern",
           "pattern": "all_distinct",
           "minDice": 3,
-          "value": 0.19,
-          "firstCostDiscount": 3,
+          "value": 1900,
+          "firstCostDiscount": 30,
           "reward": {
             "type": "fragment",
-            "value": 0.5,
+            "value": 500,
             "perMatch": false
           }
         }
@@ -382,11 +382,11 @@
           "type": "dice_pattern",
           "pattern": "all_distinct",
           "minDice": 3,
-          "value": 0.22,
-          "firstCostDiscount": 3,
+          "value": 2200,
+          "firstCostDiscount": 30,
           "reward": {
             "type": "fragment",
-            "value": 1,
+            "value": 1000,
             "perMatch": false
           }
         }
@@ -397,58 +397,58 @@
     "quality": "legend",
     "maxLevel": 6,
     "upCost": [
-      7,
-      10,
-      14,
-      19,
-      25
+      70,
+      100,
+      140,
+      190,
+      250
     ],
     "levels": [
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 0.8
+          "ratio": 8000
         }
       },
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 0.9,
+          "ratio": 9000,
           "revealIntent": true
         }
       },
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1,
+          "ratio": 10000,
           "revealIntent": true
         }
       },
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1,
+          "ratio": 10000,
           "revealIntent": true,
-          "synergyPct": 0.04
+          "synergyPct": 400
         }
       },
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1.1,
+          "ratio": 11000,
           "revealIntent": true,
-          "synergyPct": 0.04,
-          "themeFlat": 0.04
+          "synergyPct": 400,
+          "themeFlat": 400
         }
       },
       {
         "effect": {
           "type": "copy_affinity",
-          "ratio": 1.2,
+          "ratio": 12000,
           "revealIntent": true,
-          "synergyPct": 0.04,
-          "themeFlat": 0.04,
-          "convertPct": 0.5,
+          "synergyPct": 400,
+          "themeFlat": 400,
+          "convertPct": 5000,
           "revealWeakness": true,
           "convertWeakness": true
         }
@@ -459,37 +459,37 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "shi",
-          "value": 3
+          "value": 30
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "shi",
-          "value": 4
+          "value": 40
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "shi",
-          "value": 5
+          "value": 50
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "shi",
-          "value": 7
+          "value": 70
         }
       }
     ]
@@ -498,37 +498,37 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "ci",
-          "value": 3
+          "value": 30
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "ci",
-          "value": 4
+          "value": 40
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "ci",
-          "value": 5
+          "value": 50
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "ci",
-          "value": 7
+          "value": 70
         }
       }
     ]
@@ -537,37 +537,37 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "lian",
-          "value": 3
+          "value": 30
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "lian",
-          "value": 4
+          "value": 40
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "lian",
-          "value": 5
+          "value": 50
         }
       },
       {
         "effect": {
           "type": "on_win_bonus",
           "style": "lian",
-          "value": 7
+          "value": 70
         }
       }
     ]
@@ -576,45 +576,45 @@
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      6,
-      9,
-      13,
-      18
+      60,
+      90,
+      130,
+      180
     ],
     "levels": [
       {
         "effect": {
           "type": "comeback",
-          "threshold": 14,
-          "value": 0.16
+          "threshold": 140,
+          "value": 1600
         }
       },
       {
         "effect": {
           "type": "comeback",
-          "threshold": 15,
-          "value": 0.18
+          "threshold": 150,
+          "value": 1800
         }
       },
       {
         "effect": {
           "type": "comeback",
-          "threshold": 16,
-          "value": 0.2
+          "threshold": 160,
+          "value": 2000
         }
       },
       {
         "effect": {
           "type": "comeback",
-          "threshold": 17,
-          "value": 0.22
+          "threshold": 170,
+          "value": 2200
         }
       },
       {
         "effect": {
           "type": "comeback",
-          "threshold": 18,
-          "value": 0.24
+          "threshold": 180,
+          "value": 2400
         }
       }
     ]
@@ -623,10 +623,10 @@
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      6,
-      9,
-      13,
-      18
+      60,
+      90,
+      130,
+      180
     ],
     "levels": [
       {
@@ -634,13 +634,13 @@
           "type": "dice_pattern",
           "pattern": "ascending",
           "minDice": 2,
-          "perStepValue": 0.05,
+          "perStepValue": 500,
           "fullDice": 3,
-          "fullValue": 0.1,
-          "firstCostDiscount": 1,
+          "fullValue": 1000,
+          "firstCostDiscount": 10,
           "fullReward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -650,13 +650,13 @@
           "type": "dice_pattern",
           "pattern": "ascending",
           "minDice": 2,
-          "perStepValue": 0.06,
+          "perStepValue": 600,
           "fullDice": 3,
-          "fullValue": 0.1,
-          "firstCostDiscount": 1,
+          "fullValue": 1000,
+          "firstCostDiscount": 10,
           "fullReward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -666,13 +666,13 @@
           "type": "dice_pattern",
           "pattern": "ascending",
           "minDice": 2,
-          "perStepValue": 0.07,
+          "perStepValue": 700,
           "fullDice": 3,
-          "fullValue": 0.12,
-          "firstCostDiscount": 1,
+          "fullValue": 1200,
+          "firstCostDiscount": 10,
           "fullReward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -682,13 +682,13 @@
           "type": "dice_pattern",
           "pattern": "ascending",
           "minDice": 2,
-          "perStepValue": 0.08,
+          "perStepValue": 800,
           "fullDice": 3,
-          "fullValue": 0.12,
-          "firstCostDiscount": 2,
+          "fullValue": 1200,
+          "firstCostDiscount": 20,
           "fullReward": {
             "type": "inspiration",
-            "value": 2,
+            "value": 20,
             "perMatch": false
           }
         }
@@ -698,13 +698,13 @@
           "type": "dice_pattern",
           "pattern": "ascending",
           "minDice": 2,
-          "perStepValue": 0.08,
+          "perStepValue": 800,
           "fullDice": 3,
-          "fullValue": 0.14,
-          "firstCostDiscount": 2,
+          "fullValue": 1400,
+          "firstCostDiscount": 20,
           "fullReward": {
             "type": "inspiration",
-            "value": 2,
+            "value": 20,
             "perMatch": false
           }
         }
@@ -715,53 +715,53 @@
     "quality": "legend",
     "maxLevel": 6,
     "upCost": [
-      7,
-      10,
-      14,
-      19,
-      25
+      70,
+      100,
+      140,
+      190,
+      250
     ],
     "levels": [
       {
         "effect": {
           "type": "palace_pct",
-          "value": 0.15,
-          "startInspiration": 4
+          "value": 1500,
+          "startInspiration": 40
         }
       },
       {
         "effect": {
           "type": "palace_pct",
-          "value": 0.18,
-          "startInspiration": 4
+          "value": 1800,
+          "startInspiration": 40
         }
       },
       {
         "effect": {
           "type": "palace_pct",
-          "value": 0.21,
-          "startInspiration": 5
+          "value": 2100,
+          "startInspiration": 50
         }
       },
       {
         "effect": {
           "type": "palace_pct",
-          "value": 0.24,
-          "startInspiration": 6
+          "value": 2400,
+          "startInspiration": 60
         }
       },
       {
         "effect": {
           "type": "palace_pct",
-          "value": 0.27,
-          "startInspiration": 7
+          "value": 2700,
+          "startInspiration": 70
         }
       },
       {
         "effect": {
           "type": "palace_pct",
-          "value": 0.3,
-          "startInspiration": 8
+          "value": 3000,
+          "startInspiration": 80
         }
       }
     ]
@@ -770,9 +770,9 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
@@ -780,10 +780,10 @@
           "type": "dice_pattern",
           "pattern": "total_multiple",
           "multiple": 7,
-          "value": 0.18,
+          "value": 1800,
           "reward": {
             "type": "insight",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -793,10 +793,10 @@
           "type": "dice_pattern",
           "pattern": "total_multiple",
           "multiple": 7,
-          "value": 0.22,
+          "value": 2200,
           "reward": {
             "type": "insight",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -806,10 +806,10 @@
           "type": "dice_pattern",
           "pattern": "total_multiple",
           "multiple": 7,
-          "value": 0.26,
+          "value": 2600,
           "reward": {
             "type": "insight",
-            "value": 2,
+            "value": 20,
             "perMatch": false
           }
         }
@@ -819,10 +819,10 @@
           "type": "dice_pattern",
           "pattern": "total_multiple",
           "multiple": 7,
-          "value": 0.3,
+          "value": 3000,
           "reward": {
             "type": "insight",
-            "value": 2,
+            "value": 20,
             "perMatch": false
           }
         }
@@ -833,38 +833,38 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "borrow_signature",
-          "fraction": 0.3
+          "fraction": 3000
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
           "type": "borrow_signature",
-          "fraction": 0.45
+          "fraction": 4500
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
           "type": "borrow_signature",
-          "fraction": 0.6
+          "fraction": 6000
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
           "type": "borrow_signature",
-          "fraction": 0.75
+          "fraction": 7500
         },
-        "cost": 3
+        "cost": 30
       }
     ]
   },
@@ -872,10 +872,10 @@
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      6,
-      9,
-      13,
-      18
+      60,
+      90,
+      130,
+      180
     ],
     "levels": [
       {
@@ -883,55 +883,55 @@
           "type": "dice_pattern",
           "pattern": "extremes",
           "highMin": 5,
-          "highValue": 0.14,
+          "highValue": 1400,
           "lowMax": 2,
-          "lowValue": -0.07
+          "lowValue": -700
         },
-        "cost": 4
+        "cost": 40
       },
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "extremes",
           "highMin": 5,
-          "highValue": 0.16,
+          "highValue": 1600,
           "lowMax": 2,
-          "lowValue": -0.07
+          "lowValue": -700
         },
-        "cost": 4
+        "cost": 40
       },
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "extremes",
           "highMin": 5,
-          "highValue": 0.18,
+          "highValue": 1800,
           "lowMax": 2,
-          "lowValue": -0.08
+          "lowValue": -800
         },
-        "cost": 4
+        "cost": 40
       },
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "extremes",
           "highMin": 5,
-          "highValue": 0.2,
+          "highValue": 2000,
           "lowMax": 2,
-          "lowValue": -0.09
+          "lowValue": -900
         },
-        "cost": 4
+        "cost": 40
       },
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "extremes",
           "highMin": 5,
-          "highValue": 0.22,
+          "highValue": 2200,
           "lowMax": 2,
-          "lowValue": -0.1
+          "lowValue": -1000
         },
-        "cost": 4
+        "cost": 40
       }
     ]
   },
@@ -939,51 +939,51 @@
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      6,
-      9,
-      13,
-      18
+      60,
+      90,
+      130,
+      180
     ],
     "levels": [
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.14
+          "value": 1400
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.16
+          "value": 1600
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.18
+          "value": 1800
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.2
+          "value": 2000
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.24
+          "value": 2400
         },
-        "cost": 3
+        "cost": 30
       }
     ]
   },
@@ -991,50 +991,50 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "extra_dice_chain",
           "compare": "not_lower",
-          "value": 0.14,
-          "cost": 2,
-          "refund": 1
+          "value": 1400,
+          "cost": 20,
+          "refund": 10
         },
-        "cost": 2
+        "cost": 20
       },
       {
         "effect": {
           "type": "extra_dice_chain",
           "compare": "not_lower",
-          "value": 0.18,
-          "cost": 2,
-          "refund": 1
+          "value": 1800,
+          "cost": 20,
+          "refund": 10
         },
-        "cost": 2
+        "cost": 20
       },
       {
         "effect": {
           "type": "extra_dice_chain",
           "compare": "not_lower",
-          "value": 0.22,
-          "cost": 1,
-          "refund": 1
+          "value": 2200,
+          "cost": 10,
+          "refund": 10
         },
-        "cost": 1
+        "cost": 10
       },
       {
         "effect": {
           "type": "extra_dice_chain",
           "compare": "not_lower",
-          "value": 0.28,
-          "cost": 1,
-          "refund": 2
+          "value": 2800,
+          "cost": 10,
+          "refund": 20
         },
-        "cost": 1
+        "cost": 10
       }
     ]
   },
@@ -1042,11 +1042,11 @@
     "quality": "legend",
     "maxLevel": 6,
     "upCost": [
-      7,
-      10,
-      14,
-      19,
-      25
+      70,
+      100,
+      140,
+      190,
+      250
     ],
     "levels": [
       {
@@ -1056,25 +1056,25 @@
           "tiers": [
             {
               "threshold": 16,
-              "value": 0.3,
+              "value": 3000,
               "reward": {
                 "type": "inspiration",
-                "value": 3,
+                "value": 30,
                 "perMatch": false
               }
             },
             {
               "threshold": 12,
-              "value": 0.16,
+              "value": 1600,
               "reward": {
                 "type": "inspiration",
-                "value": 3,
+                "value": 30,
                 "perMatch": false
               }
             }
           ]
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
@@ -1083,25 +1083,25 @@
           "tiers": [
             {
               "threshold": 16,
-              "value": 0.34,
+              "value": 3400,
               "reward": {
                 "type": "inspiration",
-                "value": 3,
+                "value": 30,
                 "perMatch": false
               }
             },
             {
               "threshold": 12,
-              "value": 0.18,
+              "value": 1800,
               "reward": {
                 "type": "inspiration",
-                "value": 3,
+                "value": 30,
                 "perMatch": false
               }
             }
           ]
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
@@ -1110,25 +1110,25 @@
           "tiers": [
             {
               "threshold": 16,
-              "value": 0.38,
+              "value": 3800,
               "reward": {
                 "type": "inspiration",
-                "value": 3,
+                "value": 30,
                 "perMatch": false
               }
             },
             {
               "threshold": 12,
-              "value": 0.2,
+              "value": 2000,
               "reward": {
                 "type": "inspiration",
-                "value": 3,
+                "value": 30,
                 "perMatch": false
               }
             }
           ]
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
@@ -1137,25 +1137,25 @@
           "tiers": [
             {
               "threshold": 16,
-              "value": 0.42,
+              "value": 4200,
               "reward": {
                 "type": "inspiration",
-                "value": 3,
+                "value": 30,
                 "perMatch": false
               }
             },
             {
               "threshold": 12,
-              "value": 0.22,
+              "value": 2200,
               "reward": {
                 "type": "inspiration",
-                "value": 3,
+                "value": 30,
                 "perMatch": false
               }
             }
           ]
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
@@ -1164,25 +1164,25 @@
           "tiers": [
             {
               "threshold": 16,
-              "value": 0.46,
+              "value": 4600,
               "reward": {
                 "type": "inspiration",
-                "value": 3,
+                "value": 30,
                 "perMatch": false
               }
             },
             {
               "threshold": 12,
-              "value": 0.24,
+              "value": 2400,
               "reward": {
                 "type": "inspiration",
-                "value": 3,
+                "value": 30,
                 "perMatch": false
               }
             }
           ]
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
@@ -1191,25 +1191,25 @@
           "tiers": [
             {
               "threshold": 16,
-              "value": 0.5,
+              "value": 5000,
               "reward": {
                 "type": "inspiration",
-                "value": 3,
+                "value": 30,
                 "perMatch": false
               }
             },
             {
               "threshold": 12,
-              "value": 0.26,
+              "value": 2600,
               "reward": {
                 "type": "inspiration",
-                "value": 3,
+                "value": 30,
                 "perMatch": false
               }
             }
           ]
         },
-        "cost": 3
+        "cost": 30
       }
     ]
   },
@@ -1217,9 +1217,9 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
@@ -1229,7 +1229,7 @@
           "maxPip": 2,
           "target": 6
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
@@ -1238,7 +1238,7 @@
           "maxPip": 3,
           "target": 6
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
@@ -1247,7 +1247,7 @@
           "maxPip": 4,
           "target": 6
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
@@ -1256,7 +1256,7 @@
           "maxPip": 5,
           "target": 6
         },
-        "cost": 3
+        "cost": 30
       }
     ]
   },
@@ -1264,39 +1264,39 @@
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      4,
-      7
+      40,
+      70
     ],
     "levels": [
       {
         "effect": {
           "type": "planned_dice",
-          "baseCost": 4,
-          "costStep": 2,
+          "baseCost": 40,
+          "costStep": 20,
           "maxValue": 6,
-          "cost": 4
+          "cost": 40
         },
-        "cost": 4
+        "cost": 40
       },
       {
         "effect": {
           "type": "planned_dice",
-          "baseCost": 3,
-          "costStep": 1,
+          "baseCost": 30,
+          "costStep": 10,
           "maxValue": 6,
-          "cost": 3
+          "cost": 30
         },
-        "cost": 3
+        "cost": 30
       },
       {
         "effect": {
           "type": "planned_dice",
-          "baseCost": 2,
+          "baseCost": 20,
           "costStep": 0,
           "maxValue": 6,
-          "cost": 2
+          "cost": 20
         },
-        "cost": 2
+        "cost": 20
       }
     ]
   },
@@ -1304,26 +1304,26 @@
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      4,
-      7
+      40,
+      70
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_on_win",
-          "value": 2
+          "value": 20
         }
       },
       {
         "effect": {
           "type": "insp_on_win",
-          "value": 3
+          "value": 30
         }
       },
       {
         "effect": {
           "type": "insp_on_win",
-          "value": 4
+          "value": 40
         }
       }
     ]
@@ -1332,26 +1332,26 @@
     "quality": "common",
     "maxLevel": 3,
     "upCost": [
-      4,
-      7
+      40,
+      70
     ],
     "levels": [
       {
         "effect": {
           "type": "draw_bonus",
-          "value": 3
+          "value": 30
         }
       },
       {
         "effect": {
           "type": "draw_bonus",
-          "value": 4
+          "value": 40
         }
       },
       {
         "effect": {
           "type": "draw_bonus",
-          "value": 6
+          "value": 60
         }
       }
     ]
@@ -1360,41 +1360,41 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_turn_regen",
-          "value": 1,
-          "thresholdRatio": 0.5,
-          "onTalent": 2
+          "value": 10,
+          "thresholdRatio": 5000,
+          "onTalent": 20
         }
       },
       {
         "effect": {
           "type": "insp_turn_regen",
-          "value": 1,
-          "thresholdRatio": 0.6,
-          "onTalent": 2
+          "value": 10,
+          "thresholdRatio": 6000,
+          "onTalent": 20
         }
       },
       {
         "effect": {
           "type": "insp_turn_regen",
-          "value": 2,
-          "thresholdRatio": 0.6,
-          "onTalent": 3
+          "value": 20,
+          "thresholdRatio": 6000,
+          "onTalent": 30
         }
       },
       {
         "effect": {
           "type": "insp_turn_regen",
-          "value": 2,
-          "thresholdRatio": 0.7,
-          "onTalent": 4
+          "value": 20,
+          "thresholdRatio": 7000,
+          "onTalent": 40
         }
       }
     ]
@@ -1403,16 +1403,16 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "style_pct",
           "style": "shi",
-          "value": 0.1,
+          "value": 1000,
           "singleDieBonus": 0
         }
       },
@@ -1420,24 +1420,24 @@
         "effect": {
           "type": "style_pct",
           "style": "shi",
-          "value": 0.12,
-          "singleDieBonus": 0.02
+          "value": 1200,
+          "singleDieBonus": 200
         }
       },
       {
         "effect": {
           "type": "style_pct",
           "style": "shi",
-          "value": 0.15,
-          "singleDieBonus": 0.03
+          "value": 1500,
+          "singleDieBonus": 300
         }
       },
       {
         "effect": {
           "type": "style_pct",
           "style": "shi",
-          "value": 0.18,
-          "singleDieBonus": 0.05
+          "value": 1800,
+          "singleDieBonus": 500
         }
       }
     ]
@@ -1446,33 +1446,33 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "theme_pct",
           "theme": "yongwu",
-          "value": 0.15
+          "value": 1500
         }
       },
       {
         "effect": {
           "type": "theme_pct",
           "theme": "yongwu",
-          "value": 0.18
+          "value": 1800
         }
       },
       {
         "effect": {
           "type": "theme_pct",
           "theme": "yongwu",
-          "value": 0.22,
+          "value": 2200,
           "reward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -1481,10 +1481,10 @@
         "effect": {
           "type": "theme_pct",
           "theme": "yongwu",
-          "value": 0.25,
+          "value": 2500,
           "reward": {
             "type": "inspiration",
-            "value": 2,
+            "value": 20,
             "perMatch": false
           }
         }
@@ -1495,33 +1495,33 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "streak_mult",
-          "value": 0.4
+          "value": 4000
         }
       },
       {
         "effect": {
           "type": "streak_mult",
-          "value": 0.5
+          "value": 5000
         }
       },
       {
         "effect": {
           "type": "streak_mult",
-          "value": 0.65
+          "value": 6500
         }
       },
       {
         "effect": {
           "type": "streak_mult",
-          "value": 0.8
+          "value": 8000
         }
       }
     ]
@@ -1530,40 +1530,40 @@
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      6,
-      9,
-      13,
-      18
+      60,
+      90,
+      130,
+      180
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_floor",
-          "value": 16
+          "value": 160
         }
       },
       {
         "effect": {
           "type": "insp_floor",
-          "value": 18
+          "value": 180
         }
       },
       {
         "effect": {
           "type": "insp_floor",
-          "value": 20
+          "value": 200
         }
       },
       {
         "effect": {
           "type": "insp_floor",
-          "value": 22
+          "value": 220
         }
       },
       {
         "effect": {
           "type": "insp_floor",
-          "value": 24
+          "value": 240
         }
       }
     ]
@@ -1572,43 +1572,43 @@
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      6,
-      9,
-      13,
-      18
+      60,
+      90,
+      130,
+      180
     ],
     "levels": [
       {
         "effect": {
           "type": "lucky_six",
-          "mult": 1.25
+          "mult": 12500
         }
       },
       {
         "effect": {
           "type": "lucky_six",
-          "mult": 1.3
+          "mult": 13000
         }
       },
       {
         "effect": {
           "type": "lucky_six",
-          "mult": 1.35
+          "mult": 13500
         }
       },
       {
         "effect": {
           "type": "lucky_six",
-          "mult": 1.42
+          "mult": 14200
         }
       },
       {
         "effect": {
           "type": "lucky_six",
-          "mult": 1.5,
+          "mult": 15000,
           "reward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -1619,45 +1619,45 @@
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      6,
-      9,
-      13,
-      18
+      60,
+      90,
+      130,
+      180
     ],
     "levels": [
       {
         "effect": {
           "type": "comeback",
-          "value": 0.12,
-          "threshold": 12
+          "value": 1200,
+          "threshold": 120
         }
       },
       {
         "effect": {
           "type": "comeback",
-          "value": 0.14,
-          "threshold": 13
+          "value": 1400,
+          "threshold": 130
         }
       },
       {
         "effect": {
           "type": "comeback",
-          "value": 0.16,
-          "threshold": 14
+          "value": 1600,
+          "threshold": 140
         }
       },
       {
         "effect": {
           "type": "comeback",
-          "value": 0.2,
-          "threshold": 16
+          "value": 2000,
+          "threshold": 160
         }
       },
       {
         "effect": {
           "type": "comeback",
-          "value": 0.24,
-          "threshold": 18
+          "value": 2400,
+          "threshold": 180
         }
       }
     ]
@@ -1666,50 +1666,55 @@
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      6,
-      9,
-      13,
-      18
+      60,
+      90,
+      130,
+      180
     ],
     "levels": [
       {
         "effect": {
           "type": "armory_pct",
+          "target": "attrs",
           "step": 3,
-          "value": 0.04,
-          "cap": 0.12
+          "value": 400,
+          "cap": 1200
         }
       },
       {
         "effect": {
           "type": "armory_pct",
+          "target": "attrs",
           "step": 3,
-          "value": 0.05,
-          "cap": 0.15
+          "value": 500,
+          "cap": 1500
         }
       },
       {
         "effect": {
           "type": "armory_pct",
+          "target": "attrs",
           "step": 3,
-          "value": 0.06,
-          "cap": 0.18
+          "value": 600,
+          "cap": 1800
         }
       },
       {
         "effect": {
           "type": "armory_pct",
+          "target": "attrs",
           "step": 2,
-          "value": 0.04,
-          "cap": 0.2
+          "value": 400,
+          "cap": 2000
         }
       },
       {
         "effect": {
           "type": "armory_pct",
+          "target": "attrs",
           "step": 2,
-          "value": 0.05,
-          "cap": 0.25
+          "value": 500,
+          "cap": 2500
         }
       }
     ]
@@ -1718,37 +1723,37 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "study_bonus",
-          "value": 2,
-          "nextBattlePct": 0.04
+          "value": 20,
+          "nextBattlePct": 400
         }
       },
       {
         "effect": {
           "type": "study_bonus",
-          "value": 3,
-          "nextBattlePct": 0.06
+          "value": 30,
+          "nextBattlePct": 600
         }
       },
       {
         "effect": {
           "type": "study_bonus",
-          "value": 4,
-          "nextBattlePct": 0.08
+          "value": 40,
+          "nextBattlePct": 800
         }
       },
       {
         "effect": {
           "type": "study_bonus",
-          "value": 5,
-          "nextBattlePct": 0.08
+          "value": 50,
+          "nextBattlePct": 800
         }
       }
     ]
@@ -1757,50 +1762,50 @@
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      6,
-      9,
-      13,
-      18
+      60,
+      90,
+      130,
+      180
     ],
     "levels": [
       {
         "effect": {
           "type": "palace_insp",
-          "value": 3,
-          "startValue": 4,
+          "value": 30,
+          "startValue": 40,
           "scorePct": 0
         }
       },
       {
         "effect": {
           "type": "palace_insp",
-          "value": 3,
-          "startValue": 5,
-          "scorePct": 0.02
+          "value": 30,
+          "startValue": 50,
+          "scorePct": 200
         }
       },
       {
         "effect": {
           "type": "palace_insp",
-          "value": 4,
-          "startValue": 6,
-          "scorePct": 0.04
+          "value": 40,
+          "startValue": 60,
+          "scorePct": 400
         }
       },
       {
         "effect": {
           "type": "palace_insp",
-          "value": 4,
-          "startValue": 7,
-          "scorePct": 0.06
+          "value": 40,
+          "startValue": 70,
+          "scorePct": 600
         }
       },
       {
         "effect": {
           "type": "palace_insp",
-          "value": 5,
-          "startValue": 8,
-          "scorePct": 0.08
+          "value": 50,
+          "startValue": 80,
+          "scorePct": 800
         }
       }
     ]
@@ -1809,37 +1814,37 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_turn_regen",
-          "value": 1,
-          "thresholdRatio": 0.5
+          "value": 10,
+          "thresholdRatio": 5000
         }
       },
       {
         "effect": {
           "type": "insp_turn_regen",
-          "value": 1,
-          "thresholdRatio": 0.6
+          "value": 10,
+          "thresholdRatio": 6000
         }
       },
       {
         "effect": {
           "type": "insp_turn_regen",
-          "value": 2,
-          "thresholdRatio": 0.6
+          "value": 20,
+          "thresholdRatio": 6000
         }
       },
       {
         "effect": {
           "type": "insp_turn_regen",
-          "value": 2,
-          "thresholdRatio": 0.7
+          "value": 20,
+          "thresholdRatio": 7000
         }
       }
     ]
@@ -1848,36 +1853,36 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_on_quiz",
-          "value": 2,
+          "value": 20,
           "maxTriggers": 4
         }
       },
       {
         "effect": {
           "type": "insp_on_quiz",
-          "value": 2,
+          "value": 20,
           "maxTriggers": 5
         }
       },
       {
         "effect": {
           "type": "insp_on_quiz",
-          "value": 3,
+          "value": 30,
           "maxTriggers": 5
         }
       },
       {
         "effect": {
           "type": "insp_on_quiz",
-          "value": 3,
+          "value": 30,
           "maxTriggers": 6
         }
       }
@@ -1887,49 +1892,49 @@
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      6,
-      9,
-      13,
-      18
+      60,
+      90,
+      130,
+      180
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_battle_recover",
-          "value": 3,
-          "threshold": 16,
+          "value": 30,
+          "threshold": 160,
           "maxTriggers": 3
         }
       },
       {
         "effect": {
           "type": "insp_battle_recover",
-          "value": 3,
-          "threshold": 18,
+          "value": 30,
+          "threshold": 180,
           "maxTriggers": 3
         }
       },
       {
         "effect": {
           "type": "insp_battle_recover",
-          "value": 3,
-          "threshold": 20,
+          "value": 30,
+          "threshold": 200,
           "maxTriggers": 4
         }
       },
       {
         "effect": {
           "type": "insp_battle_recover",
-          "value": 4,
-          "threshold": 20,
+          "value": 40,
+          "threshold": 200,
           "maxTriggers": 4
         }
       },
       {
         "effect": {
           "type": "insp_battle_recover",
-          "value": 4,
-          "threshold": 22,
+          "value": 40,
+          "threshold": 220,
           "maxTriggers": 5
         }
       }
@@ -1939,50 +1944,50 @@
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      6,
-      9,
-      13,
-      18
+      60,
+      90,
+      130,
+      180
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_max",
-          "value": 8,
+          "value": 80,
           "group": "inspiration_capacity",
-          "fillRatio": 0.5
+          "fillRatio": 5000
         }
       },
       {
         "effect": {
           "type": "insp_max",
-          "value": 10,
+          "value": 100,
           "group": "inspiration_capacity",
-          "fillRatio": 0.5
+          "fillRatio": 5000
         }
       },
       {
         "effect": {
           "type": "insp_max",
-          "value": 12,
+          "value": 120,
           "group": "inspiration_capacity",
-          "fillRatio": 0.75
+          "fillRatio": 7500
         }
       },
       {
         "effect": {
           "type": "insp_max",
-          "value": 14,
+          "value": 140,
           "group": "inspiration_capacity",
-          "fillRatio": 0.75
+          "fillRatio": 7500
         }
       },
       {
         "effect": {
           "type": "insp_max",
-          "value": 16,
+          "value": 160,
           "group": "inspiration_capacity",
-          "fillRatio": 1
+          "fillRatio": 10000
         }
       }
     ]
@@ -1991,59 +1996,59 @@
     "quality": "legend",
     "maxLevel": 6,
     "upCost": [
-      7,
-      10,
-      14,
-      19,
-      25
+      70,
+      100,
+      140,
+      190,
+      250
     ],
     "levels": [
       {
         "effect": {
           "type": "insp_max",
-          "value": 14,
+          "value": 140,
           "group": "inspiration_capacity",
-          "fillRatio": 0.5
+          "fillRatio": 5000
         }
       },
       {
         "effect": {
           "type": "insp_max",
-          "value": 16,
+          "value": 160,
           "group": "inspiration_capacity",
-          "fillRatio": 0.5
+          "fillRatio": 5000
         }
       },
       {
         "effect": {
           "type": "insp_max",
-          "value": 18,
+          "value": 180,
           "group": "inspiration_capacity",
-          "fillRatio": 0.6
+          "fillRatio": 6000
         }
       },
       {
         "effect": {
           "type": "insp_max",
-          "value": 22,
+          "value": 220,
           "group": "inspiration_capacity",
-          "fillRatio": 0.7
+          "fillRatio": 7000
         }
       },
       {
         "effect": {
           "type": "insp_max",
-          "value": 25,
+          "value": 250,
           "group": "inspiration_capacity",
-          "fillRatio": 0.8
+          "fillRatio": 8000
         }
       },
       {
         "effect": {
           "type": "insp_max",
-          "value": 28,
+          "value": 280,
           "group": "inspiration_capacity",
-          "fillRatio": 1
+          "fillRatio": 10000
         }
       }
     ]
@@ -2052,19 +2057,19 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "single",
-          "value": 0.12,
+          "value": 1200,
           "reward": {
             "type": "insight",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -2073,10 +2078,10 @@
         "effect": {
           "type": "dice_pattern",
           "pattern": "single",
-          "value": 0.15,
+          "value": 1500,
           "reward": {
             "type": "insight",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -2085,10 +2090,10 @@
         "effect": {
           "type": "dice_pattern",
           "pattern": "single",
-          "value": 0.18,
+          "value": 1800,
           "reward": {
             "type": "insight",
-            "value": 2,
+            "value": 20,
             "perMatch": false
           }
         }
@@ -2097,10 +2102,10 @@
         "effect": {
           "type": "dice_pattern",
           "pattern": "single",
-          "value": 0.24,
+          "value": 2400,
           "reward": {
             "type": "insight",
-            "value": 3,
+            "value": 30,
             "perMatch": false
           }
         }
@@ -2111,9 +2116,9 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
@@ -2121,10 +2126,10 @@
           "type": "dice_pattern",
           "pattern": "all_high",
           "minPip": 4,
-          "value": 0.1,
+          "value": 1000,
           "reward": {
             "type": "fragment",
-            "value": 1,
+            "value": 1000,
             "perMatch": false
           }
         }
@@ -2134,10 +2139,10 @@
           "type": "dice_pattern",
           "pattern": "all_high",
           "minPip": 4,
-          "value": 0.12,
+          "value": 1200,
           "reward": {
             "type": "fragment",
-            "value": 1,
+            "value": 1000,
             "perMatch": false
           }
         }
@@ -2147,10 +2152,10 @@
           "type": "dice_pattern",
           "pattern": "all_high",
           "minPip": 4,
-          "value": 0.14,
+          "value": 1400,
           "reward": {
             "type": "fragment",
-            "value": 1,
+            "value": 1000,
             "perMatch": false
           }
         }
@@ -2160,10 +2165,10 @@
           "type": "dice_pattern",
           "pattern": "all_high",
           "minPip": 4,
-          "value": 0.16,
+          "value": 1600,
           "reward": {
             "type": "fragment",
-            "value": 1.5,
+            "value": 1500,
             "perMatch": false
           }
         }
@@ -2174,36 +2179,36 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "style_switch_pct",
-          "value": 0.08,
+          "value": 800,
           "insight": 1
         }
       },
       {
         "effect": {
           "type": "style_switch_pct",
-          "value": 0.1,
+          "value": 1000,
           "insight": 1
         }
       },
       {
         "effect": {
           "type": "style_switch_pct",
-          "value": 0.12,
+          "value": 1200,
           "insight": 1
         }
       },
       {
         "effect": {
           "type": "style_switch_pct",
-          "value": 0.12,
+          "value": 1200,
           "insight": 2
         }
       }
@@ -2213,41 +2218,41 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "manuscript_pct",
           "step": 2,
-          "value": 0.03,
-          "cap": 0.15
+          "value": 300,
+          "cap": 1500
         }
       },
       {
         "effect": {
           "type": "manuscript_pct",
           "step": 2,
-          "value": 0.035,
-          "cap": 0.16
+          "value": 350,
+          "cap": 1600
         }
       },
       {
         "effect": {
           "type": "manuscript_pct",
           "step": 2,
-          "value": 0.04,
-          "cap": 0.18
+          "value": 400,
+          "cap": 1800
         }
       },
       {
         "effect": {
           "type": "manuscript_pct",
           "step": 2,
-          "value": 0.05,
-          "cap": 0.2
+          "value": 500,
+          "cap": 2000
         }
       }
     ]
@@ -2256,19 +2261,19 @@
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      5,
-      8,
-      12
+      50,
+      80,
+      120
     ],
     "levels": [
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "pair",
-          "value": 0.08,
+          "value": 800,
           "reward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -2277,10 +2282,10 @@
         "effect": {
           "type": "dice_pattern",
           "pattern": "pair",
-          "value": 0.1,
+          "value": 1000,
           "reward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -2289,10 +2294,10 @@
         "effect": {
           "type": "dice_pattern",
           "pattern": "pair",
-          "value": 0.12,
+          "value": 1200,
           "reward": {
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "perMatch": false
           }
         }
@@ -2301,10 +2306,10 @@
         "effect": {
           "type": "dice_pattern",
           "pattern": "pair",
-          "value": 0.14,
+          "value": 1400,
           "reward": {
             "type": "inspiration",
-            "value": 2,
+            "value": 20,
             "perMatch": false
           }
         }
@@ -2315,20 +2320,20 @@
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      6,
-      9,
-      13,
-      18
+      60,
+      90,
+      130,
+      180
     ],
     "levels": [
       {
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.08,
+          "value": 800,
           "reward": {
             "type": "fragment",
-            "value": 1,
+            "value": 1000,
             "perMatch": false
           }
         }
@@ -2337,10 +2342,10 @@
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.1,
+          "value": 1000,
           "reward": {
             "type": "fragment",
-            "value": 1.5,
+            "value": 1500,
             "perMatch": false
           }
         }
@@ -2349,10 +2354,10 @@
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.12,
+          "value": 1200,
           "reward": {
             "type": "fragment",
-            "value": 2,
+            "value": 2000,
             "perMatch": false
           }
         }
@@ -2361,10 +2366,10 @@
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.14,
+          "value": 1400,
           "reward": {
             "type": "fragment",
-            "value": 2.5,
+            "value": 2500,
             "perMatch": false
           }
         }
@@ -2373,10 +2378,10 @@
         "effect": {
           "type": "dice_pattern",
           "pattern": "six",
-          "value": 0.16,
+          "value": 1600,
           "reward": {
             "type": "fragment",
-            "value": 3,
+            "value": 3000,
             "perMatch": false
           }
         }
@@ -2387,59 +2392,59 @@
     "quality": "legend",
     "maxLevel": 6,
     "upCost": [
-      7,
-      10,
-      14,
-      19,
-      25
+      70,
+      100,
+      140,
+      190,
+      250
     ],
     "levels": [
       {
         "effect": {
           "type": "reincarnate",
-          "inspThreshold": 40,
-          "attrRatio": 0.8,
-          "startInspiration": 8
+          "inspThreshold": 400,
+          "attrRatio": 8000,
+          "startInspiration": 80
         }
       },
       {
         "effect": {
           "type": "reincarnate",
-          "inspThreshold": 36,
-          "attrRatio": 0.84,
-          "startInspiration": 8
+          "inspThreshold": 360,
+          "attrRatio": 8400,
+          "startInspiration": 80
         }
       },
       {
         "effect": {
           "type": "reincarnate",
-          "inspThreshold": 32,
-          "attrRatio": 0.88,
-          "startInspiration": 10
+          "inspThreshold": 320,
+          "attrRatio": 8800,
+          "startInspiration": 100
         }
       },
       {
         "effect": {
           "type": "reincarnate",
-          "inspThreshold": 28,
-          "attrRatio": 0.92,
-          "startInspiration": 10
+          "inspThreshold": 280,
+          "attrRatio": 9200,
+          "startInspiration": 100
         }
       },
       {
         "effect": {
           "type": "reincarnate",
-          "inspThreshold": 24,
-          "attrRatio": 0.96,
-          "startInspiration": 12
+          "inspThreshold": 240,
+          "attrRatio": 9600,
+          "startInspiration": 120
         }
       },
       {
         "effect": {
           "type": "reincarnate",
-          "inspThreshold": 20,
-          "attrRatio": 1,
-          "startInspiration": 12
+          "inspThreshold": 200,
+          "attrRatio": 10000,
+          "startInspiration": 120
         }
       }
     ]

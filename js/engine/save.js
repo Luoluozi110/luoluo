@@ -16,11 +16,12 @@
  */
 
 import { normalizePoetryState } from './end-scroll.js?v=20260902endscroll1';
+import { SCALE, clampInt, legacyProgressToV2, legacyTenthsToV2 } from './numeric.js';
 
 export const RUN_SAVE_KEY = 'feihua_run_save';               // 自动存档槽（每回合结束）
 export const RUN_SAVE_MANUAL_KEY = 'feihua_run_save_manual'; // 手动存档槽（菜单「保存当前进度」）
 export const RUN_SAVE_TUTORIAL_KEY = 'feihua_run_save_tutorial'; // 教学局存档槽（入门卷专用，与正式对局隔离）
-export const RUN_SAVE_VERSION = 9;   // 记号不递增：tutorial 为可选增量字段，旧 v9 档读入时缺省即正式局
+export const RUN_SAVE_VERSION = 10;  // v10：数值 v2（属性/灵感/心得十倍，连续进度千分整数）
 export const SAVE_WARN_BYTES = 3 * 1024 * 1024;              // 体积预警阈值 3MB
 
 const LOG_MAX = 200;   // 超过则截断
@@ -321,6 +322,18 @@ function migrateRun(obj) {
     nextPlan: ['steady','guard','switch'].includes(oldStrategy.nextPlan) ? oldStrategy.nextPlan : 'guard',
     freeUsed: !!oldStrategy.freeUsed
   };
+  // v10：旧档只在此处放大一次；次数、稿页、熟练度、骰点和回合仍为计数。
+  for (const key of ['shi', 'ci', 'lian', 'bi', 'xue', 'si']) if (state.attrs && key in state.attrs) state.attrs[key] = legacyTenthsToV2(state.attrs[key]);
+  state.inspiration = legacyTenthsToV2(state.inspiration);
+  state.inspirationMax = legacyTenthsToV2(state.inspirationMax);
+  state.schoolState.inspirationAccumulator = clampInt((Number(state.schoolState.inspirationAccumulator) || 0) * SCALE.bp, 0, SCALE.bp - 1);
+  ab.version = Math.max(3, Number(ab.version) || 1);
+  ab.insight = legacyTenthsToV2(ab.insight);
+  ab.study.progress = ab.study.progress && typeof ab.study.progress === 'object' ? ab.study.progress : {};
+  for (const key of ['shi', 'ci', 'lian', 'bi', 'xue', 'si']) ab.study.progress[key] = legacyProgressToV2(ab.study.progress[key]);
+  ab.strategy.chargeRemainder = legacyProgressToV2(ab.strategy.chargeRemainder);
+  ab.manuscript = ab.manuscript && typeof ab.manuscript === 'object' ? ab.manuscript : {};
+  ab.manuscript.fragments = legacyProgressToV2(ab.manuscript.fragments);
   return { v: RUN_SAVE_VERSION, savedAt: Number(obj.savedAt) || Date.now(), state };
 }
 
@@ -503,12 +516,12 @@ export function deserializeRun(rawObj, cfg) {
   }
   out.schoolState.type = out.schoolState.type || (out.school && out.school.id) || '';
   out.schoolState.knowledge = Math.max(0, Number(out.schoolState.knowledge) || 0);
-  out.schoolState.inspirationAccumulator = Math.max(0, Number(out.schoolState.inspirationAccumulator) || 0);
+  out.schoolState.inspirationAccumulator = clampInt(out.schoolState.inspirationAccumulator, 0, SCALE.bp - 1);
   out.schoolState.settledBattleIds = Array.isArray(out.schoolState.settledBattleIds) ? out.schoolState.settledBattleIds.slice(-40) : [];
   out.abilityState = (out.abilityState && typeof out.abilityState === 'object') ? out.abilityState : {};
   const ab = out.abilityState;
-  ab.version = Math.max(2, Number(ab.version) || 1);
-  ab.insight = Math.max(0, Number(ab.insight) || 0);
+  ab.version = Math.max(3, Number(ab.version) || 1);
+  ab.insight = clampInt(ab.insight, 0);
   ab.familiarity = Object.assign({ shi: 0, ci: 0, lian: 0 }, ab.familiarity || {});
   ab.study = Object.assign({ focus: ['shi'], nextFocus: ['shi'], progress: {} }, ab.study || {});
   ab.study.focus = Array.isArray(ab.study.focus) ? ab.study.focus.filter(k => ['shi','ci','lian','bi','xue','si'].includes(k)) : ['shi'];
@@ -516,17 +529,19 @@ export function deserializeRun(rawObj, cfg) {
   ab.study.nextFocus = Array.isArray(ab.study.nextFocus) ? ab.study.nextFocus.filter(k => ['shi','ci','lian','bi','xue','si'].includes(k)) : ab.study.focus.slice();
   if (!ab.study.nextFocus.length) ab.study.nextFocus = ab.study.focus.slice();
   ab.study.progress = (ab.study.progress && typeof ab.study.progress === 'object') ? ab.study.progress : {};
+  for (const key of ['shi','ci','lian','bi','xue','si']) ab.study.progress[key] = clampInt(ab.study.progress[key], 0);
   const strategyCfg = (((cfg || {}).attrs || {}).abilitySystem || {}).strategy || {};
   const planIds = Object.keys(strategyCfg.plans || {});
   const defaultPlan = planIds.includes(strategyCfg.defaultPlan) ? strategyCfg.defaultPlan : (planIds[0] || 'guard');
   ab.strategy = Object.assign({ charges: 0, chargeRemainder: 0, refillPhase: '', plan: defaultPlan, nextPlan: defaultPlan, freeUsed: false }, ab.strategy || {});
-  ab.strategy.charges = Math.max(0, Number(ab.strategy.charges) || 0);
-  ab.strategy.chargeRemainder = Math.max(0, Math.min(0.999, Number(ab.strategy.chargeRemainder) || 0));
+  ab.strategy.charges = clampInt(ab.strategy.charges, 0);
+  ab.strategy.chargeRemainder = clampInt(ab.strategy.chargeRemainder, 0, SCALE.progress - 1);
   ab.strategy.plan = planIds.includes(ab.strategy.plan) ? ab.strategy.plan : defaultPlan;
   ab.strategy.nextPlan = planIds.includes(ab.strategy.nextPlan) ? ab.strategy.nextPlan : ab.strategy.plan;
   ab.strategy.freeUsed = !!ab.strategy.freeUsed;
   ab.manuscript = Object.assign({ pages: 0, fragments: 0, volumes: 0, polish: 0, bonusPagePhases: {}, schoolPagePhases: {}, firstPolishPhases: {} }, ab.manuscript || {});
-  for (const k of ['pages','fragments','volumes','polish']) ab.manuscript[k] = Math.max(0, Number(ab.manuscript[k]) || 0);
+  for (const k of ['pages','volumes','polish']) ab.manuscript[k] = clampInt(ab.manuscript[k], 0);
+  ab.manuscript.fragments = clampInt(ab.manuscript.fragments, 0);
   ab.manuscript.bonusPagePhases = (ab.manuscript.bonusPagePhases && typeof ab.manuscript.bonusPagePhases === 'object') ? ab.manuscript.bonusPagePhases : {};
   ab.manuscript.schoolPagePhases = (ab.manuscript.schoolPagePhases && typeof ab.manuscript.schoolPagePhases === 'object') ? ab.manuscript.schoolPagePhases : {};
   ab.manuscript.firstPolishPhases = (ab.manuscript.firstPolishPhases && typeof ab.manuscript.firstPolishPhases === 'object') ? ab.manuscript.firstPolishPhases : {};

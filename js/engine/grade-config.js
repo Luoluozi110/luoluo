@@ -52,6 +52,8 @@ export function adaptGradesConfig(raw) {
   if (!raw || typeof raw !== 'object') return {};
   if (!Array.isArray(raw.dimensions) && !Array.isArray(raw.grades)) return raw;
 
+  const rate = value => Number(raw.numericVersion) >= 2 ? Number(value || 0) / 10000 : value;
+
   const out = {};
   const byKey = new Map((raw.dimensions || []).map(d => [d.key, d]));
   const bonusOf = (dim, id) => ((dim && dim.bonuses) || []).find(b => b.id === id);
@@ -73,7 +75,7 @@ export function adaptGradesConfig(raw) {
     put(d, 'name', wc.name);
     put(d, 'mult', (wc.coeff || {}).shi);
     put(d, 'soft', (wc.coeff || {}).soft);
-    put(d, 'softRate', (wc.coeff || {}).softRate);
+    put(d, 'softRate', rate((wc.coeff || {}).softRate));
     const a = bonusOf(wc, 'sanjuejunheng'), b = bonusOf(wc, 'yizhiduxiu'), c = bonusOf(wc, 'pobi');
     if (a) { put(d, 'allHigh.threshold', (a.cond || {}).value); put(d, 'allHigh.bonus', a.score); put(d, 'allHigh.label', a.name); }
     if (b) { put(d, 'dominant.bonus', b.score); put(d, 'dominant.label', b.name); }
@@ -87,7 +89,7 @@ export function adaptGradesConfig(raw) {
     put(d, 'name', gl.name);
     put(d, 'mult', (gl.coeff || {}).bi);
     put(d, 'soft', (gl.coeff || {}).soft);
-    put(d, 'softRate', (gl.coeff || {}).softRate);
+    put(d, 'softRate', rate((gl.coeff || {}).softRate));
     const a = bonusOf(gl, 'genjishenhou'), b = bonusOf(gl, 'pianfeng');
     if (a) { put(d, 'balance.maxRange', (a.cond || {}).value); put(d, 'balance.bonus', a.score); put(d, 'balance.label', a.name); }
     if (b) { put(d, 'peak.threshold', (b.cond || {}).value); put(d, 'peak.bonus', b.score); put(d, 'peak.label', b.name); }

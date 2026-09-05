@@ -89,13 +89,18 @@ const incomplete = validateProject({ _type: 'feihua-content', talents: raw.talen
 assert.equal(incomplete.ok, false);
 assert.ok(incomplete.errors.some(x => x.code === 'required'));
 
-const patch = { _type: 'feihua-content', questions: raw.questions.slice(0, 2) };
-assert.equal(validateProject(patch, { requireComplete: false }).ok, true);
 const normalized = normalizeConfig(clone(raw));
+const legacyPatch = { _type: 'feihua-content', questions: raw.questions.slice(0, 2) };
+assert.throws(
+  () => applyProjectOverride(normalized, legacyPatch, { requireType: true }),
+  /数值 v1/
+);
+const patch = { _type: 'feihua-content', numericVersion: 2, questions: raw.questions.slice(0, 2) };
+assert.equal(validateProject(patch, { requireComplete: false }).ok, true);
 const merged = applyProjectOverride(normalized, patch, { requireType: true });
 assert.equal(merged.questions.length, 2);
 
-const oldNpcProject = { _type: 'feihua-content', npcs: clone(raw.npcs) };
+const oldNpcProject = { _type: 'feihua-content', numericVersion: 2, npcs: clone(raw.npcs) };
 const oldKang = oldNpcProject.npcs.find(tier => tier.id === 'zhukaoguan').npcs.find(npc => npc.name === '康尔玉');
 oldKang.id = '';
 const migratedNpcs = applyProjectOverride(normalized, oldNpcProject, { requireType: true });
@@ -107,6 +112,7 @@ const cloudBoard = clone(raw.board);
 delete cloudBoard.hiddenFinalRing;
 const mergedWithoutSecretRing = applyProjectOverride(normalized, {
   _type: 'feihua-content',
+  numericVersion: 2,
   board: cloudBoard
 }, { requireType: true });
 assert.ok(mergedWithoutSecretRing.board.hiddenFinalRing, '云端旧棋盘缺少隐藏终圈时应保留本地配置');

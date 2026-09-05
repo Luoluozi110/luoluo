@@ -230,7 +230,7 @@ export class Hud {
         const fb = game && typeof game.abilityFeedback === 'function' ? game.abilityFeedback() : null;
         const fmt = n => Number.isInteger(Number(n)) ? String(Number(n)) : Number(n).toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
         const derived = fb
-          ? `<span class="ability-derived">学力 研修+${fmt(fb.studyRate)}/场 · ${fb.studySlots}位　思力 构思+${fmt(fb.strategyIncome)}/阶段 · ${fb.strategyCap}上限　笔力 残页+${fmt(fb.manuscriptFragmentRate)}/战 · ${fb.manuscriptCap}稿匣</span>`
+          ? `<span class="ability-derived">学力 研修进度+${fmt(fb.studyRate)}/场 · ${fb.studySlots}位　思力 构思进度+${fmt(fb.strategyIncome)}/阶段 · ${fb.strategyCap}上限　笔力 成稿进度+${fmt(fb.manuscriptFragmentRate)}/战 · ${fb.manuscriptCap}稿匣</span>`
           : '';
         this.el.schoolProgress.innerHTML = `<span class="school-progress-name">三功修习</span><span>心得 ${Number(ab.insight) || 0}　构思 ${Number((ab.strategy || {}).charges) || 0} · ${planName}　稿页 ${Number((ab.manuscript || {}).pages) || 0}</span>${derived}`;
       } else if (mech.type === 'bowen') {

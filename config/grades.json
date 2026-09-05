@@ -11,7 +11,7 @@
         "ci": 12,
         "lian": 12,
         "soft": 51,
-        "softRate": 0.5
+        "softRate": 5000
       },
       "bonuses": [
         {
@@ -69,7 +69,7 @@
         "xue": 10,
         "si": 10,
         "soft": 39,
-        "softRate": 0.5
+        "softRate": 5000
       },
       "bonuses": [
         {
@@ -254,10 +254,10 @@
         {
           "id": "jinbangtiming",
           "name": "金榜题名",
-"desc": "殿试单场取胜",
-        "cond": {
-          "type": "final_win",
-          "value": 1
+          "desc": "殿试单场取胜",
+          "cond": {
+            "type": "final_win",
+            "value": 1
           },
           "score": 75
         }
@@ -346,5 +346,6 @@
     "qiyu": "奇遇最高：踏遍青山，奇缘满袖",
     "liupai": "流派最高：一门深入，卓然成家",
     "yuanman": "圆满最高：从容赴考，功行圆满"
-  }
+  },
+  "numericVersion": 2
 }

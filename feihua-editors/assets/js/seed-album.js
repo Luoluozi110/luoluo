@@ -11,7 +11,7 @@ window.GAME_ALBUM = [
     "reward": {
       "type": "attr",
       "attr": "shi",
-      "value": 2
+      "value": 20
     },
     "rewardDesc": "开局诗力 +2；名篇可成长并选择“豪情”或“快意”路线",
     "growth": {
@@ -30,7 +30,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "start",
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "name": "起兴",
             "desc": "开局灵感 +1"
           },
@@ -38,7 +38,7 @@ window.GAME_ALBUM = [
             "trigger": "score",
             "type": "pct",
             "style": "shi",
-            "value": 0.03,
+            "value": 300,
             "minLevel": 2,
             "name": "诗胆",
             "desc": "以诗出战，作品 +3%"
@@ -48,7 +48,7 @@ window.GAME_ALBUM = [
             "type": "insight",
             "result": "win",
             "style": "shi",
-            "value": 1,
+            "value": 10,
             "minLevel": 3,
             "name": "豪兴余韵",
             "desc": "以诗获胜，心得 +1"
@@ -82,7 +82,7 @@ window.GAME_ALBUM = [
             "type": "inspiration",
             "result": "win",
             "style": "shi",
-            "value": 1,
+            "value": 10,
             "minLevel": 2,
             "name": "诗成兴尽",
             "desc": "以诗获胜，灵感 +1"
@@ -102,7 +102,7 @@ window.GAME_ALBUM = [
             "type": "inspiration",
             "result": "draw",
             "style": "shi",
-            "value": 1,
+            "value": 10,
             "minLevel": 4,
             "name": "不尽诗意",
             "desc": "以诗平局，灵感 +1"
@@ -122,7 +122,7 @@ window.GAME_ALBUM = [
     "reward": {
       "type": "attr",
       "attr": "xue",
-      "value": 2
+      "value": 20
     },
     "rewardDesc": "开局学力 +2；名篇可成长为“校勘”或“转益”",
     "growth": {
@@ -139,7 +139,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "start",
             "type": "insight",
-            "value": 1,
+            "value": 10,
             "name": "一字千金",
             "desc": "开局心得 +1"
           },
@@ -147,7 +147,7 @@ window.GAME_ALBUM = [
             "trigger": "quiz",
             "type": "insight",
             "result": "win",
-            "value": 1,
+            "value": 10,
             "minLevel": 2,
             "name": "改字得意",
             "desc": "答对知识题，心得 +1"
@@ -164,7 +164,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "phase",
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "minLevel": 4,
             "name": "校勘阶段",
             "desc": "进入新阶段，灵感 +1"
@@ -188,7 +188,7 @@ window.GAME_ALBUM = [
             "trigger": "quiz",
             "type": "insight",
             "result": "lose",
-            "value": 1,
+            "value": 10,
             "minLevel": 2,
             "name": "错中求师",
             "desc": "答题失误后心得 +1"
@@ -205,7 +205,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "inspiration",
             "result": "draw",
-            "value": 1,
+            "value": 10,
             "minLevel": 4,
             "name": "平分秋色",
             "desc": "论战平局，灵感 +1"
@@ -224,7 +224,7 @@ window.GAME_ALBUM = [
     },
     "reward": {
       "type": "inspiration",
-      "value": 2
+      "value": 20
     },
     "rewardDesc": "开局灵感 +2；可走“惜墨”或“复笔”路线",
     "growth": {
@@ -241,7 +241,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "start",
             "type": "inspirationMax",
-            "value": 2,
+            "value": 20,
             "name": "惜墨",
             "desc": "灵感上限 +2"
           },
@@ -249,7 +249,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "inspiration",
             "result": "lose",
-            "value": 1,
+            "value": 10,
             "minLevel": 2,
             "name": "留有余墨",
             "desc": "论战失败，少损 1 点灵感"
@@ -290,7 +290,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "inspiration",
             "result": "win",
-            "value": 1,
+            "value": 10,
             "minLevel": 2,
             "name": "复得神思",
             "desc": "论战获胜，灵感 +1"
@@ -299,7 +299,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "insight",
             "result": "lose",
-            "value": 1,
+            "value": 10,
             "minLevel": 3,
             "name": "失而复得",
             "desc": "论战失败，心得 +1"
@@ -346,7 +346,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "start",
             "type": "inspirationMax",
-            "value": 2,
+            "value": 20,
             "name": "三元气象",
             "desc": "灵感上限 +2"
           },
@@ -354,7 +354,7 @@ window.GAME_ALBUM = [
             "trigger": "score",
             "type": "pct",
             "phase": "palace",
-            "value": 0.03,
+            "value": 300,
             "minLevel": 2,
             "name": "金殿文章",
             "desc": "殿试作品 +3%"
@@ -373,7 +373,7 @@ window.GAME_ALBUM = [
             "trigger": "phase",
             "type": "inspiration",
             "phase": "palace",
-            "value": 2,
+            "value": 20,
             "minLevel": 4,
             "name": "三元入殿",
             "desc": "进入殿试，灵感 +2"
@@ -397,7 +397,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "pct",
             "result": "win",
-            "value": 0.03,
+            "value": 300,
             "minLevel": 2,
             "name": "三试连环",
             "desc": "获胜后下一场作品 +3%"
@@ -407,7 +407,7 @@ window.GAME_ALBUM = [
             "type": "inspiration",
             "result": "win",
             "phase": "palace",
-            "value": 1,
+            "value": 10,
             "minLevel": 3,
             "name": "连中余势",
             "desc": "殿试获胜，灵感 +1"
@@ -451,7 +451,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "start",
             "type": "insight",
-            "value": 2,
+            "value": 20,
             "name": "门生满座",
             "desc": "开局心得 +2"
           },
@@ -459,7 +459,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "insight",
             "result": "win",
-            "value": 1,
+            "value": 10,
             "minLevel": 2,
             "name": "授业有成",
             "desc": "获胜心得 +1"
@@ -468,7 +468,7 @@ window.GAME_ALBUM = [
             "trigger": "quiz",
             "type": "insight",
             "result": "win",
-            "value": 1,
+            "value": 10,
             "minLevel": 3,
             "name": "传经",
             "desc": "答对知识题心得 +1"
@@ -509,7 +509,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "inspiration",
             "result": "draw",
-            "value": 1,
+            "value": 10,
             "minLevel": 3,
             "name": "同门唱和",
             "desc": "平局灵感 +1"
@@ -538,7 +538,7 @@ window.GAME_ALBUM = [
     "reward": {
       "type": "attr",
       "attr": "si",
-      "value": 2
+      "value": 20
     },
     "rewardDesc": "开局思力 +2；成长为“快构”或“奇谋”",
     "growth": {
@@ -581,7 +581,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "inspiration",
             "result": "win",
-            "value": 1,
+            "value": 10,
             "minLevel": 4,
             "name": "一挥而就",
             "desc": "获胜灵感 +1"
@@ -597,7 +597,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "start",
             "type": "insight",
-            "value": 1,
+            "value": 10,
             "name": "胸中丘壑",
             "desc": "开局心得 +1"
           },
@@ -614,7 +614,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "inspiration",
             "result": "lose",
-            "value": 1,
+            "value": 10,
             "minLevel": 3,
             "name": "败中有策",
             "desc": "失败灵感损失减少 1 点"
@@ -642,7 +642,7 @@ window.GAME_ALBUM = [
     "reward": {
       "type": "attr",
       "attr": "bi",
-      "value": 2
+      "value": 20
     },
     "rewardDesc": "开局笔力 +2；成长为“采风”或“游观”",
     "growth": {
@@ -676,7 +676,7 @@ window.GAME_ALBUM = [
             "type": "inspiration",
             "result": "win",
             "minLevel": 3,
-            "value": 1,
+            "value": 10,
             "name": "触景生情",
             "desc": "获胜灵感 +1"
           },
@@ -699,14 +699,14 @@ window.GAME_ALBUM = [
           {
             "trigger": "start",
             "type": "inspirationMax",
-            "value": 2,
+            "value": 20,
             "name": "胸藏万景",
             "desc": "灵感上限 +2"
           },
           {
             "trigger": "event",
             "type": "insight",
-            "value": 1,
+            "value": 10,
             "minLevel": 2,
             "name": "见闻成思",
             "desc": "触发奇遇，心得 +1"
@@ -723,7 +723,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "phase",
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "minLevel": 4,
             "name": "入景换境",
             "desc": "进入新阶段，灵感 +1"
@@ -742,7 +742,7 @@ window.GAME_ALBUM = [
     },
     "reward": {
       "type": "inspiration",
-      "value": 2
+      "value": 20
     },
     "rewardDesc": "开局灵感 +2；成长为“磨砺”或“专一”",
     "growth": {
@@ -759,7 +759,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "start",
             "type": "inspirationMax",
-            "value": 2,
+            "value": 20,
             "name": "铁杵心",
             "desc": "灵感上限 +2"
           },
@@ -767,7 +767,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "insight",
             "result": "lose",
-            "value": 1,
+            "value": 10,
             "minLevel": 2,
             "name": "磨中有悟",
             "desc": "失败心得 +1"
@@ -785,7 +785,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "inspiration",
             "result": "draw",
-            "value": 1,
+            "value": 10,
             "minLevel": 4,
             "name": "再磨一寸",
             "desc": "平局灵感 +1"
@@ -826,7 +826,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "phase",
             "type": "insight",
-            "value": 2,
+            "value": 20,
             "minLevel": 4,
             "name": "十年一日",
             "desc": "进入新阶段心得 +2"
@@ -847,7 +847,7 @@ window.GAME_ALBUM = [
     "reward": {
       "type": "attr",
       "attr": "ci",
-      "value": 2
+      "value": 20
     },
     "rewardDesc": "开局词力 +2；成长为“推敲”或“回环”",
     "growth": {
@@ -873,7 +873,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "pct",
             "style": "ci",
-            "value": 0.03,
+            "value": 300,
             "minLevel": 2,
             "name": "字字推敲",
             "desc": "以词出战，作品 +3%"
@@ -908,7 +908,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "start",
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "name": "余韵",
             "desc": "开局灵感 +1"
           },
@@ -917,7 +917,7 @@ window.GAME_ALBUM = [
             "type": "inspiration",
             "result": "draw",
             "style": "ci",
-            "value": 1,
+            "value": 10,
             "minLevel": 2,
             "name": "回环不尽",
             "desc": "词体平局灵感 +1"
@@ -927,7 +927,7 @@ window.GAME_ALBUM = [
             "type": "insight",
             "result": "win",
             "style": "ci",
-            "value": 1,
+            "value": 10,
             "minLevel": 3,
             "name": "慢工成悟",
             "desc": "词体获胜心得 +1"
@@ -956,7 +956,7 @@ window.GAME_ALBUM = [
     "reward": {
       "type": "attr",
       "attr": "lian",
-      "value": 2
+      "value": 20
     },
     "rewardDesc": "开局联力 +2；成长为“对举”或“唱和”",
     "growth": {
@@ -982,7 +982,7 @@ window.GAME_ALBUM = [
             "trigger": "score",
             "type": "pct",
             "style": "lian",
-            "value": 0.04,
+            "value": 400,
             "minLevel": 2,
             "name": "工对",
             "desc": "以联出战，作品 +4%"
@@ -992,7 +992,7 @@ window.GAME_ALBUM = [
             "type": "inspiration",
             "result": "draw",
             "style": "lian",
-            "value": 1,
+            "value": 10,
             "minLevel": 3,
             "name": "对成则和",
             "desc": "联体平局灵感 +1"
@@ -1017,7 +1017,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "start",
             "type": "insight",
-            "value": 1,
+            "value": 10,
             "name": "应对如流",
             "desc": "开局心得 +1"
           },
@@ -1026,7 +1026,7 @@ window.GAME_ALBUM = [
             "type": "insight",
             "result": "win",
             "style": "lian",
-            "value": 1,
+            "value": 10,
             "minLevel": 2,
             "name": "相与唱和",
             "desc": "联体获胜心得 +1"
@@ -1063,7 +1063,7 @@ window.GAME_ALBUM = [
     },
     "reward": {
       "type": "inspiration",
-      "value": 2
+      "value": 20
     },
     "rewardDesc": "开局灵感 +2；成长为“传抄”或“刊行”",
     "growth": {
@@ -1096,7 +1096,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "event",
             "type": "inspiration",
-            "value": 1,
+            "value": 10,
             "minLevel": 3,
             "name": "传抄入市",
             "desc": "奇遇后灵感 +1"
@@ -1121,7 +1121,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "start",
             "type": "inspirationMax",
-            "value": 3,
+            "value": 30,
             "name": "洛阳纸张",
             "desc": "灵感上限 +3"
           },
@@ -1129,7 +1129,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "inspiration",
             "result": "win",
-            "value": 1,
+            "value": 10,
             "minLevel": 2,
             "name": "刊行有酬",
             "desc": "获胜灵感 +1"
@@ -1138,7 +1138,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "insight",
             "result": "draw",
-            "value": 1,
+            "value": 10,
             "minLevel": 3,
             "name": "读者回响",
             "desc": "平局心得 +1"
@@ -1166,7 +1166,7 @@ window.GAME_ALBUM = [
     "reward": {
       "type": "attr",
       "attr": "xue",
-      "value": 2
+      "value": 20
     },
     "rewardDesc": "开局学力 +2；成长为“深读”或“广涉”",
     "growth": {
@@ -1183,7 +1183,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "start",
             "type": "insight",
-            "value": 2,
+            "value": 20,
             "name": "韦编旧痕",
             "desc": "开局心得 +2"
           },
@@ -1191,7 +1191,7 @@ window.GAME_ALBUM = [
             "trigger": "quiz",
             "type": "inspiration",
             "result": "win",
-            "value": 1,
+            "value": 10,
             "minLevel": 2,
             "name": "读书得气",
             "desc": "答对题目灵感 +1"
@@ -1200,7 +1200,7 @@ window.GAME_ALBUM = [
             "trigger": "battle",
             "type": "insight",
             "result": "draw",
-            "value": 1,
+            "value": 10,
             "minLevel": 3,
             "name": "读而能思",
             "desc": "平局心得 +1"
@@ -1240,7 +1240,7 @@ window.GAME_ALBUM = [
           {
             "trigger": "event",
             "type": "insight",
-            "value": 1,
+            "value": 10,
             "minLevel": 3,
             "name": "触类旁通",
             "desc": "奇遇后心得 +1"

@@ -14,15 +14,15 @@ window.GAME_SCHOOLS = [
     "schoolMechanics": {
       "type": "bowen",
       "knowledgeThreshold": 2,
-      "knowledgeInsight": 4,
+      "knowledgeInsight": 40,
       "knowledgePityTurn": 3,
       "studySlotsPlus": 1,
-      "differentStyleInsight": 2,
+      "differentStyleInsight": 20,
       "talentConversion": {
         "label": "穷览求心",
         "resource": "insight",
-        "cost": 8,
-        "chance": 0.45,
+        "cost": 80,
+        "chance": 4500,
         "maxAttempts": 2,
         "perPhase": 1,
         "desc": "消耗心得，融会所学以叩问文心。"
@@ -30,7 +30,7 @@ window.GAME_SCHOOLS = [
     },
     "motto": "博观约取，厚积薄发",
     "flavor": "你自幼好读，藏书万卷皆在腹中。科场之上，你能引百家之言以佐己论，举一隅而三隅反——胸中学问，便是你挥之不尽的底气。",
-    "desc": "开局学力 +3，初始文心「博览」。研修位 +1；可消耗心得发动「穷览求心」，概率获得文心三选一。"
+    "desc": "开局学力 +30，初始文心「博览」。研修位 +1；可消耗心得发动「穷览求心」，概率获得文心三选一。"
   },
   {
     "id": "qishi",
@@ -43,10 +43,10 @@ window.GAME_SCHOOLS = [
     ],
     "schoolMechanics": {
       "type": "qishi",
-      "inspirationBonusRate": 0.2,
-      "upgradeCostRate": 0.8,
-      "talentDropRate": 0.25,
-      "talentDropCap": 0.35,
+      "inspirationBonusRate": 2000,
+      "upgradeCostRate": 8000,
+      "talentDropRate": 2500,
+      "talentDropCap": 3500,
       "talentDropPityWin": 6,
       "strategyChargePlus": 1,
       "strategyMaxPlus": 1,
@@ -55,7 +55,7 @@ window.GAME_SCHOOLS = [
         "label": "推演问心",
         "resource": "strategy",
         "cost": 2,
-        "chance": 0.4,
+        "chance": 4000,
         "maxAttempts": 2,
         "perPhase": 1,
         "desc": "消耗构思，推演万象以觅得灵机。"
@@ -63,7 +63,7 @@ window.GAME_SCHOOLS = [
     },
     "motto": "灵台澄澈，万象皆明",
     "flavor": "你生性爱钻牛角尖，常于无人处反复推敲。奇思往往不循常理，却能于困局中另辟蹊径——想人之所未想，故能成人之所不能成。",
-    "desc": "开局思力 +3，初始文心「推敲」。每阶段构思与上限各 +1；可消耗构思发动「推演问心」，概率获得文心三选一。"
+    "desc": "开局思力 +30，初始文心「推敲」。每阶段构思与上限各 +1；可消耗构思发动「推演问心」，概率获得文心三选一。"
   },
   {
     "id": "cizong_bi",
@@ -87,7 +87,7 @@ window.GAME_SCHOOLS = [
         "label": "焚稿悟心",
         "resource": "manuscript",
         "cost": 3,
-        "chance": 0.5,
+        "chance": 5000,
         "maxAttempts": 2,
         "perPhase": 1,
         "desc": "消耗稿页，焚稿反思以淬炼文心。"
@@ -95,7 +95,7 @@ window.GAME_SCHOOLS = [
     },
     "motto": "笔落惊风雨，文成绣山川",
     "flavor": "你惜墨如金，落笔却字字千金。洋洋千言一挥而就，旁人苦吟终日的篇章，于你不过是砚池里一次起兴。文思如潮涌，胸中自有丘壑。",
-    "desc": "开局笔力 +3，初始文心「入木三分」。稿匣上限 +1；可消耗稿页发动「焚稿悟心」，概率获得文心三选一。"
+    "desc": "开局笔力 +30，初始文心「入木三分」。稿匣上限 +1；可消耗稿页发动「焚稿悟心」，概率获得文心三选一。"
   }
 ];
 window.GAME_GRADES = {
@@ -111,7 +111,7 @@ window.GAME_GRADES = {
         "ci": 12,
         "lian": 12,
         "soft": 51,
-        "softRate": 0.5
+        "softRate": 5000
       },
       "bonuses": [
         {
@@ -169,7 +169,7 @@ window.GAME_GRADES = {
         "xue": 10,
         "si": 10,
         "soft": 39,
-        "softRate": 0.5
+        "softRate": 5000
       },
       "bonuses": [
         {
@@ -446,7 +446,8 @@ window.GAME_GRADES = {
     "qiyu": "奇遇最高：踏遍青山，奇缘满袖",
     "liupai": "流派最高：一门深入，卓然成家",
     "yuanman": "圆满最高：从容赴考，功行圆满"
-  }
+  },
+  "numericVersion": 2
 };
 window.GAME_NARRATIVE = {
   "tutorial": {

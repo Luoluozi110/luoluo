@@ -35,7 +35,7 @@ export const MASTERY_LEVELS = 5;
 // 玩家都能在结算后带着一次可见、可用的跨局成长进入下一局。
 export const MASTERY_THRESHOLDS = [0, 12, 100, 200, 340];   // 累计需 xp
 export const MASTERY_LEVEL_NAMES = ['初学乍练', '渐入佳境', '通达晓畅', '炉火纯青', '登峰造极'];
-export const MASTERY_ATTR_PER_LEVEL = 2;                    // 每级主属性额外 +2（Lv5 累计 +9）
+export const MASTERY_ATTR_PER_LEVEL = 20;                   // 每级主属性额外 +20（Lv5 累计 +90）
 export const MASTERY_XP_FINISH = 12;                        // 完成一局（结算）基础 xp，胜负同等
 export const MASTERY_XP_CLEAR = 20;                         // 该局殿试通关额外 xp
 export const MASTERY_XP_WENZONG = 8;                        // 该局评为文宗（tier≥4）额外 xp
@@ -165,7 +165,7 @@ const MASTERY_MECH = {
     // knowledgeThreshold: 2→1 于 Lv4 开始（阈值不能低于 1，Lv4/5 共享）
     perLv: { 4: { knowledgeThreshold: 1 }, 5: { knowledgeThreshold: 1 } },
     // 高造诣增加知识转化出的心得，不再直接叠加学力。
-    apex: { 5: { knowledgeInsightBonus: 1 } }
+    apex: { 5: { knowledgeInsightBonus: 10 } }
   },
   qishi: {
     // 新版奇士的主轴是构思；灵感放大只保留轻量成长。

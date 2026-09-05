@@ -91,6 +91,146 @@
 
   /* ---------------- 基础工具 ---------------- */
   const isObj = value => !!value && typeof value === "object" && !Array.isArray(value);
+  const NUMERIC_VERSION = 2;
+  const BP = 10000;
+  const EFFECT_RATE_KEYS = new Set([
+    'cap', 'chance', 'fraction', 'mult', 'penalty', 'ratio', 'retention',
+    'inspirationRatioMin', 'lowMult', 'highMult', 'minPct', 'maxPct', 'highPct',
+    'scorePct', 'nextBattlePct', 'perStepValue', 'fullValue', 'highValue', 'lowValue',
+    'themeFlat', 'synergyPct', 'convertPct', 'previousWinBonus', 'previousNonWinBonus',
+    'fillRatio', 'thresholdRatio', 'upgradeCostRate', 'inspirationBonusRate', 'attrRatio',
+    'midRate', 'highRate'
+  ]);
+  const EFFECT_RATE_TYPES = new Set([
+    'attr_pct', 'battle_history_pct', 'comeback', 'copy_affinity', 'crit', 'dice_commitment',
+    'dice_pattern', 'dice_transform', 'extra_dice_chain', 'extra_dice_pct', 'lucky_six',
+    'manuscript_pct', 'next_battle_pct', 'palace_pct', 'restraint_pct', 'seal_signature',
+    'streak_mult', 'streak_pct', 'style_pct', 'style_switch_pct', 'syn_pct', 'theme_pct',
+    'weakness_reward'
+  ]);
+  const NPC_RATE_KEYS = new Set([
+    'bias', 'bottom', 'cap', 'floorPct', 'intentBias', 'minWeaknessRetention', 'pct',
+    'playerBonus', 'retention', 'weaknessDampen', 'extraShutdown'
+  ]);
+
+  /**
+   * 编辑器保留易读的小数百分比；导出工程时统一写回 bp。属性、灵感、心得、
+   * 成稿进度保持 v2 的整数单位，故不会在内容编辑时出现隐藏的小数。
+   */
+  function numericProjectTransform(source, toStorage) {
+    const project = JSON.parse(JSON.stringify(source || {}));
+    const ratio = value => {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return value;
+      return toStorage ? Math.round(n * BP) : n / BP;
+    };
+    const visitEffect = effect => {
+      if (!isObj(effect)) return;
+      const type = String(effect.type || '');
+      for (const [key, value] of Object.entries(effect)) {
+        if (!Number.isFinite(Number(value))) continue;
+        if (EFFECT_RATE_KEYS.has(key) || (key === 'value' && EFFECT_RATE_TYPES.has(type))) effect[key] = ratio(value);
+        else if (type === 'sky_strategy' && key === 'value' && effect.key === 'battle_attack_pct') effect[key] = ratio(value);
+      }
+      if (isObj(effect.when) && Number.isFinite(Number(effect.when.inspirationRatioMin))) effect.when.inspirationRatioMin = ratio(effect.when.inspirationRatioMin);
+      for (const tier of (effect.tiers || [])) if (isObj(tier) && Number.isFinite(Number(tier.value))) tier.value = ratio(tier.value);
+    };
+    const walkEffects = (value, seen = new WeakSet()) => {
+      if (Array.isArray(value)) { value.forEach(item => walkEffects(item, seen)); return; }
+      if (!isObj(value) || seen.has(value)) return;
+      seen.add(value);
+      if (typeof value.type === 'string') visitEffect(value);
+      Object.values(value).forEach(child => walkEffects(child, seen));
+    };
+    walkEffects(project.talents);
+    walkEffects(project['talent-upgrade']);
+    walkEffects(project['sidequest-talents']);
+    walkEffects(project.synergies);
+    walkEffects(project.sky);
+    walkEffects(project.album);
+    walkEffects(project.events);
+
+    const affinity = project.affinity;
+    if (isObj(affinity)) {
+      Object.keys(affinity.matrix || {}).forEach(key => { affinity.matrix[key] = ratio(affinity.matrix[key]); });
+      ['homeMannerBonus', 'homeAdaptiveBonus', 'zeitgeistThemeBonus', 'zeitgeistMannerBonus', 'momentumPer'].forEach(key => {
+        if (Number.isFinite(Number(affinity[key]))) affinity[key] = ratio(affinity[key]);
+      });
+      ['minPct', 'maxPct'].forEach(key => {
+        if (isObj(affinity.experimentalManner) && Number.isFinite(Number(affinity.experimentalManner[key]))) affinity.experimentalManner[key] = ratio(affinity.experimentalManner[key]);
+      });
+    }
+    for (const school of (project.schools || [])) {
+      const mechanic = school && school.schoolMechanics;
+      if (!isObj(mechanic)) continue;
+      ['inspirationBonusRate', 'upgradeCostRate', 'talentDropRate', 'talentDropCap'].forEach(key => {
+        if (Number.isFinite(Number(mechanic[key]))) mechanic[key] = ratio(mechanic[key]);
+      });
+      if (isObj(mechanic.talentConversion) && Number.isFinite(Number(mechanic.talentConversion.chance))) mechanic.talentConversion.chance = ratio(mechanic.talentConversion.chance);
+    }
+    const walkNpc = (value, seen = new WeakSet()) => {
+      if (Array.isArray(value)) { value.forEach(item => walkNpc(item, seen)); return; }
+      if (!isObj(value) || seen.has(value)) return;
+      seen.add(value);
+      Object.entries(value).forEach(([key, child]) => {
+        if (NPC_RATE_KEYS.has(key) && Number.isFinite(Number(child))) value[key] = ratio(child);
+        else if (key === 'threshold' && Number.isFinite(Number(child)) && Math.abs(Number(child)) <= BP) value[key] = ratio(child);
+        else walkNpc(child, seen);
+      });
+    };
+    walkNpc(project.npcs); walkNpc(project['sidequest-npcs']); walkNpc(project['npc-mechanics']);
+    const budget = project['npc-mechanics'] && project['npc-mechanics'].budget;
+    if (isObj(budget)) for (const key of ['signatureMain', 'signatureWeakRatio', 'weaknessShutdown', 'playerBonus', 'intentBottom']) {
+      const group = budget[key];
+      if (!isObj(group)) continue;
+      Object.keys(group).forEach(tier => { group[tier] = Array.isArray(group[tier]) ? group[tier].map(ratio) : ratio(group[tier]); });
+    }
+    const walkSidequestRates = (value, parentKey = '', seen = new WeakSet()) => {
+      if (Array.isArray(value)) { value.forEach(item => walkSidequestRates(item, parentKey, seen)); return; }
+      if (!isObj(value) || seen.has(value)) return;
+      seen.add(value);
+      Object.entries(value).forEach(([key, child]) => {
+        if ((['nextBattlePct', 'scorePct', 'chance', 'ratio', 'retention', 'inspirationRatioMin'].includes(key) || parentKey === 'scorePctByMerit') && Number.isFinite(Number(child))) value[key] = ratio(child);
+        else walkSidequestRates(child, key, seen);
+      });
+    };
+    walkSidequestRates(project.sidequests);
+    if (isObj(project.grades) && Array.isArray(project.grades.dimensions)) {
+      project.grades.numericVersion = NUMERIC_VERSION;
+      project.grades.dimensions.forEach(dim => {
+        if (isObj(dim && dim.coeff) && Number.isFinite(Number(dim.coeff.softRate))) dim.coeff.softRate = ratio(dim.coeff.softRate);
+      });
+    }
+    project.numericVersion = NUMERIC_VERSION;
+    return project;
+  }
+  function numericProjectToEditor(project) {
+    return Number(project && project.numericVersion) >= NUMERIC_VERSION ? numericProjectTransform(project, false) : JSON.parse(JSON.stringify(project || {}));
+  }
+  function numericProjectToStorage(project) { return numericProjectTransform(project, true); }
+
+  function normalizeEditorSeeds() {
+    const fields = {
+      questions: 'GAME_QUESTIONS', events: 'GAME_EVENTS', talents: 'GAME_TALENTS', 'talent-upgrade': 'GAME_TALENT_UPGRADE',
+      npcs: 'GAME_NPCS', affinity: 'GAME_AFFINITY', synergies: 'GAME_SYNERGIES', board: 'GAME_BOARD', sky: 'GAME_SKY',
+      album: 'GAME_ALBUM', schools: 'GAME_SCHOOLS', grades: 'GAME_GRADES', narrative: 'GAME_NARRATIVE',
+      sidequests: 'GAME_SIDEQUESTS', 'sidequest-npcs': 'GAME_SIDEQUEST_NPCS'
+    };
+    const raw = { numericVersion: NUMERIC_VERSION };
+    Object.entries(fields).forEach(([field, globalName]) => { if (global[globalName] !== undefined) raw[field] = global[globalName]; });
+    if (global.GAME_SIDEQUEST_TALENTS || global.GAME_SIDEQUEST_TALENT_UPGRADE || global.GAME_SIDEQUEST_TALENT_OFFERS) {
+      raw['sidequest-talents'] = {
+        talents: global.GAME_SIDEQUEST_TALENTS || [], upgrades: global.GAME_SIDEQUEST_TALENT_UPGRADE || {}, offers: global.GAME_SIDEQUEST_TALENT_OFFERS || {}
+      };
+    }
+    const display = numericProjectToEditor(raw);
+    Object.entries(fields).forEach(([field, globalName]) => { if (display[field] !== undefined) global[globalName] = display[field]; });
+    if (display['sidequest-talents']) {
+      global.GAME_SIDEQUEST_TALENTS = display['sidequest-talents'].talents || [];
+      global.GAME_SIDEQUEST_TALENT_UPGRADE = display['sidequest-talents'].upgrades || {};
+      global.GAME_SIDEQUEST_TALENT_OFFERS = display['sidequest-talents'].offers || {};
+    }
+  }
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, m =>
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
@@ -873,6 +1013,7 @@ async function fetchCloudText(s, rawUrl) {
     }
     const project = {
       _type: "feihua-content",
+      numericVersion: NUMERIC_VERSION,
       // 拉取以云端为唯一来源；不得让浏览器里更高的旧版本游标篡改云端版本。
       _version: exactVersion ? Math.max(CONTENT_VERSION, Number(version) || CONTENT_VERSION) : effectiveProjectVersion(version),
       questions: global.QB ? global.QB.exportObj() : [],
@@ -903,9 +1044,10 @@ async function fetchCloudText(s, rawUrl) {
     }
     if (!global.FeihuaConfigContract) throw new Error("配置契约校验器未加载");
     migrateCloudProject(project);
-    global.FeihuaConfigContract.assertProject(project);
+    const storageProject = numericProjectToStorage(project);
+    global.FeihuaConfigContract.assertProject(storageProject);
     // 返回快照而不是模块内部 state 的引用，防止异步发布期间后续编辑改写本次内容。
-    return JSON.parse(JSON.stringify(project));
+    return JSON.parse(JSON.stringify(storageProject));
   }
 
   function exportProject() {
@@ -1109,7 +1251,7 @@ async function fetchCloudText(s, rawUrl) {
     let mutationStarted = false;
     try {
       mutationStarted = true;
-      const routed = routeImport(incoming, true);
+      const routed = routeImport(numericProjectToEditor(incoming), true);
       if (!routed) throw new Error("云端数据未被任何已初始化的编辑器接收");
       const applied = buildProject(incoming._version, { exactVersion: true });
       const diff = projectDiffKeys(incoming, applied);
@@ -1122,7 +1264,7 @@ async function fetchCloudText(s, rawUrl) {
     } catch (error) {
       if (mutationStarted) {
         try {
-          routeImport(before, true);
+          routeImport(numericProjectToEditor(before), true);
           const restored = buildProject(before._version, { exactVersion: true });
           const restoreDiff = projectDiffKeys(before, restored);
           if (restoreDiff.length) throw new Error("回滚后仍不一致：" + restoreDiff.join("、"));
@@ -1142,7 +1284,7 @@ async function fetchCloudText(s, rawUrl) {
       catch (e) { alert("JSON 解析失败：" + e.message); return; }
       const mode = confirm(
         "导入模式：\n\n点击「确定」= 替换当前数据；\n点击「取消」= 按 ID 合并（已存在则覆盖，不存在则追加）。");
-      routeImport(data, mode);
+      routeImport(numericProjectToEditor(data), mode);
       closeOverlay("mgmtOverlay");
     };
     reader.readAsText(file, "utf-8");
@@ -1291,6 +1433,10 @@ async function fetchCloudText(s, rawUrl) {
     updateWorkspaceSummary();
   }
 
+  // 所有种子先转为编辑态，再由 buildProject 写回配置态；模块初始化之后
+  // 便不再需要了解 bp 的存在。
+  normalizeEditorSeeds();
+
   global.Common = {
     store, load, esc, toast, openOverlay, closeOverlay,
     init, switchTab, setStatus, showManagement, buildProject, applyCloudProject, projectDiffKeys, projectFingerprint,
@@ -1300,6 +1446,7 @@ async function fetchCloudText(s, rawUrl) {
     getWorkspaceHealth, reviewWorkspace, refreshWorkspaceUI, openCommandPalette,
     contentVersion: CONTENT_VERSION, localDataVersion, hasStaleStorage, markCurrentDataVersion,
     ATTR, ATTR_KEYS, CATEGORY, RARITY, QUALITY, QUALITY_MAX, QUALITY_UPCOST, KIND, TALENTS, TALENT_IDS,
-    effectBrief, effectDetail
+    effectBrief, effectDetail,
+    numericProjectToEditor, numericProjectToStorage
   };
 })(window);

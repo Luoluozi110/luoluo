@@ -390,7 +390,7 @@ export function expectedScore(attrs, style, coef) {
 
 /** NPC 自动选文体：取期望分最高者（联力 <8 同样受限） */
 export function pickNpcStyle(attrs, lianUnlocked, coef) {
-  const cands = CREATIVE_KEYS.filter(s => s !== 'lian' || lianUnlocked || (attrs.lian || 0) >= 8);
+  const cands = CREATIVE_KEYS.filter(s => s !== 'lian' || lianUnlocked || (attrs.lian || 0) >= 80);
   let best = cands[0], bestV = -1;
   for (const s of cands) {
     const v = expectedScore(attrs, s, coef);
@@ -475,7 +475,7 @@ export function pickIntentionStyle(npcAttrs, tpl, biasMult) {
   const bias = num(biasMult, 1);
   const bottom = num(tpl && tpl.bottom, 0.78);
   const biasStyle = tpl && tpl.signatureBias && tpl.signatureBias.style;
-  const cands = CREATIVE_KEYS.filter(s => s !== 'lian' || (npcAttrs.lian || 0) >= 8);
+  const cands = CREATIVE_KEYS.filter(s => s !== 'lian' || (npcAttrs.lian || 0) >= 80);
   const scores = {};
   for (const s of cands) scores[s] = expectedScore(npcAttrs, s);
   const best = cands.reduce((a, b) => (scores[b] > scores[a] ? b : a), cands[0]);
@@ -961,7 +961,9 @@ export function sixDimScore(s, cfgRaw) {
   const e = Object.assign({ total: 0, rare: 0, legend: 0, talents: 0, items: 0 }, s.events);
   const f = Object.assign({ reached: false, inspirationLeft: 0, turns: 0, finalWin: false, palaceSweep: false, manuscriptBonus: 0, manuscriptVolumes: 0 }, s.finish);
   if (f.finalWin == null) f.finalWin = !!f.palaceSweep;
-  const n = (k) => Math.max(0, Number(a[k]) || 0);
+  // 对局属性采用 v2 的十倍整数，但终局评分和评级保持原量级。
+  const attributeScale = Number(s && s.numericVersion) >= 2 ? 10 : 1;
+  const n = (k) => Math.max(0, Number(a[k]) || 0) / attributeScale;
 
   /* 维度 1 文采分 */
   const cre = [n('shi'), n('ci'), n('lian')];
@@ -1057,10 +1059,11 @@ export function sixDimScore(s, cfgRaw) {
   const y = D.yuanman;
   const p6 = [];
   if (f.reached) p6.push({ label: '抵达终点·金殿对策', value: y.reach });
-  if (f.inspirationLeft) p6.push({ label: `剩余灵感 ${f.inspirationLeft} × ${y.perInspiration}`, value: f.inspirationLeft * y.perInspiration });
+  const finalInspiration = Math.max(0, Number(f.inspirationLeft) || 0) / (Number(s && s.numericVersion) >= 2 ? 10 : 1);
+  if (finalInspiration) p6.push({ label: `剩余灵感 ${finalInspiration} × ${y.perInspiration}`, value: finalInspiration * y.perInspiration });
   if (f.reached && f.turns > 0 && f.turns <= y.swift.maxTurns)
     p6.push({ label: `${y.swift.label}：${f.turns} 回合抵达 ≤${y.swift.maxTurns}`, value: y.swift.bonus });
-  else if (f.reached && f.turns > 0 && f.turns <= y.steady.maxTurns && f.inspirationLeft >= y.steady.minInspiration)
+  else if (f.reached && f.turns > 0 && f.turns <= y.steady.maxTurns && finalInspiration >= y.steady.minInspiration)
     p6.push({ label: `${y.steady.label}：≤${y.steady.maxTurns} 回合且灵感 ≥${y.steady.minInspiration}`, value: y.steady.bonus });
   if (f.finalWin || f.palaceSweep) p6.push({ label: '金榜题名：殿试夺魁', value: y.finalWin ?? y.palaceSweep });
   if (!p6.length) p6.push({ label: '中道封笔，圆满无从谈起', value: 0 });

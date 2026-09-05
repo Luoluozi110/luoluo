@@ -4,6 +4,7 @@
  */
 
 import './config-contract.js';
+import { normalizeNumericRates } from './numeric.js';
 
 const CONTRACT = globalThis.FeihuaConfigContract;
 
@@ -125,6 +126,13 @@ export function applyProjectOverride(baseCfg, project, options = {}) {
   project = normalizeNpcIds(cloneProjectNpcData(project));
   // 引擎内部与测试可直接传配置补丁（无工程包装层）；外部编辑器发布仍由 assertProject 默认严格校验 _type。
   CONTRACT.assertProject(project, { requireComplete: false, requireType: !!options.requireType });
+  const baseNumericVersion = Number(baseCfg && baseCfg.numericVersion) || Number(baseCfg && baseCfg.attrs && baseCfg.attrs.numericVersion) || 1;
+  const projectNumericVersion = Number(project.numericVersion) || 1;
+  if (baseNumericVersion >= 2 && projectNumericVersion < 2) {
+    throw new Error('云端工程仍是数值 v1，不能覆盖本地数值 v2 配置。请先用 v2 编辑器重新导出。');
+  }
+  // 覆盖片段先各自归一化，再合并；避免给已归一化的本地层再次除以 10000。
+  normalizeNumericRates(project);
   const next = Object.assign({}, baseCfg);
   for (const key of ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'npc-mechanics', 'sky', 'album', 'schools', 'grades', 'narrative', 'sidequests', 'sidequest-npcs', 'sidequest-talents']) {
     if (project[key] !== undefined && project[key] !== null) next[key] = project[key];
@@ -152,6 +160,7 @@ export function applyProjectOverride(baseCfg, project, options = {}) {
     next.narrative = { ...next.narrative, endScroll: baseCfg.narrative.endScroll };
   }
   CONTRACT.assertConfig(next);
+  if (baseCfg.__numericRatesNormalized) Object.defineProperty(next, '__numericRatesNormalized', { value: true, configurable: true });
   return normalizeConfig(next);
 }
 
@@ -161,6 +170,8 @@ export const validateProject = CONTRACT.validateProject;
 /** 归一化：补齐派生结构，容忍内容方省略可选字段 */
 export function normalizeConfig(cfg) {
   normalizeNpcIds(cfg);
+  cfg.numericVersion = Number(cfg.numericVersion) || Number(cfg.attrs && cfg.attrs.numericVersion) || 1;
+  normalizeNumericRates(cfg);
   const board = cfg.board;
   board.layout = board.layout || 'single_ring';
   board.route = Array.isArray(board.route) && board.route.length

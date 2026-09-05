@@ -11,7 +11,7 @@
   ];
   const PROJECT_KEYS = [
     'questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity',
-    'synergies', 'board', 'sky', 'album', 'schools', 'grades', 'narrative', 'sidequests', 'sidequest-npcs', 'sidequest-talents'
+    'synergies', 'board', 'sky', 'album', 'schools', 'grades', 'narrative', 'sidequests', 'sidequest-npcs', 'sidequest-talents', 'numericVersion'
   ];
 const ATTR_KEYS = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
 const INK_AXES = [['逐名', '求真'], ['守法', '出新'], ['与人', '独行'], ['惜身', '燃笔']];
@@ -489,7 +489,7 @@ const INK_TAGS = new Set(INK_AXES.flat());
     if ('narrative' in cfg && !isObj(cfg.narrative)) add('narrative', '必须是对象');
     if ('npc-mechanics' in cfg && !isObj(cfg['npc-mechanics'])) add('npc-mechanics', '必须是对象');
 
-    const known = new Set([...REQUIRED_CONFIG_KEYS, ...PROJECT_KEYS, 'album', 'synergies', 'npc-mechanics', 'sidequests', 'sidequest-npcs', 'sidequest-talents']);
+    const known = new Set([...REQUIRED_CONFIG_KEYS, ...PROJECT_KEYS, 'album', 'synergies', 'npc-mechanics', 'sidequests', 'sidequest-npcs', 'sidequest-talents', 'numericVersion']);
     if (!partial) for (const key of Object.keys(cfg)) if (!known.has(key)) warn(key, '未知配置块，将按原样保留', 'unknown_key');
     return { ok: errors.length === 0, errors, warnings };
   }

@@ -340,9 +340,9 @@ export class Modals {
         <div class="opt-list"><button class="opt" data-talent-conversion ${conversion.available ? '' : 'disabled'}><b>${esc(conversion.rule.label || '问心转化')}</b><span>${conversion.available ? `投入 ${conversion.resourceName} ${conversion.cost}，叩问文心` : esc(conversion.reason)}</span></button></div>` : '';
       box.innerHTML = `<div class="mtitle"><h2>三功修习</h2><span class="mtag">成长 · 调度 · 沉淀</span></div>
         ${notice ? `<div class="analysis">${esc(notice)}</div>` : ''}
-        <div class="dianggu"><b>心得 ${a.insight}/${fb.insightCap}</b>　构思 ${a.strategy.charges}/${fb.strategyCap}　稿页 ${a.manuscript.pages}/${fb.manuscriptCap}　残页 ${fmt(a.manuscript.fragments)}</div>
+        <div class="dianggu"><b>心得 ${a.insight}/${fb.insightCap}</b>　构思 ${a.strategy.charges}/${fb.strategyCap}　稿页 ${a.manuscript.pages}/${fb.manuscriptCap}　成稿进度 ${fmt(a.manuscript.fragments)}</div>
         <div class="dianggu" style="color:var(--mo-3)">学力管研修：安排属性成长方向，下一阶段生效。思力管章法：储存构思，按条件自动发动。笔力管稿本：积累稿页与残页，用于润色、刊行和定卷。</div>
-        <div class="dianggu" style="color:var(--mo-3)">学力：研修 +${fmt(fb.studyRate)}/场、${fb.studySlots} 个研修位　思力：构思 +${fmt(fb.strategyIncome)}/阶段、余思 ${fmt(fb.strategyRemainder)}　笔力：残页 +${fmt(fb.manuscriptFragmentRate)}/战</div>
+        <div class="dianggu" style="color:var(--mo-3)">学力：研修进度 +${fmt(fb.studyRate)}/场、${fb.studySlots} 个研修位　思力：构思进度 +${fmt(fb.strategyIncome)}/阶段、余量 ${fmt(fb.strategyRemainder)}　笔力：成稿进度 +${fmt(fb.manuscriptFragmentRate)}/战</div>
         <hr class="hr-ink"/><h3>思力·行文章法</h3>
         <div class="dianggu">当前：<b>${esc(currentPlan.name || '未定章法')}</b>。章法满足条件时自动发动，不中断回合；此处选择将在下阶段生效。</div>
         <div class="opt-list">${Object.entries(plans).map(([id, p]) => `<button class="opt" data-strategy-plan="${id}"><b>${a.strategy.nextPlan === id ? '✓ ' : ''}${esc(p.name || id)}</b><span>${esc(p.desc || '')}${a.strategy.plan === id ? ' · 当前生效' : ''}</span></button>`).join('')}</div>
@@ -1256,7 +1256,7 @@ export function talentEffectText(t) {
         : e.pattern === 'total_tiers' ? (e.tiers || []).map(x => `总点 ≥${x.threshold}：+${pct(x.value)}`).join('；')
         : `每枚 ≥${e.highMin || 5} 点骰 +${pct(e.highValue)}；每枚 ≤${e.lowMax || 2} 点骰 ${pct(e.lowValue)}`;
       if (e.reward && Number(e.reward.value) > 0) {
-        const rn = { insight: '心得', fragment: '残页', page: '稿页', inspiration: '灵感' }[e.reward.type] || e.reward.type;
+        const rn = { insight: '心得', fragment: '成稿进度', page: '稿页', inspiration: '灵感' }[e.reward.type] || e.reward.type;
         s += `；触发后 ${rn} +${e.reward.value}${e.reward.perMatch === false ? '（每场一次）' : '（按命中数）'}`;
       }
       return s;

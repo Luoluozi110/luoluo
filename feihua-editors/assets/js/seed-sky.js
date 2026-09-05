@@ -13,7 +13,7 @@ window.GAME_SKY = [
     "effect": {
       "type": "attr_pct",
       "attr": "si",
-      "value": 0.2
+      "value": 2000
     },
     "choices": [
       {
@@ -78,7 +78,7 @@ window.GAME_SKY = [
         "effect": {
           "type": "sky_strategy",
           "key": "battle_attack_pct",
-          "value": 0.08,
+          "value": 800,
           "cost": 1
         }
       },
@@ -89,7 +89,7 @@ window.GAME_SKY = [
         "effect": {
           "type": "sky_strategy",
           "key": "battle_guard",
-          "value": 2
+          "value": 20
         }
       }
     ],
@@ -138,7 +138,7 @@ window.GAME_SKY = [
         "effect": {
           "type": "sky_strategy",
           "key": "ping_fragment",
-          "value": 1
+          "value": 1000
         }
       }
     ],
@@ -153,7 +153,7 @@ window.GAME_SKY = [
     "scope": "all",
     "effect": {
       "type": "next_battle_pct",
-      "value": 0.1
+      "value": 1000
     },
     "icon": "🏆"
   },
@@ -167,7 +167,7 @@ window.GAME_SKY = [
     "effect": {
       "type": "attr_pct",
       "attr": "lian",
-      "value": 0.15
+      "value": 1500
     }
   }
 ];

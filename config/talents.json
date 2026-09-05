@@ -7,7 +7,7 @@
     "effect": {
       "type": "on_win_bonus",
       "style": "shi",
-      "value": 2
+      "value": 20
     },
     "school": "shixian"
   },
@@ -19,7 +19,7 @@
     "effect": {
       "type": "on_win_bonus",
       "style": "ci",
-      "value": 2
+      "value": 20
     },
     "school": "cizong"
   },
@@ -31,7 +31,7 @@
     "effect": {
       "type": "on_win_bonus",
       "style": "lian",
-      "value": 2
+      "value": 20
     },
     "school": "liansheng"
   },
@@ -43,9 +43,9 @@
     "effect": {
       "type": "attr_flat",
       "attrs": {
-        "xue": 3
+        "xue": 30
       },
-      "value": 3
+      "value": 30
     },
     "school": "tongru"
   },
@@ -59,8 +59,8 @@
       "pattern": "low_then_high",
       "lowMax": 2,
       "nextHighMin": 5,
-      "value": 0.1,
-      "conditionalFirstCostDiscount": 2
+      "value": 1000,
+      "conditionalFirstCostDiscount": 20
     },
     "school": "qishi"
   },
@@ -72,7 +72,7 @@
     "effect": {
       "type": "attr_flat",
       "attrs": {
-        "bi": 3
+        "bi": 30
       }
     }
   },
@@ -84,7 +84,7 @@
     "effect": {
       "type": "dice_pattern",
       "pattern": "six",
-      "value": 0.08
+      "value": 800
     }
   },
   {
@@ -95,7 +95,7 @@
     "effect": {
       "type": "attr_flat",
       "attrs": {
-        "si": 3
+        "si": 30
       }
     }
   },
@@ -107,7 +107,7 @@
     "effect": {
       "type": "attr_flat",
       "attrs": {
-        "xue": 3
+        "xue": 30
       }
     }
   },
@@ -115,16 +115,16 @@
     "id": "T010",
     "name": "天马行空",
     "kind": "passive",
-    "text": "笔势腾踔，不拘辙迹。首枚续掷少耗 2 灵感；收笔时三枚灵感骰点数各不相同，作品得分 +15%，并得残页 0.5（每场一次）。",
+    "text": "笔势腾踔，不拘辙迹。首枚续掷少耗 20 灵感；收笔时三枚灵感骰点数各不相同，作品得分 +15%，并得成稿进度 500（每场一次）。",
     "effect": {
       "type": "dice_pattern",
       "pattern": "all_distinct",
       "minDice": 3,
-      "value": 0.15,
-      "firstCostDiscount": 2,
+      "value": 1500,
+      "firstCostDiscount": 20,
       "reward": {
         "type": "fragment",
-        "value": 0.5,
+        "value": 500,
         "perMatch": false
       }
     }
@@ -136,7 +136,7 @@
     "text": "「颂其诗，读其书，不知其人可乎？是以论其世也。」——《孟子·万章下》。深谙题材与风格之配，自动获得对手所选风格的相性加成。",
     "effect": {
       "type": "copy_affinity",
-      "ratio": 0.8
+      "ratio": 8000
     }
   },
   {
@@ -147,7 +147,7 @@
     "effect": {
       "type": "on_win_bonus",
       "style": "shi",
-      "value": 3
+      "value": 30
     }
   },
   {
@@ -158,7 +158,7 @@
     "effect": {
       "type": "on_win_bonus",
       "style": "ci",
-      "value": 3
+      "value": 30
     }
   },
   {
@@ -169,7 +169,7 @@
     "effect": {
       "type": "on_win_bonus",
       "style": "lian",
-      "value": 3
+      "value": 30
     }
   },
   {
@@ -179,8 +179,8 @@
     "text": "「大凡物不得其平则鸣。」——韩愈《送孟东野序》。灵感不高于 14 时，胸中块垒尽发，本场得分 +16%。需先有「哲思派」倾向。",
     "effect": {
       "type": "comeback",
-      "threshold": 14,
-      "value": 0.16
+      "threshold": 140,
+      "value": 1600
     }
   },
   {
@@ -192,13 +192,13 @@
       "type": "dice_pattern",
       "pattern": "ascending",
       "minDice": 2,
-      "perStepValue": 0.05,
+      "perStepValue": 500,
       "fullDice": 3,
-      "fullValue": 0.1,
-      "firstCostDiscount": 1,
+      "fullValue": 1000,
+      "firstCostDiscount": 10,
       "fullReward": {
         "type": "inspiration",
-        "value": 1,
+        "value": 10,
         "perMatch": false
       }
     }
@@ -210,8 +210,8 @@
     "text": "解元、会元、状元连中三元，本朝数百年不过数人。图鉴「连中三元」解锁后可装配：殿试三场得分各 +15%，并于入场时恢复 4 灵感。",
     "effect": {
       "type": "palace_pct",
-      "value": 0.15,
-      "startInspiration": 4
+      "value": 1500,
+      "startInspiration": 40
     },
     "source": "album"
   },
@@ -224,10 +224,10 @@
       "type": "dice_pattern",
       "pattern": "total_multiple",
       "multiple": 7,
-      "value": 0.18,
+      "value": 1800,
       "reward": {
         "type": "insight",
-        "value": 1,
+        "value": 10,
         "perMatch": false
       }
     }
@@ -239,9 +239,9 @@
     "text": "惠洪《冷斋夜话》记黄庭坚论诗：不易其意而造其语，谓之换骨法；窥入其意而形容之，谓之夺胎法。本场窥敌之技，暂借对手招牌之强为我所用——敌愈强，此招愈利。",
     "effect": {
       "type": "borrow_signature",
-      "fraction": 0.3
+      "fraction": 3000
     },
-    "cost": 3
+    "cost": 30
   },
   {
     "id": "TA03",
@@ -252,11 +252,11 @@
       "type": "dice_pattern",
       "pattern": "extremes",
       "highMin": 5,
-      "highValue": 0.14,
+      "highValue": 1400,
       "lowMax": 2,
-      "lowValue": -0.07
+      "lowValue": -700
     },
-    "cost": 4
+    "cost": 40
   },
   {
     "id": "TA04",
@@ -266,9 +266,9 @@
     "effect": {
       "type": "dice_pattern",
       "pattern": "six",
-      "value": 0.14
+      "value": 1400
     },
-    "cost": 3
+    "cost": 30
   },
   {
     "id": "TA05",
@@ -278,11 +278,11 @@
     "effect": {
       "type": "extra_dice_chain",
       "compare": "not_lower",
-      "value": 0.14,
-      "cost": 2,
-      "refund": 1
+      "value": 1400,
+      "cost": 20,
+      "refund": 10
     },
-    "cost": 2
+    "cost": 20
   },
   {
     "id": "TA06",
@@ -295,25 +295,25 @@
       "tiers": [
         {
           "threshold": 16,
-          "value": 0.3,
+          "value": 3000,
           "reward": {
             "type": "inspiration",
-            "value": 3,
+            "value": 30,
             "perMatch": false
           }
         },
         {
           "threshold": 12,
-          "value": 0.16,
+          "value": 1600,
           "reward": {
             "type": "inspiration",
-            "value": 3,
+            "value": 30,
             "perMatch": false
           }
         }
       ]
     },
-    "cost": 3
+    "cost": 30
   },
   {
     "id": "TA07",
@@ -326,7 +326,7 @@
       "maxPip": 2,
       "target": 6
     },
-    "cost": 3
+    "cost": 30
   },
   {
     "id": "TA08",
@@ -335,12 +335,12 @@
     "text": "胸中先有丘壑，落笔方能从容。发动后于回合掷移动骰前指定 1—6 格落点；本局每次再用，所耗灵感递增，谋定之后不可反悔。",
     "effect": {
       "type": "planned_dice",
-      "baseCost": 4,
-      "costStep": 2,
+      "baseCost": 40,
+      "costStep": 20,
       "maxValue": 6,
-      "cost": 4
+      "cost": 40
     },
-    "cost": 4
+    "cost": 40
   },
   {
     "id": "T017",
@@ -349,7 +349,7 @@
     "text": "孟郊《登科后》：「春风得意马蹄疾，一日看尽长安花。」少年得志，意气风发——每场论战取胜，灵感 +2。",
     "effect": {
       "type": "insp_on_win",
-      "value": 2
+      "value": 20
     }
   },
   {
@@ -359,7 +359,7 @@
     "text": "王羲之《兰亭集序》载：引以为流觞曲水，列坐其次。雅集唱和，从容不迫——与对手平分秋色时，出战文体额外 +3。",
     "effect": {
       "type": "draw_bonus",
-      "value": 3
+      "value": 30
     }
   },
   {
@@ -369,9 +369,9 @@
     "text": "《晋书·左思传》：洛阳为之纸贵。一篇既出，士林争传，声名回响不断——灵感低于上限 50% 时，每回合恢复 1；每获得一枚新文心再恢复 2。",
     "effect": {
       "type": "insp_turn_regen",
-      "value": 1,
-      "thresholdRatio": 0.5,
-      "onTalent": 2
+      "value": 10,
+      "thresholdRatio": 5000,
+      "onTalent": 20
     }
   },
   {
@@ -382,7 +382,7 @@
     "effect": {
       "type": "style_pct",
       "style": "shi",
-      "value": 0.1,
+      "value": 1000,
       "singleDieBonus": 0
     }
   },
@@ -394,7 +394,7 @@
     "effect": {
       "type": "theme_pct",
       "theme": "yongwu",
-      "value": 0.15
+      "value": 1500
     }
   },
   {
@@ -404,7 +404,7 @@
     "text": "《左传·庄公十年》：夫战，勇气也。一鼓作气，再而衰，三而竭。气势连捷的收益 ×1.4，越连捷越凌厉。",
     "effect": {
       "type": "streak_mult",
-      "value": 0.4
+      "value": 4000
     }
   },
   {
@@ -414,7 +414,7 @@
     "text": "智永居永欣寺三十年，临书不退，笔头委积，埋之为冢——积学既深，虽江郎才尽亦有余勇。每场结算后灵感补足至 16，不致骤然封笔。",
     "effect": {
       "type": "insp_floor",
-      "value": 16
+      "value": 160
     }
   },
   {
@@ -424,7 +424,7 @@
     "text": "「六」者，顺也。灵感骰若掷出六点，灵思沛然，本场得分 ×1.25。",
     "effect": {
       "type": "lucky_six",
-      "mult": 1.25
+      "mult": 12500
     }
   },
   {
@@ -434,8 +434,8 @@
     "text": "《史记·项羽本纪》：皆沉船，破釜甑，烧庐舍，持三日粮，以示士卒必死，无一还心。灵感 ≤12 的绝境中，背水一战，本场得分 +12%。",
     "effect": {
       "type": "comeback",
-      "value": 0.12,
-      "threshold": 12
+      "value": 1200,
+      "threshold": 120
     }
   },
   {
@@ -445,9 +445,10 @@
     "text": "《庄子·天下》：惠施多方，其书五车。腹笥越厚，下笔越雄——每拥有 3 枚文心，六维算分属性临时 +4%。",
     "effect": {
       "type": "armory_pct",
+      "target": "attrs",
       "step": 3,
-      "value": 0.04,
-      "cap": 0.12
+      "value": 400,
+      "cap": 1200
     }
   },
   {
@@ -457,8 +458,8 @@
     "text": "杜甫《戏为六绝句》：转益多师是汝师。败于名家而有所悟，平局亦能取法——「败中有得」「平分秋色」的补偿属性额外 +2，下一场得分 +4%。",
     "effect": {
       "type": "study_bonus",
-      "value": 2,
-      "nextBattlePct": 0.04
+      "value": 20,
+      "nextBattlePct": 400
     }
   },
   {
@@ -468,8 +469,8 @@
     "text": "殿试策问，临轩而试。金殿之上从容奏对——进入殿试先恢复 4 灵感，殿试每场开场再恢复 3。",
     "effect": {
       "type": "palace_insp",
-      "value": 3,
-      "startValue": 4,
+      "value": 30,
+      "startValue": 40,
       "scorePct": 0
     }
   },
@@ -480,8 +481,8 @@
     "text": "苏轼《文与可画筼筜谷偃竹记》：故画竹必先得成竹于胸中。谋定后动，临阵不慌——持有时，每个回合开始恢复 1 点灵感。",
     "effect": {
       "type": "insp_turn_regen",
-      "value": 1,
-      "thresholdRatio": 0.5
+      "value": 10,
+      "thresholdRatio": 5000
     }
   },
   {
@@ -491,7 +492,7 @@
     "text": "朱熹《观书有感》：“问渠那得清如许？为有源头活水来。”每次答对考题或完成创作抉择，灵感额外 +2；每局最多触发 4 次。",
     "effect": {
       "type": "insp_on_quiz",
-      "value": 2,
+      "value": 20,
       "maxTriggers": 4
     },
     "acquire": {
@@ -506,8 +507,8 @@
     "text": "枯木经霜，春来更发新枝。每场论战全部结算后，若灵感不高于 16，则恢复 3 点；每局最多触发 3 次。",
     "effect": {
       "type": "insp_battle_recover",
-      "value": 3,
-      "threshold": 16,
+      "value": 30,
+      "threshold": 160,
       "maxTriggers": 3
     },
     "acquire": {
@@ -523,9 +524,9 @@
     "text": "涓流不拒，积而成渊。获得时，本局灵感上限永久 +8，并补充 4 灵感；与「海纳百川」互斥，且扩容只结算一次。",
     "effect": {
       "type": "insp_max",
-      "value": 8,
+      "value": 80,
       "group": "inspiration_capacity",
-      "fillRatio": 0.5
+      "fillRatio": 5000
     },
     "acquire": {
       "minTurn": 12,
@@ -541,9 +542,9 @@
     "text": "《文心雕龙》言“操千曲而后晓声，观千剑而后识器”。获得时，本局灵感上限永久 +14，并补充 7 灵感；与「蓄水成渊」互斥，且扩容只结算一次。",
     "effect": {
       "type": "insp_max",
-      "value": 14,
+      "value": 140,
       "group": "inspiration_capacity",
-      "fillRatio": 0.5
+      "fillRatio": 5000
     },
     "acquire": {
       "phase": "lap2",
@@ -560,10 +561,10 @@
     "effect": {
       "type": "dice_pattern",
       "pattern": "single",
-      "value": 0.12,
+      "value": 1200,
       "reward": {
         "type": "insight",
-        "value": 1,
+        "value": 10,
         "perMatch": false
       }
     }
@@ -577,10 +578,10 @@
       "type": "dice_pattern",
       "pattern": "all_high",
       "minPip": 4,
-      "value": 0.1,
+      "value": 1000,
       "reward": {
         "type": "fragment",
-        "value": 1,
+        "value": 1000,
         "perMatch": false
       }
     }
@@ -592,7 +593,7 @@
     "text": "《周易·系辞》言：引而伸之，触类而长之。若本场改用不同于上一场的文体，作品得分 +8%，战后心得额外 +1。",
     "effect": {
       "type": "style_switch_pct",
-      "value": 0.08,
+      "value": 800,
       "insight": 1
     }
   },
@@ -604,8 +605,8 @@
     "effect": {
       "type": "manuscript_pct",
       "step": 2,
-      "value": 0.03,
-      "cap": 0.15
+      "value": 300,
+      "cap": 1500
     }
   },
   {
@@ -616,10 +617,10 @@
     "effect": {
       "type": "dice_pattern",
       "pattern": "pair",
-      "value": 0.08,
+      "value": 800,
       "reward": {
         "type": "inspiration",
-        "value": 1,
+        "value": 10,
         "perMatch": false
       }
     }
@@ -632,10 +633,10 @@
     "effect": {
       "type": "dice_pattern",
       "pattern": "six",
-      "value": 0.08,
+      "value": 800,
       "reward": {
         "type": "fragment",
-        "value": 1,
+        "value": 1000,
         "perMatch": false
       }
     }
@@ -647,9 +648,9 @@
     "text": "殿试结束后，你竟褪却了官服，到寺庙中过上了青灯古佛的生活，日日抄经读史。有一天，你在打扫牌匾时，发现牌匾后的卷轴，上面写着这样一副对联：\n燕子去无踪，惟余萝月半林，留人古寺；\n龙华会有果，好借蒲团一座，照我传灯。\n随即，白光闪出，你眼前一亮，回到了还是童生的那个时刻……",
     "effect": {
       "type": "reincarnate",
-      "inspThreshold": 40,
-      "attrRatio": 0.8,
-      "startInspiration": 8
+      "inspThreshold": 400,
+      "attrRatio": 8000,
+      "startInspiration": 80
     }
   }
 ]

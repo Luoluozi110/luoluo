@@ -25,7 +25,11 @@
   },
   "stageChange": {
     "kind": "科 场 叙 事",
-    "names": { "xiucai": "秀才", "juren": "举人", "jinshi": "进士" },
+    "names": {
+      "xiucai": "秀才",
+      "juren": "举人",
+      "jinshi": "进士"
+    },
     "titleTpl": "{name}阶段 · 晋阶试",
     "buttonTpl": "进入{name}阶段",
     "default": "基础功名已立。接下来的道路会逐渐收紧，先前积下的文心与选择，将在新的试场中显出分量。",
@@ -34,34 +38,123 @@
   },
   "chapterTactics": {
     "craft": {
-      "守法": { "title": "守法·循格成章", "text": "先立骨架，再安字句；你把可传的章法带进下一圈。" },
-      "出新": { "title": "出新·换景立意", "text": "不肯只沿熟路，你愿在转折处另开一个入口。" },
-      "neutral": { "title": "法意并读", "text": "旧法与新意都暂存卷边，下一笔再决定取舍。" }
+      "守法": {
+        "title": "守法·循格成章",
+        "text": "先立骨架，再安字句；你把可传的章法带进下一圈。"
+      },
+      "出新": {
+        "title": "出新·换景立意",
+        "text": "不肯只沿熟路，你愿在转折处另开一个入口。"
+      },
+      "neutral": {
+        "title": "法意并读",
+        "text": "旧法与新意都暂存卷边，下一笔再决定取舍。"
+      }
     },
     "cost": {
-      "惜身": { "title": "惜身·留白养气", "text": "收住锋芒不是退却；你为后面的长卷留了余力。" },
-      "燃笔": { "title": "燃笔·趁势成篇", "text": "灵感一至便不轻放；你把当下最亮的一笔写到底。" },
-      "neutral": { "title": "张弛相济", "text": "你肯全力落笔，也知道给未成之句留下呼吸。" }
+      "惜身": {
+        "title": "惜身·留白养气",
+        "text": "收住锋芒不是退却；你为后面的长卷留了余力。"
+      },
+      "燃笔": {
+        "title": "燃笔·趁势成篇",
+        "text": "灵感一至便不轻放；你把当下最亮的一笔写到底。"
+      },
+      "neutral": {
+        "title": "张弛相济",
+        "text": "你肯全力落笔，也知道给未成之句留下呼吸。"
+      }
     }
   },
   "echoChains": [
-    { "id": "jianglang", "eventId": "E006", "title": "旧笔回声", "text": "行至新圈，包袱里那支旧笔又硌了你一下。你终于明白，能慢慢写稳的一行，也自有光。" },
-    { "id": "dengyou", "eventId": "E012", "title": "灯下回声", "text": "驿灯在风里轻晃。那一夜读到天明或按时熄灯的取舍，仍替你守着卷页的一角。" },
-    { "id": "zhiyin", "eventId": "E013", "title": "江上回声", "text": "过渡口时，远处有人续上你曾写的一句。同行与独行，都没有白走。" },
-    { "id": "laonong", "eventId": "E018", "title": "田埂回声", "text": "一封折得发软的文书追到门前：乡人已把那几句官文问明，也记得曾为他们停步的人。" },
-    { "id": "luodi", "eventId": "E025", "title": "榜外回声", "text": "旧榜早已换纸，舟中却有人低吟你当时写下的一句。被看见的路，并不只在榜上。" },
-    { "id": "gusi", "eventId": "E042", "title": "松风回声", "text": "入夜后松风穿过廊下，像把寺钟带到了此处。那一次受与辞，仍在替你问同一个问题。" }
+    {
+      "id": "jianglang",
+      "eventId": "E006",
+      "title": "旧笔回声",
+      "text": "行至新圈，包袱里那支旧笔又硌了你一下。你终于明白，能慢慢写稳的一行，也自有光。"
+    },
+    {
+      "id": "dengyou",
+      "eventId": "E012",
+      "title": "灯下回声",
+      "text": "驿灯在风里轻晃。那一夜读到天明或按时熄灯的取舍，仍替你守着卷页的一角。"
+    },
+    {
+      "id": "zhiyin",
+      "eventId": "E013",
+      "title": "江上回声",
+      "text": "过渡口时，远处有人续上你曾写的一句。同行与独行，都没有白走。"
+    },
+    {
+      "id": "laonong",
+      "eventId": "E018",
+      "title": "田埂回声",
+      "text": "一封折得发软的文书追到门前：乡人已把那几句官文问明，也记得曾为他们停步的人。"
+    },
+    {
+      "id": "luodi",
+      "eventId": "E025",
+      "title": "榜外回声",
+      "text": "旧榜早已换纸，舟中却有人低吟你当时写下的一句。被看见的路，并不只在榜上。"
+    },
+    {
+      "id": "gusi",
+      "eventId": "E042",
+      "title": "松风回声",
+      "text": "入夜后松风穿过廊下，像把寺钟带到了此处。那一次受与辞，仍在替你问同一个问题。"
+    }
   ],
   "relations": [
-    { "npcId": "zhou_xiaoman", "phase": "middle", "title": "周小满来笺", "text": "周小满把新临的一页字夹在你行卷里：\"我还在练那一横。你到中圈，也别把初学时的认真丢了。\"" },
-    { "npcId": "su_mingzhe", "phase": "middle", "title": "苏明哲来笺", "text": "苏明哲替你把旧卷平码齐整，只留一句：\"路数可以换，须先知道自己为何要换。\"" },
-    { "npcId": "tang_ji_qing", "phase": "inner", "title": "唐季卿来笺", "text": "唐季卿在经注空白处批了一行：\"典故不是门槛；若能让人听懂，才算真正用过。\"" },
-    { "npcId": "yuwen_yuan", "phase": "inner", "title": "宇文渊来笺", "text": "宇文渊没有评你的字，只问：\"这一卷若无人署名，你还愿意这样写吗？\"" }
+    {
+      "npcId": "zhou_xiaoman",
+      "phase": "middle",
+      "title": "周小满来笺",
+      "text": "周小满把新临的一页字夹在你行卷里：\"我还在练那一横。你到中圈，也别把初学时的认真丢了。\""
+    },
+    {
+      "npcId": "su_mingzhe",
+      "phase": "middle",
+      "title": "苏明哲来笺",
+      "text": "苏明哲替你把旧卷平码齐整，只留一句：\"路数可以换，须先知道自己为何要换。\""
+    },
+    {
+      "npcId": "tang_ji_qing",
+      "phase": "inner",
+      "title": "唐季卿来笺",
+      "text": "唐季卿在经注空白处批了一行：\"典故不是门槛；若能让人听懂，才算真正用过。\""
+    },
+    {
+      "npcId": "yuwen_yuan",
+      "phase": "inner",
+      "title": "宇文渊来笺",
+      "text": "宇文渊没有评你的字，只问：\"这一卷若无人署名，你还愿意这样写吗？\""
+    }
   ],
   "palaceQuestions": [
-    { "id": "change", "examiner": "王侍郎", "key": "变", "prompt": "你是否被自己的常用路数困住？", "varied": "你近来肯换体换法，王侍郎只道：\"知变，方能知守。\"", "steady": "王侍郎翻看你的旧卷：\"一路走得很稳，今日可还认得别的门？\"" },
-    { "id": "feeling", "examiner": "李学士", "key": "情", "prompt": "形式与声律之外，这篇文章究竟在意谁？", "withPeople": "李学士望向你行卷里的故人姓名：\"句中有情，莫把所念之人写丢。\"", "alone": "李学士轻扣案角：\"即使独行，也须让读者看见你所守的那一点心。\"" },
-    { "id": "use", "examiner": "赵大儒", "key": "用", "prompt": "此卷若出金殿，能否被榜外之人听懂？", "open": "赵大儒记起你行卷里的取舍：\"有用之学，不妨落到人间。\"", "strict": "赵大儒抚平卷角：\"法度可立卷，也要记得卷外自有人等着。\"" }
+    {
+      "id": "change",
+      "examiner": "王侍郎",
+      "key": "变",
+      "prompt": "你是否被自己的常用路数困住？",
+      "varied": "你近来肯换体换法，王侍郎只道：\"知变，方能知守。\"",
+      "steady": "王侍郎翻看你的旧卷：\"一路走得很稳，今日可还认得别的门？\""
+    },
+    {
+      "id": "feeling",
+      "examiner": "李学士",
+      "key": "情",
+      "prompt": "形式与声律之外，这篇文章究竟在意谁？",
+      "withPeople": "李学士望向你行卷里的故人姓名：\"句中有情，莫把所念之人写丢。\"",
+      "alone": "李学士轻扣案角：\"即使独行，也须让读者看见你所守的那一点心。\""
+    },
+    {
+      "id": "use",
+      "examiner": "赵大儒",
+      "key": "用",
+      "prompt": "此卷若出金殿，能否被榜外之人听懂？",
+      "open": "赵大儒记起你行卷里的取舍：\"有用之学，不妨落到人间。\"",
+      "strict": "赵大儒抚平卷角：\"法度可立卷，也要记得卷外自有人等着。\""
+    }
   ],
   "endingFragments": {
     "school": "你的流派功课并未随放榜而停下；它已成了下一卷最稳的底稿。",
@@ -69,56 +162,390 @@
   },
   "endScroll": {
     "chapterLines": [
-      { "id": "outer_yongwu", "chapter": "outer", "themes": ["yongwu"], "motif": "观物", "tone": "清润", "text": "初学看花看砚，也开始看见物外之心。" },
-      { "id": "outer_songbie", "chapter": "outer", "themes": ["songbie"], "motif": "同行", "tone": "温厚", "text": "路从一声珍重起，同行之意先入卷中。" },
-      { "id": "outer_shanshui", "chapter": "outer", "themes": ["shanshui"], "motif": "启程", "tone": "清旷", "text": "山水初开，少年把远处当作下一页。" },
-      { "id": "outer_biansai", "chapter": "outer", "themes": ["biansai"], "motif": "试锋", "tone": "明快", "text": "尚未见长风，笔下已试着立起锋芒。" },
-      { "id": "outer_huaigu", "chapter": "outer", "themes": ["huaigu"], "motif": "问古", "tone": "沉静", "text": "翻过旧人的篇章，也悄悄写下自己的疑问。" },
-      { "id": "outer_jieling", "chapter": "outer", "themes": ["jieling"], "motif": "时序", "tone": "明净", "text": "一番风物催人起步，纸上已有新岁声。" },
-      { "id": "outer_keep", "chapter": "outer", "inkTags": ["守法", "惜身"], "motif": "扎根", "tone": "端正", "text": "先把一横一竖写稳，再向长路索问新章。" },
-      { "id": "outer_new", "chapter": "outer", "inkTags": ["出新", "燃笔"], "motif": "破题", "tone": "灵动", "text": "旧纸尚白，第一笔已经不肯只循旧路。" },
-
-      { "id": "middle_yongwu", "chapter": "middle", "themes": ["yongwu"], "motif": "照心", "tone": "含蓄", "text": "借一草一木照心，句子遂有了可守之处。" },
-      { "id": "middle_songbie", "chapter": "middle", "themes": ["songbie"], "motif": "留情", "tone": "婉转", "text": "几番聚散之后，空处也能写出情分。" },
-      { "id": "middle_shanshui", "chapter": "middle", "themes": ["shanshui"], "motif": "行旅", "tone": "清远", "text": "山程水驿渐深，眼界与行囊一同展开。" },
-      { "id": "middle_biansai", "chapter": "middle", "themes": ["biansai"], "motif": "立志", "tone": "劲健", "text": "风急路窄，落笔反而有了不可移的骨力。" },
-      { "id": "middle_huaigu", "chapter": "middle", "themes": ["huaigu"], "motif": "辨古", "tone": "苍润", "text": "不只向古人借句，也开始同古人辩一辩。" },
-      { "id": "middle_jieling", "chapter": "middle", "themes": ["jieling"], "motif": "知时", "tone": "疏朗", "text": "寒暑在卷边换过，取舍也渐渐有了分寸。" },
-      { "id": "middle_truth", "chapter": "middle", "inkTags": ["求真", "独行"], "motif": "自问", "tone": "沉静", "text": "众声渐远，仍肯问这一笔是否出自本心。" },
-      { "id": "middle_world", "chapter": "middle", "inkTags": ["入世", "逐名"], "motif": "应世", "tone": "朗健", "text": "卷页向人间打开，功名也有了所为之事。" },
-
-      { "id": "inner_yongwu", "chapter": "inner", "themes": ["yongwu"], "motif": "见微", "tone": "凝练", "text": "一物虽微，已足以托住全卷的心事。" },
-      { "id": "inner_songbie", "chapter": "inner", "themes": ["songbie"], "motif": "回望", "tone": "深婉", "text": "金殿将近，最先回望的仍是同行之人。" },
-      { "id": "inner_shanshui", "chapter": "inner", "themes": ["shanshui"], "motif": "开境", "tone": "高远", "text": "行到云水尽处，笔下天地反而更宽。" },
-      { "id": "inner_biansai", "chapter": "inner", "themes": ["biansai"], "motif": "担当", "tone": "雄健", "text": "长风入卷，锋芒终于知道应当指向何处。" },
-      { "id": "inner_huaigu", "chapter": "inner", "themes": ["huaigu"], "motif": "承续", "tone": "浑厚", "text": "与千载文章相对，仍留下了自己的署名。" },
-      { "id": "inner_jieling", "chapter": "inner", "themes": ["jieling"], "motif": "成候", "tone": "明澈", "text": "一路风候收于笔底，此时落款恰逢其时。" },
-      { "id": "inner_keep", "chapter": "inner", "inkTags": ["守法", "求真", "惜身"], "motif": "持守", "tone": "端凝", "text": "阅尽繁华章法，仍守得住最初那一点真。" },
-      { "id": "inner_new", "chapter": "inner", "inkTags": ["出新", "入世", "燃笔"], "motif": "开新", "tone": "飞扬", "text": "旧格已熟，新声遂能从万卷之间生出。" }
+      {
+        "id": "outer_yongwu",
+        "chapter": "outer",
+        "themes": [
+          "yongwu"
+        ],
+        "motif": "观物",
+        "tone": "清润",
+        "text": "初学看花看砚，也开始看见物外之心。"
+      },
+      {
+        "id": "outer_songbie",
+        "chapter": "outer",
+        "themes": [
+          "songbie"
+        ],
+        "motif": "同行",
+        "tone": "温厚",
+        "text": "路从一声珍重起，同行之意先入卷中。"
+      },
+      {
+        "id": "outer_shanshui",
+        "chapter": "outer",
+        "themes": [
+          "shanshui"
+        ],
+        "motif": "启程",
+        "tone": "清旷",
+        "text": "山水初开，少年把远处当作下一页。"
+      },
+      {
+        "id": "outer_biansai",
+        "chapter": "outer",
+        "themes": [
+          "biansai"
+        ],
+        "motif": "试锋",
+        "tone": "明快",
+        "text": "尚未见长风，笔下已试着立起锋芒。"
+      },
+      {
+        "id": "outer_huaigu",
+        "chapter": "outer",
+        "themes": [
+          "huaigu"
+        ],
+        "motif": "问古",
+        "tone": "沉静",
+        "text": "翻过旧人的篇章，也悄悄写下自己的疑问。"
+      },
+      {
+        "id": "outer_jieling",
+        "chapter": "outer",
+        "themes": [
+          "jieling"
+        ],
+        "motif": "时序",
+        "tone": "明净",
+        "text": "一番风物催人起步，纸上已有新岁声。"
+      },
+      {
+        "id": "outer_keep",
+        "chapter": "outer",
+        "inkTags": [
+          "守法",
+          "惜身"
+        ],
+        "motif": "扎根",
+        "tone": "端正",
+        "text": "先把一横一竖写稳，再向长路索问新章。"
+      },
+      {
+        "id": "outer_new",
+        "chapter": "outer",
+        "inkTags": [
+          "出新",
+          "燃笔"
+        ],
+        "motif": "破题",
+        "tone": "灵动",
+        "text": "旧纸尚白，第一笔已经不肯只循旧路。"
+      },
+      {
+        "id": "middle_yongwu",
+        "chapter": "middle",
+        "themes": [
+          "yongwu"
+        ],
+        "motif": "照心",
+        "tone": "含蓄",
+        "text": "借一草一木照心，句子遂有了可守之处。"
+      },
+      {
+        "id": "middle_songbie",
+        "chapter": "middle",
+        "themes": [
+          "songbie"
+        ],
+        "motif": "留情",
+        "tone": "婉转",
+        "text": "几番聚散之后，空处也能写出情分。"
+      },
+      {
+        "id": "middle_shanshui",
+        "chapter": "middle",
+        "themes": [
+          "shanshui"
+        ],
+        "motif": "行旅",
+        "tone": "清远",
+        "text": "山程水驿渐深，眼界与行囊一同展开。"
+      },
+      {
+        "id": "middle_biansai",
+        "chapter": "middle",
+        "themes": [
+          "biansai"
+        ],
+        "motif": "立志",
+        "tone": "劲健",
+        "text": "风急路窄，落笔反而有了不可移的骨力。"
+      },
+      {
+        "id": "middle_huaigu",
+        "chapter": "middle",
+        "themes": [
+          "huaigu"
+        ],
+        "motif": "辨古",
+        "tone": "苍润",
+        "text": "不只向古人借句，也开始同古人辩一辩。"
+      },
+      {
+        "id": "middle_jieling",
+        "chapter": "middle",
+        "themes": [
+          "jieling"
+        ],
+        "motif": "知时",
+        "tone": "疏朗",
+        "text": "寒暑在卷边换过，取舍也渐渐有了分寸。"
+      },
+      {
+        "id": "middle_truth",
+        "chapter": "middle",
+        "inkTags": [
+          "求真",
+          "独行"
+        ],
+        "motif": "自问",
+        "tone": "沉静",
+        "text": "众声渐远，仍肯问这一笔是否出自本心。"
+      },
+      {
+        "id": "middle_world",
+        "chapter": "middle",
+        "inkTags": [
+          "入世",
+          "逐名"
+        ],
+        "motif": "应世",
+        "tone": "朗健",
+        "text": "卷页向人间打开，功名也有了所为之事。"
+      },
+      {
+        "id": "inner_yongwu",
+        "chapter": "inner",
+        "themes": [
+          "yongwu"
+        ],
+        "motif": "见微",
+        "tone": "凝练",
+        "text": "一物虽微，已足以托住全卷的心事。"
+      },
+      {
+        "id": "inner_songbie",
+        "chapter": "inner",
+        "themes": [
+          "songbie"
+        ],
+        "motif": "回望",
+        "tone": "深婉",
+        "text": "金殿将近，最先回望的仍是同行之人。"
+      },
+      {
+        "id": "inner_shanshui",
+        "chapter": "inner",
+        "themes": [
+          "shanshui"
+        ],
+        "motif": "开境",
+        "tone": "高远",
+        "text": "行到云水尽处，笔下天地反而更宽。"
+      },
+      {
+        "id": "inner_biansai",
+        "chapter": "inner",
+        "themes": [
+          "biansai"
+        ],
+        "motif": "担当",
+        "tone": "雄健",
+        "text": "长风入卷，锋芒终于知道应当指向何处。"
+      },
+      {
+        "id": "inner_huaigu",
+        "chapter": "inner",
+        "themes": [
+          "huaigu"
+        ],
+        "motif": "承续",
+        "tone": "浑厚",
+        "text": "与千载文章相对，仍留下了自己的署名。"
+      },
+      {
+        "id": "inner_jieling",
+        "chapter": "inner",
+        "themes": [
+          "jieling"
+        ],
+        "motif": "成候",
+        "tone": "明澈",
+        "text": "一路风候收于笔底，此时落款恰逢其时。"
+      },
+      {
+        "id": "inner_keep",
+        "chapter": "inner",
+        "inkTags": [
+          "守法",
+          "求真",
+          "惜身"
+        ],
+        "motif": "持守",
+        "tone": "端凝",
+        "text": "阅尽繁华章法，仍守得住最初那一点真。"
+      },
+      {
+        "id": "inner_new",
+        "chapter": "inner",
+        "inkTags": [
+          "出新",
+          "入世",
+          "燃笔"
+        ],
+        "motif": "开新",
+        "tone": "飞扬",
+        "text": "旧格已熟，新声遂能从万卷之间生出。"
+      }
     ],
     "titles": [
-      { "id": "title_road", "text": "一程入墨", "motifs": ["启程", "行旅", "开境"] },
-      { "id": "title_heart", "text": "问心成章", "motifs": ["自问", "持守", "照心"] },
-      { "id": "title_people", "text": "人间行卷", "motifs": ["同行", "留情", "应世", "担当"] },
-      { "id": "title_wind", "text": "长风有信", "themes": ["biansai", "shanshui"] },
-      { "id": "title_old", "text": "与古同席", "themes": ["huaigu"], "motifs": ["问古", "辨古", "承续"] },
-      { "id": "title_season", "text": "风候入笺", "themes": ["jieling"] },
-      { "id": "title_object", "text": "一物见心", "themes": ["yongwu"] },
-      { "id": "title_parting", "text": "此去有声", "themes": ["songbie"] },
-      { "id": "title_palace", "text": "金殿留墨", "endings": ["jinbang"] },
-      { "id": "title_unfinished", "text": "余墨待春", "endings": ["turnlimit", "fengbi"] },
-      { "id": "title_own", "text": "自有来路", "endings": ["palace", "secret_loss"] },
-      { "id": "title_taoyuan", "text": "万卷归心", "endings": ["taoyuan"] },
-      { "id": "title_scroll", "text": "此局成卷", "weight": 1 }
+      {
+        "id": "title_road",
+        "text": "一程入墨",
+        "motifs": [
+          "启程",
+          "行旅",
+          "开境"
+        ]
+      },
+      {
+        "id": "title_heart",
+        "text": "问心成章",
+        "motifs": [
+          "自问",
+          "持守",
+          "照心"
+        ]
+      },
+      {
+        "id": "title_people",
+        "text": "人间行卷",
+        "motifs": [
+          "同行",
+          "留情",
+          "应世",
+          "担当"
+        ]
+      },
+      {
+        "id": "title_wind",
+        "text": "长风有信",
+        "themes": [
+          "biansai",
+          "shanshui"
+        ]
+      },
+      {
+        "id": "title_old",
+        "text": "与古同席",
+        "themes": [
+          "huaigu"
+        ],
+        "motifs": [
+          "问古",
+          "辨古",
+          "承续"
+        ]
+      },
+      {
+        "id": "title_season",
+        "text": "风候入笺",
+        "themes": [
+          "jieling"
+        ]
+      },
+      {
+        "id": "title_object",
+        "text": "一物见心",
+        "themes": [
+          "yongwu"
+        ]
+      },
+      {
+        "id": "title_parting",
+        "text": "此去有声",
+        "themes": [
+          "songbie"
+        ]
+      },
+      {
+        "id": "title_palace",
+        "text": "金殿留墨",
+        "endings": [
+          "jinbang"
+        ]
+      },
+      {
+        "id": "title_unfinished",
+        "text": "余墨待春",
+        "endings": [
+          "turnlimit",
+          "fengbi"
+        ]
+      },
+      {
+        "id": "title_own",
+        "text": "自有来路",
+        "endings": [
+          "palace",
+          "secret_loss"
+        ]
+      },
+      {
+        "id": "title_taoyuan",
+        "text": "万卷归心",
+        "endings": [
+          "taoyuan"
+        ]
+      },
+      {
+        "id": "title_scroll",
+        "text": "此局成卷",
+        "weight": 1
+      }
     ],
     "endings": {
-      "jinbang": { "line": "金殿收卷时，来路仍在墨中。", "seal": "金榜题名" },
-      "palace": { "line": "未署榜首之名，也已写成自己的来路。", "seal": "行卷有痕" },
-      "turnlimit": { "line": "时辰催卷，未尽之意留待来日。", "seal": "余墨待续" },
-      "fengbi": { "line": "灵思暂歇，纸上所得仍可珍藏。", "seal": "墨意犹存" },
-      "taoyuan": { "line": "万卷归心之后，脚下的路不再由棋盘标明。", "seal": "桃源出卷" },
-      "secret_loss": { "line": "金榜已定，桃源一问留待下卷。", "seal": "花笺留问" },
-      "default": { "line": "一局既终，沿途取舍都已成章。", "seal": "此卷已成" }
+      "jinbang": {
+        "line": "金殿收卷时，来路仍在墨中。",
+        "seal": "金榜题名"
+      },
+      "palace": {
+        "line": "未署榜首之名，也已写成自己的来路。",
+        "seal": "行卷有痕"
+      },
+      "turnlimit": {
+        "line": "时辰催卷，未尽之意留待来日。",
+        "seal": "余墨待续"
+      },
+      "fengbi": {
+        "line": "灵思暂歇，纸上所得仍可珍藏。",
+        "seal": "墨意犹存"
+      },
+      "taoyuan": {
+        "line": "万卷归心之后，脚下的路不再由棋盘标明。",
+        "seal": "桃源出卷"
+      },
+      "secret_loss": {
+        "line": "金榜已定，桃源一问留待下卷。",
+        "seal": "花笺留问"
+      },
+      "default": {
+        "line": "一局既终，沿途取舍都已成章。",
+        "seal": "此卷已成"
+      }
     },
     "noteFallback": "一路所得没有另立库存，都已收进这几句里。"
   },

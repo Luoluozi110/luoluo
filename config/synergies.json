@@ -14,7 +14,7 @@
         "stackMode": "add",
         "type": "style_pct",
         "style": "shi",
-        "value": 0.1
+        "value": 1000
       },
       {
         "effectId": "S01-E2",
@@ -22,7 +22,7 @@
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "six",
-        "value": 0.06
+        "value": 600
       }
     ]
   },
@@ -41,7 +41,7 @@
         "stackMode": "add",
         "type": "style_pct",
         "style": "ci",
-        "value": 0.08
+        "value": 800
       },
       {
         "effectId": "S02-E2",
@@ -49,7 +49,7 @@
         "stackMode": "add",
         "type": "on_win_bonus",
         "style": "ci",
-        "value": 3
+        "value": 30
       }
     ]
   },
@@ -68,7 +68,7 @@
         "stackMode": "add",
         "type": "style_pct",
         "style": "lian",
-        "value": 0.1
+        "value": 1000
       },
       {
         "effectId": "S03-E2",
@@ -77,7 +77,7 @@
         "type": "dice_pattern",
         "pattern": "all_distinct",
         "minDice": 3,
-        "value": 0.08
+        "value": 800
       }
     ]
   },
@@ -95,8 +95,8 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "extra_dice_pct",
-        "value": 0.03,
-        "firstCostDiscount": 1
+        "value": 300,
+        "firstCostDiscount": 10
       },
       {
         "effectId": "S04-E2",
@@ -104,7 +104,7 @@
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "low_then_high",
-        "value": 0.16
+        "value": 1600
       }
     ]
   },
@@ -122,14 +122,14 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "syn_pct",
-        "value": 0.08
+        "value": 800
       },
       {
         "effectId": "S05-E2",
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "insp_on_quiz",
-        "value": 1,
+        "value": 10,
         "maxTriggers": 3
       }
     ]
@@ -148,7 +148,7 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "insp_on_win",
-        "value": 2
+        "value": 20
       },
       {
         "effectId": "S06-E2",
@@ -156,7 +156,7 @@
         "stackMode": "add",
         "type": "battle_history_pct",
         "result": "nonwin",
-        "value": 0.08
+        "value": 800
       }
     ]
   },
@@ -175,7 +175,7 @@
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "six",
-        "value": 0.06
+        "value": 600
       },
       {
         "effectId": "S07-E2",
@@ -183,7 +183,7 @@
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "ascending",
-        "value": 0.16
+        "value": 1600
       }
     ]
   },
@@ -201,7 +201,7 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "syn_pct",
-        "value": 0.1
+        "value": 1000
       }
     ]
   },
@@ -219,9 +219,9 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "syn_pct",
-        "value": 0.1,
+        "value": 1000,
         "when": {
-          "inspirationRatioMin": 0.6
+          "inspirationRatioMin": 6000
         }
       }
     ]
@@ -241,10 +241,10 @@
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "six",
-        "value": 0.1,
+        "value": 1000,
         "reward": {
           "type": "fragment",
-          "value": 1,
+          "value": 1000,
           "perMatch": false
         }
       }
@@ -266,10 +266,10 @@
         "type": "dice_pattern",
         "pattern": "total_multiple",
         "divisor": 7,
-        "value": 0.16,
+        "value": 1600,
         "reward": {
           "type": "insight",
-          "value": 2,
+          "value": 20,
           "perMatch": false
         }
       }
@@ -289,16 +289,16 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "comeback",
-        "threshold": 16,
-        "value": 0.14
+        "threshold": 160,
+        "value": 1400
       },
       {
         "effectId": "S12-E2",
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "insp_battle_recover",
-        "threshold": 16,
-        "value": 3,
+        "threshold": 160,
+        "value": 30,
         "maxTriggers": 3
       }
     ]
@@ -317,7 +317,7 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "style_switch_pct",
-        "value": 0.14,
+        "value": 1400,
         "insight": 2
       }
     ]
@@ -337,8 +337,8 @@
         "stackMode": "add",
         "type": "manuscript_pct",
         "step": 2,
-        "value": 0.03,
-        "cap": 0.18
+        "value": 300,
+        "cap": 1800
       }
     ]
   },
@@ -357,7 +357,7 @@
         "stackMode": "add",
         "type": "streak_pct",
         "minStreak": 2,
-        "value": 0.14
+        "value": 1400
       },
       {
         "effectId": "S15-E2",
@@ -368,7 +368,7 @@
         "value": 0,
         "reward": {
           "type": "inspiration",
-          "value": 2,
+          "value": 20,
           "perMatch": false
         }
       }
@@ -388,15 +388,15 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "palace_insp",
-        "value": 4,
-        "startValue": 5
+        "value": 40,
+        "startValue": 50
       },
       {
         "effectId": "S16-E2",
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "palace_pct",
-        "value": 0.08
+        "value": 800
       }
     ]
   },
@@ -414,7 +414,7 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "insp_on_quiz",
-        "value": 2,
+        "value": 20,
         "maxTriggers": 5
       }
     ]
@@ -434,7 +434,7 @@
         "stackMode": "add",
         "type": "style_pct",
         "style": "shi",
-        "value": 0.18,
+        "value": 1800,
         "when": {
           "themes": [
             "yongwu"
@@ -442,7 +442,7 @@
         },
         "reward": {
           "type": "fragment",
-          "value": 1,
+          "value": 1000,
           "perMatch": false
         }
       }
@@ -463,7 +463,7 @@
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "six",
-        "value": 0.16,
+        "value": 1600,
         "when": {
           "usedTalents": [
             "TA07"
@@ -471,7 +471,7 @@
         },
         "reward": {
           "type": "inspiration",
-          "value": 1,
+          "value": 10,
           "perMatch": false
         }
       }
@@ -495,11 +495,11 @@
         "tiers": [
           {
             "min": 12,
-            "value": 0.12
+            "value": 1200
           },
           {
             "min": 16,
-            "value": 0.22
+            "value": 2200
           }
         ],
         "when": {
@@ -510,7 +510,7 @@
         },
         "reward": {
           "type": "inspiration",
-          "value": 2,
+          "value": 20,
           "perMatch": false
         }
       }
@@ -530,8 +530,8 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "study_bonus",
-        "value": 2,
-        "nextBattlePct": 0.08
+        "value": 20,
+        "nextBattlePct": 800
       },
       {
         "effectId": "S21-E2",
@@ -539,7 +539,7 @@
         "stackMode": "add",
         "type": "battle_history_pct",
         "result": "nonwin",
-        "value": 0.12
+        "value": 1200
       }
     ]
   },
@@ -557,9 +557,10 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "armory_pct",
+        "target": "score",
         "step": 4,
-        "value": 0.03,
-        "cap": 0.15
+        "value": 300,
+        "cap": 1500
       }
     ]
   },
@@ -577,8 +578,8 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "insp_turn_regen",
-        "value": 2,
-        "thresholdRatio": 0.6
+        "value": 20,
+        "thresholdRatio": 6000
       }
     ]
   },
@@ -596,7 +597,7 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "palace_pct",
-        "value": 0.18,
+        "value": 1800,
         "when": {
           "styles": [
             "shi"
@@ -609,7 +610,7 @@
         "stackMode": "add",
         "type": "on_win_bonus",
         "style": "shi",
-        "value": 3
+        "value": 30
       }
     ]
   },
@@ -627,7 +628,7 @@
         "stackGroup": "synergy-score",
         "stackMode": "add",
         "type": "style_switch_pct",
-        "value": 0.16,
+        "value": 1600,
         "insight": 2,
         "when": {
           "stylePair": [
@@ -653,7 +654,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "streak_pct",
-        "value": 0.1,
+        "value": 1000,
         "minStreak": 2
       }
     ]
@@ -673,7 +674,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "style_switch_pct",
-        "value": 0.12,
+        "value": 1200,
         "insight": 2
       }
     ]
@@ -693,7 +694,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "battle_history_pct",
-        "value": 0.1,
+        "value": 1000,
         "condition": "previous_nonwin"
       },
       {
@@ -701,8 +702,8 @@
         "stackGroup": "synergy-growth",
         "stackMode": "max",
         "type": "study_bonus",
-        "value": 1,
-        "nextBattlePct": 0.06
+        "value": 10,
+        "nextBattlePct": 600
       }
     ]
   },
@@ -721,8 +722,8 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "comeback",
-        "value": 0.14,
-        "threshold": 16,
+        "value": 1400,
+        "threshold": 160,
         "when": {
           "usedTalents": [
             "TA09"
@@ -746,11 +747,11 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "dice_pattern",
-        "value": 0.12,
+        "value": 1200,
         "pattern": "single",
         "reward": {
           "type": "inspiration",
-          "value": 1,
+          "value": 10,
           "perMatch": false
         }
       }
@@ -771,7 +772,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "dice_pattern",
-        "value": 0.14,
+        "value": 1400,
         "pattern": "low_then_high",
         "lowMax": 2,
         "nextHighMin": 5
@@ -793,7 +794,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "battle_history_pct",
-        "value": 0.08,
+        "value": 800,
         "condition": "previous_nonwin"
       },
       {
@@ -801,8 +802,8 @@
         "stackGroup": "synergy-recovery",
         "stackMode": "max",
         "type": "insp_battle_recover",
-        "threshold": 18,
-        "value": 3,
+        "threshold": 180,
+        "value": 30,
         "maxTriggers": 3
       }
     ]
@@ -822,7 +823,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "syn_pct",
-        "value": 0.1,
+        "value": 1000,
         "when": {
           "usedTalents": [
             "TA10"
@@ -846,7 +847,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "restraint_pct",
-        "value": 0.1
+        "value": 1000
       }
     ]
   },
@@ -865,12 +866,12 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "dice_pattern",
-        "value": 0.12,
+        "value": 1200,
         "pattern": "first_last_equal",
         "minDice": 2,
         "reward": {
           "type": "fragment",
-          "value": 1,
+          "value": 1000,
           "perMatch": false
         }
       }
@@ -891,13 +892,13 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "dice_pattern",
-        "value": 0.14,
+        "value": 1400,
         "pattern": "low_and_high",
         "lowMax": 2,
         "highMin": 5,
         "reward": {
           "type": "inspiration",
-          "value": 1,
+          "value": 10,
           "perMatch": false
         }
       }
@@ -918,7 +919,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "dice_pattern",
-        "value": 0.12,
+        "value": 1200,
         "pattern": "six",
         "when": {
           "usedTalents": [
@@ -942,7 +943,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "style_pct",
-        "value": 0.08,
+        "value": 800,
         "style": "shi"
       }
     ]
@@ -962,7 +963,7 @@
         "stackMode": "max",
         "type": "on_win_bonus",
         "style": "ci",
-        "value": 2
+        "value": 20
       }
     ]
   },
@@ -980,7 +981,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "style_pct",
-        "value": 0.08,
+        "value": 800,
         "style": "lian"
       }
     ]
@@ -999,9 +1000,10 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "armory_pct",
-        "value": 0.02,
+        "target": "attrs",
+        "value": 200,
         "step": 3,
-        "cap": 0.06
+        "cap": 600
       }
     ]
   },
@@ -1019,7 +1021,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "dice_pattern",
-        "value": 0.1,
+        "value": 1000,
         "pattern": "total_multiple",
         "multiple": 7,
         "when": {
@@ -1049,11 +1051,11 @@
         "tiers": [
           {
             "threshold": 16,
-            "value": 0.14
+            "value": 1400
           },
           {
             "threshold": 12,
-            "value": 0.08
+            "value": 800
           }
         ],
         "when": {
@@ -1078,7 +1080,7 @@
         "stackGroup": "synergy-recovery",
         "stackMode": "max",
         "type": "insp_on_quiz",
-        "value": 1,
+        "value": 10,
         "maxTriggers": 4
       }
     ]
@@ -1097,9 +1099,9 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "manuscript_pct",
-        "value": 0.02,
+        "value": 200,
         "step": 2,
-        "cap": 0.12,
+        "cap": 1200,
         "when": {
           "styles": [
             "shi"
@@ -1122,7 +1124,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "theme_pct",
-        "value": 0.12,
+        "value": 1200,
         "theme": "yongwu"
       }
     ]
@@ -1141,8 +1143,8 @@
         "stackGroup": "synergy-palace",
         "stackMode": "max",
         "type": "palace_insp",
-        "value": 2,
-        "startValue": 3
+        "value": 20,
+        "startValue": 30
       }
     ]
   },
@@ -1160,7 +1162,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "palace_pct",
-        "value": 0.12
+        "value": 1200
       }
     ]
   },
@@ -1179,7 +1181,7 @@
         "stackMode": "max",
         "type": "streak_pct",
         "minStreak": 2,
-        "value": 0.06
+        "value": 600
       }
     ]
   },
@@ -1199,7 +1201,7 @@
         "type": "dice_pattern",
         "pattern": "first_last_equal",
         "minDice": 2,
-        "value": 0.06
+        "value": 600
       }
     ]
   },
@@ -1218,10 +1220,10 @@
         "stackMode": "max",
         "type": "dice_pattern",
         "pattern": "pair",
-        "value": 0.06,
+        "value": 600,
         "reward": {
           "type": "inspiration",
-          "value": 1,
+          "value": 10,
           "perMatch": false
         }
       }
@@ -1241,7 +1243,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "style_switch_pct",
-        "value": 0.08,
+        "value": 800,
         "insight": 1
       }
     ]
@@ -1260,7 +1262,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "style_switch_pct",
-        "value": 0.1,
+        "value": 1000,
         "insight": 0,
         "when": {
           "usedTalents": [
@@ -1285,7 +1287,7 @@
         "stackMode": "max",
         "type": "theme_pct",
         "theme": "huaigu",
-        "value": 0.08
+        "value": 800
       }
     ]
   },
@@ -1303,8 +1305,8 @@
         "stackGroup": "synergy-growth",
         "stackMode": "max",
         "type": "study_bonus",
-        "value": 1,
-        "nextBattlePct": 0.04
+        "value": 10,
+        "nextBattlePct": 400
       }
     ]
   },
@@ -1322,8 +1324,8 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "comeback",
-        "threshold": 16,
-        "value": 0.1,
+        "threshold": 160,
+        "value": 1000,
         "when": {
           "usedTalents": [
             "TA09"
@@ -1346,7 +1348,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "syn_pct",
-        "value": 0.06,
+        "value": 600,
         "when": {
           "usedTalents": [
             "TA09"
@@ -1370,7 +1372,7 @@
         "stackMode": "max",
         "type": "dice_pattern",
         "pattern": "single",
-        "value": 0.08
+        "value": 800
       }
     ]
   },
@@ -1392,7 +1394,7 @@
         "value": 0,
         "reward": {
           "type": "inspiration",
-          "value": 1,
+          "value": 10,
           "perMatch": false
         }
       }
@@ -1415,7 +1417,7 @@
         "pattern": "low_then_high",
         "lowMax": 2,
         "nextHighMin": 5,
-        "value": 0.08
+        "value": 800
       }
     ]
   },
@@ -1435,7 +1437,7 @@
         "type": "dice_pattern",
         "pattern": "all_distinct",
         "minDice": 2,
-        "value": 0.06
+        "value": 600
       }
     ]
   },
@@ -1454,7 +1456,7 @@
         "stackMode": "max",
         "type": "battle_history_pct",
         "result": "nonwin",
-        "value": 0.06
+        "value": 600
       }
     ]
   },
@@ -1472,8 +1474,8 @@
         "stackGroup": "synergy-recovery",
         "stackMode": "max",
         "type": "insp_battle_recover",
-        "threshold": 18,
-        "value": 2,
+        "threshold": 180,
+        "value": 20,
         "maxTriggers": 3
       }
     ]
@@ -1492,12 +1494,12 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "syn_pct",
-        "value": 0.08,
+        "value": 800,
         "when": {
           "usedTalents": [
             "TA10"
           ],
-          "inspirationRatioMin": 0.5
+          "inspirationRatioMin": 5000
         }
       }
     ]
@@ -1518,7 +1520,7 @@
         "type": "dice_pattern",
         "pattern": "all_high",
         "minPip": 4,
-        "value": 0.06,
+        "value": 600,
         "when": {
           "usedTalents": [
             "TA10"
@@ -1541,7 +1543,7 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "restraint_pct",
-        "value": 0.06
+        "value": 600
       }
     ]
   },
@@ -1559,9 +1561,9 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "syn_pct",
-        "value": 0.06,
+        "value": 600,
         "when": {
-          "inspirationRatioMin": 0.6
+          "inspirationRatioMin": 6000
         }
       }
     ]
@@ -1583,7 +1585,7 @@
         "pattern": "low_and_high",
         "lowMax": 2,
         "highMin": 5,
-        "value": 0.08
+        "value": 800
       }
     ]
   },
@@ -1602,7 +1604,7 @@
         "stackMode": "max",
         "type": "dice_pattern",
         "pattern": "six",
-        "value": 0.08,
+        "value": 800,
         "when": {
           "usedTalents": [
             "TA07"
@@ -1626,7 +1628,7 @@
         "stackMode": "max",
         "type": "dice_pattern",
         "pattern": "six",
-        "value": 0.08,
+        "value": 800,
         "when": {
           "usedTalents": [
             "TA11"
@@ -1658,7 +1660,7 @@
         },
         "reward": {
           "type": "inspiration",
-          "value": 1,
+          "value": 10,
           "perMatch": false
         }
       }
@@ -1678,8 +1680,8 @@
         "stackGroup": "synergy-resonance-v2",
         "stackMode": "max",
         "type": "comeback",
-        "threshold": 14,
-        "value": 0.08
+        "threshold": 140,
+        "value": 800
       }
     ]
   },
@@ -1698,10 +1700,10 @@
         "stackMode": "max",
         "type": "dice_pattern",
         "pattern": "single",
-        "value": 0.06,
+        "value": 600,
         "reward": {
           "type": "insight",
-          "value": 1,
+          "value": 10,
           "perMatch": false
         }
       }
@@ -1722,7 +1724,7 @@
         "stackMode": "max",
         "type": "dice_pattern",
         "pattern": "six",
-        "value": 0.08,
+        "value": 800,
         "when": {
           "usedTalents": [
             "TA04"

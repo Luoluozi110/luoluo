@@ -1,25 +1,25 @@
 {
   "initial": {
-    "shi": 5,
-    "ci": 5,
-    "lian": 5,
-    "bi": 5,
-    "xue": 5,
-    "si": 5
+    "shi": 50,
+    "ci": 50,
+    "lian": 50,
+    "bi": 50,
+    "xue": 50,
+    "si": 50
   },
-  "schoolBonus": 3,
-  "quizCorrectGain": 4,
-  "zeCellGain": 1,
-  "branchLandmarkGain": 5,
+  "schoolBonus": 30,
+  "quizCorrectGain": 40,
+  "zeCellGain": 10,
+  "branchLandmarkGain": 50,
   "battleWinGain": [
-    3,
-    5
+    30,
+    50
   ],
   "battleDrawGain": {
-    "style": 1
+    "style": 10
   },
   "battleLoseGain": {
-    "style": 2
+    "style": 20
   },
   "battleFormula": {
     "styleCommonMult": 7,
@@ -27,38 +27,38 @@
     "basicMult": 4
   },
   "abilitySystem": {
-    "version": 2,
+    "version": 3,
     "growth": {
       "familiarityNeed": 3,
-      "insightWin": 3,
-      "insightDraw": 3,
-      "insightLose": 2,
-      "insightUpset": 1,
-      "firstStylePerPhase": 1,
-      "baseCost": 4,
-      "catchupGap": 6,
-      "catchupCost": 3,
-      "specialistGap": 6,
-      "specialistCost": 5
+      "insightWin": 30,
+      "insightDraw": 30,
+      "insightLose": 20,
+      "insightUpset": 10,
+      "firstStylePerPhase": 10,
+      "baseCost": 40,
+      "catchupGap": 60,
+      "catchupCost": 30,
+      "specialistGap": 60,
+      "specialistCost": 50
     },
     "study": {
-      "baseInsightCap": 6,
-      "insightCapPerXue": 3,
+      "baseInsightCap": 60,
+      "insightCapPerXue": 30,
       "baseSlots": 1,
-      "slotPerXue": 10,
+      "slotPerXue": 100,
       "maxSlots": 3,
-      "progressNeed": 3,
-      "progressPerXue": 0.04,
+      "progressNeed": 3000,
+      "progressPerXue": 4,
       "slotMilestones": [
-        10,
-        20
+        100,
+        200
       ]
     },
     "strategy": {
       "baseCharges": 1,
       "maxCharges": 3,
-      "chargePerSi": 10,
-      "capPerSi": 10,
+      "chargePerSi": 100,
+      "capPerSi": 100,
       "maxCap": 6,
       "defaultPlan": "guard",
       "plans": {
@@ -66,36 +66,36 @@
           "name": "徐行拾句",
           "desc": "自然移动骰为 1～3 时，消耗 1 构思，额外获得 1 份残页（不改变原始骰）",
           "lowMax": 3,
-          "fragmentGain": 1
+          "fragmentGain": 1000
         },
         "guard": {
           "name": "留白养气",
-          "desc": "论战失败时，消耗 1 构思，减少 2 点败北灵感损失",
-          "lossReduce": 2
+          "desc": "论战失败时，消耗 1 构思，减少 20 点败北灵感损失",
+          "lossReduce": 20
         },
         "switch": {
           "name": "换韵生新",
           "desc": "文体不同于上一场时，消耗 1 构思，获得 6% 作品加成",
-          "scorePct": 0.06
+          "scorePct": 600
         }
       }
     },
     "manuscript": {
       "baseCap": 2,
-      "capPerBi": 6,
+      "capPerBi": 60,
       "maxCap": 8,
-      "fragmentPerBi": 0.05,
-      "fragmentNeed": 2,
-      "fragmentFastBi": 16,
-      "bonusPageBi": 24,
+      "fragmentPerBi": 5,
+      "fragmentNeed": 2000,
+      "fragmentFastBi": 160,
+      "bonusPageBi": 240,
       "polishCost": 2,
-      "polishDiscount": 2,
+      "polishDiscount": 20,
       "publishCost": 3,
-      "publishInspiration": 4,
+      "publishInspiration": 40,
       "volumeCost": 5,
       "volumeScore": 60,
       "volumeCap": 2,
-      "volumeRefundBi": 32,
+      "volumeRefundBi": 320,
       "volumeRefundPages": 1
     }
   },
@@ -103,23 +103,23 @@
     "shi": {
       "name": "一气",
       "lowMax": 3,
-      "lowMult": 0.85,
+      "lowMult": 8500,
       "highMin": 4,
-      "highMult": 1.25,
-      "singleDieInsight": 1
+      "highMult": 12500,
+      "singleDieInsight": 10
     },
     "ci": {
       "name": "叠阕",
       "highMin": 5,
-      "highPct": 0.08,
-      "firstExtraDiscount": 1
+      "highPct": 800,
+      "firstExtraDiscount": 10
     },
     "lian": {
       "name": "对举",
-      "switchPct": 0.08,
-      "catchupGap": 4,
+      "switchPct": 800,
+      "catchupGap": 40,
       "practiceBonus": 1,
-      "lossInspirationReduce": 1
+      "lossInspirationReduce": 10
     }
   },
   "techniqueSystem": {
@@ -135,17 +135,18 @@
       "lian": []
     }
   },
-  "talentDropRate": 0.22,
+  "talentDropRate": 2200,
   "diminish": {
-    "soft": 34,
-    "hard": 48,
-    "midRate": 0.5,
-    "highRate": 0.25,
-    "minGain": 1
+    "soft": 340,
+    "hard": 480,
+    "midRate": 5000,
+    "highRate": 2500,
+    "minGain": 10
   },
   "winScale": {
-    "min": 0.45,
-    "max": 1,
+    "min": 4500,
+    "max": 10000,
     "exp": 1
-  }
+  },
+  "numericVersion": 2
 }

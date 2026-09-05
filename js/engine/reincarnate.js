@@ -1,24 +1,32 @@
 /** 照我传灯·跨局传承存储。独立于 Game 生命周期，支持 Web Storage 与无头测试内存兜底。 */
 import { ATTR_KEYS } from './rules.js';
+import { NUMERIC_VERSION, legacyTenthsToV2 } from './numeric.js';
 
 export const REINCARNATE_KEY = 'feihua_reincarnate_v1';
 
 export const Reincarnate = {
   _mem: null,
   _read() {
+    let record = null;
     try {
       if (typeof localStorage !== 'undefined' && localStorage) {
         const raw = localStorage.getItem(REINCARNATE_KEY);
-        if (raw) return JSON.parse(raw);
+        if (raw) record = JSON.parse(raw);
       }
     } catch (e) { /* localStorage 不可用或坏档 → 尝试 sessionStorage */ }
     try {
-      if (typeof sessionStorage !== 'undefined' && sessionStorage) {
+      if (!record && typeof sessionStorage !== 'undefined' && sessionStorage) {
         const raw = sessionStorage.getItem(REINCARNATE_KEY);
-        if (raw) return JSON.parse(raw);
+        if (raw) record = JSON.parse(raw);
       }
     } catch (e) { /* sessionStorage 不可用 → 内存兜底 */ }
-    return this._mem;
+    record = record || this._mem;
+    if (record && Number(record.numericVersion) !== NUMERIC_VERSION) {
+      for (const key of ATTR_KEYS) if (record.attrs && key in record.attrs) record.attrs[key] = legacyTenthsToV2(record.attrs[key]);
+      record.numericVersion = NUMERIC_VERSION;
+      this._write(record);
+    }
+    return record;
   },
   _write(obj) {
     this._mem = obj;
@@ -50,7 +58,7 @@ export const Reincarnate = {
     const talentLevel = Math.max(1, Math.floor(Number((s.talentLevels || {})[talentId]) || 1));
     // 传承不仅保留当前属性，也保留点灯者本身。否则下一局虽得到属性，
     // 却无法再次点灯，传承链会在一局后中断。
-    this._write({ talentId, talentName: t.name || talentId, talentLevel, ratio, attrs, ts: typeof Date !== 'undefined' ? Date.now() : 0 });
+    this._write({ numericVersion: NUMERIC_VERSION, talentId, talentName: t.name || talentId, talentLevel, ratio, attrs, ts: typeof Date !== 'undefined' ? Date.now() : 0 });
     return true;
   },
   consume() {
