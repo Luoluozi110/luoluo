@@ -1,0 +1,5959 @@
+{
+  "date": "2026-09-05",
+  "scope": "设计文档核查；未修改或验证新版游戏运行时",
+  "counts": {
+    "mainTalents": 49,
+    "sideTalents": 12,
+    "talents": 61,
+    "upgradeRecords": 61,
+    "levelRecords": 263,
+    "synergies": 48,
+    "synergyEffects": 62,
+    "mappedNumericOccurrences": 817,
+    "unknownNumericPaths": 0
+  },
+  "checks": {
+    "uniqueTalentIds": true,
+    "upgradeCoverage": true,
+    "upgradeLevelAndCostLengths": true,
+    "synergyMembersExist": true,
+    "scaledValuesSafeIntegers": true,
+    "pricesSafeIntegers": true,
+    "arithmeticExamples": true,
+    "legacyEngineExamples": true,
+    "existingConfigValidation": {
+      "blocks": 17,
+      "errors": 0,
+      "warnings": 0
+    },
+    "documentStructure": {
+      "localLinks": 17,
+      "jsonExamples": 2,
+      "tables": 131,
+      "brokenLinks": 0,
+      "balancedFences": true,
+      "consistentTableColumns": true
+    },
+    "sourceFingerprintRecheck": true
+  },
+  "arithmetic": {
+    "progress": [
+      {
+        "attribute": 50,
+        "study": 1200,
+        "manuscript": 250,
+        "strategy": 1500,
+        "insightCap": 70
+      },
+      {
+        "attribute": 51,
+        "study": 1204,
+        "manuscript": 255,
+        "strategy": 1510,
+        "insightCap": 70
+      },
+      {
+        "attribute": 100,
+        "study": 1400,
+        "manuscript": 500,
+        "strategy": 2000,
+        "insightCap": 90
+      },
+      {
+        "attribute": 160,
+        "study": 1640,
+        "manuscript": 800,
+        "strategy": 2600,
+        "insightCap": 110
+      },
+      {
+        "attribute": 200,
+        "study": 1800,
+        "manuscript": 1000,
+        "strategy": 3000,
+        "insightCap": 120
+      },
+      {
+        "attribute": 250,
+        "study": 2000,
+        "manuscript": 1250,
+        "strategy": 3500,
+        "insightCap": 140
+      },
+      {
+        "attribute": 300,
+        "study": 2000,
+        "manuscript": 1500,
+        "strategy": 4000,
+        "insightCap": 160
+      }
+    ],
+    "legacyEngineProgressSamplesVerified": 6,
+    "initialPoemBattleScoresLegacy": [
+      114,
+      117,
+      121,
+      132,
+      138,
+      143
+    ],
+    "initialPoemBattleScoresA": [
+      1140,
+      1170,
+      1210,
+      1320,
+      1380,
+      1430
+    ],
+    "initialPoemBattleScoresB": [
+      1137,
+      1175,
+      1212,
+      1320,
+      1375,
+      1430
+    ],
+    "qishiUpgrade": {
+      "legacy": 4,
+      "baselineA": 40,
+      "targetB": 32
+    },
+    "manuscriptTwoRewards": {
+      "progress": 2000,
+      "threshold": 2000,
+      "pages": 1
+    },
+    "S24totalBp": 2400
+  },
+  "sourceFiles": [
+    {
+      "path": "feihuaqi-playable/config/affinity.json",
+      "sha256": "0aee69dc4740e209934d6841191384a303dd06ba8bcb8e19ab37fdead5d7eafb"
+    },
+    {
+      "path": "feihuaqi-playable/config/album.json",
+      "sha256": "e8216ba92b7af4017f304e7a9ea6a534114feafe085eb85f7e5d9937dcc6077f"
+    },
+    {
+      "path": "feihuaqi-playable/config/attrs.json",
+      "sha256": "4cc215d810d3166b537625cb36321ee69de67ef716b7ef2c0e23bf12710a2219"
+    },
+    {
+      "path": "feihuaqi-playable/config/board.json",
+      "sha256": "026afbc62096b1a8d85f3fa3096207d30458a8645231076e5506ad87ebb760fc"
+    },
+    {
+      "path": "feihuaqi-playable/config/cloud.json",
+      "sha256": "260a8032c19e8354b0be901a3578f1512c4a267a1c2c1a08c3c020be7f1fb14f"
+    },
+    {
+      "path": "feihuaqi-playable/config/events.json",
+      "sha256": "dc493be58ca0425d62ba97700c0c6d5b1268169d929618707a7325a5cda8369f"
+    },
+    {
+      "path": "feihuaqi-playable/config/grades.json",
+      "sha256": "853b2ab11a9086ba8d2211f0451553306fc677f0f86f092c2ccb26a7e26e8200"
+    },
+    {
+      "path": "feihuaqi-playable/config/inspiration.json",
+      "sha256": "cd524681a49efe17f28f2faee4805c9ffb36747c23e29dfbe8e25c7cc4815d7a"
+    },
+    {
+      "path": "feihuaqi-playable/config/leaderboard.json",
+      "sha256": "7ef66531e3e5063ee8801fb6222a9bf3c40bc6168549cf7ec4d6696ab9c2e84e"
+    },
+    {
+      "path": "feihuaqi-playable/config/narrative.json",
+      "sha256": "95aaa53721d43b77b8c9f9256efedb48a1369832f73e545f55011b56378049d3"
+    },
+    {
+      "path": "feihuaqi-playable/config/npc-mechanics.json",
+      "sha256": "1ed72d943f302f6132981d9d6608a5289705757eb7c481e723026716381f8935"
+    },
+    {
+      "path": "feihuaqi-playable/config/npcs.json",
+      "sha256": "ee16c26731746987cbf9bd955155845c7c750cb038692e9bb37cd0fe051f6a9c"
+    },
+    {
+      "path": "feihuaqi-playable/config/questions.json",
+      "sha256": "5ae9fe294dcac582661d3850fbf6a1d9f39720364c168a74039bb2dc113a51a4"
+    },
+    {
+      "path": "feihuaqi-playable/config/schools.json",
+      "sha256": "c327af1ec52141b0f3181e6c0bdc41ae9c990d0d4fcd87e8f6a542c0d936b9b9"
+    },
+    {
+      "path": "feihuaqi-playable/config/sidequest-npcs.json",
+      "sha256": "2db898b96a64db6eafc3e3cb705c62a25b1bc305bd4f87266602f5188cc9ee4a"
+    },
+    {
+      "path": "feihuaqi-playable/config/sidequest-talents.json",
+      "sha256": "a44e2979b9b301cc74173cfbf81daa3589c5e77a9e1746c668f01411bd42b1e7"
+    },
+    {
+      "path": "feihuaqi-playable/config/sidequests.json",
+      "sha256": "83022d247a501a32e43e36871d59e68861487c40c175dce981a1e54fb55be7f5"
+    },
+    {
+      "path": "feihuaqi-playable/config/sky.json",
+      "sha256": "70d12a638400e43252644101854cdbca9c7e55e8d519f51049be1d0f58dfb72b"
+    },
+    {
+      "path": "feihuaqi-playable/config/synergies.json",
+      "sha256": "128326649549d201d78651873457d4f0ab3694014cdc9e985a54ee682f46f927"
+    },
+    {
+      "path": "feihuaqi-playable/config/talent-upgrade.json",
+      "sha256": "48aec8de92613f98ddebb16cb44c0ae2c7fa5e266c44d8637a32b728ce819ae5"
+    },
+    {
+      "path": "feihuaqi-playable/config/talents.json",
+      "sha256": "728e36acdd38dba4b2fd5fa37bfad0c9d24d9cbbb544761230e9409d0c6a19be"
+    },
+    {
+      "path": "feihuaqi-playable/js/engine/rules.js",
+      "sha256": "c806707a0c90311e8eb8f4aae6d6bbbccd624953e86566b03178be7176a8f1b2"
+    },
+    {
+      "path": "feihuaqi-playable/js/engine/game.js",
+      "sha256": "852f222fdd719b75e0fe975b503604713da77ae6dde2b23dae6d0f34356272c2"
+    },
+    {
+      "path": "feihuaqi-playable/js/engine/save.js",
+      "sha256": "36355734f2a3343f57d7dd4ecebca4663d72c54160d74fb33621e6c29e7334d0"
+    },
+    {
+      "path": "feihuaqi-playable/js/engine/reincarnate.js",
+      "sha256": "9eb12eaca9aa903f6451d2a26689ea0c9bc3a7439a095da2b23b0118ef907a5f"
+    },
+    {
+      "path": "feihuaqi-playable/js/engine/config.js",
+      "sha256": "bf5ac87a51c37f6a145767fb4eb5bae436a22e234ee09149fbf0e79ed3a7811f"
+    },
+    {
+      "path": "feihuaqi-playable/js/ui/hud.js",
+      "sha256": "622c2887660cfe121293c5b8bf07516c39e223871c2b7ee6dd8d55359b6d93bd"
+    }
+  ],
+  "numericMappings": [
+    {
+      "context": "T001:base",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "T001:Lv1",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "T001:Lv2",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "T001:Lv3",
+      "path": "value",
+      "old": 5,
+      "new": 50,
+      "unit": "insight"
+    },
+    {
+      "context": "T002:base",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "T002:Lv1",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "T002:Lv2",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "T002:Lv3",
+      "path": "value",
+      "old": 5,
+      "new": 50,
+      "unit": "insight"
+    },
+    {
+      "context": "T003:base",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "T003:Lv1",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "T003:Lv2",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "T003:Lv3",
+      "path": "value",
+      "old": 5,
+      "new": 50,
+      "unit": "insight"
+    },
+    {
+      "context": "T004:base",
+      "path": "attrs.xue",
+      "old": 3,
+      "new": 30,
+      "unit": "attribute"
+    },
+    {
+      "context": "T004:base",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "attribute"
+    },
+    {
+      "context": "T004:Lv1",
+      "path": "attrs.xue",
+      "old": 3,
+      "new": 30,
+      "unit": "attribute"
+    },
+    {
+      "context": "T004:Lv1",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "attribute"
+    },
+    {
+      "context": "T004:Lv2",
+      "path": "attrs.xue",
+      "old": 4,
+      "new": 40,
+      "unit": "attribute"
+    },
+    {
+      "context": "T004:Lv2",
+      "path": "value",
+      "old": 4,
+      "new": 40,
+      "unit": "attribute"
+    },
+    {
+      "context": "T004:Lv3",
+      "path": "attrs.xue",
+      "old": 6,
+      "new": 60,
+      "unit": "attribute"
+    },
+    {
+      "context": "T004:Lv3",
+      "path": "value",
+      "old": 6,
+      "new": 60,
+      "unit": "attribute"
+    },
+    {
+      "context": "T005:base",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "T005:base",
+      "path": "nextHighMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "T005:base",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T005:base",
+      "path": "conditionalFirstCostDiscount",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T005:Lv1",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "T005:Lv1",
+      "path": "nextHighMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "T005:Lv1",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T005:Lv1",
+      "path": "conditionalFirstCostDiscount",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T005:Lv2",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "T005:Lv2",
+      "path": "nextHighMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "T005:Lv2",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "T005:Lv2",
+      "path": "conditionalFirstCostDiscount",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T005:Lv3",
+      "path": "lowMax",
+      "old": 3,
+      "new": 3,
+      "unit": "pip"
+    },
+    {
+      "context": "T005:Lv3",
+      "path": "nextHighMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "T005:Lv3",
+      "path": "value",
+      "old": 0.22,
+      "new": 2200,
+      "unit": "bp"
+    },
+    {
+      "context": "T005:Lv3",
+      "path": "conditionalFirstCostDiscount",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T006:base",
+      "path": "attrs.bi",
+      "old": 3,
+      "new": 30,
+      "unit": "attribute"
+    },
+    {
+      "context": "T006:Lv1",
+      "path": "attrs.bi",
+      "old": 3,
+      "new": 30,
+      "unit": "attribute"
+    },
+    {
+      "context": "T006:Lv2",
+      "path": "attrs.bi",
+      "old": 4,
+      "new": 40,
+      "unit": "attribute"
+    },
+    {
+      "context": "T006:Lv3",
+      "path": "attrs.bi",
+      "old": 5,
+      "new": 50,
+      "unit": "attribute"
+    },
+    {
+      "context": "T006:Lv4",
+      "path": "attrs.bi",
+      "old": 6,
+      "new": 60,
+      "unit": "attribute"
+    },
+    {
+      "context": "T007:base",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T007:Lv1",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T007:Lv2",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T007:Lv3",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T007:Lv4",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "T007:Lv5",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "T007:Lv5",
+      "path": "reward.value",
+      "old": 1,
+      "new": 1000,
+      "unit": "progress"
+    },
+    {
+      "context": "T008:base",
+      "path": "attrs.si",
+      "old": 3,
+      "new": 30,
+      "unit": "attribute"
+    },
+    {
+      "context": "T008:Lv1",
+      "path": "attrs.si",
+      "old": 3,
+      "new": 30,
+      "unit": "attribute"
+    },
+    {
+      "context": "T008:Lv2",
+      "path": "attrs.si",
+      "old": 4,
+      "new": 40,
+      "unit": "attribute"
+    },
+    {
+      "context": "T008:Lv3",
+      "path": "attrs.si",
+      "old": 5,
+      "new": 50,
+      "unit": "attribute"
+    },
+    {
+      "context": "T008:Lv4",
+      "path": "attrs.si",
+      "old": 6,
+      "new": 60,
+      "unit": "attribute"
+    },
+    {
+      "context": "T009:base",
+      "path": "attrs.xue",
+      "old": 3,
+      "new": 30,
+      "unit": "attribute"
+    },
+    {
+      "context": "T009:Lv1",
+      "path": "attrs.xue",
+      "old": 3,
+      "new": 30,
+      "unit": "attribute"
+    },
+    {
+      "context": "T009:Lv2",
+      "path": "attrs.xue",
+      "old": 4,
+      "new": 40,
+      "unit": "attribute"
+    },
+    {
+      "context": "T009:Lv3",
+      "path": "attrs.xue",
+      "old": 5,
+      "new": 50,
+      "unit": "attribute"
+    },
+    {
+      "context": "T010:base",
+      "path": "minDice",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T010:base",
+      "path": "value",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "T010:base",
+      "path": "firstCostDiscount",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T010:base",
+      "path": "reward.value",
+      "old": 0.5,
+      "new": 500,
+      "unit": "progress"
+    },
+    {
+      "context": "T010:Lv1",
+      "path": "minDice",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T010:Lv1",
+      "path": "value",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "T010:Lv1",
+      "path": "firstCostDiscount",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T010:Lv1",
+      "path": "reward.value",
+      "old": 0.5,
+      "new": 500,
+      "unit": "progress"
+    },
+    {
+      "context": "T010:Lv2",
+      "path": "minDice",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T010:Lv2",
+      "path": "value",
+      "old": 0.19,
+      "new": 1900,
+      "unit": "bp"
+    },
+    {
+      "context": "T010:Lv2",
+      "path": "firstCostDiscount",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T010:Lv2",
+      "path": "reward.value",
+      "old": 0.5,
+      "new": 500,
+      "unit": "progress"
+    },
+    {
+      "context": "T010:Lv3",
+      "path": "minDice",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T010:Lv3",
+      "path": "value",
+      "old": 0.22,
+      "new": 2200,
+      "unit": "bp"
+    },
+    {
+      "context": "T010:Lv3",
+      "path": "firstCostDiscount",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T010:Lv3",
+      "path": "reward.value",
+      "old": 1,
+      "new": 1000,
+      "unit": "progress"
+    },
+    {
+      "context": "T011:base",
+      "path": "ratio",
+      "old": 0.8,
+      "new": 8000,
+      "unit": "bp"
+    },
+    {
+      "context": "T011:Lv1",
+      "path": "ratio",
+      "old": 0.8,
+      "new": 8000,
+      "unit": "bp"
+    },
+    {
+      "context": "T011:Lv2",
+      "path": "ratio",
+      "old": 0.9,
+      "new": 9000,
+      "unit": "bp"
+    },
+    {
+      "context": "T011:Lv3",
+      "path": "ratio",
+      "old": 1,
+      "new": 10000,
+      "unit": "bp"
+    },
+    {
+      "context": "T011:Lv4",
+      "path": "ratio",
+      "old": 1,
+      "new": 10000,
+      "unit": "bp"
+    },
+    {
+      "context": "T011:Lv4",
+      "path": "synergyPct",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T011:Lv5",
+      "path": "ratio",
+      "old": 1.1,
+      "new": 11000,
+      "unit": "bp"
+    },
+    {
+      "context": "T011:Lv5",
+      "path": "synergyPct",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T011:Lv5",
+      "path": "themeFlat",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T011:Lv6",
+      "path": "ratio",
+      "old": 1.2,
+      "new": 12000,
+      "unit": "bp"
+    },
+    {
+      "context": "T011:Lv6",
+      "path": "synergyPct",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T011:Lv6",
+      "path": "themeFlat",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T011:Lv6",
+      "path": "convertPct",
+      "old": 0.5,
+      "new": 5000,
+      "unit": "bp"
+    },
+    {
+      "context": "T012:base",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "T012:Lv1",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "T012:Lv2",
+      "path": "value",
+      "old": 4,
+      "new": 40,
+      "unit": "insight"
+    },
+    {
+      "context": "T012:Lv3",
+      "path": "value",
+      "old": 5,
+      "new": 50,
+      "unit": "insight"
+    },
+    {
+      "context": "T012:Lv4",
+      "path": "value",
+      "old": 7,
+      "new": 70,
+      "unit": "insight"
+    },
+    {
+      "context": "T013:base",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "T013:Lv1",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "T013:Lv2",
+      "path": "value",
+      "old": 4,
+      "new": 40,
+      "unit": "insight"
+    },
+    {
+      "context": "T013:Lv3",
+      "path": "value",
+      "old": 5,
+      "new": 50,
+      "unit": "insight"
+    },
+    {
+      "context": "T013:Lv4",
+      "path": "value",
+      "old": 7,
+      "new": 70,
+      "unit": "insight"
+    },
+    {
+      "context": "T014:base",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "T014:Lv1",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "T014:Lv2",
+      "path": "value",
+      "old": 4,
+      "new": 40,
+      "unit": "insight"
+    },
+    {
+      "context": "T014:Lv3",
+      "path": "value",
+      "old": 5,
+      "new": 50,
+      "unit": "insight"
+    },
+    {
+      "context": "T014:Lv4",
+      "path": "value",
+      "old": 7,
+      "new": 70,
+      "unit": "insight"
+    },
+    {
+      "context": "T015:base",
+      "path": "threshold",
+      "old": 14,
+      "new": 140,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T015:base",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "T015:Lv1",
+      "path": "threshold",
+      "old": 14,
+      "new": 140,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T015:Lv1",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "T015:Lv2",
+      "path": "threshold",
+      "old": 15,
+      "new": 150,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T015:Lv2",
+      "path": "value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "T015:Lv3",
+      "path": "threshold",
+      "old": 16,
+      "new": 160,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T015:Lv3",
+      "path": "value",
+      "old": 0.2,
+      "new": 2000,
+      "unit": "bp"
+    },
+    {
+      "context": "T015:Lv4",
+      "path": "threshold",
+      "old": 17,
+      "new": 170,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T015:Lv4",
+      "path": "value",
+      "old": 0.22,
+      "new": 2200,
+      "unit": "bp"
+    },
+    {
+      "context": "T015:Lv5",
+      "path": "threshold",
+      "old": 18,
+      "new": 180,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T015:Lv5",
+      "path": "value",
+      "old": 0.24,
+      "new": 2400,
+      "unit": "bp"
+    },
+    {
+      "context": "T016:base",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T016:base",
+      "path": "perStepValue",
+      "old": 0.05,
+      "new": 500,
+      "unit": "bp"
+    },
+    {
+      "context": "T016:base",
+      "path": "fullDice",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T016:base",
+      "path": "fullValue",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T016:base",
+      "path": "firstCostDiscount",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T016:base",
+      "path": "fullReward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T016:Lv1",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T016:Lv1",
+      "path": "perStepValue",
+      "old": 0.05,
+      "new": 500,
+      "unit": "bp"
+    },
+    {
+      "context": "T016:Lv1",
+      "path": "fullDice",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T016:Lv1",
+      "path": "fullValue",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T016:Lv1",
+      "path": "firstCostDiscount",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T016:Lv1",
+      "path": "fullReward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T016:Lv2",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T016:Lv2",
+      "path": "perStepValue",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "T016:Lv2",
+      "path": "fullDice",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T016:Lv2",
+      "path": "fullValue",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T016:Lv2",
+      "path": "firstCostDiscount",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T016:Lv2",
+      "path": "fullReward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T016:Lv3",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T016:Lv3",
+      "path": "perStepValue",
+      "old": 0.07,
+      "new": 700,
+      "unit": "bp"
+    },
+    {
+      "context": "T016:Lv3",
+      "path": "fullDice",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T016:Lv3",
+      "path": "fullValue",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T016:Lv3",
+      "path": "firstCostDiscount",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T016:Lv3",
+      "path": "fullReward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T016:Lv4",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T016:Lv4",
+      "path": "perStepValue",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T016:Lv4",
+      "path": "fullDice",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T016:Lv4",
+      "path": "fullValue",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T016:Lv4",
+      "path": "firstCostDiscount",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T016:Lv4",
+      "path": "fullReward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T016:Lv5",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T016:Lv5",
+      "path": "perStepValue",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T016:Lv5",
+      "path": "fullDice",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T016:Lv5",
+      "path": "fullValue",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "T016:Lv5",
+      "path": "firstCostDiscount",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T016:Lv5",
+      "path": "fullReward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T099:base",
+      "path": "value",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "T099:base",
+      "path": "startInspiration",
+      "old": 4,
+      "new": 40,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T099:Lv1",
+      "path": "value",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "T099:Lv1",
+      "path": "startInspiration",
+      "old": 4,
+      "new": 40,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T099:Lv2",
+      "path": "value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "T099:Lv2",
+      "path": "startInspiration",
+      "old": 4,
+      "new": 40,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T099:Lv3",
+      "path": "value",
+      "old": 0.21,
+      "new": 2100,
+      "unit": "bp"
+    },
+    {
+      "context": "T099:Lv3",
+      "path": "startInspiration",
+      "old": 5,
+      "new": 50,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T099:Lv4",
+      "path": "value",
+      "old": 0.24,
+      "new": 2400,
+      "unit": "bp"
+    },
+    {
+      "context": "T099:Lv4",
+      "path": "startInspiration",
+      "old": 6,
+      "new": 60,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T099:Lv5",
+      "path": "value",
+      "old": 0.27,
+      "new": 2700,
+      "unit": "bp"
+    },
+    {
+      "context": "T099:Lv5",
+      "path": "startInspiration",
+      "old": 7,
+      "new": 70,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T099:Lv6",
+      "path": "value",
+      "old": 0.3,
+      "new": 3000,
+      "unit": "bp"
+    },
+    {
+      "context": "T099:Lv6",
+      "path": "startInspiration",
+      "old": 8,
+      "new": 80,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA01:base",
+      "path": "multiple",
+      "old": 7,
+      "new": 7,
+      "unit": "pip"
+    },
+    {
+      "context": "TA01:base",
+      "path": "value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "TA01:base",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "insight"
+    },
+    {
+      "context": "TA01:Lv1",
+      "path": "multiple",
+      "old": 7,
+      "new": 7,
+      "unit": "pip"
+    },
+    {
+      "context": "TA01:Lv1",
+      "path": "value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "TA01:Lv1",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "insight"
+    },
+    {
+      "context": "TA01:Lv2",
+      "path": "multiple",
+      "old": 7,
+      "new": 7,
+      "unit": "pip"
+    },
+    {
+      "context": "TA01:Lv2",
+      "path": "value",
+      "old": 0.22,
+      "new": 2200,
+      "unit": "bp"
+    },
+    {
+      "context": "TA01:Lv2",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "insight"
+    },
+    {
+      "context": "TA01:Lv3",
+      "path": "multiple",
+      "old": 7,
+      "new": 7,
+      "unit": "pip"
+    },
+    {
+      "context": "TA01:Lv3",
+      "path": "value",
+      "old": 0.26,
+      "new": 2600,
+      "unit": "bp"
+    },
+    {
+      "context": "TA01:Lv3",
+      "path": "reward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "TA01:Lv4",
+      "path": "multiple",
+      "old": 7,
+      "new": 7,
+      "unit": "pip"
+    },
+    {
+      "context": "TA01:Lv4",
+      "path": "value",
+      "old": 0.3,
+      "new": 3000,
+      "unit": "bp"
+    },
+    {
+      "context": "TA01:Lv4",
+      "path": "reward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "TA02:base",
+      "path": "fraction",
+      "old": 0.3,
+      "new": 3000,
+      "unit": "bp"
+    },
+    {
+      "context": "TA02:Lv1",
+      "path": "fraction",
+      "old": 0.3,
+      "new": 3000,
+      "unit": "bp"
+    },
+    {
+      "context": "TA02:Lv2",
+      "path": "fraction",
+      "old": 0.45,
+      "new": 4500,
+      "unit": "bp"
+    },
+    {
+      "context": "TA02:Lv3",
+      "path": "fraction",
+      "old": 0.6,
+      "new": 6000,
+      "unit": "bp"
+    },
+    {
+      "context": "TA02:Lv4",
+      "path": "fraction",
+      "old": 0.75,
+      "new": 7500,
+      "unit": "bp"
+    },
+    {
+      "context": "TA03:base",
+      "path": "highMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "TA03:base",
+      "path": "highValue",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "TA03:base",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "TA03:base",
+      "path": "lowValue",
+      "old": -0.07,
+      "new": -700,
+      "unit": "bp"
+    },
+    {
+      "context": "TA03:Lv1",
+      "path": "highMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "TA03:Lv1",
+      "path": "highValue",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "TA03:Lv1",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "TA03:Lv1",
+      "path": "lowValue",
+      "old": -0.07,
+      "new": -700,
+      "unit": "bp"
+    },
+    {
+      "context": "TA03:Lv2",
+      "path": "highMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "TA03:Lv2",
+      "path": "highValue",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "TA03:Lv2",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "TA03:Lv2",
+      "path": "lowValue",
+      "old": -0.07,
+      "new": -700,
+      "unit": "bp"
+    },
+    {
+      "context": "TA03:Lv3",
+      "path": "highMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "TA03:Lv3",
+      "path": "highValue",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "TA03:Lv3",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "TA03:Lv3",
+      "path": "lowValue",
+      "old": -0.08,
+      "new": -800,
+      "unit": "bp"
+    },
+    {
+      "context": "TA03:Lv4",
+      "path": "highMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "TA03:Lv4",
+      "path": "highValue",
+      "old": 0.2,
+      "new": 2000,
+      "unit": "bp"
+    },
+    {
+      "context": "TA03:Lv4",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "TA03:Lv4",
+      "path": "lowValue",
+      "old": -0.09,
+      "new": -900,
+      "unit": "bp"
+    },
+    {
+      "context": "TA03:Lv5",
+      "path": "highMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "TA03:Lv5",
+      "path": "highValue",
+      "old": 0.22,
+      "new": 2200,
+      "unit": "bp"
+    },
+    {
+      "context": "TA03:Lv5",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "TA03:Lv5",
+      "path": "lowValue",
+      "old": -0.1,
+      "new": -1000,
+      "unit": "bp"
+    },
+    {
+      "context": "TA04:base",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "TA04:Lv1",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "TA04:Lv2",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "TA04:Lv3",
+      "path": "value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "TA04:Lv4",
+      "path": "value",
+      "old": 0.2,
+      "new": 2000,
+      "unit": "bp"
+    },
+    {
+      "context": "TA04:Lv5",
+      "path": "value",
+      "old": 0.24,
+      "new": 2400,
+      "unit": "bp"
+    },
+    {
+      "context": "TA05:base",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "TA05:base",
+      "path": "cost",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA05:base",
+      "path": "refund",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA05:Lv1",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "TA05:Lv1",
+      "path": "cost",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA05:Lv1",
+      "path": "refund",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA05:Lv2",
+      "path": "value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "TA05:Lv2",
+      "path": "cost",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA05:Lv2",
+      "path": "refund",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA05:Lv3",
+      "path": "value",
+      "old": 0.22,
+      "new": 2200,
+      "unit": "bp"
+    },
+    {
+      "context": "TA05:Lv3",
+      "path": "cost",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA05:Lv3",
+      "path": "refund",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA05:Lv4",
+      "path": "value",
+      "old": 0.28,
+      "new": 2800,
+      "unit": "bp"
+    },
+    {
+      "context": "TA05:Lv4",
+      "path": "cost",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA05:Lv4",
+      "path": "refund",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:base",
+      "path": "tiers.0.threshold",
+      "old": 16,
+      "new": 16,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:base",
+      "path": "tiers.0.value",
+      "old": 0.3,
+      "new": 3000,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:base",
+      "path": "tiers.0.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:base",
+      "path": "tiers.1.threshold",
+      "old": 12,
+      "new": 12,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:base",
+      "path": "tiers.1.value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:base",
+      "path": "tiers.1.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:Lv1",
+      "path": "tiers.0.threshold",
+      "old": 16,
+      "new": 16,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:Lv1",
+      "path": "tiers.0.value",
+      "old": 0.3,
+      "new": 3000,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:Lv1",
+      "path": "tiers.0.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:Lv1",
+      "path": "tiers.1.threshold",
+      "old": 12,
+      "new": 12,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:Lv1",
+      "path": "tiers.1.value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:Lv1",
+      "path": "tiers.1.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:Lv2",
+      "path": "tiers.0.threshold",
+      "old": 16,
+      "new": 16,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:Lv2",
+      "path": "tiers.0.value",
+      "old": 0.34,
+      "new": 3400,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:Lv2",
+      "path": "tiers.0.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:Lv2",
+      "path": "tiers.1.threshold",
+      "old": 12,
+      "new": 12,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:Lv2",
+      "path": "tiers.1.value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:Lv2",
+      "path": "tiers.1.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:Lv3",
+      "path": "tiers.0.threshold",
+      "old": 16,
+      "new": 16,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:Lv3",
+      "path": "tiers.0.value",
+      "old": 0.38,
+      "new": 3800,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:Lv3",
+      "path": "tiers.0.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:Lv3",
+      "path": "tiers.1.threshold",
+      "old": 12,
+      "new": 12,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:Lv3",
+      "path": "tiers.1.value",
+      "old": 0.2,
+      "new": 2000,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:Lv3",
+      "path": "tiers.1.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:Lv4",
+      "path": "tiers.0.threshold",
+      "old": 16,
+      "new": 16,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:Lv4",
+      "path": "tiers.0.value",
+      "old": 0.42,
+      "new": 4200,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:Lv4",
+      "path": "tiers.0.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:Lv4",
+      "path": "tiers.1.threshold",
+      "old": 12,
+      "new": 12,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:Lv4",
+      "path": "tiers.1.value",
+      "old": 0.22,
+      "new": 2200,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:Lv4",
+      "path": "tiers.1.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:Lv5",
+      "path": "tiers.0.threshold",
+      "old": 16,
+      "new": 16,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:Lv5",
+      "path": "tiers.0.value",
+      "old": 0.46,
+      "new": 4600,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:Lv5",
+      "path": "tiers.0.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:Lv5",
+      "path": "tiers.1.threshold",
+      "old": 12,
+      "new": 12,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:Lv5",
+      "path": "tiers.1.value",
+      "old": 0.24,
+      "new": 2400,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:Lv5",
+      "path": "tiers.1.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:Lv6",
+      "path": "tiers.0.threshold",
+      "old": 16,
+      "new": 16,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:Lv6",
+      "path": "tiers.0.value",
+      "old": 0.5,
+      "new": 5000,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:Lv6",
+      "path": "tiers.0.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA06:Lv6",
+      "path": "tiers.1.threshold",
+      "old": 12,
+      "new": 12,
+      "unit": "pip"
+    },
+    {
+      "context": "TA06:Lv6",
+      "path": "tiers.1.value",
+      "old": 0.26,
+      "new": 2600,
+      "unit": "bp"
+    },
+    {
+      "context": "TA06:Lv6",
+      "path": "tiers.1.reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA07:base",
+      "path": "maxPip",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "TA07:base",
+      "path": "target",
+      "old": 6,
+      "new": 6,
+      "unit": "pip"
+    },
+    {
+      "context": "TA07:Lv1",
+      "path": "maxPip",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "TA07:Lv1",
+      "path": "target",
+      "old": 6,
+      "new": 6,
+      "unit": "pip"
+    },
+    {
+      "context": "TA07:Lv2",
+      "path": "maxPip",
+      "old": 3,
+      "new": 3,
+      "unit": "pip"
+    },
+    {
+      "context": "TA07:Lv2",
+      "path": "target",
+      "old": 6,
+      "new": 6,
+      "unit": "pip"
+    },
+    {
+      "context": "TA07:Lv3",
+      "path": "maxPip",
+      "old": 4,
+      "new": 4,
+      "unit": "pip"
+    },
+    {
+      "context": "TA07:Lv3",
+      "path": "target",
+      "old": 6,
+      "new": 6,
+      "unit": "pip"
+    },
+    {
+      "context": "TA07:Lv4",
+      "path": "maxPip",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "TA07:Lv4",
+      "path": "target",
+      "old": 6,
+      "new": 6,
+      "unit": "pip"
+    },
+    {
+      "context": "TA08:base",
+      "path": "baseCost",
+      "old": 4,
+      "new": 40,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA08:base",
+      "path": "costStep",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA08:base",
+      "path": "maxValue",
+      "old": 6,
+      "new": 6,
+      "unit": "pip"
+    },
+    {
+      "context": "TA08:base",
+      "path": "cost",
+      "old": 4,
+      "new": 40,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA08:Lv1",
+      "path": "baseCost",
+      "old": 4,
+      "new": 40,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA08:Lv1",
+      "path": "costStep",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA08:Lv1",
+      "path": "maxValue",
+      "old": 6,
+      "new": 6,
+      "unit": "pip"
+    },
+    {
+      "context": "TA08:Lv1",
+      "path": "cost",
+      "old": 4,
+      "new": 40,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA08:Lv2",
+      "path": "baseCost",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA08:Lv2",
+      "path": "costStep",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA08:Lv2",
+      "path": "maxValue",
+      "old": 6,
+      "new": 6,
+      "unit": "pip"
+    },
+    {
+      "context": "TA08:Lv2",
+      "path": "cost",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA08:Lv3",
+      "path": "baseCost",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA08:Lv3",
+      "path": "costStep",
+      "old": 0,
+      "new": 0,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA08:Lv3",
+      "path": "maxValue",
+      "old": 6,
+      "new": 6,
+      "unit": "pip"
+    },
+    {
+      "context": "TA08:Lv3",
+      "path": "cost",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T017:base",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T017:Lv1",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T017:Lv2",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T017:Lv3",
+      "path": "value",
+      "old": 4,
+      "new": 40,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T018:base",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "T018:Lv1",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "T018:Lv2",
+      "path": "value",
+      "old": 4,
+      "new": 40,
+      "unit": "insight"
+    },
+    {
+      "context": "T018:Lv3",
+      "path": "value",
+      "old": 6,
+      "new": 60,
+      "unit": "insight"
+    },
+    {
+      "context": "T019:base",
+      "path": "value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T019:base",
+      "path": "thresholdRatio",
+      "old": 0.5,
+      "new": 5000,
+      "unit": "bp"
+    },
+    {
+      "context": "T019:base",
+      "path": "onTalent",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T019:Lv1",
+      "path": "value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T019:Lv1",
+      "path": "thresholdRatio",
+      "old": 0.5,
+      "new": 5000,
+      "unit": "bp"
+    },
+    {
+      "context": "T019:Lv1",
+      "path": "onTalent",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T019:Lv2",
+      "path": "value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T019:Lv2",
+      "path": "thresholdRatio",
+      "old": 0.6,
+      "new": 6000,
+      "unit": "bp"
+    },
+    {
+      "context": "T019:Lv2",
+      "path": "onTalent",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T019:Lv3",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T019:Lv3",
+      "path": "thresholdRatio",
+      "old": 0.6,
+      "new": 6000,
+      "unit": "bp"
+    },
+    {
+      "context": "T019:Lv3",
+      "path": "onTalent",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T019:Lv4",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T019:Lv4",
+      "path": "thresholdRatio",
+      "old": 0.7,
+      "new": 7000,
+      "unit": "bp"
+    },
+    {
+      "context": "T019:Lv4",
+      "path": "onTalent",
+      "old": 4,
+      "new": 40,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T020:base",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T020:base",
+      "path": "singleDieBonus",
+      "old": 0,
+      "new": 0,
+      "unit": "bp"
+    },
+    {
+      "context": "T020:Lv1",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T020:Lv1",
+      "path": "singleDieBonus",
+      "old": 0,
+      "new": 0,
+      "unit": "bp"
+    },
+    {
+      "context": "T020:Lv2",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T020:Lv2",
+      "path": "singleDieBonus",
+      "old": 0.02,
+      "new": 200,
+      "unit": "bp"
+    },
+    {
+      "context": "T020:Lv3",
+      "path": "value",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "T020:Lv3",
+      "path": "singleDieBonus",
+      "old": 0.03,
+      "new": 300,
+      "unit": "bp"
+    },
+    {
+      "context": "T020:Lv4",
+      "path": "value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "T020:Lv4",
+      "path": "singleDieBonus",
+      "old": 0.05,
+      "new": 500,
+      "unit": "bp"
+    },
+    {
+      "context": "T021:base",
+      "path": "value",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "T021:Lv1",
+      "path": "value",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "T021:Lv2",
+      "path": "value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "T021:Lv3",
+      "path": "value",
+      "old": 0.22,
+      "new": 2200,
+      "unit": "bp"
+    },
+    {
+      "context": "T021:Lv3",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T021:Lv4",
+      "path": "value",
+      "old": 0.25,
+      "new": 2500,
+      "unit": "bp"
+    },
+    {
+      "context": "T021:Lv4",
+      "path": "reward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T022:base",
+      "path": "value",
+      "old": 0.4,
+      "new": 4000,
+      "unit": "bp"
+    },
+    {
+      "context": "T022:Lv1",
+      "path": "value",
+      "old": 0.4,
+      "new": 4000,
+      "unit": "bp"
+    },
+    {
+      "context": "T022:Lv2",
+      "path": "value",
+      "old": 0.5,
+      "new": 5000,
+      "unit": "bp"
+    },
+    {
+      "context": "T022:Lv3",
+      "path": "value",
+      "old": 0.65,
+      "new": 6500,
+      "unit": "bp"
+    },
+    {
+      "context": "T022:Lv4",
+      "path": "value",
+      "old": 0.8,
+      "new": 8000,
+      "unit": "bp"
+    },
+    {
+      "context": "T023:base",
+      "path": "value",
+      "old": 16,
+      "new": 160,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T023:Lv1",
+      "path": "value",
+      "old": 16,
+      "new": 160,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T023:Lv2",
+      "path": "value",
+      "old": 18,
+      "new": 180,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T023:Lv3",
+      "path": "value",
+      "old": 20,
+      "new": 200,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T023:Lv4",
+      "path": "value",
+      "old": 22,
+      "new": 220,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T023:Lv5",
+      "path": "value",
+      "old": 24,
+      "new": 240,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T024:base",
+      "path": "mult",
+      "old": 1.25,
+      "new": 12500,
+      "unit": "bp"
+    },
+    {
+      "context": "T024:Lv1",
+      "path": "mult",
+      "old": 1.25,
+      "new": 12500,
+      "unit": "bp"
+    },
+    {
+      "context": "T024:Lv2",
+      "path": "mult",
+      "old": 1.3,
+      "new": 13000,
+      "unit": "bp"
+    },
+    {
+      "context": "T024:Lv3",
+      "path": "mult",
+      "old": 1.35,
+      "new": 13500,
+      "unit": "bp"
+    },
+    {
+      "context": "T024:Lv4",
+      "path": "mult",
+      "old": 1.42,
+      "new": 14200,
+      "unit": "bp"
+    },
+    {
+      "context": "T024:Lv5",
+      "path": "mult",
+      "old": 1.5,
+      "new": 15000,
+      "unit": "bp"
+    },
+    {
+      "context": "T024:Lv5",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T025:base",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T025:base",
+      "path": "threshold",
+      "old": 12,
+      "new": 120,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T025:Lv1",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T025:Lv1",
+      "path": "threshold",
+      "old": 12,
+      "new": 120,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T025:Lv2",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "T025:Lv2",
+      "path": "threshold",
+      "old": 13,
+      "new": 130,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T025:Lv3",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "T025:Lv3",
+      "path": "threshold",
+      "old": 14,
+      "new": 140,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T025:Lv4",
+      "path": "value",
+      "old": 0.2,
+      "new": 2000,
+      "unit": "bp"
+    },
+    {
+      "context": "T025:Lv4",
+      "path": "threshold",
+      "old": 16,
+      "new": 160,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T025:Lv5",
+      "path": "value",
+      "old": 0.24,
+      "new": 2400,
+      "unit": "bp"
+    },
+    {
+      "context": "T025:Lv5",
+      "path": "threshold",
+      "old": 18,
+      "new": 180,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T026:base",
+      "path": "step",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T026:base",
+      "path": "value",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T026:base",
+      "path": "cap",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T026:Lv1",
+      "path": "step",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T026:Lv1",
+      "path": "value",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T026:Lv1",
+      "path": "cap",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T026:Lv2",
+      "path": "step",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T026:Lv2",
+      "path": "value",
+      "old": 0.05,
+      "new": 500,
+      "unit": "bp"
+    },
+    {
+      "context": "T026:Lv2",
+      "path": "cap",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "T026:Lv3",
+      "path": "step",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T026:Lv3",
+      "path": "value",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "T026:Lv3",
+      "path": "cap",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "T026:Lv4",
+      "path": "step",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T026:Lv4",
+      "path": "value",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T026:Lv4",
+      "path": "cap",
+      "old": 0.2,
+      "new": 2000,
+      "unit": "bp"
+    },
+    {
+      "context": "T026:Lv5",
+      "path": "step",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T026:Lv5",
+      "path": "value",
+      "old": 0.05,
+      "new": 500,
+      "unit": "bp"
+    },
+    {
+      "context": "T026:Lv5",
+      "path": "cap",
+      "old": 0.25,
+      "new": 2500,
+      "unit": "bp"
+    },
+    {
+      "context": "T027:base",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "T027:base",
+      "path": "nextBattlePct",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T027:Lv1",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "T027:Lv1",
+      "path": "nextBattlePct",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T027:Lv2",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "T027:Lv2",
+      "path": "nextBattlePct",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "T027:Lv3",
+      "path": "value",
+      "old": 4,
+      "new": 40,
+      "unit": "insight"
+    },
+    {
+      "context": "T027:Lv3",
+      "path": "nextBattlePct",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T027:Lv4",
+      "path": "value",
+      "old": 5,
+      "new": 50,
+      "unit": "insight"
+    },
+    {
+      "context": "T027:Lv4",
+      "path": "nextBattlePct",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T028:base",
+      "path": "value",
+      "old": 0,
+      "new": 0,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T028:base",
+      "path": "startValue",
+      "old": 13,
+      "new": 130,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T028:base",
+      "path": "scorePct",
+      "old": 0,
+      "new": 0,
+      "unit": "bp"
+    },
+    {
+      "context": "T028:Lv1",
+      "path": "value",
+      "old": 0,
+      "new": 0,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T028:Lv1",
+      "path": "startValue",
+      "old": 13,
+      "new": 130,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T028:Lv1",
+      "path": "scorePct",
+      "old": 0,
+      "new": 0,
+      "unit": "bp"
+    },
+    {
+      "context": "T028:Lv2",
+      "path": "value",
+      "old": 0,
+      "new": 0,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T028:Lv2",
+      "path": "startValue",
+      "old": 14,
+      "new": 140,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T028:Lv2",
+      "path": "scorePct",
+      "old": 0.02,
+      "new": 200,
+      "unit": "bp"
+    },
+    {
+      "context": "T028:Lv3",
+      "path": "value",
+      "old": 0,
+      "new": 0,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T028:Lv3",
+      "path": "startValue",
+      "old": 18,
+      "new": 180,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T028:Lv3",
+      "path": "scorePct",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T028:Lv4",
+      "path": "value",
+      "old": 0,
+      "new": 0,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T028:Lv4",
+      "path": "startValue",
+      "old": 19,
+      "new": 190,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T028:Lv4",
+      "path": "scorePct",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "T028:Lv5",
+      "path": "value",
+      "old": 0,
+      "new": 0,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T028:Lv5",
+      "path": "startValue",
+      "old": 23,
+      "new": 230,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T028:Lv5",
+      "path": "scorePct",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T029:base",
+      "path": "value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T029:base",
+      "path": "thresholdRatio",
+      "old": 0.5,
+      "new": 5000,
+      "unit": "bp"
+    },
+    {
+      "context": "T029:Lv1",
+      "path": "value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T029:Lv1",
+      "path": "thresholdRatio",
+      "old": 0.5,
+      "new": 5000,
+      "unit": "bp"
+    },
+    {
+      "context": "T029:Lv2",
+      "path": "value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T029:Lv2",
+      "path": "thresholdRatio",
+      "old": 0.6,
+      "new": 6000,
+      "unit": "bp"
+    },
+    {
+      "context": "T029:Lv3",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T029:Lv3",
+      "path": "thresholdRatio",
+      "old": 0.6,
+      "new": 6000,
+      "unit": "bp"
+    },
+    {
+      "context": "T029:Lv4",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T029:Lv4",
+      "path": "thresholdRatio",
+      "old": 0.7,
+      "new": 7000,
+      "unit": "bp"
+    },
+    {
+      "context": "T030:base",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T030:base",
+      "path": "maxTriggers",
+      "old": 4,
+      "new": 4,
+      "unit": "count"
+    },
+    {
+      "context": "T030:acquire",
+      "path": "minTurn",
+      "old": 6,
+      "new": 6,
+      "unit": "count"
+    },
+    {
+      "context": "T030:Lv1",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T030:Lv1",
+      "path": "maxTriggers",
+      "old": 4,
+      "new": 4,
+      "unit": "count"
+    },
+    {
+      "context": "T030:Lv2",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T030:Lv2",
+      "path": "maxTriggers",
+      "old": 5,
+      "new": 5,
+      "unit": "count"
+    },
+    {
+      "context": "T030:Lv3",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T030:Lv3",
+      "path": "maxTriggers",
+      "old": 5,
+      "new": 5,
+      "unit": "count"
+    },
+    {
+      "context": "T030:Lv4",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T030:Lv4",
+      "path": "maxTriggers",
+      "old": 6,
+      "new": 6,
+      "unit": "count"
+    },
+    {
+      "context": "T031:base",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T031:base",
+      "path": "threshold",
+      "old": 16,
+      "new": 160,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T031:base",
+      "path": "maxTriggers",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T031:acquire",
+      "path": "minTurn",
+      "old": 10,
+      "new": 10,
+      "unit": "count"
+    },
+    {
+      "context": "T031:acquire",
+      "path": "maxInspiration",
+      "old": 18,
+      "new": 180,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T031:Lv1",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T031:Lv1",
+      "path": "threshold",
+      "old": 16,
+      "new": 160,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T031:Lv1",
+      "path": "maxTriggers",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T031:Lv2",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T031:Lv2",
+      "path": "threshold",
+      "old": 18,
+      "new": 180,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T031:Lv2",
+      "path": "maxTriggers",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T031:Lv3",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T031:Lv3",
+      "path": "threshold",
+      "old": 20,
+      "new": 200,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T031:Lv3",
+      "path": "maxTriggers",
+      "old": 4,
+      "new": 4,
+      "unit": "count"
+    },
+    {
+      "context": "T031:Lv4",
+      "path": "value",
+      "old": 4,
+      "new": 40,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T031:Lv4",
+      "path": "threshold",
+      "old": 20,
+      "new": 200,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T031:Lv4",
+      "path": "maxTriggers",
+      "old": 4,
+      "new": 4,
+      "unit": "count"
+    },
+    {
+      "context": "T031:Lv5",
+      "path": "value",
+      "old": 4,
+      "new": 40,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T031:Lv5",
+      "path": "threshold",
+      "old": 22,
+      "new": 220,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T031:Lv5",
+      "path": "maxTriggers",
+      "old": 5,
+      "new": 5,
+      "unit": "count"
+    },
+    {
+      "context": "T032:base",
+      "path": "value",
+      "old": 8,
+      "new": 80,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T032:base",
+      "path": "fillRatio",
+      "old": 0.5,
+      "new": 5000,
+      "unit": "bp"
+    },
+    {
+      "context": "T032:acquire",
+      "path": "minTurn",
+      "old": 12,
+      "new": 12,
+      "unit": "count"
+    },
+    {
+      "context": "T032:acquire",
+      "path": "minTalents",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "T032:Lv1",
+      "path": "value",
+      "old": 8,
+      "new": 80,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T032:Lv1",
+      "path": "fillRatio",
+      "old": 0.5,
+      "new": 5000,
+      "unit": "bp"
+    },
+    {
+      "context": "T032:Lv2",
+      "path": "value",
+      "old": 10,
+      "new": 100,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T032:Lv2",
+      "path": "fillRatio",
+      "old": 0.5,
+      "new": 5000,
+      "unit": "bp"
+    },
+    {
+      "context": "T032:Lv3",
+      "path": "value",
+      "old": 12,
+      "new": 120,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T032:Lv3",
+      "path": "fillRatio",
+      "old": 0.75,
+      "new": 7500,
+      "unit": "bp"
+    },
+    {
+      "context": "T032:Lv4",
+      "path": "value",
+      "old": 14,
+      "new": 140,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T032:Lv4",
+      "path": "fillRatio",
+      "old": 0.75,
+      "new": 7500,
+      "unit": "bp"
+    },
+    {
+      "context": "T032:Lv5",
+      "path": "value",
+      "old": 16,
+      "new": 160,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T032:Lv5",
+      "path": "fillRatio",
+      "old": 1,
+      "new": 10000,
+      "unit": "bp"
+    },
+    {
+      "context": "T033:base",
+      "path": "value",
+      "old": 14,
+      "new": 140,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T033:base",
+      "path": "fillRatio",
+      "old": 0.5,
+      "new": 5000,
+      "unit": "bp"
+    },
+    {
+      "context": "T033:acquire",
+      "path": "minWins",
+      "old": 5,
+      "new": 5,
+      "unit": "count"
+    },
+    {
+      "context": "T033:Lv1",
+      "path": "value",
+      "old": 14,
+      "new": 140,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T033:Lv1",
+      "path": "fillRatio",
+      "old": 0.5,
+      "new": 5000,
+      "unit": "bp"
+    },
+    {
+      "context": "T033:Lv2",
+      "path": "value",
+      "old": 16,
+      "new": 160,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T033:Lv2",
+      "path": "fillRatio",
+      "old": 0.5,
+      "new": 5000,
+      "unit": "bp"
+    },
+    {
+      "context": "T033:Lv3",
+      "path": "value",
+      "old": 18,
+      "new": 180,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T033:Lv3",
+      "path": "fillRatio",
+      "old": 0.6,
+      "new": 6000,
+      "unit": "bp"
+    },
+    {
+      "context": "T033:Lv4",
+      "path": "value",
+      "old": 22,
+      "new": 220,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T033:Lv4",
+      "path": "fillRatio",
+      "old": 0.7,
+      "new": 7000,
+      "unit": "bp"
+    },
+    {
+      "context": "T033:Lv5",
+      "path": "value",
+      "old": 25,
+      "new": 250,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T033:Lv5",
+      "path": "fillRatio",
+      "old": 0.8,
+      "new": 8000,
+      "unit": "bp"
+    },
+    {
+      "context": "T033:Lv6",
+      "path": "value",
+      "old": 28,
+      "new": 280,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T033:Lv6",
+      "path": "fillRatio",
+      "old": 1,
+      "new": 10000,
+      "unit": "bp"
+    },
+    {
+      "context": "T035:base",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T035:base",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "insight"
+    },
+    {
+      "context": "T035:Lv1",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T035:Lv1",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "insight"
+    },
+    {
+      "context": "T035:Lv2",
+      "path": "value",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "T035:Lv2",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "insight"
+    },
+    {
+      "context": "T035:Lv3",
+      "path": "value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "T035:Lv3",
+      "path": "reward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "T035:Lv4",
+      "path": "value",
+      "old": 0.24,
+      "new": 2400,
+      "unit": "bp"
+    },
+    {
+      "context": "T035:Lv4",
+      "path": "reward.value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "T036:base",
+      "path": "minPip",
+      "old": 4,
+      "new": 4,
+      "unit": "pip"
+    },
+    {
+      "context": "T036:base",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T036:base",
+      "path": "reward.value",
+      "old": 1,
+      "new": 1000,
+      "unit": "progress"
+    },
+    {
+      "context": "T036:Lv1",
+      "path": "minPip",
+      "old": 4,
+      "new": 4,
+      "unit": "pip"
+    },
+    {
+      "context": "T036:Lv1",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T036:Lv1",
+      "path": "reward.value",
+      "old": 1,
+      "new": 1000,
+      "unit": "progress"
+    },
+    {
+      "context": "T036:Lv2",
+      "path": "minPip",
+      "old": 4,
+      "new": 4,
+      "unit": "pip"
+    },
+    {
+      "context": "T036:Lv2",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T036:Lv2",
+      "path": "reward.value",
+      "old": 1,
+      "new": 1000,
+      "unit": "progress"
+    },
+    {
+      "context": "T036:Lv3",
+      "path": "minPip",
+      "old": 4,
+      "new": 4,
+      "unit": "pip"
+    },
+    {
+      "context": "T036:Lv3",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "T036:Lv3",
+      "path": "reward.value",
+      "old": 1,
+      "new": 1000,
+      "unit": "progress"
+    },
+    {
+      "context": "T036:Lv4",
+      "path": "minPip",
+      "old": 4,
+      "new": 4,
+      "unit": "pip"
+    },
+    {
+      "context": "T036:Lv4",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "T036:Lv4",
+      "path": "reward.value",
+      "old": 1.5,
+      "new": 1500,
+      "unit": "progress"
+    },
+    {
+      "context": "T037:base",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T037:base",
+      "path": "insight",
+      "old": 1,
+      "new": 10,
+      "unit": "insight"
+    },
+    {
+      "context": "T037:Lv1",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T037:Lv1",
+      "path": "insight",
+      "old": 1,
+      "new": 10,
+      "unit": "insight"
+    },
+    {
+      "context": "T037:Lv2",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T037:Lv2",
+      "path": "insight",
+      "old": 1,
+      "new": 10,
+      "unit": "insight"
+    },
+    {
+      "context": "T037:Lv3",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T037:Lv3",
+      "path": "insight",
+      "old": 1,
+      "new": 10,
+      "unit": "insight"
+    },
+    {
+      "context": "T037:Lv4",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T037:Lv4",
+      "path": "insight",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "T038:base",
+      "path": "step",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T038:base",
+      "path": "value",
+      "old": 0.03,
+      "new": 300,
+      "unit": "bp"
+    },
+    {
+      "context": "T038:base",
+      "path": "cap",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "T038:Lv1",
+      "path": "step",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T038:Lv1",
+      "path": "value",
+      "old": 0.03,
+      "new": 300,
+      "unit": "bp"
+    },
+    {
+      "context": "T038:Lv1",
+      "path": "cap",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "T038:Lv2",
+      "path": "step",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T038:Lv2",
+      "path": "value",
+      "old": 0.035,
+      "new": 350,
+      "unit": "bp"
+    },
+    {
+      "context": "T038:Lv2",
+      "path": "cap",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "T038:Lv3",
+      "path": "step",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T038:Lv3",
+      "path": "value",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T038:Lv3",
+      "path": "cap",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "T038:Lv4",
+      "path": "step",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T038:Lv4",
+      "path": "value",
+      "old": 0.05,
+      "new": 500,
+      "unit": "bp"
+    },
+    {
+      "context": "T038:Lv4",
+      "path": "cap",
+      "old": 0.2,
+      "new": 2000,
+      "unit": "bp"
+    },
+    {
+      "context": "T039:base",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T039:base",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T039:Lv1",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T039:Lv1",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T039:Lv2",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T039:Lv2",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T039:Lv3",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T039:Lv3",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T039:Lv4",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "T039:Lv4",
+      "path": "reward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T040:base",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T040:base",
+      "path": "reward.value",
+      "old": 1,
+      "new": 1000,
+      "unit": "progress"
+    },
+    {
+      "context": "T040:Lv1",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T040:Lv1",
+      "path": "reward.value",
+      "old": 1,
+      "new": 1000,
+      "unit": "progress"
+    },
+    {
+      "context": "T040:Lv2",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T040:Lv2",
+      "path": "reward.value",
+      "old": 1.5,
+      "new": 1500,
+      "unit": "progress"
+    },
+    {
+      "context": "T040:Lv3",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T040:Lv3",
+      "path": "reward.value",
+      "old": 2,
+      "new": 2000,
+      "unit": "progress"
+    },
+    {
+      "context": "T040:Lv4",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "T040:Lv4",
+      "path": "reward.value",
+      "old": 2.5,
+      "new": 2500,
+      "unit": "progress"
+    },
+    {
+      "context": "T040:Lv5",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "T040:Lv5",
+      "path": "reward.value",
+      "old": 3,
+      "new": 3000,
+      "unit": "progress"
+    },
+    {
+      "context": "T034:base",
+      "path": "inspThreshold",
+      "old": 40,
+      "new": 400,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T034:base",
+      "path": "attrRatio",
+      "old": 0.8,
+      "new": 8000,
+      "unit": "bp"
+    },
+    {
+      "context": "T034:base",
+      "path": "startInspiration",
+      "old": 8,
+      "new": 80,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T034:Lv1",
+      "path": "inspThreshold",
+      "old": 40,
+      "new": 400,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T034:Lv1",
+      "path": "attrRatio",
+      "old": 0.8,
+      "new": 8000,
+      "unit": "bp"
+    },
+    {
+      "context": "T034:Lv1",
+      "path": "startInspiration",
+      "old": 8,
+      "new": 80,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T034:Lv2",
+      "path": "inspThreshold",
+      "old": 36,
+      "new": 360,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T034:Lv2",
+      "path": "attrRatio",
+      "old": 0.84,
+      "new": 8400,
+      "unit": "bp"
+    },
+    {
+      "context": "T034:Lv2",
+      "path": "startInspiration",
+      "old": 8,
+      "new": 80,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T034:Lv3",
+      "path": "inspThreshold",
+      "old": 32,
+      "new": 320,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T034:Lv3",
+      "path": "attrRatio",
+      "old": 0.88,
+      "new": 8800,
+      "unit": "bp"
+    },
+    {
+      "context": "T034:Lv3",
+      "path": "startInspiration",
+      "old": 10,
+      "new": 100,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T034:Lv4",
+      "path": "inspThreshold",
+      "old": 28,
+      "new": 280,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T034:Lv4",
+      "path": "attrRatio",
+      "old": 0.92,
+      "new": 9200,
+      "unit": "bp"
+    },
+    {
+      "context": "T034:Lv4",
+      "path": "startInspiration",
+      "old": 10,
+      "new": 100,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T034:Lv5",
+      "path": "inspThreshold",
+      "old": 24,
+      "new": 240,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T034:Lv5",
+      "path": "attrRatio",
+      "old": 0.96,
+      "new": 9600,
+      "unit": "bp"
+    },
+    {
+      "context": "T034:Lv5",
+      "path": "startInspiration",
+      "old": 12,
+      "new": 120,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T034:Lv6",
+      "path": "inspThreshold",
+      "old": 20,
+      "new": 200,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T034:Lv6",
+      "path": "attrRatio",
+      "old": 1,
+      "new": 10000,
+      "unit": "bp"
+    },
+    {
+      "context": "T034:Lv6",
+      "path": "startInspiration",
+      "old": 12,
+      "new": 120,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T041:base",
+      "path": "value",
+      "old": 0.05,
+      "new": 500,
+      "unit": "bp"
+    },
+    {
+      "context": "T041:base",
+      "path": "previousWinBonus",
+      "old": 0.03,
+      "new": 300,
+      "unit": "bp"
+    },
+    {
+      "context": "T041:Lv1",
+      "path": "value",
+      "old": 0.05,
+      "new": 500,
+      "unit": "bp"
+    },
+    {
+      "context": "T041:Lv1",
+      "path": "previousWinBonus",
+      "old": 0.03,
+      "new": 300,
+      "unit": "bp"
+    },
+    {
+      "context": "T041:Lv2",
+      "path": "value",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "T041:Lv2",
+      "path": "previousWinBonus",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T041:Lv3",
+      "path": "value",
+      "old": 0.07,
+      "new": 700,
+      "unit": "bp"
+    },
+    {
+      "context": "T041:Lv3",
+      "path": "previousWinBonus",
+      "old": 0.05,
+      "new": 500,
+      "unit": "bp"
+    },
+    {
+      "context": "T041:Lv4",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T041:Lv4",
+      "path": "previousWinBonus",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "T042:base",
+      "path": "value",
+      "old": 0.05,
+      "new": 500,
+      "unit": "bp"
+    },
+    {
+      "context": "T042:base",
+      "path": "previousNonWinBonus",
+      "old": 0.03,
+      "new": 300,
+      "unit": "bp"
+    },
+    {
+      "context": "T042:Lv1",
+      "path": "value",
+      "old": 0.05,
+      "new": 500,
+      "unit": "bp"
+    },
+    {
+      "context": "T042:Lv1",
+      "path": "previousNonWinBonus",
+      "old": 0.03,
+      "new": 300,
+      "unit": "bp"
+    },
+    {
+      "context": "T042:Lv2",
+      "path": "value",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "T042:Lv2",
+      "path": "previousNonWinBonus",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T042:Lv3",
+      "path": "value",
+      "old": 0.07,
+      "new": 700,
+      "unit": "bp"
+    },
+    {
+      "context": "T042:Lv3",
+      "path": "previousNonWinBonus",
+      "old": 0.05,
+      "new": 500,
+      "unit": "bp"
+    },
+    {
+      "context": "T042:Lv4",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T042:Lv4",
+      "path": "previousNonWinBonus",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "T043:base",
+      "path": "value",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T043:base",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T043:Lv1",
+      "path": "value",
+      "old": 0.04,
+      "new": 400,
+      "unit": "bp"
+    },
+    {
+      "context": "T043:Lv1",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T043:Lv2",
+      "path": "value",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "T043:Lv2",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T043:Lv3",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T043:Lv3",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T043:Lv4",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T043:Lv4",
+      "path": "reward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T043:Lv5",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T043:Lv5",
+      "path": "reward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA09:base",
+      "path": "penalty",
+      "old": -0.08,
+      "new": -800,
+      "unit": "bp"
+    },
+    {
+      "context": "TA09:Lv1",
+      "path": "penalty",
+      "old": -0.08,
+      "new": -800,
+      "unit": "bp"
+    },
+    {
+      "context": "TA09:Lv2",
+      "path": "penalty",
+      "old": -0.06,
+      "new": -600,
+      "unit": "bp"
+    },
+    {
+      "context": "TA09:Lv3",
+      "path": "penalty",
+      "old": -0.04,
+      "new": -400,
+      "unit": "bp"
+    },
+    {
+      "context": "TA09:Lv4",
+      "path": "penalty",
+      "old": -0.02,
+      "new": -200,
+      "unit": "bp"
+    },
+    {
+      "context": "TA09:Lv5",
+      "path": "penalty",
+      "old": 0,
+      "new": 0,
+      "unit": "bp"
+    },
+    {
+      "context": "T044:base",
+      "path": "value",
+      "old": 0.07,
+      "new": 700,
+      "unit": "bp"
+    },
+    {
+      "context": "T044:Lv1",
+      "path": "value",
+      "old": 0.07,
+      "new": 700,
+      "unit": "bp"
+    },
+    {
+      "context": "T044:Lv2",
+      "path": "value",
+      "old": 0.09,
+      "new": 900,
+      "unit": "bp"
+    },
+    {
+      "context": "T044:Lv3",
+      "path": "value",
+      "old": 0.11,
+      "new": 1100,
+      "unit": "bp"
+    },
+    {
+      "context": "T044:Lv4",
+      "path": "value",
+      "old": 0.13,
+      "new": 1300,
+      "unit": "bp"
+    },
+    {
+      "context": "T045:base",
+      "path": "firstCostDiscount",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T045:base",
+      "path": "value",
+      "old": 0.07,
+      "new": 700,
+      "unit": "bp"
+    },
+    {
+      "context": "T045:Lv1",
+      "path": "firstCostDiscount",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T045:Lv1",
+      "path": "value",
+      "old": 0.07,
+      "new": 700,
+      "unit": "bp"
+    },
+    {
+      "context": "T045:Lv2",
+      "path": "firstCostDiscount",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T045:Lv2",
+      "path": "value",
+      "old": 0.09,
+      "new": 900,
+      "unit": "bp"
+    },
+    {
+      "context": "T045:Lv3",
+      "path": "firstCostDiscount",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T045:Lv3",
+      "path": "value",
+      "old": 0.11,
+      "new": 1100,
+      "unit": "bp"
+    },
+    {
+      "context": "T045:Lv4",
+      "path": "firstCostDiscount",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T045:Lv4",
+      "path": "value",
+      "old": 0.13,
+      "new": 1300,
+      "unit": "bp"
+    },
+    {
+      "context": "T046:base",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T046:Lv1",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "T046:Lv2",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "T046:Lv3",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T046:Lv4",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "T046:Lv5",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "TA10:base",
+      "path": "floor",
+      "old": 4,
+      "new": 4,
+      "unit": "pip"
+    },
+    {
+      "context": "TA10:base",
+      "path": "value",
+      "old": 0.03,
+      "new": 300,
+      "unit": "bp"
+    },
+    {
+      "context": "TA10:Lv1",
+      "path": "floor",
+      "old": 4,
+      "new": 4,
+      "unit": "pip"
+    },
+    {
+      "context": "TA10:Lv1",
+      "path": "value",
+      "old": 0.03,
+      "new": 300,
+      "unit": "bp"
+    },
+    {
+      "context": "TA10:Lv2",
+      "path": "floor",
+      "old": 4,
+      "new": 4,
+      "unit": "pip"
+    },
+    {
+      "context": "TA10:Lv2",
+      "path": "value",
+      "old": 0.05,
+      "new": 500,
+      "unit": "bp"
+    },
+    {
+      "context": "TA10:Lv3",
+      "path": "floor",
+      "old": 4,
+      "new": 4,
+      "unit": "pip"
+    },
+    {
+      "context": "TA10:Lv3",
+      "path": "value",
+      "old": 0.07,
+      "new": 700,
+      "unit": "bp"
+    },
+    {
+      "context": "TA10:Lv4",
+      "path": "floor",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "TA10:Lv4",
+      "path": "value",
+      "old": 0.09,
+      "new": 900,
+      "unit": "bp"
+    },
+    {
+      "context": "TA10:Lv5",
+      "path": "floor",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "TA10:Lv5",
+      "path": "value",
+      "old": 0.11,
+      "new": 1100,
+      "unit": "bp"
+    },
+    {
+      "context": "T047:base",
+      "path": "value",
+      "old": 0.07,
+      "new": 700,
+      "unit": "bp"
+    },
+    {
+      "context": "T047:Lv1",
+      "path": "value",
+      "old": 0.07,
+      "new": 700,
+      "unit": "bp"
+    },
+    {
+      "context": "T047:Lv2",
+      "path": "value",
+      "old": 0.09,
+      "new": 900,
+      "unit": "bp"
+    },
+    {
+      "context": "T047:Lv3",
+      "path": "value",
+      "old": 0.11,
+      "new": 1100,
+      "unit": "bp"
+    },
+    {
+      "context": "T047:Lv4",
+      "path": "value",
+      "old": 0.13,
+      "new": 1300,
+      "unit": "bp"
+    },
+    {
+      "context": "T048:base",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T048:base",
+      "path": "firstCostDiscount",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T048:base",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T048:Lv1",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T048:Lv1",
+      "path": "firstCostDiscount",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T048:Lv1",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T048:Lv2",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T048:Lv2",
+      "path": "firstCostDiscount",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T048:Lv2",
+      "path": "value",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "T048:Lv3",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T048:Lv3",
+      "path": "firstCostDiscount",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T048:Lv3",
+      "path": "value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "T048:Lv4",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "T048:Lv4",
+      "path": "firstCostDiscount",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T048:Lv4",
+      "path": "value",
+      "old": 0.21,
+      "new": 2100,
+      "unit": "bp"
+    },
+    {
+      "context": "T049:base",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "T049:base",
+      "path": "highMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "T049:base",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T049:base",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T049:Lv1",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "T049:Lv1",
+      "path": "highMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "T049:Lv1",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "T049:Lv1",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T049:Lv2",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "T049:Lv2",
+      "path": "highMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "T049:Lv2",
+      "path": "value",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "T049:Lv2",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T049:Lv3",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "T049:Lv3",
+      "path": "highMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "T049:Lv3",
+      "path": "value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "T049:Lv3",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T049:Lv4",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "T049:Lv4",
+      "path": "highMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "T049:Lv4",
+      "path": "value",
+      "old": 0.21,
+      "new": 2100,
+      "unit": "bp"
+    },
+    {
+      "context": "T049:Lv4",
+      "path": "reward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "T049:Lv5",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "T049:Lv5",
+      "path": "highMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "T049:Lv5",
+      "path": "value",
+      "old": 0.24,
+      "new": 2400,
+      "unit": "bp"
+    },
+    {
+      "context": "T049:Lv5",
+      "path": "reward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "TA11:base",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "TA11:base",
+      "path": "value",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "TA11:Lv1",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "TA11:Lv1",
+      "path": "value",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "TA11:Lv2",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "TA11:Lv2",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "TA11:Lv3",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "TA11:Lv3",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "TA11:Lv4",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "TA11:Lv4",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "TA11:Lv5",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "TA11:Lv5",
+      "path": "value",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "S01-E1",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "S01-E2",
+      "path": "value",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "S02-E1",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "S02-E2",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "insight"
+    },
+    {
+      "context": "S03-E1",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "S03-E2",
+      "path": "minDice",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "S03-E2",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "S04-E1",
+      "path": "value",
+      "old": 0.03,
+      "new": 300,
+      "unit": "bp"
+    },
+    {
+      "context": "S04-E1",
+      "path": "firstCostDiscount",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S04-E2",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "S05-E1",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "S05-E2",
+      "path": "value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S05-E2",
+      "path": "maxTriggers",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "S06-E1",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S06-E2",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "S07-E1",
+      "path": "value",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "S07-E2",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "S08-E1",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "S09-E1",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "S09-E1",
+      "path": "when.inspirationRatioMin",
+      "old": 0.6,
+      "new": 6000,
+      "unit": "bp"
+    },
+    {
+      "context": "S10-E1",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "S10-E1",
+      "path": "reward.value",
+      "old": 1,
+      "new": 1000,
+      "unit": "progress"
+    },
+    {
+      "context": "S11-E1",
+      "path": "divisor",
+      "old": 7,
+      "new": 7,
+      "unit": "pip"
+    },
+    {
+      "context": "S11-E1",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "S11-E1",
+      "path": "reward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "S12-E1",
+      "path": "threshold",
+      "old": 16,
+      "new": 160,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S12-E1",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "S12-E2",
+      "path": "threshold",
+      "old": 16,
+      "new": 160,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S12-E2",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S12-E2",
+      "path": "maxTriggers",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "S13-E1",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "S13-E1",
+      "path": "insight",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "S14-E1",
+      "path": "step",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "S14-E1",
+      "path": "value",
+      "old": 0.03,
+      "new": 300,
+      "unit": "bp"
+    },
+    {
+      "context": "S14-E1",
+      "path": "cap",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "S15-E1",
+      "path": "minStreak",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "S15-E1",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "S15-E2",
+      "path": "value",
+      "old": 0,
+      "new": 0,
+      "unit": "bp"
+    },
+    {
+      "context": "S15-E2",
+      "path": "reward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S16-E1",
+      "path": "value",
+      "old": 0,
+      "new": 0,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S16-E1",
+      "path": "startValue",
+      "old": 17,
+      "new": 170,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S16-E2",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "S17-E1",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S17-E1",
+      "path": "maxTriggers",
+      "old": 5,
+      "new": 5,
+      "unit": "count"
+    },
+    {
+      "context": "S18-E1",
+      "path": "value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "S18-E1",
+      "path": "reward.value",
+      "old": 1,
+      "new": 1000,
+      "unit": "progress"
+    },
+    {
+      "context": "S19-E1",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "S19-E1",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S20-E1",
+      "path": "tiers.0.min",
+      "old": 12,
+      "new": 12,
+      "unit": "pip"
+    },
+    {
+      "context": "S20-E1",
+      "path": "tiers.0.value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "S20-E1",
+      "path": "tiers.1.min",
+      "old": 16,
+      "new": 16,
+      "unit": "pip"
+    },
+    {
+      "context": "S20-E1",
+      "path": "tiers.1.value",
+      "old": 0.22,
+      "new": 2200,
+      "unit": "bp"
+    },
+    {
+      "context": "S20-E1",
+      "path": "reward.value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S21-E1",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "S21-E1",
+      "path": "nextBattlePct",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "S21-E2",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "S22-E1",
+      "path": "step",
+      "old": 4,
+      "new": 4,
+      "unit": "count"
+    },
+    {
+      "context": "S22-E1",
+      "path": "value",
+      "old": 0.03,
+      "new": 300,
+      "unit": "bp"
+    },
+    {
+      "context": "S22-E1",
+      "path": "cap",
+      "old": 0.15,
+      "new": 1500,
+      "unit": "bp"
+    },
+    {
+      "context": "S23-E1",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S23-E1",
+      "path": "thresholdRatio",
+      "old": 0.6,
+      "new": 6000,
+      "unit": "bp"
+    },
+    {
+      "context": "S24-E1",
+      "path": "value",
+      "old": 0.18,
+      "new": 1800,
+      "unit": "bp"
+    },
+    {
+      "context": "S24-E2",
+      "path": "value",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "S25-E1",
+      "path": "value",
+      "old": 0.16,
+      "new": 1600,
+      "unit": "bp"
+    },
+    {
+      "context": "S25-E1",
+      "path": "insight",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "S26-E1",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "S26-E1",
+      "path": "minStreak",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "S27-E1",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "S27-E1",
+      "path": "insight",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "S28-E1",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "S28-E2",
+      "path": "value",
+      "old": 1,
+      "new": 10,
+      "unit": "insight"
+    },
+    {
+      "context": "S28-E2",
+      "path": "nextBattlePct",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "S29-E1",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "S29-E1",
+      "path": "threshold",
+      "old": 16,
+      "new": 160,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S30-E1",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "S30-E1",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S31-E1",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "S31-E1",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "S31-E1",
+      "path": "nextHighMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "S32-E1",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "S32-E2",
+      "path": "threshold",
+      "old": 18,
+      "new": 180,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S32-E2",
+      "path": "value",
+      "old": 3,
+      "new": 30,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S32-E2",
+      "path": "maxTriggers",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "S33-E1",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "S34-E1",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "S35-E1",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "S35-E1",
+      "path": "minDice",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "S35-E1",
+      "path": "reward.value",
+      "old": 1,
+      "new": 1000,
+      "unit": "progress"
+    },
+    {
+      "context": "S36-E1",
+      "path": "value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "S36-E1",
+      "path": "lowMax",
+      "old": 2,
+      "new": 2,
+      "unit": "pip"
+    },
+    {
+      "context": "S36-E1",
+      "path": "highMin",
+      "old": 5,
+      "new": 5,
+      "unit": "pip"
+    },
+    {
+      "context": "S36-E1",
+      "path": "reward.value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S37-E1",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "S38-E1",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "S39-E1",
+      "path": "value",
+      "old": 2,
+      "new": 20,
+      "unit": "insight"
+    },
+    {
+      "context": "S40-E1",
+      "path": "value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "S41-E1",
+      "path": "value",
+      "old": 0.02,
+      "new": 200,
+      "unit": "bp"
+    },
+    {
+      "context": "S41-E1",
+      "path": "step",
+      "old": 3,
+      "new": 3,
+      "unit": "count"
+    },
+    {
+      "context": "S41-E1",
+      "path": "cap",
+      "old": 0.06,
+      "new": 600,
+      "unit": "bp"
+    },
+    {
+      "context": "S42-E1",
+      "path": "value",
+      "old": 0.1,
+      "new": 1000,
+      "unit": "bp"
+    },
+    {
+      "context": "S42-E1",
+      "path": "multiple",
+      "old": 7,
+      "new": 7,
+      "unit": "pip"
+    },
+    {
+      "context": "S43-E1",
+      "path": "value",
+      "old": 0,
+      "new": 0,
+      "unit": "bp"
+    },
+    {
+      "context": "S43-E1",
+      "path": "tiers.0.threshold",
+      "old": 16,
+      "new": 16,
+      "unit": "pip"
+    },
+    {
+      "context": "S43-E1",
+      "path": "tiers.0.value",
+      "old": 0.14,
+      "new": 1400,
+      "unit": "bp"
+    },
+    {
+      "context": "S43-E1",
+      "path": "tiers.1.threshold",
+      "old": 12,
+      "new": 12,
+      "unit": "pip"
+    },
+    {
+      "context": "S43-E1",
+      "path": "tiers.1.value",
+      "old": 0.08,
+      "new": 800,
+      "unit": "bp"
+    },
+    {
+      "context": "S44-E1",
+      "path": "value",
+      "old": 1,
+      "new": 10,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S44-E1",
+      "path": "maxTriggers",
+      "old": 4,
+      "new": 4,
+      "unit": "count"
+    },
+    {
+      "context": "S45-E1",
+      "path": "value",
+      "old": 0.02,
+      "new": 200,
+      "unit": "bp"
+    },
+    {
+      "context": "S45-E1",
+      "path": "step",
+      "old": 2,
+      "new": 2,
+      "unit": "count"
+    },
+    {
+      "context": "S45-E1",
+      "path": "cap",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "S46-E1",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    },
+    {
+      "context": "S47-E1",
+      "path": "value",
+      "old": 0,
+      "new": 0,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S47-E1",
+      "path": "startValue",
+      "old": 9,
+      "new": 90,
+      "unit": "inspiration"
+    },
+    {
+      "context": "S48-E1",
+      "path": "value",
+      "old": 0.12,
+      "new": 1200,
+      "unit": "bp"
+    }
+  ]
+}
