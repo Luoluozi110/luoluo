@@ -1,0 +1,98 @@
+{
+  "status": "passed-static-design-checks",
+  "counts": {
+    "talents": 61,
+    "main": 49,
+    "side": 12,
+    "levels": 263,
+    "synergies": 48,
+    "synergyEffects": 62,
+    "numericEffectFields": 811,
+    "changedFragmentFields": 19
+  },
+  "examples": {
+    "A": {
+      "nominal": 8,
+      "actual": 4,
+      "overflow": 4
+    },
+    "B": {
+      "scorePercent": 58,
+      "progress": 80,
+      "made": 2,
+      "rest": 0,
+      "nominalPages": 3,
+      "actualPages": 1,
+      "overflow": 2
+    },
+    "C": {
+      "cost": 1,
+      "scorePercent": 52
+    },
+    "D": {
+      "scorePercent": 27,
+      "insight": 3
+    },
+    "E": {
+      "insight": 6,
+      "nextPercent": 8
+    },
+    "F": [
+      1,
+      1,
+      1,
+      1,
+      2
+    ]
+  },
+  "schoolRows": [
+    {
+      "id": "bowen",
+      "study": 36,
+      "slots": 3,
+      "insightCap": 9,
+      "strategy": 15,
+      "strategyCap": 3,
+      "manuscript": 5,
+      "pageCap": 2
+    },
+    {
+      "id": "qishi",
+      "study": 30,
+      "slots": 1,
+      "insightCap": 7,
+      "strategy": 31,
+      "strategyCap": 5,
+      "manuscript": 5,
+      "pageCap": 2
+    },
+    {
+      "id": "cizong_bi",
+      "study": 30,
+      "slots": 1,
+      "insightCap": 7,
+      "strategy": 15,
+      "strategyCap": 3,
+      "manuscript": 11,
+      "pageCap": 4
+    }
+  ],
+  "sourceFiles": {
+    "js/engine/game.js": "852f222fdd719b75e0fe975b503604713da77ae6dde2b23dae6d0f34356272c2",
+    "js/engine/rules.js": "c806707a0c90311e8eb8f4aae6d6bbbccd624953e86566b03178be7176a8f1b2",
+    "js/engine/save.js": "36355734f2a3343f57d7dd4ecebca4663d72c54160d74fb33621e6c29e7334d0"
+  },
+  "limits": [
+    "No runtime implementation",
+    "No full-game simulation",
+    "No full peripheral numeric mapping",
+    "No save migration test",
+    "No playtest"
+  ],
+  "documentChecks": {
+    "links": 8,
+    "jsonBlocks": 0,
+    "tables": 119,
+    "passed": true
+  }
+}
