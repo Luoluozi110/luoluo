@@ -1,0 +1,37 @@
+{
+  "scheme": "small-integer-v2-proposal",
+  "scope": "Arithmetic checks only; no runtime changes or full-game balance validation",
+  "conservationChecks": 36600,
+  "growthCandidateSplitChecks": 56364,
+  "attributeRange": [
+    0,
+    60
+  ],
+  "incomeEventsPerCase": 200,
+  "base": 110,
+  "poetrySingleDieScores": [
+    114,
+    117,
+    121,
+    132,
+    138,
+    143
+  ],
+  "progressScalesFromLegacy": {
+    "study": 25,
+    "manuscript": 20,
+    "strategy": 10
+  },
+  "sourceFingerprints": {
+    "attrs.json": "4cc215d810d3166b537625cb36321ee69de67ef716b7ef2c0e23bf12710a2219",
+    "inspiration.json": "cd524681a49efe17f28f2faee4805c9ffb36747c23e29dfbe8e25c7cc4815d7a"
+  },
+  "limitations": [
+    "No capacity or overflow simulation",
+    "No changing attributes or stacked rewards",
+    "No legacy save migration",
+    "No full effect mapping",
+    "No game balance or playtesting"
+  ],
+  "passed": true
+}
