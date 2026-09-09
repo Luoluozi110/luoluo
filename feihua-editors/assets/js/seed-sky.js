@@ -1,7 +1,4 @@
-/* 天象种子数据（与游戏 config/sky.json 一致，作为编辑器默认）。
- * 游戏内天象格触发时从 cfg.sky 随机抽取一张；id 形如 SKxx。
- * icon 为可选展示字形（emoji 或短文本），游戏 showSky 弹窗显示；留空则回退为星纹。
- * 数据结构见 feihuaqi-playable/config/sky.json。 */
+// 自动生成：小整数 v2.1，与云端工程同源。
 window.GAME_SKY = [
   {
     "id": "SK01",
@@ -89,7 +86,7 @@ window.GAME_SKY = [
         "effect": {
           "type": "sky_strategy",
           "key": "battle_guard",
-          "value": 20
+          "value": 2
         }
       }
     ],
@@ -138,7 +135,7 @@ window.GAME_SKY = [
         "effect": {
           "type": "sky_strategy",
           "key": "ping_fragment",
-          "value": 1000
+          "value": 20
         }
       }
     ],

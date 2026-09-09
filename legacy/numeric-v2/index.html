@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <base href="../../">
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>文心棋</title>
+  <meta name="application-name" content="文心棋" />
+  <meta name="description" content="文心棋：以科举与文学创作为题的单人棋局游戏。" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%23b23a2e'/><text x='16' y='22' font-size='18' text-anchor='middle' fill='white' font-family='serif'>花</text></svg>" />
+  <!-- 首屏先显示系统 CJK 字体；自托管字体确认加载成功后再无闪烁切换。 -->
+  <link rel="preload" as="font" type="font/woff2" href="fonts/noto-serif-sc/NotoSerifSC-400.woff2?v=20260831firstrun1" crossorigin />
+  <link rel="stylesheet" href="css/base.css?v=20260831firstrun1" />
+  <link rel="stylesheet" href="css/board.css?v=20260831firstrun1" />
+  <link rel="stylesheet" href="css/ui.css?v=20260903tutorial1" />
+  <script>
+    (() => {
+      if (!document.fonts || !document.fonts.load) return;
+      document.fonts.load('400 16px "Wenxin Serif SC"', '文心棋選擇流派龘𠮷')
+        .then((faces) => {
+          if (faces.length) document.documentElement.classList.add('font-web-ready');
+        })
+        .catch(() => document.documentElement.classList.remove('font-web-ready'));
+      document.fonts.addEventListener?.('loadingerror', () => {
+        document.documentElement.classList.remove('font-web-ready');
+      });
+    })();
+  </script>
+</head>
+<body>
+<a href="index.html" style="position:fixed;right:8px;top:8px;z-index:99999;background:#fff8eb;padding:6px 12px">旧局续玩 · 返回新版</a>
+  <div id="app">
+    <div id="scene"></div>
+    <div id="hud"></div>
+    <div id="modalLayer"></div>
+    <div id="battleStage"></div>
+    <div id="schoolScreen"></div>
+    <div id="loadout-screen"></div>
+    <div id="album-screen"></div>
+    <div id="codex-screen"></div>
+    <div id="content-test-screen"></div>
+    <div id="resultScreen"></div>
+    <div id="topLayer"></div>
+    <button id="soundToggle" type="button" aria-label="音效开关"></button>
+  </div>
+  <script type="module" src="legacy/numeric-v2/js/ui/app.js?v=20260904pairbonds1"></script>
+</body>
+</html>

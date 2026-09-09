@@ -962,7 +962,7 @@ export function sixDimScore(s, cfgRaw) {
   const f = Object.assign({ reached: false, inspirationLeft: 0, turns: 0, finalWin: false, palaceSweep: false, manuscriptBonus: 0, manuscriptVolumes: 0 }, s.finish);
   if (f.finalWin == null) f.finalWin = !!f.palaceSweep;
   // 对局属性采用 v2 的十倍整数，但终局评分和评级保持原量级。
-  const attributeScale = Number(s && s.numericVersion) >= 2 ? 10 : 1;
+  const attributeScale = Number(s && s.numericVersion) === 2 ? 10 : 1;
   const n = (k) => Math.max(0, Number(a[k]) || 0) / attributeScale;
 
   /* 维度 1 文采分 */
@@ -1059,7 +1059,7 @@ export function sixDimScore(s, cfgRaw) {
   const y = D.yuanman;
   const p6 = [];
   if (f.reached) p6.push({ label: '抵达终点·金殿对策', value: y.reach });
-  const finalInspiration = Math.max(0, Number(f.inspirationLeft) || 0) / (Number(s && s.numericVersion) >= 2 ? 10 : 1);
+  const finalInspiration = Math.max(0, Number(f.inspirationLeft) || 0) / (Number(s && s.numericVersion) === 2 ? 10 : 1);
   if (finalInspiration) p6.push({ label: `剩余灵感 ${finalInspiration} × ${y.perInspiration}`, value: finalInspiration * y.perInspiration });
   if (f.reached && f.turns > 0 && f.turns <= y.swift.maxTurns)
     p6.push({ label: `${y.swift.label}：${f.turns} 回合抵达 ≤${y.swift.maxTurns}`, value: y.swift.bonus });

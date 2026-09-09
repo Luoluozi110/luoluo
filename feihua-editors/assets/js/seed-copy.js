@@ -1,6 +1,4 @@
-/* 自动生成：叙事文案编辑器默认种子，镜像游戏 config/schools.json、config/grades.json 与 config/narrative.json 的当前内容。
- * 仅含文案/展示字段的默认来源；编辑后覆盖到 localStorage，导出即对应 json。
- * 若游戏侧这三类配置有结构更新，请用同样方式重新生成本文件以保持一致。 */
+// 自动生成：小整数 v2.1，与云端工程同源。
 window.GAME_SCHOOLS = [
   {
     "id": "bowen",
@@ -14,14 +12,14 @@ window.GAME_SCHOOLS = [
     "schoolMechanics": {
       "type": "bowen",
       "knowledgeThreshold": 2,
-      "knowledgeInsight": 40,
+      "knowledgeInsight": 4,
       "knowledgePityTurn": 3,
       "studySlotsPlus": 1,
-      "differentStyleInsight": 20,
+      "differentStyleInsight": 2,
       "talentConversion": {
         "label": "穷览求心",
         "resource": "insight",
-        "cost": 80,
+        "cost": 8,
         "chance": 4500,
         "maxAttempts": 2,
         "perPhase": 1,
@@ -30,7 +28,7 @@ window.GAME_SCHOOLS = [
     },
     "motto": "博观约取，厚积薄发",
     "flavor": "你自幼好读，藏书万卷皆在腹中。科场之上，你能引百家之言以佐己论，举一隅而三隅反——胸中学问，便是你挥之不尽的底气。",
-    "desc": "开局学力 +30，初始文心「博览」。研修位 +1；可消耗心得发动「穷览求心」，概率获得文心三选一。"
+    "desc": "开局学力 +3，初始文心「博览」。研修位 +1；可消耗心得发动「穷览求心」，概率获得文心三选一。"
   },
   {
     "id": "qishi",
@@ -63,7 +61,7 @@ window.GAME_SCHOOLS = [
     },
     "motto": "灵台澄澈，万象皆明",
     "flavor": "你生性爱钻牛角尖，常于无人处反复推敲。奇思往往不循常理，却能于困局中另辟蹊径——想人之所未想，故能成人之所不能成。",
-    "desc": "开局思力 +30，初始文心「推敲」。每阶段构思与上限各 +1；可消耗构思发动「推演问心」，概率获得文心三选一。"
+    "desc": "开局思力 +3，初始文心「推敲」。每阶段构思与上限各 +1；可消耗构思发动「推演问心」，概率获得文心三选一。"
   },
   {
     "id": "cizong_bi",
@@ -95,7 +93,7 @@ window.GAME_SCHOOLS = [
     },
     "motto": "笔落惊风雨，文成绣山川",
     "flavor": "你惜墨如金，落笔却字字千金。洋洋千言一挥而就，旁人苦吟终日的篇章，于你不过是砚池里一次起兴。文思如潮涌，胸中自有丘壑。",
-    "desc": "开局笔力 +30，初始文心「入木三分」。稿匣上限 +1；可消耗稿页发动「焚稿悟心」，概率获得文心三选一。"
+    "desc": "开局笔力 +3，初始文心「入木三分」。稿匣上限 +1；可消耗稿页发动「焚稿悟心」，概率获得文心三选一。"
   }
 ];
 window.GAME_GRADES = {
@@ -447,7 +445,7 @@ window.GAME_GRADES = {
     "liupai": "流派最高：一门深入，卓然成家",
     "yuanman": "圆满最高：从容赴考，功行圆满"
   },
-  "numericVersion": 2
+  "numericVersion": 3
 };
 window.GAME_NARRATIVE = {
   "tutorial": {

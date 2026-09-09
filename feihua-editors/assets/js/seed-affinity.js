@@ -1,4 +1,4 @@
-/* 飞花棋相性系统原始配置（config/affinity.json）。作为编辑器默认种子；请勿手工改动，在编辑器内管理后导出即可覆盖。 */
+// 自动生成：小整数 v2.1，与云端工程同源。
 window.GAME_AFFINITY = {
   "themes": [
     "yongwu",
@@ -89,5 +89,5 @@ window.GAME_AFFINITY = {
   "zeitgeistMannerBonus": 300,
   "momentumPer": 200,
   "momentumMax": 5,
-  "numericVersion": 2
+  "numericVersion": 3
 };

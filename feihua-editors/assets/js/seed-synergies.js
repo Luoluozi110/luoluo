@@ -1,4 +1,5 @@
-/* 游戏原始羁绊数据（作为编辑器默认种子；与 config/synergies.json 保持一致）。 */window.GAME_SYNERGIES = [
+// 自动生成：小整数 v2.1，与云端工程同源。
+window.GAME_SYNERGIES = [
   {
     "id": "S01",
     "name": "诗酒剑气",
@@ -10,7 +11,7 @@
     "effects": [
       {
         "effectId": "S01-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S01-E1",
         "stackMode": "add",
         "type": "style_pct",
         "style": "shi",
@@ -18,7 +19,7 @@
       },
       {
         "effectId": "S01-E2",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S01-E2",
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "six",
@@ -37,7 +38,7 @@
     "effects": [
       {
         "effectId": "S02-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S02-E1",
         "stackMode": "add",
         "type": "style_pct",
         "style": "ci",
@@ -45,11 +46,12 @@
       },
       {
         "effectId": "S02-E2",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S02-E2",
         "stackMode": "add",
         "type": "on_win_bonus",
         "style": "ci",
-        "value": 30
+        "value": 3,
+        "resource": "insight"
       }
     ]
   },
@@ -64,7 +66,7 @@
     "effects": [
       {
         "effectId": "S03-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S03-E1",
         "stackMode": "add",
         "type": "style_pct",
         "style": "lian",
@@ -72,7 +74,7 @@
       },
       {
         "effectId": "S03-E2",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S03-E2",
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "all_distinct",
@@ -92,15 +94,15 @@
     "effects": [
       {
         "effectId": "S04-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S04-E1",
         "stackMode": "add",
         "type": "extra_dice_pct",
         "value": 300,
-        "firstCostDiscount": 10
+        "firstCostDiscount": 1
       },
       {
         "effectId": "S04-E2",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S04-E2",
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "low_then_high",
@@ -119,17 +121,17 @@
     "effects": [
       {
         "effectId": "S05-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S05-E1",
         "stackMode": "add",
         "type": "syn_pct",
         "value": 800
       },
       {
         "effectId": "S05-E2",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S05-E2",
         "stackMode": "add",
         "type": "insp_on_quiz",
-        "value": 10,
+        "value": 1,
         "maxTriggers": 3
       }
     ]
@@ -145,15 +147,15 @@
     "effects": [
       {
         "effectId": "S06-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S06-E1",
         "stackMode": "add",
         "type": "insp_on_win",
-        "value": 20
+        "value": 2
       },
       {
         "effectId": "S06-E2",
-        "stackGroup": "synergy-score",
-        "stackMode": "add",
+        "stackGroup": "previous-nonwin-score",
+        "stackMode": "max",
         "type": "battle_history_pct",
         "result": "nonwin",
         "value": 800
@@ -171,7 +173,7 @@
     "effects": [
       {
         "effectId": "S07-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S07-E1",
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "six",
@@ -179,7 +181,7 @@
       },
       {
         "effectId": "S07-E2",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S07-E2",
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "ascending",
@@ -198,7 +200,7 @@
     "effects": [
       {
         "effectId": "S08-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S08-E1",
         "stackMode": "add",
         "type": "syn_pct",
         "value": 1000
@@ -216,7 +218,7 @@
     "effects": [
       {
         "effectId": "S09-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S09-E1",
         "stackMode": "add",
         "type": "syn_pct",
         "value": 1000,
@@ -233,19 +235,20 @@
       "T007",
       "T040"
     ],
-    "desc": "出现六点时得分 +10%，并获得 1 页稿本。",
+    "desc": "出现六点时得分 +10%，并获得 20 成稿进度（每场一次）。",
     "effects": [
       {
         "effectId": "S10-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S10-E1",
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "six",
         "value": 1000,
         "reward": {
           "type": "fragment",
-          "value": 1000,
-          "perMatch": false
+          "value": 20,
+          "perMatch": false,
+          "unit": "manuscript_progress"
         }
       }
     ]
@@ -261,7 +264,7 @@
     "effects": [
       {
         "effectId": "S11-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S11-E1",
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "total_multiple",
@@ -269,7 +272,7 @@
         "value": 1600,
         "reward": {
           "type": "insight",
-          "value": 20,
+          "value": 2,
           "perMatch": false
         }
       }
@@ -286,20 +289,21 @@
     "effects": [
       {
         "effectId": "S12-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S12-E1",
         "stackMode": "add",
         "type": "comeback",
-        "threshold": 160,
+        "threshold": 16,
         "value": 1400
       },
       {
         "effectId": "S12-E2",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S12-E2",
         "stackMode": "add",
         "type": "insp_battle_recover",
-        "threshold": 160,
-        "value": 30,
-        "maxTriggers": 3
+        "threshold": 16,
+        "value": 3,
+        "maxTriggers": 3,
+        "resourceGroup": "low-inspiration-recovery"
       }
     ]
   },
@@ -314,11 +318,12 @@
     "effects": [
       {
         "effectId": "S13-E1",
-        "stackGroup": "synergy-score",
-        "stackMode": "add",
+        "stackGroup": "switch-score",
+        "stackMode": "max",
         "type": "style_switch_pct",
         "value": 1400,
-        "insight": 2
+        "insight": 2,
+        "resourceGroup": "switch-insight"
       }
     ]
   },
@@ -333,7 +338,7 @@
     "effects": [
       {
         "effectId": "S14-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S14-E1",
         "stackMode": "add",
         "type": "manuscript_pct",
         "step": 2,
@@ -353,22 +358,22 @@
     "effects": [
       {
         "effectId": "S15-E1",
-        "stackGroup": "synergy-score",
-        "stackMode": "add",
+        "stackGroup": "streak-score",
+        "stackMode": "max",
         "type": "streak_pct",
         "minStreak": 2,
         "value": 1400
       },
       {
         "effectId": "S15-E2",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S15-E2",
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "pair",
         "value": 0,
         "reward": {
           "type": "inspiration",
-          "value": 20,
+          "value": 2,
           "perMatch": false
         }
       }
@@ -385,15 +390,15 @@
     "effects": [
       {
         "effectId": "S16-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S16-E1",
         "stackMode": "add",
         "type": "palace_insp",
-        "value": 40,
-        "startValue": 50
+        "value": 4,
+        "startValue": 5
       },
       {
         "effectId": "S16-E2",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S16-E2",
         "stackMode": "add",
         "type": "palace_pct",
         "value": 800
@@ -411,10 +416,10 @@
     "effects": [
       {
         "effectId": "S17-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S17-E1",
         "stackMode": "add",
         "type": "insp_on_quiz",
-        "value": 20,
+        "value": 2,
         "maxTriggers": 5
       }
     ]
@@ -426,11 +431,11 @@
       "T020",
       "T021"
     ],
-    "desc": "以诗出战且选择勇武时得分 +18%，触发后获得 1 页稿本。",
+    "desc": "以诗出战且选择勇武时得分 +18%，触发后获得 20 成稿进度（每场一次）。",
     "effects": [
       {
         "effectId": "S18-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S18-E1",
         "stackMode": "add",
         "type": "style_pct",
         "style": "shi",
@@ -442,8 +447,9 @@
         },
         "reward": {
           "type": "fragment",
-          "value": 1000,
-          "perMatch": false
+          "value": 20,
+          "perMatch": false,
+          "unit": "manuscript_progress"
         }
       }
     ]
@@ -459,7 +465,7 @@
     "effects": [
       {
         "effectId": "S19-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S19-E1",
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "six",
@@ -471,7 +477,7 @@
         },
         "reward": {
           "type": "inspiration",
-          "value": 10,
+          "value": 1,
           "perMatch": false
         }
       }
@@ -488,7 +494,7 @@
     "effects": [
       {
         "effectId": "S20-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S20-E1",
         "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "total_tiers",
@@ -510,7 +516,7 @@
         },
         "reward": {
           "type": "inspiration",
-          "value": 20,
+          "value": 2,
           "perMatch": false
         }
       }
@@ -523,20 +529,21 @@
       "T011",
       "T027"
     ],
-    "desc": "游学心得 +2；上一场未胜时本场得分 +12%。",
+    "desc": "败北或平局后心得 +2，下一场得分 +8%；上一场未胜时本场另得 +12%（同组取高）。",
     "effects": [
       {
         "effectId": "S21-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S21-E1",
         "stackMode": "add",
         "type": "study_bonus",
-        "value": 20,
-        "nextBattlePct": 800
+        "value": 2,
+        "nextBattlePct": 800,
+        "resource": "insight"
       },
       {
         "effectId": "S21-E2",
-        "stackGroup": "synergy-score",
-        "stackMode": "add",
+        "stackGroup": "previous-nonwin-score",
+        "stackMode": "max",
         "type": "battle_history_pct",
         "result": "nonwin",
         "value": 1200
@@ -554,7 +561,7 @@
     "effects": [
       {
         "effectId": "S22-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S22-E1",
         "stackMode": "add",
         "type": "armory_pct",
         "target": "score",
@@ -575,10 +582,10 @@
     "effects": [
       {
         "effectId": "S23-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S23-E1",
         "stackMode": "add",
         "type": "insp_turn_regen",
-        "value": 20,
+        "value": 2,
         "thresholdRatio": 6000
       }
     ]
@@ -594,7 +601,7 @@
     "effects": [
       {
         "effectId": "S24-E1",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S24-E1",
         "stackMode": "add",
         "type": "palace_pct",
         "value": 1800,
@@ -606,11 +613,12 @@
       },
       {
         "effectId": "S24-E2",
-        "stackGroup": "synergy-score",
+        "stackGroup": "score:S24-E2",
         "stackMode": "add",
         "type": "on_win_bonus",
         "style": "shi",
-        "value": 30
+        "value": 3,
+        "resource": "insight"
       }
     ]
   },
@@ -625,8 +633,8 @@
     "effects": [
       {
         "effectId": "S25-E1",
-        "stackGroup": "synergy-score",
-        "stackMode": "add",
+        "stackGroup": "switch-score",
+        "stackMode": "max",
         "type": "style_switch_pct",
         "value": 1600,
         "insight": 2,
@@ -635,7 +643,8 @@
             "ci",
             "lian"
           ]
-        }
+        },
+        "resourceGroup": "switch-insight"
       }
     ]
   },
@@ -651,7 +660,7 @@
     "effects": [
       {
         "effectId": "S26-E1",
-        "stackGroup": "synergy-resonance-v2",
+        "stackGroup": "streak-score",
         "stackMode": "max",
         "type": "streak_pct",
         "value": 1000,
@@ -671,11 +680,12 @@
     "effects": [
       {
         "effectId": "S27-E1",
-        "stackGroup": "synergy-resonance-v2",
+        "stackGroup": "switch-score",
         "stackMode": "max",
         "type": "style_switch_pct",
         "value": 1200,
-        "insight": 2
+        "insight": 2,
+        "resourceGroup": "switch-insight"
       }
     ]
   },
@@ -691,7 +701,7 @@
     "effects": [
       {
         "effectId": "S28-E1",
-        "stackGroup": "synergy-resonance-v2",
+        "stackGroup": "previous-nonwin-score",
         "stackMode": "max",
         "type": "battle_history_pct",
         "value": 1000,
@@ -699,11 +709,12 @@
       },
       {
         "effectId": "S28-E2",
-        "stackGroup": "synergy-growth",
-        "stackMode": "max",
+        "stackGroup": "score:S28-E2",
+        "stackMode": "add",
         "type": "study_bonus",
-        "value": 10,
-        "nextBattlePct": 600
+        "value": 1,
+        "nextBattlePct": 600,
+        "resource": "insight"
       }
     ]
   },
@@ -719,11 +730,11 @@
     "effects": [
       {
         "effectId": "S29-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S29-E1",
+        "stackMode": "add",
         "type": "comeback",
         "value": 1400,
-        "threshold": 160,
+        "threshold": 16,
         "when": {
           "usedTalents": [
             "TA09"
@@ -744,14 +755,14 @@
     "effects": [
       {
         "effectId": "S30-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S30-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "value": 1200,
         "pattern": "single",
         "reward": {
           "type": "inspiration",
-          "value": 10,
+          "value": 1,
           "perMatch": false
         }
       }
@@ -769,8 +780,8 @@
     "effects": [
       {
         "effectId": "S31-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S31-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "value": 1400,
         "pattern": "low_then_high",
@@ -791,7 +802,7 @@
     "effects": [
       {
         "effectId": "S32-E1",
-        "stackGroup": "synergy-resonance-v2",
+        "stackGroup": "previous-nonwin-score",
         "stackMode": "max",
         "type": "battle_history_pct",
         "value": 800,
@@ -799,12 +810,13 @@
       },
       {
         "effectId": "S32-E2",
-        "stackGroup": "synergy-recovery",
-        "stackMode": "max",
+        "stackGroup": "score:S32-E2",
+        "stackMode": "add",
         "type": "insp_battle_recover",
-        "threshold": 180,
-        "value": 30,
-        "maxTriggers": 3
+        "threshold": 18,
+        "value": 3,
+        "maxTriggers": 3,
+        "resourceGroup": "low-inspiration-recovery"
       }
     ]
   },
@@ -820,8 +832,8 @@
     "effects": [
       {
         "effectId": "S33-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S33-E1",
+        "stackMode": "add",
         "type": "syn_pct",
         "value": 1000,
         "when": {
@@ -844,8 +856,8 @@
     "effects": [
       {
         "effectId": "S34-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S34-E1",
+        "stackMode": "add",
         "type": "restraint_pct",
         "value": 1000
       }
@@ -859,20 +871,21 @@
       "T007",
       "T040"
     ],
-    "desc": "梦中首尾相照：骰组首尾同点时得分 +12%，并得 1 份残页。",
+    "desc": "梦中首尾相照：骰组首尾同点时得分 +12%，并得 20 成稿进度（每场一次）。",
     "effects": [
       {
         "effectId": "S35-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S35-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "value": 1200,
         "pattern": "first_last_equal",
         "minDice": 2,
         "reward": {
           "type": "fragment",
-          "value": 1000,
-          "perMatch": false
+          "value": 20,
+          "perMatch": false,
+          "unit": "manuscript_progress"
         }
       }
     ]
@@ -889,8 +902,8 @@
     "effects": [
       {
         "effectId": "S36-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S36-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "value": 1400,
         "pattern": "low_and_high",
@@ -898,7 +911,7 @@
         "highMin": 5,
         "reward": {
           "type": "inspiration",
-          "value": 10,
+          "value": 1,
           "perMatch": false
         }
       }
@@ -916,8 +929,8 @@
     "effects": [
       {
         "effectId": "S37-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S37-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "value": 1200,
         "pattern": "six",
@@ -940,8 +953,8 @@
     "effects": [
       {
         "effectId": "S38-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S38-E1",
+        "stackMode": "add",
         "type": "style_pct",
         "value": 800,
         "style": "shi"
@@ -959,11 +972,12 @@
     "effects": [
       {
         "effectId": "S39-E1",
-        "stackGroup": "synergy-growth",
-        "stackMode": "max",
+        "stackGroup": "score:S39-E1",
+        "stackMode": "add",
         "type": "on_win_bonus",
         "style": "ci",
-        "value": 20
+        "value": 2,
+        "resource": "insight"
       }
     ]
   },
@@ -978,8 +992,8 @@
     "effects": [
       {
         "effectId": "S40-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S40-E1",
+        "stackMode": "add",
         "type": "style_pct",
         "value": 800,
         "style": "lian"
@@ -997,8 +1011,8 @@
     "effects": [
       {
         "effectId": "S41-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S41-E1",
+        "stackMode": "add",
         "type": "armory_pct",
         "target": "attrs",
         "value": 200,
@@ -1018,8 +1032,8 @@
     "effects": [
       {
         "effectId": "S42-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S42-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "value": 1000,
         "pattern": "total_multiple",
@@ -1043,8 +1057,8 @@
     "effects": [
       {
         "effectId": "S43-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S43-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "value": 0,
         "pattern": "total_tiers",
@@ -1077,10 +1091,10 @@
     "effects": [
       {
         "effectId": "S44-E1",
-        "stackGroup": "synergy-recovery",
-        "stackMode": "max",
+        "stackGroup": "score:S44-E1",
+        "stackMode": "add",
         "type": "insp_on_quiz",
-        "value": 10,
+        "value": 1,
         "maxTriggers": 4
       }
     ]
@@ -1096,8 +1110,8 @@
     "effects": [
       {
         "effectId": "S45-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S45-E1",
+        "stackMode": "add",
         "type": "manuscript_pct",
         "value": 200,
         "step": 2,
@@ -1121,8 +1135,8 @@
     "effects": [
       {
         "effectId": "S46-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S46-E1",
+        "stackMode": "add",
         "type": "theme_pct",
         "value": 1200,
         "theme": "yongwu"
@@ -1140,11 +1154,11 @@
     "effects": [
       {
         "effectId": "S47-E1",
-        "stackGroup": "synergy-palace",
-        "stackMode": "max",
+        "stackGroup": "score:S47-E1",
+        "stackMode": "add",
         "type": "palace_insp",
-        "value": 20,
-        "startValue": 30
+        "value": 2,
+        "startValue": 3
       }
     ]
   },
@@ -1159,8 +1173,8 @@
     "effects": [
       {
         "effectId": "S48-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S48-E1",
+        "stackMode": "add",
         "type": "palace_pct",
         "value": 1200
       }
@@ -1177,8 +1191,8 @@
     "effects": [
       {
         "effectId": "S49-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S49-E1",
+        "stackMode": "add",
         "type": "streak_pct",
         "minStreak": 2,
         "value": 600
@@ -1196,8 +1210,8 @@
     "effects": [
       {
         "effectId": "S50-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S50-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "first_last_equal",
         "minDice": 2,
@@ -1216,14 +1230,14 @@
     "effects": [
       {
         "effectId": "S51-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S51-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "pair",
         "value": 600,
         "reward": {
           "type": "inspiration",
-          "value": 10,
+          "value": 1,
           "perMatch": false
         }
       }
@@ -1240,8 +1254,8 @@
     "effects": [
       {
         "effectId": "S52-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S52-E1",
+        "stackMode": "add",
         "type": "style_switch_pct",
         "value": 800,
         "insight": 1
@@ -1259,8 +1273,8 @@
     "effects": [
       {
         "effectId": "S53-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S53-E1",
+        "stackMode": "add",
         "type": "style_switch_pct",
         "value": 1000,
         "insight": 0,
@@ -1283,8 +1297,8 @@
     "effects": [
       {
         "effectId": "S54-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S54-E1",
+        "stackMode": "add",
         "type": "theme_pct",
         "theme": "huaigu",
         "value": 800
@@ -1302,11 +1316,12 @@
     "effects": [
       {
         "effectId": "S55-E1",
-        "stackGroup": "synergy-growth",
-        "stackMode": "max",
+        "stackGroup": "score:S55-E1",
+        "stackMode": "add",
         "type": "study_bonus",
-        "value": 10,
-        "nextBattlePct": 400
+        "value": 1,
+        "nextBattlePct": 400,
+        "resource": "insight"
       }
     ]
   },
@@ -1321,10 +1336,10 @@
     "effects": [
       {
         "effectId": "S56-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S56-E1",
+        "stackMode": "add",
         "type": "comeback",
-        "threshold": 160,
+        "threshold": 16,
         "value": 1000,
         "when": {
           "usedTalents": [
@@ -1345,8 +1360,8 @@
     "effects": [
       {
         "effectId": "S57-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S57-E1",
+        "stackMode": "add",
         "type": "syn_pct",
         "value": 600,
         "when": {
@@ -1368,8 +1383,8 @@
     "effects": [
       {
         "effectId": "S58-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S58-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "single",
         "value": 800
@@ -1387,14 +1402,14 @@
     "effects": [
       {
         "effectId": "S59-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S59-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "single",
         "value": 0,
         "reward": {
           "type": "inspiration",
-          "value": 10,
+          "value": 1,
           "perMatch": false
         }
       }
@@ -1411,8 +1426,8 @@
     "effects": [
       {
         "effectId": "S60-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S60-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "low_then_high",
         "lowMax": 2,
@@ -1432,8 +1447,8 @@
     "effects": [
       {
         "effectId": "S61-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S61-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "all_distinct",
         "minDice": 2,
@@ -1452,8 +1467,8 @@
     "effects": [
       {
         "effectId": "S62-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S62-E1",
+        "stackMode": "add",
         "type": "battle_history_pct",
         "result": "nonwin",
         "value": 600
@@ -1471,11 +1486,11 @@
     "effects": [
       {
         "effectId": "S63-E1",
-        "stackGroup": "synergy-recovery",
-        "stackMode": "max",
+        "stackGroup": "score:S63-E1",
+        "stackMode": "add",
         "type": "insp_battle_recover",
-        "threshold": 180,
-        "value": 20,
+        "threshold": 18,
+        "value": 2,
         "maxTriggers": 3
       }
     ]
@@ -1491,8 +1506,8 @@
     "effects": [
       {
         "effectId": "S64-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S64-E1",
+        "stackMode": "add",
         "type": "syn_pct",
         "value": 800,
         "when": {
@@ -1515,8 +1530,8 @@
     "effects": [
       {
         "effectId": "S65-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S65-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "all_high",
         "minPip": 4,
@@ -1540,8 +1555,8 @@
     "effects": [
       {
         "effectId": "S66-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S66-E1",
+        "stackMode": "add",
         "type": "restraint_pct",
         "value": 600
       }
@@ -1558,8 +1573,8 @@
     "effects": [
       {
         "effectId": "S67-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S67-E1",
+        "stackMode": "add",
         "type": "syn_pct",
         "value": 600,
         "when": {
@@ -1579,8 +1594,8 @@
     "effects": [
       {
         "effectId": "S68-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S68-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "low_and_high",
         "lowMax": 2,
@@ -1600,8 +1615,8 @@
     "effects": [
       {
         "effectId": "S69-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S69-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "six",
         "value": 800,
@@ -1624,8 +1639,8 @@
     "effects": [
       {
         "effectId": "S70-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S70-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "six",
         "value": 800,
@@ -1648,8 +1663,8 @@
     "effects": [
       {
         "effectId": "S71-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S71-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "six",
         "value": 0,
@@ -1660,7 +1675,7 @@
         },
         "reward": {
           "type": "inspiration",
-          "value": 10,
+          "value": 1,
           "perMatch": false
         }
       }
@@ -1677,10 +1692,10 @@
     "effects": [
       {
         "effectId": "S72-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S72-E1",
+        "stackMode": "add",
         "type": "comeback",
-        "threshold": 140,
+        "threshold": 14,
         "value": 800
       }
     ]
@@ -1696,14 +1711,14 @@
     "effects": [
       {
         "effectId": "S73-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S73-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "single",
         "value": 600,
         "reward": {
           "type": "insight",
-          "value": 10,
+          "value": 1,
           "perMatch": false
         }
       }
@@ -1720,8 +1735,8 @@
     "effects": [
       {
         "effectId": "S74-E1",
-        "stackGroup": "synergy-resonance-v2",
-        "stackMode": "max",
+        "stackGroup": "score:S74-E1",
+        "stackMode": "add",
         "type": "dice_pattern",
         "pattern": "six",
         "value": 800,

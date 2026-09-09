@@ -1,0 +1,58 @@
+{
+  "date": "2026-09-09",
+  "ruleSetId": "small-integer-v2.1",
+  "numericVersion": 3,
+  "editorVersion": 26,
+  "scope": {
+    "talents": 61,
+    "levels": 263,
+    "synergies": 74
+  },
+  "release": {
+    "command": "npm run test:release",
+    "tests": 18,
+    "pass": 18,
+    "fail": 0
+  },
+  "browser": {
+    "engine": "Edge",
+    "newGame": true,
+    "editorExport": true,
+    "legacyContinuation": true,
+    "pageErrors": 0
+  },
+  "baseline": {
+    "tests": 87,
+    "pass": 54,
+    "fail": 33
+  },
+  "fullSuite": {
+    "command": "npm test",
+    "tests": 103,
+    "pass": 82,
+    "fail": 21,
+    "failedFiles": [
+      "tests/ability-system.test.mjs",
+      "tests/album-growth.test.mjs",
+      "tests/boot-perf.test.mjs",
+      "tests/center-art.test.mjs",
+      "tests/config-contract.test.mjs",
+      "tests/creative-choice-study.test.mjs",
+      "tests/experimental-manner-ui.test.mjs",
+      "tests/extra-dice-pct.test.mjs",
+      "tests/font-fallback.test.mjs",
+      "tests/normal-dice-pct.test.mjs",
+      "tests/numeric-v2.test.mjs",
+      "tests/reincarnate.test.mjs",
+      "tests/sidequest-presentation.test.mjs",
+      "tests/sky-strategy.test.mjs",
+      "tests/talent-upgrade.test.mjs",
+      "tests/wenxin-bond-coverage.test.mjs",
+      "tests/wenxin-bond-ui.test.mjs",
+      "tests/wenxin-copy-redesign.test.mjs",
+      "tests/wenxin-dice-pattern.test.mjs",
+      "tests/wenxin-independent-pairs.test.mjs",
+      "tests/wenxin-strong-feedback.test.mjs"
+    ]
+  }
+}

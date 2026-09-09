@@ -1,0 +1,2452 @@
+{
+  "T001": {
+    "quality": "common",
+    "maxLevel": 3,
+    "upCost": [
+      40,
+      70
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "shi",
+          "value": 20
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "shi",
+          "value": 30
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "shi",
+          "value": 50
+        }
+      }
+    ]
+  },
+  "T002": {
+    "quality": "common",
+    "maxLevel": 3,
+    "upCost": [
+      40,
+      70
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "ci",
+          "value": 20
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "ci",
+          "value": 30
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "ci",
+          "value": 50
+        }
+      }
+    ]
+  },
+  "T003": {
+    "quality": "common",
+    "maxLevel": 3,
+    "upCost": [
+      40,
+      70
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "lian",
+          "value": 20
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "lian",
+          "value": 30
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "lian",
+          "value": 50
+        }
+      }
+    ]
+  },
+  "T004": {
+    "quality": "common",
+    "maxLevel": 3,
+    "upCost": [
+      40,
+      70
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "xue": 30
+          },
+          "value": 30
+        }
+      },
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "xue": 40
+          },
+          "value": 40
+        }
+      },
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "xue": 60
+          },
+          "value": 60
+        }
+      }
+    ]
+  },
+  "T005": {
+    "quality": "common",
+    "maxLevel": 3,
+    "upCost": [
+      40,
+      70
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "low_then_high",
+          "lowMax": 2,
+          "nextHighMin": 5,
+          "value": 1000,
+          "conditionalFirstCostDiscount": 20
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "low_then_high",
+          "lowMax": 2,
+          "nextHighMin": 5,
+          "value": 1600,
+          "conditionalFirstCostDiscount": 30
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "low_then_high",
+          "lowMax": 3,
+          "nextHighMin": 5,
+          "value": 2200,
+          "conditionalFirstCostDiscount": 30
+        }
+      }
+    ]
+  },
+  "T006": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "bi": 30
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "bi": 40
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "bi": 50
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "bi": 60
+          }
+        }
+      }
+    ]
+  },
+  "T007": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      60,
+      90,
+      130,
+      180
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 800
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 1000
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 1200
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 1400
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 1600,
+          "reward": {
+            "type": "fragment",
+            "value": 1000,
+            "perMatch": false
+          }
+        }
+      }
+    ]
+  },
+  "T008": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "si": 30
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "si": 40
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "si": 50
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "si": 60
+          }
+        }
+      }
+    ]
+  },
+  "T009": {
+    "quality": "common",
+    "maxLevel": 3,
+    "upCost": [
+      40,
+      70
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "xue": 30
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "xue": 40
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "attr_flat",
+          "attrs": {
+            "xue": 50
+          }
+        }
+      }
+    ]
+  },
+  "T010": {
+    "quality": "common",
+    "maxLevel": 3,
+    "upCost": [
+      40,
+      70
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "all_distinct",
+          "minDice": 3,
+          "value": 1500,
+          "firstCostDiscount": 20,
+          "reward": {
+            "type": "fragment",
+            "value": 500,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "all_distinct",
+          "minDice": 3,
+          "value": 1900,
+          "firstCostDiscount": 30,
+          "reward": {
+            "type": "fragment",
+            "value": 500,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "all_distinct",
+          "minDice": 3,
+          "value": 2200,
+          "firstCostDiscount": 30,
+          "reward": {
+            "type": "fragment",
+            "value": 1000,
+            "perMatch": false
+          }
+        }
+      }
+    ]
+  },
+  "T011": {
+    "quality": "legend",
+    "maxLevel": 6,
+    "upCost": [
+      70,
+      100,
+      140,
+      190,
+      250
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "copy_affinity",
+          "ratio": 8000
+        }
+      },
+      {
+        "effect": {
+          "type": "copy_affinity",
+          "ratio": 9000,
+          "revealIntent": true
+        }
+      },
+      {
+        "effect": {
+          "type": "copy_affinity",
+          "ratio": 10000,
+          "revealIntent": true
+        }
+      },
+      {
+        "effect": {
+          "type": "copy_affinity",
+          "ratio": 10000,
+          "revealIntent": true,
+          "synergyPct": 400
+        }
+      },
+      {
+        "effect": {
+          "type": "copy_affinity",
+          "ratio": 11000,
+          "revealIntent": true,
+          "synergyPct": 400,
+          "themeFlat": 400
+        }
+      },
+      {
+        "effect": {
+          "type": "copy_affinity",
+          "ratio": 12000,
+          "revealIntent": true,
+          "synergyPct": 400,
+          "themeFlat": 400,
+          "convertPct": 5000,
+          "revealWeakness": true,
+          "convertWeakness": true
+        }
+      }
+    ]
+  },
+  "T012": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "shi",
+          "value": 30
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "shi",
+          "value": 40
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "shi",
+          "value": 50
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "shi",
+          "value": 70
+        }
+      }
+    ]
+  },
+  "T013": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "ci",
+          "value": 30
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "ci",
+          "value": 40
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "ci",
+          "value": 50
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "ci",
+          "value": 70
+        }
+      }
+    ]
+  },
+  "T014": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "lian",
+          "value": 30
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "lian",
+          "value": 40
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "lian",
+          "value": 50
+        }
+      },
+      {
+        "effect": {
+          "type": "on_win_bonus",
+          "style": "lian",
+          "value": 70
+        }
+      }
+    ]
+  },
+  "T015": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      60,
+      90,
+      130,
+      180
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "comeback",
+          "threshold": 140,
+          "value": 1600
+        }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "threshold": 150,
+          "value": 1800
+        }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "threshold": 160,
+          "value": 2000
+        }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "threshold": 170,
+          "value": 2200
+        }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "threshold": 180,
+          "value": 2400
+        }
+      }
+    ]
+  },
+  "T016": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      60,
+      90,
+      130,
+      180
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "ascending",
+          "minDice": 2,
+          "perStepValue": 500,
+          "fullDice": 3,
+          "fullValue": 1000,
+          "firstCostDiscount": 10,
+          "fullReward": {
+            "type": "inspiration",
+            "value": 10,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "ascending",
+          "minDice": 2,
+          "perStepValue": 600,
+          "fullDice": 3,
+          "fullValue": 1000,
+          "firstCostDiscount": 10,
+          "fullReward": {
+            "type": "inspiration",
+            "value": 10,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "ascending",
+          "minDice": 2,
+          "perStepValue": 700,
+          "fullDice": 3,
+          "fullValue": 1200,
+          "firstCostDiscount": 10,
+          "fullReward": {
+            "type": "inspiration",
+            "value": 10,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "ascending",
+          "minDice": 2,
+          "perStepValue": 800,
+          "fullDice": 3,
+          "fullValue": 1200,
+          "firstCostDiscount": 20,
+          "fullReward": {
+            "type": "inspiration",
+            "value": 20,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "ascending",
+          "minDice": 2,
+          "perStepValue": 800,
+          "fullDice": 3,
+          "fullValue": 1400,
+          "firstCostDiscount": 20,
+          "fullReward": {
+            "type": "inspiration",
+            "value": 20,
+            "perMatch": false
+          }
+        }
+      }
+    ]
+  },
+  "T099": {
+    "quality": "legend",
+    "maxLevel": 6,
+    "upCost": [
+      70,
+      100,
+      140,
+      190,
+      250
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "palace_pct",
+          "value": 1500,
+          "startInspiration": 40
+        }
+      },
+      {
+        "effect": {
+          "type": "palace_pct",
+          "value": 1800,
+          "startInspiration": 40
+        }
+      },
+      {
+        "effect": {
+          "type": "palace_pct",
+          "value": 2100,
+          "startInspiration": 50
+        }
+      },
+      {
+        "effect": {
+          "type": "palace_pct",
+          "value": 2400,
+          "startInspiration": 60
+        }
+      },
+      {
+        "effect": {
+          "type": "palace_pct",
+          "value": 2700,
+          "startInspiration": 70
+        }
+      },
+      {
+        "effect": {
+          "type": "palace_pct",
+          "value": 3000,
+          "startInspiration": 80
+        }
+      }
+    ]
+  },
+  "TA01": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "total_multiple",
+          "multiple": 7,
+          "value": 1800,
+          "reward": {
+            "type": "insight",
+            "value": 10,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "total_multiple",
+          "multiple": 7,
+          "value": 2200,
+          "reward": {
+            "type": "insight",
+            "value": 10,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "total_multiple",
+          "multiple": 7,
+          "value": 2600,
+          "reward": {
+            "type": "insight",
+            "value": 20,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "total_multiple",
+          "multiple": 7,
+          "value": 3000,
+          "reward": {
+            "type": "insight",
+            "value": 20,
+            "perMatch": false
+          }
+        }
+      }
+    ]
+  },
+  "TA02": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "borrow_signature",
+          "fraction": 3000
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "borrow_signature",
+          "fraction": 4500
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "borrow_signature",
+          "fraction": 6000
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "borrow_signature",
+          "fraction": 7500
+        },
+        "cost": 30
+      }
+    ]
+  },
+  "TA03": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      60,
+      90,
+      130,
+      180
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "extremes",
+          "highMin": 5,
+          "highValue": 1400,
+          "lowMax": 2,
+          "lowValue": -700
+        },
+        "cost": 40
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "extremes",
+          "highMin": 5,
+          "highValue": 1600,
+          "lowMax": 2,
+          "lowValue": -700
+        },
+        "cost": 40
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "extremes",
+          "highMin": 5,
+          "highValue": 1800,
+          "lowMax": 2,
+          "lowValue": -800
+        },
+        "cost": 40
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "extremes",
+          "highMin": 5,
+          "highValue": 2000,
+          "lowMax": 2,
+          "lowValue": -900
+        },
+        "cost": 40
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "extremes",
+          "highMin": 5,
+          "highValue": 2200,
+          "lowMax": 2,
+          "lowValue": -1000
+        },
+        "cost": 40
+      }
+    ]
+  },
+  "TA04": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      60,
+      90,
+      130,
+      180
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 1400
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 1600
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 1800
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 2000
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 2400
+        },
+        "cost": 30
+      }
+    ]
+  },
+  "TA05": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "extra_dice_chain",
+          "compare": "not_lower",
+          "value": 1400,
+          "cost": 20,
+          "refund": 10
+        },
+        "cost": 20
+      },
+      {
+        "effect": {
+          "type": "extra_dice_chain",
+          "compare": "not_lower",
+          "value": 1800,
+          "cost": 20,
+          "refund": 10
+        },
+        "cost": 20
+      },
+      {
+        "effect": {
+          "type": "extra_dice_chain",
+          "compare": "not_lower",
+          "value": 2200,
+          "cost": 10,
+          "refund": 10
+        },
+        "cost": 10
+      },
+      {
+        "effect": {
+          "type": "extra_dice_chain",
+          "compare": "not_lower",
+          "value": 2800,
+          "cost": 10,
+          "refund": 20
+        },
+        "cost": 10
+      }
+    ]
+  },
+  "TA06": {
+    "quality": "legend",
+    "maxLevel": 6,
+    "upCost": [
+      70,
+      100,
+      140,
+      190,
+      250
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "total_tiers",
+          "tiers": [
+            {
+              "threshold": 16,
+              "value": 3000,
+              "reward": {
+                "type": "inspiration",
+                "value": 30,
+                "perMatch": false
+              }
+            },
+            {
+              "threshold": 12,
+              "value": 1600,
+              "reward": {
+                "type": "inspiration",
+                "value": 30,
+                "perMatch": false
+              }
+            }
+          ]
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "total_tiers",
+          "tiers": [
+            {
+              "threshold": 16,
+              "value": 3400,
+              "reward": {
+                "type": "inspiration",
+                "value": 30,
+                "perMatch": false
+              }
+            },
+            {
+              "threshold": 12,
+              "value": 1800,
+              "reward": {
+                "type": "inspiration",
+                "value": 30,
+                "perMatch": false
+              }
+            }
+          ]
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "total_tiers",
+          "tiers": [
+            {
+              "threshold": 16,
+              "value": 3800,
+              "reward": {
+                "type": "inspiration",
+                "value": 30,
+                "perMatch": false
+              }
+            },
+            {
+              "threshold": 12,
+              "value": 2000,
+              "reward": {
+                "type": "inspiration",
+                "value": 30,
+                "perMatch": false
+              }
+            }
+          ]
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "total_tiers",
+          "tiers": [
+            {
+              "threshold": 16,
+              "value": 4200,
+              "reward": {
+                "type": "inspiration",
+                "value": 30,
+                "perMatch": false
+              }
+            },
+            {
+              "threshold": 12,
+              "value": 2200,
+              "reward": {
+                "type": "inspiration",
+                "value": 30,
+                "perMatch": false
+              }
+            }
+          ]
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "total_tiers",
+          "tiers": [
+            {
+              "threshold": 16,
+              "value": 4600,
+              "reward": {
+                "type": "inspiration",
+                "value": 30,
+                "perMatch": false
+              }
+            },
+            {
+              "threshold": 12,
+              "value": 2400,
+              "reward": {
+                "type": "inspiration",
+                "value": 30,
+                "perMatch": false
+              }
+            }
+          ]
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "total_tiers",
+          "tiers": [
+            {
+              "threshold": 16,
+              "value": 5000,
+              "reward": {
+                "type": "inspiration",
+                "value": 30,
+                "perMatch": false
+              }
+            },
+            {
+              "threshold": 12,
+              "value": 2600,
+              "reward": {
+                "type": "inspiration",
+                "value": 30,
+                "perMatch": false
+              }
+            }
+          ]
+        },
+        "cost": 30
+      }
+    ]
+  },
+  "TA07": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_transform",
+          "mode": "lowest_to",
+          "maxPip": 2,
+          "target": 6
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "dice_transform",
+          "mode": "lowest_to",
+          "maxPip": 3,
+          "target": 6
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "dice_transform",
+          "mode": "lowest_to",
+          "maxPip": 4,
+          "target": 6
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "dice_transform",
+          "mode": "lowest_to",
+          "maxPip": 5,
+          "target": 6
+        },
+        "cost": 30
+      }
+    ]
+  },
+  "TA08": {
+    "quality": "common",
+    "maxLevel": 3,
+    "upCost": [
+      40,
+      70
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "planned_dice",
+          "baseCost": 40,
+          "costStep": 20,
+          "maxValue": 6,
+          "cost": 40
+        },
+        "cost": 40
+      },
+      {
+        "effect": {
+          "type": "planned_dice",
+          "baseCost": 30,
+          "costStep": 10,
+          "maxValue": 6,
+          "cost": 30
+        },
+        "cost": 30
+      },
+      {
+        "effect": {
+          "type": "planned_dice",
+          "baseCost": 20,
+          "costStep": 0,
+          "maxValue": 6,
+          "cost": 20
+        },
+        "cost": 20
+      }
+    ]
+  },
+  "T017": {
+    "quality": "common",
+    "maxLevel": 3,
+    "upCost": [
+      40,
+      70
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "insp_on_win",
+          "value": 20
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_on_win",
+          "value": 30
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_on_win",
+          "value": 40
+        }
+      }
+    ]
+  },
+  "T018": {
+    "quality": "common",
+    "maxLevel": 3,
+    "upCost": [
+      40,
+      70
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "draw_bonus",
+          "value": 30
+        }
+      },
+      {
+        "effect": {
+          "type": "draw_bonus",
+          "value": 40
+        }
+      },
+      {
+        "effect": {
+          "type": "draw_bonus",
+          "value": 60
+        }
+      }
+    ]
+  },
+  "T019": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "insp_turn_regen",
+          "value": 10,
+          "thresholdRatio": 5000,
+          "onTalent": 20
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_turn_regen",
+          "value": 10,
+          "thresholdRatio": 6000,
+          "onTalent": 20
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_turn_regen",
+          "value": 20,
+          "thresholdRatio": 6000,
+          "onTalent": 30
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_turn_regen",
+          "value": 20,
+          "thresholdRatio": 7000,
+          "onTalent": 40
+        }
+      }
+    ]
+  },
+  "T020": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "style_pct",
+          "style": "shi",
+          "value": 1000,
+          "singleDieBonus": 0
+        }
+      },
+      {
+        "effect": {
+          "type": "style_pct",
+          "style": "shi",
+          "value": 1200,
+          "singleDieBonus": 200
+        }
+      },
+      {
+        "effect": {
+          "type": "style_pct",
+          "style": "shi",
+          "value": 1500,
+          "singleDieBonus": 300
+        }
+      },
+      {
+        "effect": {
+          "type": "style_pct",
+          "style": "shi",
+          "value": 1800,
+          "singleDieBonus": 500
+        }
+      }
+    ]
+  },
+  "T021": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "theme_pct",
+          "theme": "yongwu",
+          "value": 1500
+        }
+      },
+      {
+        "effect": {
+          "type": "theme_pct",
+          "theme": "yongwu",
+          "value": 1800
+        }
+      },
+      {
+        "effect": {
+          "type": "theme_pct",
+          "theme": "yongwu",
+          "value": 2200,
+          "reward": {
+            "type": "inspiration",
+            "value": 10,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "theme_pct",
+          "theme": "yongwu",
+          "value": 2500,
+          "reward": {
+            "type": "inspiration",
+            "value": 20,
+            "perMatch": false
+          }
+        }
+      }
+    ]
+  },
+  "T022": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "streak_mult",
+          "value": 4000
+        }
+      },
+      {
+        "effect": {
+          "type": "streak_mult",
+          "value": 5000
+        }
+      },
+      {
+        "effect": {
+          "type": "streak_mult",
+          "value": 6500
+        }
+      },
+      {
+        "effect": {
+          "type": "streak_mult",
+          "value": 8000
+        }
+      }
+    ]
+  },
+  "T023": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      60,
+      90,
+      130,
+      180
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "insp_floor",
+          "value": 160
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_floor",
+          "value": 180
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_floor",
+          "value": 200
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_floor",
+          "value": 220
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_floor",
+          "value": 240
+        }
+      }
+    ]
+  },
+  "T024": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      60,
+      90,
+      130,
+      180
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "lucky_six",
+          "mult": 12500
+        }
+      },
+      {
+        "effect": {
+          "type": "lucky_six",
+          "mult": 13000
+        }
+      },
+      {
+        "effect": {
+          "type": "lucky_six",
+          "mult": 13500
+        }
+      },
+      {
+        "effect": {
+          "type": "lucky_six",
+          "mult": 14200
+        }
+      },
+      {
+        "effect": {
+          "type": "lucky_six",
+          "mult": 15000,
+          "reward": {
+            "type": "inspiration",
+            "value": 10,
+            "perMatch": false
+          }
+        }
+      }
+    ]
+  },
+  "T025": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      60,
+      90,
+      130,
+      180
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "comeback",
+          "value": 1200,
+          "threshold": 120
+        }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "value": 1400,
+          "threshold": 130
+        }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "value": 1600,
+          "threshold": 140
+        }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "value": 2000,
+          "threshold": 160
+        }
+      },
+      {
+        "effect": {
+          "type": "comeback",
+          "value": 2400,
+          "threshold": 180
+        }
+      }
+    ]
+  },
+  "T026": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      60,
+      90,
+      130,
+      180
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "armory_pct",
+          "target": "attrs",
+          "step": 3,
+          "value": 400,
+          "cap": 1200
+        }
+      },
+      {
+        "effect": {
+          "type": "armory_pct",
+          "target": "attrs",
+          "step": 3,
+          "value": 500,
+          "cap": 1500
+        }
+      },
+      {
+        "effect": {
+          "type": "armory_pct",
+          "target": "attrs",
+          "step": 3,
+          "value": 600,
+          "cap": 1800
+        }
+      },
+      {
+        "effect": {
+          "type": "armory_pct",
+          "target": "attrs",
+          "step": 2,
+          "value": 400,
+          "cap": 2000
+        }
+      },
+      {
+        "effect": {
+          "type": "armory_pct",
+          "target": "attrs",
+          "step": 2,
+          "value": 500,
+          "cap": 2500
+        }
+      }
+    ]
+  },
+  "T027": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "study_bonus",
+          "value": 20,
+          "nextBattlePct": 400
+        }
+      },
+      {
+        "effect": {
+          "type": "study_bonus",
+          "value": 30,
+          "nextBattlePct": 600
+        }
+      },
+      {
+        "effect": {
+          "type": "study_bonus",
+          "value": 40,
+          "nextBattlePct": 800
+        }
+      },
+      {
+        "effect": {
+          "type": "study_bonus",
+          "value": 50,
+          "nextBattlePct": 800
+        }
+      }
+    ]
+  },
+  "T028": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      60,
+      90,
+      130,
+      180
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "palace_insp",
+          "value": 30,
+          "startValue": 40,
+          "scorePct": 0
+        }
+      },
+      {
+        "effect": {
+          "type": "palace_insp",
+          "value": 30,
+          "startValue": 50,
+          "scorePct": 200
+        }
+      },
+      {
+        "effect": {
+          "type": "palace_insp",
+          "value": 40,
+          "startValue": 60,
+          "scorePct": 400
+        }
+      },
+      {
+        "effect": {
+          "type": "palace_insp",
+          "value": 40,
+          "startValue": 70,
+          "scorePct": 600
+        }
+      },
+      {
+        "effect": {
+          "type": "palace_insp",
+          "value": 50,
+          "startValue": 80,
+          "scorePct": 800
+        }
+      }
+    ]
+  },
+  "T029": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "insp_turn_regen",
+          "value": 10,
+          "thresholdRatio": 5000
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_turn_regen",
+          "value": 10,
+          "thresholdRatio": 6000
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_turn_regen",
+          "value": 20,
+          "thresholdRatio": 6000
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_turn_regen",
+          "value": 20,
+          "thresholdRatio": 7000
+        }
+      }
+    ]
+  },
+  "T030": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "insp_on_quiz",
+          "value": 20,
+          "maxTriggers": 4
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_on_quiz",
+          "value": 20,
+          "maxTriggers": 5
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_on_quiz",
+          "value": 30,
+          "maxTriggers": 5
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_on_quiz",
+          "value": 30,
+          "maxTriggers": 6
+        }
+      }
+    ]
+  },
+  "T031": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      60,
+      90,
+      130,
+      180
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "insp_battle_recover",
+          "value": 30,
+          "threshold": 160,
+          "maxTriggers": 3
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_battle_recover",
+          "value": 30,
+          "threshold": 180,
+          "maxTriggers": 3
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_battle_recover",
+          "value": 30,
+          "threshold": 200,
+          "maxTriggers": 4
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_battle_recover",
+          "value": 40,
+          "threshold": 200,
+          "maxTriggers": 4
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_battle_recover",
+          "value": 40,
+          "threshold": 220,
+          "maxTriggers": 5
+        }
+      }
+    ]
+  },
+  "T032": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      60,
+      90,
+      130,
+      180
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 80,
+          "group": "inspiration_capacity",
+          "fillRatio": 5000
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 100,
+          "group": "inspiration_capacity",
+          "fillRatio": 5000
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 120,
+          "group": "inspiration_capacity",
+          "fillRatio": 7500
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 140,
+          "group": "inspiration_capacity",
+          "fillRatio": 7500
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 160,
+          "group": "inspiration_capacity",
+          "fillRatio": 10000
+        }
+      }
+    ]
+  },
+  "T033": {
+    "quality": "legend",
+    "maxLevel": 6,
+    "upCost": [
+      70,
+      100,
+      140,
+      190,
+      250
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 140,
+          "group": "inspiration_capacity",
+          "fillRatio": 5000
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 160,
+          "group": "inspiration_capacity",
+          "fillRatio": 5000
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 180,
+          "group": "inspiration_capacity",
+          "fillRatio": 6000
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 220,
+          "group": "inspiration_capacity",
+          "fillRatio": 7000
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 250,
+          "group": "inspiration_capacity",
+          "fillRatio": 8000
+        }
+      },
+      {
+        "effect": {
+          "type": "insp_max",
+          "value": 280,
+          "group": "inspiration_capacity",
+          "fillRatio": 10000
+        }
+      }
+    ]
+  },
+  "T035": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "single",
+          "value": 1200,
+          "reward": {
+            "type": "insight",
+            "value": 10,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "single",
+          "value": 1500,
+          "reward": {
+            "type": "insight",
+            "value": 10,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "single",
+          "value": 1800,
+          "reward": {
+            "type": "insight",
+            "value": 20,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "single",
+          "value": 2400,
+          "reward": {
+            "type": "insight",
+            "value": 30,
+            "perMatch": false
+          }
+        }
+      }
+    ]
+  },
+  "T036": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "all_high",
+          "minPip": 4,
+          "value": 1000,
+          "reward": {
+            "type": "fragment",
+            "value": 1000,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "all_high",
+          "minPip": 4,
+          "value": 1200,
+          "reward": {
+            "type": "fragment",
+            "value": 1000,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "all_high",
+          "minPip": 4,
+          "value": 1400,
+          "reward": {
+            "type": "fragment",
+            "value": 1000,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "all_high",
+          "minPip": 4,
+          "value": 1600,
+          "reward": {
+            "type": "fragment",
+            "value": 1500,
+            "perMatch": false
+          }
+        }
+      }
+    ]
+  },
+  "T037": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "style_switch_pct",
+          "value": 800,
+          "insight": 1
+        }
+      },
+      {
+        "effect": {
+          "type": "style_switch_pct",
+          "value": 1000,
+          "insight": 1
+        }
+      },
+      {
+        "effect": {
+          "type": "style_switch_pct",
+          "value": 1200,
+          "insight": 1
+        }
+      },
+      {
+        "effect": {
+          "type": "style_switch_pct",
+          "value": 1200,
+          "insight": 2
+        }
+      }
+    ]
+  },
+  "T038": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 300,
+          "cap": 1500
+        }
+      },
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 350,
+          "cap": 1600
+        }
+      },
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 400,
+          "cap": 1800
+        }
+      },
+      {
+        "effect": {
+          "type": "manuscript_pct",
+          "step": 2,
+          "value": 500,
+          "cap": 2000
+        }
+      }
+    ]
+  },
+  "T039": {
+    "quality": "rare",
+    "maxLevel": 4,
+    "upCost": [
+      50,
+      80,
+      120
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "pair",
+          "value": 800,
+          "reward": {
+            "type": "inspiration",
+            "value": 10,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "pair",
+          "value": 1000,
+          "reward": {
+            "type": "inspiration",
+            "value": 10,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "pair",
+          "value": 1200,
+          "reward": {
+            "type": "inspiration",
+            "value": 10,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "pair",
+          "value": 1400,
+          "reward": {
+            "type": "inspiration",
+            "value": 20,
+            "perMatch": false
+          }
+        }
+      }
+    ]
+  },
+  "T040": {
+    "quality": "epic",
+    "maxLevel": 5,
+    "upCost": [
+      60,
+      90,
+      130,
+      180
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 800,
+          "reward": {
+            "type": "fragment",
+            "value": 1000,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 1000,
+          "reward": {
+            "type": "fragment",
+            "value": 1500,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 1200,
+          "reward": {
+            "type": "fragment",
+            "value": 2000,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 1400,
+          "reward": {
+            "type": "fragment",
+            "value": 2500,
+            "perMatch": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "dice_pattern",
+          "pattern": "six",
+          "value": 1600,
+          "reward": {
+            "type": "fragment",
+            "value": 3000,
+            "perMatch": false
+          }
+        }
+      }
+    ]
+  },
+  "T034": {
+    "quality": "legend",
+    "maxLevel": 6,
+    "upCost": [
+      70,
+      100,
+      140,
+      190,
+      250
+    ],
+    "levels": [
+      {
+        "effect": {
+          "type": "reincarnate",
+          "inspThreshold": 400,
+          "attrRatio": 8000,
+          "startInspiration": 80
+        }
+      },
+      {
+        "effect": {
+          "type": "reincarnate",
+          "inspThreshold": 360,
+          "attrRatio": 8400,
+          "startInspiration": 80
+        }
+      },
+      {
+        "effect": {
+          "type": "reincarnate",
+          "inspThreshold": 320,
+          "attrRatio": 8800,
+          "startInspiration": 100
+        }
+      },
+      {
+        "effect": {
+          "type": "reincarnate",
+          "inspThreshold": 280,
+          "attrRatio": 9200,
+          "startInspiration": 100
+        }
+      },
+      {
+        "effect": {
+          "type": "reincarnate",
+          "inspThreshold": 240,
+          "attrRatio": 9600,
+          "startInspiration": 120
+        }
+      },
+      {
+        "effect": {
+          "type": "reincarnate",
+          "inspThreshold": 200,
+          "attrRatio": 10000,
+          "startInspiration": 120
+        }
+      }
+    ]
+  }
+}

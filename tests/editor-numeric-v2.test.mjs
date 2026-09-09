@@ -36,7 +36,7 @@ const restored = context.window.Common.numericProjectToStorage(display);
 
 assert.deepEqual(JSON.parse(JSON.stringify(restored)), source, '完整云端工程经过编辑器显示层后必须无损还原');
 assert.equal(context.window.GAME_SCHOOLS[1].schoolMechanics.inspirationBonusRate, 0.2, '编辑器应将 2000 bp 显示为 0.2');
-assert.equal(display.numericVersion, 2);
+assert.equal(display.numericVersion, 3);
 for (const [seed, key] of Object.entries({
   GAME_QUESTIONS: 'questions', GAME_EVENTS: 'events', GAME_TALENTS: 'talents', GAME_TALENT_UPGRADE: 'talent-upgrade',
   GAME_NPCS: 'npcs', GAME_AFFINITY: 'affinity', GAME_SYNERGIES: 'synergies', GAME_BOARD: 'board', GAME_SKY: 'sky',

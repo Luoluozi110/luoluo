@@ -40,6 +40,20 @@ const INK_TAGS = new Set(INK_AXES.flat());
     const warn = (path, message, code = 'warning') => warnings.push({ path, message, code });
     const cfg = isObj(config) ? config : {};
     if (!isObj(config)) add('$', '配置根必须是对象', 'root_type');
+    if (Number(cfg.numericVersion || cfg.attrs?.numericVersion) === 3) {
+      const resources = new Set(['inspiration', 'inspirationMax', 'insight', 'cost', 'refund', 'baseCost', 'costStep', 'firstCostDiscount', 'conditionalFirstCostDiscount', 'fragment', 'fragmentGain', 'fragmentNeed', 'progressNeed']);
+      const walkUnits = (value, path = '') => {
+        if (!value || typeof value !== 'object') return;
+        for (const [key, child] of Object.entries(value)) {
+          const p = path ? `${path}.${key}` : key;
+          if ((resources.has(key) || (key === 'value' && typeof value.type === 'string') || /(?:^|\.)(attrs|initial|upCost)$/.test(path)) && typeof child === 'number' && !Number.isSafeInteger(child)) {
+            add(p, '小整数资源与 bp 存储值必须为安全整数', 'numeric_unit');
+          }
+          walkUnits(child, p);
+        }
+      };
+      walkUnits(cfg);
+    }
 
     if (!partial) {
       for (const key of REQUIRED_CONFIG_KEYS) if (!(key in cfg)) add(key, '缺少必需配置块', 'required');
@@ -137,7 +151,6 @@ const INK_TAGS = new Set(INK_AXES.flat());
         if (!isObj(t.effect) || !text(t.effect.type)) add(`talents[${i}].effect`, '必须包含 effect.type');
       });
     }
-
     // 支线限定文心会在 normalizeConfig 阶段并入主文心池，但 loadConfig 会先执行契约校验。
     // 因此引用校验必须同时认识独立配置中的文心，否则这些文心永远无法进入羁绊 members。
     const sideTalents = isObj(cfg['sidequest-talents']) && Array.isArray(cfg['sidequest-talents'].talents)
@@ -147,6 +160,7 @@ const INK_TAGS = new Set(INK_AXES.flat());
       if (!isObj(t)) { add(p, '必须是对象'); return; }
       if (!text(t.id)) add(`${p}.id`, '必须是非空字符串');
       else if (talentIds.has(t.id)) {
+        // normalizeConfig 会把同一支线对象镜像并入 cfg.talents；二次校验时这是预期形态。
         const mirrored = Array.isArray(cfg.talents) && cfg.talents.some(main => main && main.id === t.id && main.source === 'sidequest');
         if (!mirrored) add(`${p}.id`, `文心 ID 重复：${t.id}`, 'duplicate_id');
       } else talentIds.add(t.id);
@@ -388,7 +402,8 @@ const INK_TAGS = new Set(INK_AXES.flat());
             const attrs = npc.attrs || {};
             const total = ['shi','ci','lian','bi','xue','si'].reduce((n, k) => n + (Number(attrs[k]) || 0), 0);
             if (npc.name !== '陈之微' || npc.title !== '桃花仙人') add(`npcs[${i}].npcs[0]`, '隐藏终圈对手必须为「陈之微·桃花仙人」');
-            if (total !== 300) add(`npcs[${i}].npcs[0].attrs`, `六维总和必须为 300，当前为 ${total}`);
+            const expectedTotal = Number(cfg.numericVersion || (cfg.attrs && cfg.attrs.numericVersion)) === 2 ? 3000 : 300;
+            if (total !== expectedTotal) add(`npcs[${i}].npcs[0].attrs`, `六维总和必须为 ${expectedTotal}，当前为 ${total}`);
           }
         }
         });
@@ -401,6 +416,28 @@ const INK_TAGS = new Set(INK_AXES.flat());
       else for (const key of ['invite', 'victory', 'defeat']) {
         const block = hidden[key];
         if (!isObj(block) || !text(block.title) || !text(block.text)) add(`narrative.hiddenFinal.${key}`, '必须包含标题与正文');
+      }
+      const endScroll = cfg.narrative && cfg.narrative.endScroll;
+      if (endScroll != null) {
+        if (!isObj(endScroll)) add('narrative.endScroll', '终局成卷必须是对象');
+        else {
+          const lineIds = uniqueIds(endScroll.chapterLines, 'narrative.endScroll.chapterLines');
+          if (lineIds.size) for (const chapter of ['outer', 'middle', 'inner']) {
+            const lines = endScroll.chapterLines.filter(line => line && line.chapter === chapter);
+            if (lines.length < 2) add('narrative.endScroll.chapterLines', `${chapter} 至少需要两条候选章句`);
+            lines.forEach((line, i) => {
+              if (!text(line.text)) add(`narrative.endScroll.chapterLines[${endScroll.chapterLines.indexOf(line)}].text`, '章句正文不能为空');
+            });
+          }
+          uniqueIds(endScroll.titles, 'narrative.endScroll.titles');
+          if (Array.isArray(endScroll.titles)) endScroll.titles.forEach((title, i) => {
+            if (!text(title.text)) add(`narrative.endScroll.titles[${i}].text`, '卷名不能为空');
+          });
+          if (!isObj(endScroll.endings) || !isObj(endScroll.endings.default)) add('narrative.endScroll.endings', '必须提供 default 收束句与印章');
+          else for (const [key, ending] of Object.entries(endScroll.endings)) {
+            if (!isObj(ending) || !text(ending.line) || !text(ending.seal)) add(`narrative.endScroll.endings.${key}`, '必须包含收束句与印章');
+          }
+        }
       }
     }
 

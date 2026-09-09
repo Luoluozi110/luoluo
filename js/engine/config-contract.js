@@ -40,6 +40,20 @@ const INK_TAGS = new Set(INK_AXES.flat());
     const warn = (path, message, code = 'warning') => warnings.push({ path, message, code });
     const cfg = isObj(config) ? config : {};
     if (!isObj(config)) add('$', '配置根必须是对象', 'root_type');
+    if (Number(cfg.numericVersion || cfg.attrs?.numericVersion) === 3) {
+      const resources = new Set(['inspiration', 'inspirationMax', 'insight', 'cost', 'refund', 'baseCost', 'costStep', 'firstCostDiscount', 'conditionalFirstCostDiscount', 'fragment', 'fragmentGain', 'fragmentNeed', 'progressNeed']);
+      const walkUnits = (value, path = '') => {
+        if (!value || typeof value !== 'object') return;
+        for (const [key, child] of Object.entries(value)) {
+          const p = path ? `${path}.${key}` : key;
+          if ((resources.has(key) || (key === 'value' && typeof value.type === 'string') || /(?:^|\.)(attrs|initial|upCost)$/.test(path)) && typeof child === 'number' && !Number.isSafeInteger(child)) {
+            add(p, '小整数资源与 bp 存储值必须为安全整数', 'numeric_unit');
+          }
+          walkUnits(child, p);
+        }
+      };
+      walkUnits(cfg);
+    }
 
     if (!partial) {
       for (const key of REQUIRED_CONFIG_KEYS) if (!(key in cfg)) add(key, '缺少必需配置块', 'required');
@@ -388,7 +402,7 @@ const INK_TAGS = new Set(INK_AXES.flat());
             const attrs = npc.attrs || {};
             const total = ['shi','ci','lian','bi','xue','si'].reduce((n, k) => n + (Number(attrs[k]) || 0), 0);
             if (npc.name !== '陈之微' || npc.title !== '桃花仙人') add(`npcs[${i}].npcs[0]`, '隐藏终圈对手必须为「陈之微·桃花仙人」');
-            const expectedTotal = Number(cfg.numericVersion || (cfg.attrs && cfg.attrs.numericVersion)) >= 2 ? 3000 : 300;
+            const expectedTotal = Number(cfg.numericVersion || (cfg.attrs && cfg.attrs.numericVersion)) === 2 ? 3000 : 300;
             if (total !== expectedTotal) add(`npcs[${i}].npcs[0].attrs`, `六维总和必须为 ${expectedTotal}，当前为 ${total}`);
           }
         }

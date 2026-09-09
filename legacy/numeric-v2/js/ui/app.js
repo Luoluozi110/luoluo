@@ -1,0 +1,1512 @@
+/**
+ * app.js —— 主控制器：装配 引擎(Game) + 表现层(BoardView/Hud/Modals/BattleStage/AlbumUI)
+ * 并实现 game.js 所需的 ui 适配器接口，
+ * 串起「选流派 → 装配名篇 → 对局 → 新解锁 → 结算」全流程。
+ */
+import { loadConfig, configSource, applyProjectOverride, loadCloudUrl } from '../engine/config.js?v=20260904pairbonds1';
+import { Game, Reincarnate } from '../engine/game.js?v=20260903wenxinbonds2';
+import { BoardView } from './board.js?v=20260831firstrun1';
+import { Hud, radarSVG } from './hud.js?v=20260903wenxinbonds2';
+// 奇遇属性收益在 20260823eventattrs1 起于选择前完整展示；独立版本键避免旧模块缓存继续省略属性。
+import { Modals, talentEffectText } from './modals.js?v=20260903wenxinbonds2';
+import { BattleStage } from './battle.js?v=20260831firstrun1';
+import { AlbumUI } from './album.js?v=20260902endscroll1';
+import { CodexUI } from './codex.js?v=20260831firstrun1';
+import { SCHOOL_EMBLEM, ensureDefs } from './svg.js?v=20260831firstrun1';
+import { initQuality, getTier, setTier } from './quality.js?v=20260831firstrun1';
+import { ATTR_NAMES } from '../engine/rules.js?v=20260831firstrun1';
+import * as Album from '../engine/album.js?v=20260831firstrun1';
+import * as Codex from '../engine/codex.js?v=20260831firstrun1';
+import { setCodexSilent } from '../engine/codex.js?v=20260831firstrun1';
+// 音频模块统一使用同一 URL，确保静音、SFX 与配乐共享一个 AudioContext / Master 总线。
+import { initAudio, play, isMuted, setMuted } from './audio.js';
+import { setScene, setTension, setStage } from './music.js?v=20260831firstrun1';
+import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY, RUN_SAVE_TUTORIAL_KEY, normalizeOnboardingState } from '../engine/save.js?v=20260902endscroll1';
+import { Leaderboard } from './leaderboard.js?v=20260831firstrun1';
+import { personalize } from './namefmt.js?v=20260831firstrun1';
+import { ContentTestUI } from './contentTest.js?v=20260831firstrun1';
+
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const START_ATTR_KEYS = ['shi', 'ci', 'lian', 'bi', 'xue', 'si'];
+
+/** 选派页与 Game.start 共用同一套开局数值：基础、流派加成、造诣和待消费传灯都计入。 */
+function schoolStartPreview(school, store, flame = Reincarnate.peek()) {
+  const attrs = { ...(cfg.attrs && cfg.attrs.initial || {}) };
+  const mastery = (store.mastery && store.mastery[school.id]) || Album.masteryEntry(0);
+  const masteryLevel = Math.max(1, Number(mastery.level) || 1);
+  attrs[school.attr] = (Number(attrs[school.attr]) || 0)
+    + (Number(cfg.attrs.schoolBonus) || 0)
+    + (masteryLevel - 1) * Album.MASTERY_ATTR_PER_LEVEL;
+  for (const key of START_ATTR_KEYS) {
+    attrs[key] = (Number(attrs[key]) || 0) + (Number(flame && flame.attrs && flame.attrs[key]) || 0);
+  }
+  return { attrs, masteryLevel, flame };
+}
+
+function talentInheritedLevel(talent) {
+  if (!talent) return 1;
+  const up = cfg.talentUpgradeById && cfg.talentUpgradeById.get(talent.id);
+  const max = Math.max(1, Number(up && up.maxLevel) || 1);
+  return Math.min(max, Math.max(1, Number(Codex.getTalentLevel(talent.id)) || 1));
+}
+
+function masteryMechanicChange(school, fromLevel, toLevel) {
+  if (!school || toLevel <= fromLevel) return '';
+  const before = Album.applyMasteryMechanics(school.schoolMechanics || {}, school.id, fromLevel) || {};
+  const after = Album.applyMasteryMechanics(school.schoolMechanics || {}, school.id, toLevel) || {};
+  const changes = [
+    ['inspirationBonusRate', '灵感收益', v => `${Math.round(Number(v || 0) * 100)}%`],
+    ['manuscriptCapPlus', '稿匣额外上限', v => `+${Number(v || 0)}`],
+    ['knowledgeThreshold', '博闻融会所需知识', v => `${Number(v || 0)}`],
+    ['strategyChargePlus', '每阶段构思', v => `+${Number(v || 0)}`],
+    ['firstFinishedPagePlus', '首篇成稿额外稿页', v => `+${Number(v || 0)}`]
+  ].filter(([key]) => Number(before[key] || 0) !== Number(after[key] || 0));
+  return changes.map(([key, label, format]) => `${label} ${format(before[key])} → ${format(after[key])}`).join('；');
+}
+
+let cfg, cloudBaseCfg, cloudProject = null, customProject = null, board, hud, modals, battle, schoolEl, resultEl, albumUI, codexUI, contentTestUI;
+let game = null;
+let rolling = false;
+let menuEl = null;
+let menuOv = null;
+let customConfigActive = false;
+let cloudConfigUrl = '';     // 云端配置地址（部署级 cloud.json 或本机 localStorage 覆盖）
+let cloudConfigActive = false;
+let cloudSyncPromise = Promise.resolve(null);
+let cloudSyncRunning = false;
+let cloudSyncNotice = '';
+let leaderboardInitPromise = null;
+
+// 云端工程配置须兼顾“编辑器发布后可更新”与“弱网不拖住首屏”。
+// 成功结果会被本机缓存，下一次启动先用已验证版本显示菜单，再在后台限时检查更新。
+// 三圈版本使用独立缓存槽，避免旧单环工程配置覆盖正式地图。
+const CLOUD_CACHE_KEY = 'feihua_cloud_config_cache_v3_staged_rings';
+const LEGACY_CLOUD_CACHE_KEY = 'feihua_cloud_config_cache_v2_ringfix';
+const CLOUD_REQUEST_TIMEOUT_MS = 3500;
+
+/** index.html 已带静态骨架；缺失时补建，保证 app.js 单独引用也能跑 */
+function ensureSkeleton() {
+  if ($('#scene')) return;
+  $('#app').innerHTML = `
+    <div id="scene"></div>
+    <div id="hud"></div>
+    <div id="modalLayer"></div>
+    <div id="battleStage"></div>
+    <div id="schoolScreen"></div>
+    <div id="loadout-screen"></div>
+    <div id="album-screen"></div>
+    <div id="codex-screen"></div>
+    <div id="content-test-screen"></div>
+    <div id="resultScreen"></div>
+    <div id="topLayer"></div>
+    <button id="soundToggle" type="button"></button>`;
+}
+
+async function boot() {
+  ensureSkeleton();
+  initQuality();  // 尽早定档：在 <html> 写 data-quality，board 构建前生效
+  ensureDefs();   // 共享体积资源：格子图标/名胜/流派徽记引用
+
+  // 音效：挂解锁钩子（首次交互后才建 AudioContext）+ 全局点击音 + 静音开关
+  initAudio($('#soundToggle'));
+  // 配乐：待机/标题界面 BGM（首次交互后真正起播）
+  setScene('idle');
+
+  // 主菜单与图鉴/名篇操作只需配置，不需要预先构建完整棋盘与 HUD。
+  // 先用本地已验证的云端缓存（若有）合并，立即显示菜单；网络刷新在后台限时进行。
+  await prepareCloudConfig();
+  schoolEl = $('#schoolScreen');
+  resultEl = $('#resultScreen');
+  modals = new Modals($('#modalLayer'), cfg);
+  albumUI = new AlbumUI({
+    loadoutEl: $('#loadout-screen'),
+    albumEl: $('#album-screen'),
+    layerEl: $('#modalLayer'),
+    topEl: $('#topLayer'),
+    cards: cfg.album || []
+  });
+  codexUI = new CodexUI({ el: $('#codex-screen'), cfg });
+  contentTestUI = new ContentTestUI({ el: $('#content-test-screen'), cfg });
+
+  buildMenu();
+  openMainMenu({ resync: false });
+  if (new URLSearchParams(location.search).get('test') === 'content') openContentTest();
+  if (cloudSyncNotice) announceCloudSync();
+}
+
+/**
+ * 首次真正进入棋局时再创建高成本的棋盘/HUD；重复调用安全。
+ * 创建前先等待后台云端同步收尾，保证 BoardView 基建在完成合并后的 cfg 上、
+ * 复现地图编辑器覆盖，同时菜单首屏不受云端请求拖延。
+ */
+async function ensureGameUi() {
+  await waitForCloudBeforeGame();   // 同步 Promise 不忙时立即通过
+  // 云端/本机工程覆盖可以替换 board；已有棋盘必须同源重建，不能让 Game 与 BoardView 各持一份地图。
+  if (!board) board = new BoardView(cfg, $('#scene'));
+  // ensureGameUi 只在“新局 / 读档”边界调用；此时允许原子重建，保证引擎和棋盘使用同一份 cfg。
+  else if (board.cfg !== cfg) board.rebuild(cfg, null);
+  if (battle && battle.cfg !== cfg) battle.cfg = cfg;
+  if (!hud) {
+    hud = new Hud($('#hud'));
+    if (cfg.inspiration && cfg.inspiration.lowWarning) hud.lowWarning = cfg.inspiration.lowWarning;
+    hud.onTalent = t => modals.showTalentDetail(t);
+    hud.onSynergy = sy => sy ? modals.showSynergyDetail(sy) : modals.showSynergyCatalog();
+    hud.onSideQuest = () => { if (game && typeof game.sideQuestJournal === 'function') modals.showSideQuestJournal(game.sideQuestJournal()); };
+    hud.onRoll(onRoll);
+    hud.onPlan(onPlan);
+    hud.onAbility(onAbility);
+    hud.onViewAngle(() => {
+      if (!board) return;
+      const state = board.cycleViewAngle();
+      hud.setViewAngleState(state);
+      hud.toast(`地图视角：${state.label} ${state.angle}°`);
+    });
+  }
+  board.onViewChange = state => hud.setViewAngleState(state);
+  hud.setViewAngleState(board.getViewAngleState());
+  if (!battle) battle = new BattleStage($('#battleStage'), cfg);
+  ensureLeaderboard();
+}
+
+/** 排行榜配置不进入首屏关键路径；首次需要排行榜能力或开启对局时再读取。 */
+function ensureLeaderboard() {
+  if (!leaderboardInitPromise) leaderboardInitPromise = Leaderboard.init(modals).catch(() => false);
+  return leaderboardInitPromise;
+}
+
+
+/* ---------------------------------------------------- 阶段 → 配乐移调 */
+
+/**
+ * 把游戏进度(0..1)映射为科考阶段 0..4，驱动配乐「五声调式内移调」。
+ * 阈值与 config/npcs.json 的 tier.range 对齐：童生[0,0.25)→0，秀才[0.25,0.5)→1，
+ * 举人[0.5,0.75)→2，进士[0.75,1)→3，主考官(殿试,=1)→4。
+ */
+function stageFromProgress(p) {
+  if (p >= 1) return 4;
+  if (p >= 0.75) return 3;
+  if (p >= 0.5) return 2;
+  if (p >= 0.25) return 1;
+  return 0;
+}
+
+/* ---------------------------------------------------- 游戏前主菜单 */
+function prepareFrontScreen(opts = {}) {
+  if (opts.resync !== false) maybeResyncCloud();
+  showMenuButton(false);
+  setScene('idle');
+  setStage(game ? stageFromProgress(game.progress()) : 0);
+  // 教学局（含正常结束/中途退出/另开新局）都会经过此处回主菜单：解除图鉴静默，
+  // 避免残留静默污染之后的正式局图鉴写入。
+  if (!(game && game.s && game.s.tutorial && !game.s.over)) setCodexSilent(false);
+  clearRunIfFinished();
+  resultEl.classList.remove('on');
+  albumUI.closeLoadout();
+  albumUI.closeAlbum();
+  codexUI.close();
+  schoolEl.classList.add('on');
+}
+
+function openMainMenu(opts = {}) {
+  prepareFrontScreen(opts);
+  buildMainMenu();
+}
+
+/** 结束教学局：清教学槽、解图鉴静默，返回主菜单。供「结束教学局」/新开教学局前调用。 */
+function endOnboardingTutorial() {
+  setCodexSilent(false);
+  if (hasRun({ tutorial: true })) clearRun(RUN_SAVE_TUTORIAL_KEY);
+  if (game && game.s && game.s.tutorial) { game.s.over = true; }
+  openMainMenu({ resync: false });
+}
+
+function buildMainMenu() {
+  const canContinue = hasRun();
+  const runs = listRuns().filter(r => !r.over);
+  const best = runs.find(r => r.manual) || runs[0] || null;
+  const continueDetail = best
+    ? `${best.manual ? '手动存档' : '自动存档'} · 第 ${best.turn} 回合${best.savedAt ? ` · ${new Date(best.savedAt).toLocaleTimeString('zh-CN', { hour12: false })}` : ''}`
+    : '尚无可继续的未完成对局';
+  const store = Album.loadStore();
+  const npcs = cfg.npcs || [];
+  const foesTotal = npcs.reduce((sum, tier) => sum + ((tier.npcs || []).length || 0), 0);
+  const foesGot = npcs.reduce((sum, tier) =>
+    sum + (tier.npcs || []).filter(npc => Codex.hasFoe(tier.id, npc.name)).length, 0);
+
+  schoolEl.innerHTML = `
+    <main class="main-menu-shell scroll-frame paper" aria-labelledby="mainMenuTitle">
+      <div class="main-menu-brand" aria-hidden="true">文 心 棋</div>
+      <h1 id="mainMenuTitle" class="main-menu-title title-ink">桃 花 入 墨 · 一 局 成 文</h1>
+      <p class="main-menu-lead">择文心，历科场；从一纸初心，行至终局成卷。</p>
+
+      <nav class="main-menu-primary" aria-label="游戏主菜单">
+        <button class="btn btn-primary main-menu-item" data-main-start>
+          <span>开始游戏</span><small>新建一局，从选择流派开始</small>
+        </button>
+        <button class="btn btn-ink main-menu-item" data-main-continue ${canContinue ? '' : 'disabled'} aria-disabled="${canContinue ? 'false' : 'true'}">
+          <span>继续游戏</span><small>${continueDetail}</small>
+        </button>
+        <button class="btn btn-ink main-menu-item" data-main-onboarding>
+          <span>入门卷</span><small>独立查看规则脉络与上手要点</small>
+        </button>
+        <button class="btn btn-ink main-menu-item" data-main-settings>
+          <span>设置</span><small>音效与画质</small>
+        </button>
+        <button class="btn btn-ink main-menu-item" data-main-help>
+          <span>说明</span><small>玩法目标、存档与操作方式</small>
+        </button>
+      </nav>
+
+      <div class="main-menu-secondary" aria-label="收藏与工具">
+        <button class="btn btn-sm btn-ink" data-main-album>传世名篇 ${store.unlocked.length}/${(cfg.album || []).length}</button>
+        <button class="btn btn-sm btn-ink" data-main-codex>图鉴阁 ${foesGot}/${foesTotal}</button>
+        <button class="btn btn-sm btn-ink" data-main-save-transfer>存档码</button>
+        <button class="btn btn-sm btn-test" data-main-content-test>版本测试</button>
+      </div>
+    </main>`;
+
+  schoolEl.querySelector('[data-main-start]')?.addEventListener('click', () => { window.location.href = 'index.html'; });
+  schoolEl.querySelector('[data-main-continue]')?.addEventListener('click', () => { if (hasRun()) loadGame(); });
+  schoolEl.querySelector('[data-main-onboarding]')?.addEventListener('click', openOnboardingHub);
+  schoolEl.querySelector('[data-main-settings]')?.addEventListener('click', openMainSettings);
+  schoolEl.querySelector('[data-main-help]')?.addEventListener('click', openMainHelp);
+  schoolEl.querySelector('[data-main-album]')?.addEventListener('click', () =>
+    albumUI.openAlbum({ onBack: () => openMainMenu({ resync: false }) }));
+  schoolEl.querySelector('[data-main-codex]')?.addEventListener('click', () => codexUI.open('foes'));
+  schoolEl.querySelector('[data-main-save-transfer]')?.addEventListener('click', () => albumUI.openSaveTransfer());
+  schoolEl.querySelector('[data-main-content-test]')?.addEventListener('click', openContentTest);
+}
+
+function openOnboardingHub() {
+  prepareFrontScreen({ resync: false });
+  const canResume = hasRun({ tutorial: true });
+  const tRun = canResume ? listRuns({ tutorial: true }).filter(r => !r.over)[0] : null;
+  schoolEl.innerHTML = `
+    <main class="guide-shell scroll-frame paper" aria-labelledby="onboardingGuideTitle">
+      <button class="btn btn-sm btn-ink guide-back" data-guide-back>返回主菜单</button>
+      <div class="main-menu-brand" aria-hidden="true">入 门 卷</div>
+      <h1 id="onboardingGuideTitle" class="guide-title title-ink">先识一局，再入科场</h1>
+      <p class="guide-lead">入门卷独立于正式对局：教学局按真实规则演练论战与文心，边玩边教，不写入正式存档、不占用跨局进度。</p>
+      <div class="guide-grid">
+        <section><b>一 · 择流派</b><p>博闻加学力、奇士加思力、辞宗加笔力，并各授一枚初始文心。教学局三派皆可试，放心选。</p></section>
+        <section><b>二 · 行棋盘</b><p>掷骰前进，落到不同格子会触发奇遇、问答、名胜或论战；地图可拖动，移动端支持双指缩放。</p></section>
+        <section><b>三 · 看六维</b><p>诗力、词力、联力决定三类文体的功底；笔力、学力、思力进入战后修习与成长。</p></section>
+        <section><b>四 · 用灵感</b><p>灵感可追加灵感骰、发动主动文心；灵感归零会封笔，应留有回旋余地。</p></section>
+        <section><b>五 · 识论战</b><p>首场论战会完整讲解六步：遭遇、审题、选文体（诗/词/联）、选文风、掷灵感骰、算分对决。算分逐项揭示格律、意象、立意、骰值与修正的来源。</p></section>
+        <section><b>六 · 结教学</b><p>教学局随时可从右上角菜单结束，不占用正式存档；跨局解锁与造诣一律以正式局为准。</p></section>
+      </div>
+      <div class="guide-actions" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px">
+        ${canResume
+          ? `<button class="btn btn-primary" data-guide-continue>继续教学局（第 ${tRun.turn} 回合）</button>`
+          : ''}
+        <button class="btn btn-primary" data-guide-start>${canResume ? '另开一场教学局' : '开始教学局'}</button>
+        <button class="btn btn-ink" data-guide-read>先看规则提纲</button>
+      </div>
+      <div class="guide-note" style="margin-top:14px">${canResume ? '当前有一场未结束的教学局，可从中断处继续；另开新场会先结束旧场。' : '教学局面向所有玩家开放，无论是否已完赛；正式首局仍保留受控难度。'}</div>
+    </main>`;
+  schoolEl.querySelector('[data-guide-back]')?.addEventListener('click', () => openMainMenu({ resync: false }));
+  schoolEl.querySelector('[data-guide-start]')?.addEventListener('click', () => startOnboardingTutorial());
+  schoolEl.querySelector('[data-guide-continue]')?.addEventListener('click', () => loadGame({ tutorial: true }));
+  schoolEl.querySelector('[data-guide-read]')?.addEventListener('click', openOnboardingGuide);
+}
+
+function openOnboardingGuide() {
+  prepareFrontScreen({ resync: false });
+  schoolEl.innerHTML = `
+    <main class="guide-shell scroll-frame paper" aria-labelledby="onboardingGuideTitle">
+      <button class="btn btn-sm btn-ink guide-back" data-guide-back>返回入门卷</button>
+      <div class="main-menu-brand" aria-hidden="true">规 则 提 纲</div>
+      <h1 id="onboardingGuideTitle" class="guide-title title-ink">论战怎么算？文心怎么用？</h1>
+      <p class="guide-lead">以下为本游戏的两条主线玩法速览；完整演示请从入门卷「开始教学局」体验。</p>
+      <div class="guide-grid">
+        <section><b>论战六步</b><p>遭遇 → 审题 → 选文体 → 选文风 → 掷灵感骰 → 算分对决。文体在诗/词/联三者间取舍，文风（婉约、豪放等）需与题材相性相合。</p></section>
+        <section><b>得分构成</b><p>结算逐项揭示：格律分、意象分、立意分（三项基础）× 灵感骰发挥 ＋ 修正项。修正如文心羁绊、本门功底、当朝风潮会按顺序叠乘/叠加。</p></section>
+        <section><b>文心种类</b><p>被动文心常驻生效（如每回合回灵感、骰点保底）；主动文心在论战中择机发动，消耗灵感。初始文心由流派初授。</p></section>
+        <section><b>文心获得</b><p>奇遇、问答与部分论战胜利会带来文心候选；获得后点右侧「文心」栏可查看效果、升级（消耗灵感）与羁绊提示。</p></section>
+        <section><b>灵感资源</b><p>每回合少量恢复，也可通过事件/论战增减。追加灵感骰与发动主动文心都靠它；归零即封笔结束本局。</p></section>
+        <section><b>跨局积累</b><p>正式局会点亮图鉴、推进名篇并积累流派造诣；教学局只演练论战与文心，不计入这些积累，也不写正式存档。</p></section>
+      </div>
+      <div class="guide-actions" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px">
+        <button class="btn btn-primary" data-guide-try>去教学局实战</button>
+        <button class="btn btn-ink" data-guide-back2>返回入门卷</button>
+      </div>
+    </main>`;
+  schoolEl.querySelector('[data-guide-back]')?.addEventListener('click', () => openOnboardingHub());
+  schoolEl.querySelector('[data-guide-back2]')?.addEventListener('click', () => openOnboardingHub());
+  schoolEl.querySelector('[data-guide-try]')?.addEventListener('click', () => startOnboardingTutorial());
+}
+
+function startOnboardingTutorial() {
+  if (hasRun({ tutorial: true })) {
+    clearRun(RUN_SAVE_TUTORIAL_KEY);   // 另开新场前清掉旧教学进度
+  }
+  setCodexSilent(true);                // 进入教学选流派页即开始静默（开局初授文心不写图鉴）
+  openSchoolScreen({ resync: false, tutorial: true });
+}
+
+async function showTutorialRunIntro() {
+  const ov = modals.open(`
+    <div class="modal scroll-frame paper ob-intro" style="width:min(620px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
+      <div class="kind">教 学 局</div>
+      <div class="title-ink" style="font-size:36px;text-align:center">边玩边教 · 论战与文心</div>
+      <hr class="hr-ink"/>
+      <div class="stage-story" style="font-size:15.5px;line-height:2.05;letter-spacing:.03em;text-align:left;white-space:pre-line">
+这局会带你走一遍真实规则：\n\n· 掷骰行路，落入格子触发事件、问答与论战；\n· 首场论战逐步讲解「审题→选文体→选风格→掷骰→算分」，看清分数从何而来；\n· 首次获得文心时，说明被动/主动的区别与用法；\n· 论战落败时会收到师友点拨，复盘主要失分。\n\n本局不计入图鉴、名篇、造诣或完成局数，也不占用正式存档；随时可从右上角菜单退出。</div>
+      <div class="btn-row" style="margin-top:16px">
+        <button class="btn btn-primary" data-ok>开始试炼</button>
+      </div>
+    </div>`, 'ob-tutorial-intro');
+  play('stage');
+  await new Promise(r => ov.querySelector('[data-ok]').addEventListener('click', () => { modals.close(ov); r(); }));
+}
+
+function openMainSettings() {
+  const render = () => {
+    const muted = isMuted();
+    const quality = getTier();
+    return `
+      <div class="modal paper compact-modal main-menu-modal" role="dialog" aria-modal="true" aria-labelledby="mainSettingsTitle">
+        <div class="mtitle"><h2 id="mainSettingsTitle">设 置</h2></div>
+        <div class="menu-list">
+          <button class="btn btn-ink menu-item" data-setting-audio aria-pressed="${muted ? 'false' : 'true'}">音效：${muted ? '关闭' : '开启'}</button>
+          <button class="btn btn-ink menu-item" data-setting-quality>画质：${quality === 'low' ? '省电档' : '高画质'}</button>
+          <button class="btn btn-primary menu-item" data-setting-back>返回主菜单</button>
+        </div>
+        <p class="main-menu-modal-note">设置会保存在本机浏览器中；画质切换立即生效。</p>
+      </div>`;
+  };
+  let ov = modals.open(render(), 'mainSettings');
+  const bind = () => {
+    ov.querySelector('[data-setting-audio]')?.addEventListener('click', () => {
+      setMuted(!isMuted());
+      refresh();
+    });
+    ov.querySelector('[data-setting-quality]')?.addEventListener('click', () => {
+      setTier(getTier() === 'low' ? 'high' : 'low');
+      board?.applyQuality?.();
+      refresh();
+    });
+    ov.querySelector('[data-setting-back]')?.addEventListener('click', () => modals.close(ov));
+    ov.addEventListener('click', e => { if (e.target === ov) modals.close(ov); });
+  };
+  const refresh = () => {
+    const old = ov;
+    modals.close(old);
+    ov = modals.open(render(), 'mainSettings');
+    bind();
+  };
+  bind();
+}
+
+function openMainHelp() {
+  const html = `
+    <div class="modal paper main-menu-modal help-modal" role="dialog" aria-modal="true" aria-labelledby="mainHelpTitle">
+      <div class="mtitle"><h2 id="mainHelpTitle">游 戏 说 明</h2></div>
+      <div class="help-sections">
+        <section><b>目标</b><p>沿三圈科场路线前行，积累才学与文心，通过阶段晋阶试，最终完成殿试与终局成卷。</p></section>
+        <section><b>开始与继续</b><p>“开始游戏”总是建立新局；“继续游戏”仅在存在未完成存档时可用，并优先读取手动存档。</p></section>
+        <section><b>返回</b><p>选流派、入门卷、设置与说明均可返回主菜单；对局中可用右上角菜单保存或返回主菜单。</p></section>
+        <section><b>操作</b><p>鼠标或触控选择按钮；棋盘支持拖动平移，移动端支持双指缩放。右上角扬声器可快速静音。</p></section>
+      </div>
+      <button class="btn btn-primary menu-item" data-help-back>返回主菜单</button>
+    </div>`;
+  const ov = modals.open(html, 'mainHelp');
+  ov.querySelector('[data-help-back]')?.addEventListener('click', () => modals.close(ov));
+  ov.addEventListener('click', e => { if (e.target === ov) modals.close(ov); });
+}
+
+/* ---------------------------------------------------- 选流派屏 */
+function openSchoolScreen(opts = {}) {
+  prepareFrontScreen(opts);
+  buildSchoolScreen(opts);
+}
+
+/** 本局已结束时，清理「继续上局」入口（逐槽检查，只清已结束的槽） */
+function clearRunIfFinished() {
+  for (const r of listRuns()) if (r.over) clearRun(r.slot);
+  // 教学局独立槽：若存在已结束的教学存档，一并清理
+  for (const r of listRuns({ tutorial: true })) if (r.over) clearRun(r.slot);
+}
+
+/* ------------------------------------------------ 存档管线（v2） */
+let lastAutoSave = 0;
+
+/** 把自动保存挂到引擎的「安全保存点」回调上 */
+function wireGameSaves(g) {
+  g.onSavePoint = () => autoSaveRun(g);
+  // 升级等「玩家主动推进」操作调用：立即落盘，避免升级后到下一存档点前重载导致回退。
+  // 同步手动槽（若存在且未结束），保证「继续上局」从自动/手动任一槽读都反映最新进度。
+  g.onForceSave = () => forceSaveRun(g);
+}
+
+/**
+ * 强制落盘（升级等主动推进时调用）：写入自动槽，并同步手动槽（若存在且未结束）。
+ * 与 autoSaveRun 的区别：跳过防抖、且把手动槽一并刷新，确保「继续上局」无论读哪个槽都拿到最新进度。
+ */
+function forceSaveRun(g) {
+  if (!g || !g.s || g.s.over) return;
+  const tutorial = g.s.tutorial === true;
+  const autoSlot = tutorial ? RUN_SAVE_TUTORIAL_KEY : RUN_SAVE_KEY;
+  const manualSlot = tutorial ? RUN_SAVE_TUTORIAL_KEY : RUN_SAVE_MANUAL_KEY;
+  const a = saveRun(g, autoSlot, { tutorial });
+  const m = loadRun(manualSlot);
+  if (m && !m.__corrupt && m.state && !m.state.over) saveRun(g, manualSlot, { tutorial });
+  if (a.where !== 'local') hud.toast('本地存储不可用，本次进度仅暂存于内存/会话（关闭页面将丢失）');
+  else if (a.tooBig) hud.toast('存档体积较大，建议及时结算本局');
+}
+
+/**
+ * 自动存档（写入自动槽）。带 300ms 防抖：殿试等流程一回合内可能触发多次保存点。
+ * force=true 时跳过防抖（开局首存）。
+ */
+function autoSaveRun(g, force = false) {
+  if (!g || !g.s || g.s.over) return;
+  const now = Date.now();
+  if (!force && now - lastAutoSave < 300) return;
+  lastAutoSave = now;
+  const tutorial = g.s.tutorial === true;
+  const slot = tutorial ? RUN_SAVE_TUTORIAL_KEY : RUN_SAVE_KEY;
+  const r = saveRun(g, slot, { tutorial });
+  if (!r.ok) return;
+  if (r.where !== 'local') hud.toast('本地存储不可用，本次进度仅暂存于内存/会话（关闭页面将丢失）');
+  else if (r.tooBig) hud.toast('存档体积较大，建议及时结算本局');
+}
+
+function buildSchoolScreen(opts = {}) {
+  const tutorial = opts.tutorial === true;
+  const store = Album.loadStore();
+  const masteryOf = sch => (store.mastery && store.mastery[sch.id]) || { xp: 0, level: 1 };
+  const cards = cfg.schools.map(sch => {
+    const tal = (cfg.talents || []).find(t => t.id === sch.talent);
+    const m = masteryOf(sch);
+    const preview = schoolStartPreview(sch, store);
+    const inheritedLevel = talentInheritedLevel(tal);
+    const isMax = m.level >= Album.MASTERY_LEVELS;
+    const next = isMax ? null : Album.MASTERY_THRESHOLDS[m.level];
+    const prev = Album.MASTERY_THRESHOLDS[m.level - 1];
+    const widthPct = next == null ? 100 : Math.min(100, Math.max(0, ((m.xp - prev) / (next - prev)) * 100));
+    const masteryLine = isMax
+      ? `<div style="color:var(--zhu);font-size:var(--text-meta);letter-spacing:.08em">造诣 ${Album.masteryLevelName(m.level)}</div>`
+      : `<div style="display:flex;align-items:center;gap:6px;font-size:var(--text-micro);color:var(--mo-3);letter-spacing:.06em;min-width:0">
+           <span>造诣 Lv${m.level} ${Album.masteryLevelName(m.level)}</span>
+           <span style="flex:1;min-width:40px;height:4px;background:rgba(128,112,96,.15);border-radius:2px;overflow:hidden">
+             <span style="display:block;height:100%;width:${widthPct.toFixed(1)}%;background:var(--zhu)"></span>
+           </span>
+           <span>${m.xp}/${next}</span>
+         </div>`;
+    const attrsLine = START_ATTR_KEYS.map(key =>
+      `<span><b>${esc(ATTR_NAMES[key] || key)}</b>${preview.attrs[key]}</span>`).join('');
+    const flameLine = preview.flame && preview.flame.attrs
+      ? `<div class="school-start-note">传灯待继承：${START_ATTR_KEYS.filter(key => Number(preview.flame.attrs[key]) > 0)
+        .map(key => `${ATTR_NAMES[key]} +${preview.flame.attrs[key]}`).join('、') || '属性修为'} </div>`
+      : '';
+    return `
+      <button class="school-card" data-id="${sch.id}">
+        <div class="emblem">${SCHOOL_EMBLEM[sch.attr] || ''}</div>
+        <h3>${sch.name}</h3>
+        ${sch.motto ? `<div class="motto">${sch.motto}</div>` : ''}
+        ${sch.flavor ? `<div class="flavor">${sch.flavor}</div>` : ''}
+        ${masteryLine}
+        <div class="school-start">
+          <div class="school-start-title">本局实属性 <span>造诣 Lv${preview.masteryLevel}</span></div>
+          <div class="school-start-attrs">${attrsLine}</div>
+          <div class="school-start-talent">初授文心「${esc(tal ? tal.name : '—')}」<strong>继承 Lv${inheritedLevel}</strong></div>
+          ${flameLine}
+        </div>
+        ${sch.desc ? `<div class="school-guide">玩法提示：${esc(sch.desc)}</div>` : ''}
+      </button>`;
+  }).join('');
+
+  const src = Object.entries(configSource).map(([k, v]) => `${k}←${v}`).join('　');
+  const canContinue = !tutorial && hasRun();
+  // 续玩存档摘要：槽位（手动/自动）+ 回合 + 时间
+  const contRun = canContinue
+    ? (listRuns().filter(r => !r.over).find(r => r.manual) || listRuns().filter(r => !r.over)[0])
+    : null;
+  const contInfo = contRun
+    ? `${contRun.manual ? '手动存档' : '自动存档'} · 第 ${contRun.turn} 回合 · ${contRun.savedAt ? new Date(contRun.savedAt).toLocaleTimeString('zh-CN', { hour12: false }) : ''}`
+    : '检测到未完成的存档，可从中断处续玩';
+
+  // 图鉴阁入口：展示已邂逅对手数（跨局累计）
+  const npcs = cfg.npcs || [];
+  const foesTotal = npcs.reduce((a, t) => a + ((t.npcs || []).length || 0), 0);
+  const foesGot = npcs.reduce((a, t) =>
+    a + (t.npcs || []).filter(n => Codex.hasFoe(t.id, n.name)).length, 0);
+
+  schoolEl.innerHTML = `
+    <div class="school-inner scroll-frame paper" style="max-width:min(1080px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));border-radius:14px">
+      <div class="school-screen-nav"><button class="btn btn-sm btn-ink" data-school-back>${tutorial ? '返回入门卷' : '返回主菜单'}</button></div>
+      <div style="font-size:17px;text-align:center;letter-spacing:.48em;color:var(--zhu);margin-left:.48em">文 心 棋</div>
+      <div class="title-ink" style="font-size:40px;text-align:center;margin-top:2px">${tutorial ? '教 学 局 · 择 流 派' : '選 擇 流 派'}</div>
+      <div class="subtitle" style="text-align:center;margin-top:6px">${tutorial
+        ? '本局为教学演练：选择任一喜欢的流派即可开始，随后会引导你识得论战与文心。'
+        : '三派各有所长，落子无悔，且赴科场。'}</div>
+      ${tutorial ? '<div class="guide-note" style="max-width:720px;margin:10px auto 0">流派决定主属性偏向与初授文心。教学局不计入跨局进度，放心试错。</div>' : ''}
+      ${canContinue ? `<div style="text-align:center;margin:10px 0 4px"><button class="btn btn-primary" data-continue style="font-size:18px;padding:12px 30px;letter-spacing:.12em">▶ 继续上局</button>
+        <div style="font-size:var(--text-meta);color:var(--mo-3);margin-top:6px;line-height:1.6">${contInfo}</div></div>` : ''}
+      <div class="school-grid">${cards}</div>
+      <div class="school-actions" style="text-align:center;margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-ink" data-album>传世名篇（已解锁 ${store.unlocked.length}/${(cfg.album || []).length}）</button>
+        <button class="btn btn-ink" data-codex>图鉴阁（已邂逅 ${foesGot}/${foesTotal}）</button>
+        <button class="btn btn-ink" data-save-transfer>存档码（导入／导出）</button>
+        <button class="btn btn-test" data-content-test>版本测试 · 全内容解锁</button>
+      </div>
+      <div style="font-size:var(--text-meta);color:var(--mo-3);letter-spacing:.08em;margin-top:8px;text-align:center;line-height:1.65">
+        择定流派后，可于「装配名篇」中携带至多 ${Album.LOADOUT_MAX} 张图鉴卡入局。
+      </div>
+      <div style="text-align:center;font-size:var(--text-micro);color:var(--mo-3);letter-spacing:.1em;margin-top:12px;line-height:1.55">
+        配置来源：${src}
+      </div>
+    </div>`;
+
+  schoolEl.querySelector('[data-school-back]')?.addEventListener('click', () => {
+    if (tutorial) { setCodexSilent(false); openOnboardingHub(); return; }
+    openMainMenu({ resync: false });
+  });
+  schoolEl.querySelectorAll('.school-card').forEach(b =>
+    b.addEventListener('click', () => openLoadout(b.dataset.id, { tutorial })));
+  schoolEl.querySelector('[data-album]').addEventListener('click', () =>
+    albumUI.openAlbum({ onBack: () => { buildSchoolScreen({ tutorial }); } }));
+  schoolEl.querySelector('[data-codex]')?.addEventListener('click', () => codexUI.open('foes'));
+  schoolEl.querySelector('[data-save-transfer]')?.addEventListener('click', () => albumUI.openSaveTransfer());
+  schoolEl.querySelector('[data-content-test]')?.addEventListener('click', openContentTest);
+  const cont = schoolEl.querySelector('[data-continue]');
+  if (cont) cont.addEventListener('click', () => loadGame());
+}
+
+/* ---------------------------------------------------- 版本测试页 */
+function openContentTest() {
+  schoolEl.classList.remove('on');
+  albumUI.closeLoadout();
+  albumUI.closeAlbum();
+  codexUI.close();
+  setScene('menu');
+  contentTestUI.open({
+    onBack: () => openMainMenu({ resync: false }),
+    onChanged: () => { if (schoolEl.classList.contains('on')) buildSchoolScreen(); }
+  });
+}
+
+/* ---------------------------------------------------- 装配屏 */
+function openLoadout(schoolId, opts = {}) {
+  const tutorial = opts.tutorial === true;
+  const school = cfg.schools.find(s => s.id === schoolId) || cfg.schools[0];
+  schoolEl.classList.remove('on');
+  setScene('menu');           // 装配名篇：菜单配乐
+  albumUI.openLoadout({
+    schoolName: school.name,
+    onStart: picked => openNameScreen(schoolId, picked, { tutorial }),
+    onBack: () => openSchoolScreen({ tutorial }),
+    onAlbum: () => albumUI.openAlbum({ onBack: () => {} })
+  });
+}
+
+/* ---------------------------------------------------- 开局起名屏 */
+/** 装配名篇后、真正开局前，让玩家为自己的角色起名；点「返回」回装配屏 */
+async function openNameScreen(schoolId, loadout, opts = {}) {
+  const tutorial = opts.tutorial === true;
+  albumUI.closeLoadout();   // 收起装配屏，名号弹窗独占画面
+  const name = await modals.showNamePrompt('');
+  if (name === null) { openLoadout(schoolId, { tutorial }); return; }
+  await startGame(schoolId, loadout, name, { tutorial });
+}
+
+async function startGame(schoolId, loadout, playerName, opts = {}) {
+  const tutorial = opts.tutorial === true;
+  await ensureGameUi();   // 保证棋盘/HUD 就绪，且基于已完成合并的云端配置构建
+  schoolEl.classList.remove('on');
+  resultEl.classList.remove('on');
+  albumUI.closeLoadout();
+  albumUI.closeAlbum();
+  board.setVisibleRing?.('outer');
+  board.setPiecePos(0);
+  board.clearHint();
+  board.cellEls.forEach(e => e.classList.remove('active'));
+
+  game = new Game(cfg, makeUi(), Math.random);
+  wireGameSaves(game);
+  // 教学局：图鉴（对手/文心/天象）全部静默，演练不污染正式收集。
+  setCodexSilent(tutorial);
+  game.onVictory = (nm, sc) => Leaderboard.submit(nm, sc).catch(() => {});   // 通关 → 提交云端排行榜
+  const cards = loadout || [];
+  const s = game.start(schoolId, { loadout: cards, name: playerName || '', tutorial });
+  // 教学局：无论玩家是否完赛过，都强制启用受控难度与教学点拨（降噪只服务本局教学体验）。
+  if (tutorial && s.onboarding) {
+    s.onboarding.enabled = true;
+    s.onboarding.disabledByPlayer = false;
+    s.onboarding.introSeen = true;   // 教学局的受控试炼说明已由「教学局说明」承担，不再重复弹出
+  }
+  modals.playerName = s.playerName || '';   // 叙事文本据此替换「你」
+  modals.game = game;                       // 文心升级：详情弹窗调用引擎 upgradeTalent
+  // 教学局：进入棋盘前先放「教学局说明」。
+  if (tutorial && typeof showTutorialRunIntro === 'function') {
+    await showTutorialRunIntro();
+  }
+  // 新局进入棋盘前先展示序章；序章只出现一次，并随存档记录。（教学局跳过序章，直接上手）
+  if (!tutorial && !s.prologueSeen && typeof modals.showPrologue === 'function') {
+    await modals.showPrologue();
+    s.prologueSeen = true;
+  }
+  if (s.tutorialState && !s.tutorialState.firstMoveSeen && typeof modals.showKickoffTutorial === 'function') {
+    await modals.showKickoffTutorial();
+    s.tutorialState.firstMoveSeen = true;
+  }
+  // 入门卷说明：正式局开局一次，向新手解释受控试炼；可在弹窗内直接关闭。（教学局已用教学局说明替代）
+  if (!tutorial && s.onboarding && s.onboarding.enabled && !s.onboarding.introSeen && typeof modals.showOnboardingIntro === 'function') {
+    await modals.showOnboardingIntro();
+  }
+  if (cards.length) hud.toast(`行囊生效：${cards.map(c => `「${c.name}」`).join('')}`);
+  hud.render(s, game);
+  updateOnboardingBadge(s);
+  showMenuButton(true);
+  setScene('board');          // 进入对局：行进配乐
+  setTension(0);
+  setStage(stageFromProgress(game.progress())); // 按当前科考阶段移调（宫→商→角→徵→羽）
+  autoSaveRun(game, true); // 开局即存（跳过防抖），关闭后可从「继续上局」恢复
+  hud.toast('手机端可拖动棋盘平移、双指缩放；随时点右上角菜单存档');
+  enableRoll();
+}
+
+/* ---------------------------------------------------- ui 适配器 */
+function makeUi() {
+  return {
+    floatAttrs(out, anchor, reason) {
+      const txt = Object.entries(out)
+        .map(([k, v]) => `${ATTR_NAMES[k]} ${v > 0 ? '+' : ''}${v}`).join('　');
+      if (txt) board.float(txt, 'ink-up');
+      const total = Object.values(out).reduce((sum, value) => sum + (Number(value) || 0), 0);
+      if (total) play(total > 0 ? 'gain' : 'spend', { amount: Math.abs(total) });
+      hud.recordChange({ kind: 'attr', values: out, reason });
+    },
+    floatInspiration(real, reason) {
+      board.float(`灵感 ${real > 0 ? '+' : ''}${real}`, real >= 0 ? 'ink-up' : 'ink-down');
+      if (real) play(real > 0 ? 'gain' : 'spend', { amount: Math.abs(real) });
+      hud.recordChange({ kind: 'inspiration', value: real, reason });
+    },
+    floatInspirationMax(real, reason) {
+      board.float(`灵感上限 +${real}`, 'ink-up');
+      if (real > 0) play('gain', { amount: real });
+      hud.recordChange({ kind: 'inspiration-max', value: real, reason });
+    },
+    recordLog: entry => hud.recordLog(entry),
+    showTalentGain: (t, meta) => modals.showTalentGain(t, meta),
+    askReplaceTalent: (t, list) => modals.askReplaceTalent(t, list),
+    onState(s) { hud.render(s, game); updateOnboardingBadge(s); },
+    skyExpired(card) { hud.toast(`${card.name} 之效已散`); },
+    showDice: d => board.showDice(d),
+    showPlannedMovePrompt: gameRef => modals.showPlannedMovePrompt(gameRef),
+    movePiece: s => board.movePiece(s),
+    toast: t => hud.toast(t),
+    showChoiceEcho: echo => hud.choiceEcho({
+      choiceText: personalize(echo.choiceText, modals.playerName),
+      resultText: personalize(echo.resultText, modals.playerName)
+    }),
+    showEventEcho: echo => hud.choiceEcho({
+      leadText: personalize(echo.leadText || '奇遇回声', modals.playerName),
+      choiceText: personalize(echo.eventName, modals.playerName),
+      resultText: personalize(echo.resultText, modals.playerName)
+    }),
+    highlightCell: c => board.highlight(c),
+    showQuiz: (q, opt) => modals.showQuiz(q, opt),
+    showQuizResult: (q, ans, ok) => modals.showQuizResult(q, ans, ok),
+    showEvent: ev => modals.showEvent(ev),
+    showBowenChoice: () => modals.showBowenChoice(),
+    showSky: c => modals.showSky(c),
+    showPrologue: () => modals.showPrologue(),
+    showBattleTutorial: () => modals.showBattleTutorial(),
+    showLap2Intro: () => modals.showLap2Intro(),
+    // 引擎明确要求同步圈层；不再让阶段弹窗承担唯一的状态切换职责。
+    syncStageRing: s => board.revealRouteState(s),
+    showStageChange: async (gate, state) => {
+      if (modals.showStageChange) return await modals.showStageChange(gate, state);
+      return '';
+    },
+    showZeitgeist: z => modals.showZeitgeist(z),
+    // 支线入口依赖此元数据决定是否展示「入世另行」与「行路凝心」。
+    // 不能在适配层截断第四参，否则配置虽存在，名胜 UI 仍会误判为无支线。
+    askScenic: (cell, cost, curInsp, sideQuestMeta) => modals.askScenic(cell, cost, curInsp, sideQuestMeta),
+    chooseScenicTalent: (candidates, meta) => modals.chooseScenicTalent(candidates, meta),
+    chooseSideQuest: (routes, cell) => modals.chooseSideQuest(routes, cell),
+    showSideQuestAct: (route, act, meta) => modals.showSideQuestAct(route, act, meta),
+    showSideQuestComplete: (route, state) => modals.showSideQuestComplete(route, state),
+    showSideQuestJournal: journal => modals.showSideQuestJournal(journal),
+    askSideQuestFinal: meta => modals.askSideQuestFinal(meta),
+    runBattle: async sess => {
+      setScene('battle');     // 挥毫论战：切 combat 配乐
+      setTension(0.7);
+      const out = await battle.run(sess);
+      setScene('board');      // 战后回到对局配乐
+      setTension(0);
+      setStage(stageFromProgress(game.progress())); // 战后阶段可能已进阶，重新移调
+      return out;
+    },
+    showPalaceIntro: (themes, names, inkSummary, questions, echoes, sideQuestFinal, chapterDraft) => modals.showPalaceIntro(themes, names, inkSummary, questions, echoes, sideQuestFinal, chapterDraft),
+    askHiddenFinal: meta => modals.askHiddenFinal(meta),
+    showHiddenFinalRing: async () => {
+      setScene('board');
+      setTension(0.25);
+      if (board.showHiddenFinalRing) await board.showHiddenFinalRing();
+      setTension(0.55);
+    },
+    showHiddenFinalVictory: (out, npc) => modals.showHiddenFinalVictory(out, npc),
+    showHiddenFinalDefeat: (out, npc) => modals.showHiddenFinalDefeat(out, npc),
+    showResult: sum => showResult(sum)
+  };
+}
+
+/** 轻量「入门卷」HUD 标记：开启时显示，关闭/未开启时移除。点标记可关闭。 */
+function updateOnboardingBadge(s) {
+  const hudEl = document.getElementById('hud');
+  if (!hudEl) return;
+  let badge = hudEl.querySelector('#ob-badge');
+  const show = s && s.onboarding && s.onboarding.enabled && !s.onboarding.disabledByPlayer;
+  if (show) {
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'ob-badge';
+      badge.className = 'ob-badge';
+      badge.textContent = '入门卷';
+      badge.title = '入门卷开启：前几场对手更温和，并有师友点拨。点此可关闭。';
+      badge.addEventListener('click', () => { if (game) modals.confirmCloseOnboarding(); });
+      hudEl.appendChild(badge);
+    }
+  } else if (badge) {
+    badge.remove();
+  }
+}
+
+function enableRoll() {
+  if (!game || game.s.over) return;
+  board.hintRange(game.s);
+  hud.setRollEnabled(true, '掷骰');
+}
+
+async function onRoll() {
+  if (!game || game.s.over || rolling) return;
+  rolling = true;
+  hud.setRollEnabled(false);
+  board.clearHint();
+  try {
+    await game.playTurn();
+  } catch (e) {
+    console.error(e);
+    hud.toast('对局异常：' + (e && e.message || e));
+  }
+  rolling = false;
+  if (game && !game.s.over) enableRoll();
+  // 每回合的自动落盘已改由引擎「安全保存点」回调（onSavePoint）触发，此处不再重复存档
+}
+
+/** 布局谋篇：玩家主动点击 HUD 的「布局谋篇」按钮时触发（非阻塞）。
+ *  打开定策弹窗，定策值写入 game.s.plannedMoveDice，于下一次掷骰时生效。 */
+function onPlan() {
+  if (!game || game.s.over || rolling) return;
+  if (!game.s.active.some(t => (t.effect || {}).type === 'planned_dice')) return;
+  if (game.s.plannedMoveDice != null) return;
+  modals.showPlannedMovePrompt(game);
+}
+
+/** 三功修习：集中管理心得、研修位与稿本，避免每场战后连续弹窗。 */
+function onAbility() {
+  if (!game || game.s.over || rolling) return;
+  if (game.s.tutorialState && !game.s.tutorialState.abilitySeen) {
+    game.s.tutorialState.abilitySeen = true;
+    hud.toast('三功修习：学力管研修，思力管章法，笔力管稿本；带“下阶段生效”的设置不会立即改变当前战斗。');
+    game.onForceSave?.();
+  }
+  modals.showAbilityPanel(game);
+}
+
+/* ---------------------------------------------------- 菜单 / 随时存档 */
+const MENU_ICON = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2.4" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2.4" fill="currentColor" stroke="none"/><circle cx="8" cy="18" r="2.4" fill="currentColor" stroke="none"/></svg>`;
+
+function buildMenu() {
+  if (menuEl) return;
+  const btn = document.createElement('button');
+  btn.id = 'menuBtn';
+  btn.type = 'button';
+  btn.title = '菜单 / 存档';
+  btn.setAttribute('aria-label', '菜单');
+  btn.innerHTML = MENU_ICON;
+  btn.style.display = 'none';
+  btn.addEventListener('click', toggleMenu);
+  document.body.appendChild(btn);
+  menuEl = btn;
+}
+
+function showMenuButton(on) {
+  if (menuEl) menuEl.style.display = on ? 'flex' : 'none';
+}
+
+function toggleMenu() {
+  if (menuOv) { closeMenu(); return; }
+  showMenu();
+}
+
+function closeMenu() {
+  if (menuOv) { modals.close(menuOv); menuOv = null; }
+  if (menuEl) menuEl.classList.remove('on');
+}
+
+function showMenu() {
+  const tutorial = !!(game && game.s && game.s.tutorial);
+  const canSave = !!(game && !game.s.over);
+  const canLoad = tutorial ? hasRun({ tutorial: true }) : hasRun();
+  // 存档摘要：教学局读教学槽；正式局优先手动槽（保留关键节点），其次自动槽
+  const runs = (tutorial ? listRuns({ tutorial: true }) : listRuns()).filter(r => !r.over);
+  const best = runs.find(r => r.manual) || runs[0] || null;
+  const fmt = t => t ? new Date(t).toLocaleTimeString('zh-CN', { hour12: false }) : '';
+  const loadLabel = best
+    ? `读取存档（第${best.turn}回合 · ${fmt(best.savedAt)}）`
+    : '没有可用存档';
+  const html = `
+    <div class="modal paper compact-modal" style="width:min(360px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
+      <div class="mtitle"><h2>桃 花 棋 · ${tutorial ? '教 学 局' : '菜 单'}</h2></div>
+      <div class="menu-list">
+        <button class="btn btn-ink menu-item" data-save ${canSave ? '' : 'disabled'}>${canSave ? (tutorial ? '保存当前进度' : '保存当前进度（手动存档）') : '暂无进行中的对局'}</button>
+        <button class="btn btn-ink menu-item" data-load ${canLoad ? '' : 'disabled'}>${tutorial ? '继续教学局' : loadLabel}</button>
+        <button class="btn btn-ink menu-item" data-save-transfer>存档码（导入／导出）</button>
+        <button class="btn btn-ink menu-item" data-codex>图鉴阁</button>
+        <button class="btn btn-ink menu-item" data-leaderboard>☁ 云端排行榜</button>
+        <button class="btn btn-ink menu-item" data-custom>载入自定义配置（高级）</button>
+        <button class="btn btn-ink menu-item" data-restart>${tutorial ? '结束教学局' : '返回主菜单'}</button>
+        <button class="btn btn-ink menu-item" data-quality>${getTier() === 'low' ? '切换高画质' : '切换省电档'}</button>
+        <button class="btn btn-ink menu-item" data-close>关闭</button>
+      </div>
+      <div style="font-size:12px;color:var(--mo-3);text-align:center;margin-top:12px;letter-spacing:.05em;line-height:1.7">
+        ${tutorial
+          ? '教学局独立存档，不影响正式对局；返回后可随时从「入门卷」续学。'
+          : '每回合结束自动存档；「保存当前进度」另存为手动档，不被覆盖。<br/>关闭页面后，可从「主菜单 · 继续上局」恢复（读取时手动档优先）。'}
+      </div>
+    </div>`;
+  const ov = modals.open(html, 'gameMenu');
+  menuOv = ov;
+  if (menuEl) menuEl.classList.add('on');
+  ov.querySelector('[data-save]')?.addEventListener('click', () => { saveGame(); closeMenu(); });
+  ov.querySelector('[data-load]')?.addEventListener('click', () => { closeMenu(); loadGame({ tutorial }); });
+  ov.querySelector('[data-save-transfer]')?.addEventListener('click', () => {
+    closeMenu();
+    albumUI.openSaveTransfer({
+      // 局内导出前把当前瞬时状态强制写入自动槽，避免导出上一个安全存档点。
+      beforeExport: () => { if (game && game.s && !game.s.over) forceSaveRun(game); }
+    });
+  });
+  ov.querySelector('[data-codex]')?.addEventListener('click', () => { closeMenu(); codexUI.open('foes'); });
+  ov.querySelector('[data-leaderboard]')?.addEventListener('click', () => {
+    closeMenu();
+    ensureLeaderboard().then(() => Leaderboard.openModal());
+  });
+  ov.querySelector('[data-custom]')?.addEventListener('click', () => { closeMenu(); openCustomConfig(); });
+  ov.querySelector('[data-restart]')?.addEventListener('click', () => {
+    closeMenu();
+    if (tutorial) { endOnboardingTutorial(); return; }
+    openMainMenu();
+  });
+  // 入门卷开启时（正式局），菜单提供关闭入口（恢复标准难度，且不再有首败点拨）；教学局无此开关。
+  if (!tutorial && game && game.s && game.s.onboarding && game.s.onboarding.enabled && !game.s.onboarding.disabledByPlayer) {
+    const list = ov.querySelector('.menu-list');
+    const restart = list && list.querySelector('[data-restart]');
+    if (list) {
+      const b = document.createElement('button');
+      b.className = 'btn btn-ink menu-item';
+      b.textContent = '关闭入门卷（恢复标准难度）';
+      b.addEventListener('click', () => { closeMenu(); modals.confirmCloseOnboarding(); });
+      if (restart) list.insertBefore(b, restart);
+      else list.appendChild(b);
+    }
+  }
+  ov.querySelector('[data-quality]')?.addEventListener('click', () => {
+    const next = getTier() === 'low' ? 'high' : 'low';
+    setTier(next);
+    if (board && board.applyQuality) board.applyQuality();   // 花瓣按新档重生成
+    closeMenu(); showMenu();                                  // 重开菜单刷新标签
+  });
+  ov.querySelector('[data-close]')?.addEventListener('click', () => closeMenu());
+  ov.addEventListener('click', e => { if (e.target === ov) closeMenu(); });
+}
+
+/* ------------------------------------------------------ 云端自动同步（编辑器发布 → 所有玩家共享） */
+
+function isRingProject(project) {
+  // 当前正式版本为 192 格三圈路线；不仅校验数量，也校验阶段门、route→cell id 和圈层语义。
+  // 否则一份“看起来也是 192 格”的旧工程会让 Game 进入中圈、BoardView 却无法定位或揭示棋子。
+  const board = project && project.board;
+  if (!board || typeof board !== 'object') return true;
+  const rings = Array.isArray(board.rings) ? board.rings : [];
+  const sizes = rings.map(r => (r.cells || []).length);
+  if (board.layout !== 'concentric_spiral'
+    || !Array.isArray(board.mainRing) || board.mainRing.length !== 192
+    || sizes.join(',') !== '72,64,56'
+    || !Array.isArray(board.route) || board.route.length !== 192) return false;
+
+  const cells = new Map(rings.flatMap(r => (r.cells || []).map(c => [Number(c.id), { cell: c, ring: r.id }])));
+  const validStep = (index, ring, phase, transition) => {
+    const step = board.route[index];
+    const id = Number(step && (step.cellId ?? step.id));
+    const physical = cells.get(id);
+    const logical = board.mainRing[index];
+    const gate = logical && logical.phaseGate;
+    return step && step.ring === ring
+      && physical && physical.ring === ring
+      && logical && Number(logical.id) === id && logical.ring === ring
+      && gate && gate.phase === phase && gate.transition === transition;
+  };
+  return validStep(72, 'middle', 'juren', 'middle')
+    && validStep(136, 'inner', 'jinshi', 'inner');
+}
+
+function readCloudCache(url) {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CLOUD_CACHE_KEY) || 'null');
+    if (cached && cached.url === url && cached.project && typeof cached.project === 'object' && isRingProject(cached.project)) {
+      return cached.project;
+    }
+    // 旧缓存只允许继续提供非地图内容；含旧单环 board 的缓存必须失效。
+    const legacy = JSON.parse(localStorage.getItem(LEGACY_CLOUD_CACHE_KEY) || 'null');
+    if (legacy && legacy.url === url && legacy.project && typeof legacy.project === 'object' && isRingProject(legacy.project)) {
+      return legacy.project;
+    }
+  } catch (_) { /* 缓存损坏或旧格式直接忽略 */ }
+  return null;
+}
+
+function writeCloudCache(url, project) {
+  try { localStorage.setItem(CLOUD_CACHE_KEY, JSON.stringify({ url, project, savedAt: Date.now() })); }
+  catch (_) { /* 缓存不可写不影响同步结果 */ }
+}
+
+/** 拉取云端配置：发布后的内容必须绕过 GitHub Raw/CDN 的旧响应。
+ *  以时间戳保证编辑器刚发布的名篇、题库等内容在下一局可见，
+ *  同时用 AbortController 限制弱网等待。 */
+async function fetchCloudConfig(url, opts = {}) {
+  const timeoutMs = Number(opts.timeoutMs) || CLOUD_REQUEST_TIMEOUT_MS;
+  const controller = typeof AbortController === 'function' ? new AbortController() : null;
+  let timer;
+  try {
+    const sep = url.includes('?') ? '&' : '?';
+    const requestUrl = `${url}${sep}_wb=${Date.now()}`;
+    timer = setTimeout(() => controller && controller.abort(), timeoutMs);
+    const res = await fetch(requestUrl, {
+      cache: 'no-store',
+      signal: controller ? controller.signal : undefined
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const obj = await res.json();
+    if (!obj || typeof obj !== 'object') throw new Error('云端配置格式无效');
+    return obj;
+  } catch (e) {
+    if (!opts.silent && hud && hud.toast) {
+      const msg = e && e.name === 'AbortError' ? '云端配置同步超时，已使用本地内容' : '云端配置拉取失败：' + (e.message || e);
+      hud.toast(msg);
+    }
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function composeProjects() {
+  let next = cloudBaseCfg || cfg;
+  if (cloudProject) next = applyProjectOverride(next, cloudProject, { requireType: true });
+  if (customProject) next = applyProjectOverride(next, customProject, { requireType: true });
+  return next;
+}
+
+function refreshConfigBoundUi() {
+  if (modals) modals.cfg = cfg;
+  if (albumUI) albumUI.cards = cfg.album || [];
+  if (codexUI) codexUI.cfg = cfg;
+  // 正在对局时不热重建棋盘，避免中途跳画面；返回菜单后 ensureGameUi 会以同一份 cfg 重建。
+}
+
+/** 合并一份已验证的云端工程配置，并将它缓存给下一次首屏。 */
+function applyCloudProject(url, project, notice) {
+  if (!isRingProject(project)) {
+    cloudSyncNotice = '已忽略阶段门或路线映射不完整的云端地图，继续使用正式三圈地图';
+    return false;
+  }
+  const previous = cloudProject;
+  cloudProject = project;
+  try { cfg = composeProjects(); }
+  catch (error) {
+    cloudProject = previous;
+    cloudSyncNotice = `已忽略不符合配置契约的云端工程：${error.message || error}`;
+    return false;
+  }
+  cloudConfigActive = true;
+  writeCloudCache(url, project);
+  refreshConfigBoundUi();
+  if (notice) cloudSyncNotice = notice;
+  return true;
+}
+
+/**
+ * 启动云端同步：先立即采用本机缓存，再后台限时拉取最新版本。
+ * 不把远端 Raw 请求放在菜单首屏的硬等待链上；真正进局时会等待同一 Promise，
+ * 因而 BoardView 始终根据完成合并后的 cfg 建立。
+ */
+async function prepareCloudConfig() {
+  try {
+    cloudConfigUrl = '';
+  } catch (_) { cloudConfigUrl = ''; }
+  if (!cloudConfigUrl) return;
+
+  const cached = readCloudCache(cloudConfigUrl);
+  if (cached) {
+    applyCloudProject(cloudConfigUrl, cached, '已使用本机缓存的云端配置，并在后台检查更新');
+  }
+  cloudSyncRunning = true;
+  cloudSyncPromise = fetchCloudConfig(cloudConfigUrl, { silent: true }).then(project => {
+    if (!project) return null;
+    applyCloudProject(cloudConfigUrl, project, cached ? '云端配置已刷新，下一局将使用最新内容' : '已从云端同步最新配置');
+    return project;
+  }).finally(() => { cloudSyncRunning = false; });
+}
+
+function announceCloudSync() {
+  if (!cloudSyncNotice) return;
+  if (hud) hud.toast(cloudSyncNotice);
+  cloudSyncNotice = '';
+}
+
+/** 返回主菜单时静默拉取；有进行中的棋盘时不热替换地图，避免画面与规则配置脱节。 */
+function maybeResyncCloud() {
+  if (!cloudConfigUrl || cloudSyncRunning) return;
+  cloudSyncRunning = true;
+  cloudSyncPromise = fetchCloudConfig(cloudConfigUrl, { silent: true }).then(project => {
+    if (project) applyCloudProject(cloudConfigUrl, project, '云端配置已刷新，下一局将使用最新内容');
+    return project;
+  }).finally(() => { cloudSyncRunning = false; });
+}
+
+/** 第一次进入对局：缓存配置先用于菜单，但真正开局前必须等本次云端刷新收尾。
+ *  fetchCloudConfig 自带 3.5 秒 AbortController 上限，故这里不会无限阻塞；
+ *  这样编辑器刚发布的名篇不会被旧缓存抢跑，弱网时仍会安全回退到已验证缓存。 */
+async function waitForCloudBeforeGame() {
+  try { await cloudSyncPromise; } catch (_) { /* fetchCloudConfig 已降级为 null */ }
+  announceCloudSync();
+}
+
+/* ------------------------------------------------------ 载入自定义配置（编辑器导出 → 本机生效） */
+/**
+ * 旧编辑器导出的工程会把“当时的官方文心”一并写入 localStorage，进而遮住后来部署的
+ * 官方规则。仅识别明确的旧版灵感骰签名并迁移；真正改写过效果的自定义文心保持原样。
+ */
+function migrateLegacyOfficialDiceTalents(project) {
+  if (!project || !Array.isArray(project.talents) || !cloudBaseCfg) return { project, migrated: [] };
+  const legacy = {
+    T005: e => e && e.type === 'dice_transform' && e.mode === 'low_lift',
+    T010: e => e && e.type === 'dice_pattern' && e.pattern === 'distinct',
+    T016: e => e && e.type === 'extra_dice_pct',
+    TA01: e => e && ((e.type === 'dice_transform' && e.mode === 'first_floor') || (e.type === 'dice_pattern' && e.pattern === 'exact_total')),
+    TA05: e => e && e.type === 'extra_dice_pct',
+    TA06: e => e && (e.type === 'fixed_dice' || (e.type === 'dice_pattern' && e.pattern === 'total'))
+  };
+  const official = new Map((cloudBaseCfg.talents || []).map(t => [t.id, t]));
+  const migrated = project.talents.filter(t => legacy[t.id] && legacy[t.id](t.effect)).map(t => t.id);
+  if (!migrated.length) return { project, migrated };
+  const next = JSON.parse(JSON.stringify(project));
+  next.talents = next.talents.map(t => migrated.includes(t.id) ? JSON.parse(JSON.stringify(official.get(t.id))) : t);
+  if (next['talent-upgrade']) {
+    const current = cloudBaseCfg['talent-upgrade'] || {};
+    for (const id of migrated) if (current[id]) next['talent-upgrade'][id] = JSON.parse(JSON.stringify(current[id]));
+  }
+  return { project: next, migrated };
+}
+
+function openCustomConfig() {
+  const cur = localStorage.getItem('feihua_custom_config');
+  const html = `
+    <div class="modal paper" style="width:min(620px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px))">
+      <div class="mtitle"><h2>载 入 自 定 义 配 置</h2></div>
+      <div style="font-size:13px;color:var(--mo-3);line-height:1.85;margin:4px 2px 12px">
+        把「内容编辑器」导出的 <code>feihua-content.json</code> 粘贴或上传到此处，<br/>
+        即可让<b>当前浏览器里的游戏</b>立即使用你改过的题库 / 奇遇 / 文心 / NPC / 相性——<b>无需重新部署</b>。<br/>
+        配置仅存于本机（刷新仍生效）；点「恢复默认配置」可清除。
+      </div>
+      <textarea id="cfgTA" class="cfg-ta" placeholder="在此粘贴 feihua-content.json 的内容…"></textarea>
+      <div class="modal-actions" style="margin-top:12px">
+        <label class="btn" style="cursor:pointer">上传文件<input type="file" id="cfgFile" accept=".json,application/json" style="display:none"/></label>
+        <button class="btn primary" id="cfgApply">应用配置</button>
+        <button class="btn" id="cfgReset">恢复默认配置</button>
+        <button class="btn" id="cfgClose">关闭</button>
+      </div>
+      <div id="cfgMsg" style="font-size:12px;margin-top:10px;min-height:16px"></div>
+
+      <hr style="border:none;border-top:1px dashed var(--mo-4);margin:16px 0 12px" />
+      <div style="font-size:13px;color:var(--mo-2);line-height:1.8">
+        <b>云端自动同步（所有玩家共享）</b><br/>
+        填入「内容编辑器」发布后给出的云端地址；保存后<b>本机及所有玩家启动时自动拉取</b>，无需手动载入。
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap">
+        <input id="cloudUrlInput" class="cfg-url" style="flex:1;min-width:220px"
+          placeholder="https://raw.githubusercontent.com/.../feihua-content.json" value="${esc(cloudConfigUrl)}" />
+        <button class="btn primary" id="cloudSave">保存并同步</button>
+        <button class="btn" id="cloudClear">清除</button>
+      </div>
+      <div id="cloudMsg" style="font-size:12px;margin-top:8px;min-height:16px"></div>
+    </div>`;
+  const ov = modals.open(html, 'customConfig');
+  const ta = ov.querySelector('#cfgTA');
+  if (cur) { try { ta.value = JSON.stringify(JSON.parse(cur), null, 2); } catch (_) { ta.value = cur; } }
+  ov.querySelector('#cfgFile').addEventListener('change', e => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { ta.value = r.result; };
+    r.readAsText(f); e.target.value = '';
+  });
+  const setMsg = (t, bad) => { const m = ov.querySelector('#cfgMsg'); m.textContent = t; m.style.color = bad ? 'var(--bad)' : 'var(--mo-2)'; };
+  const setCloudMsg = (t, bad) => { const m = ov.querySelector('#cloudMsg'); m.textContent = t; m.style.color = bad ? 'var(--bad)' : 'var(--mo-2)'; };
+  ov.querySelector('#cfgClose').addEventListener('click', () => modals.close(ov));
+  ov.querySelector('#cfgReset').addEventListener('click', () => {
+    localStorage.removeItem('feihua_custom_config');
+    customProject = null; customConfigActive = false; cfg = composeProjects(); refreshConfigBoundUi();
+    modals.close(ov); hud.toast('已恢复默认配置');
+  });
+  ov.querySelector('#cfgApply').addEventListener('click', () => {
+    let obj;
+    try { obj = JSON.parse(ta.value); }
+    catch (err) { setMsg('JSON 解析失败：' + err.message, true); return; }
+    const proj = (obj && typeof obj === 'object') ? obj : null;
+    const keys = ['questions', 'events', 'talents', 'talent-upgrade', 'npcs', 'affinity', 'synergies', 'board', 'sky', 'album'].filter(k => proj && proj[k] !== undefined);
+    if (!keys.length) { setMsg('文件中未找到 questions / events / talents / talent-upgrade / npcs / affinity / synergies / board / sky / album 任一键。', true); return; }
+    if (!isRingProject(proj)) {
+      setMsg('地图配置缺少三圈阶段门或路线映射，已拒绝载入；请从最新版内容编辑器重新导出。', true);
+      return;
+    }
+    const migrated = migrateLegacyOfficialDiceTalents(proj);
+    try { customProject = migrated.project; cfg = composeProjects(); }
+    catch (err) { setMsg('合并失败：' + err.message, true); return; }
+    refreshConfigBoundUi();
+    localStorage.setItem('feihua_custom_config', JSON.stringify(migrated.project));
+    customConfigActive = true;
+    modals.close(ov);
+    const notice = migrated.migrated.length ? `；已迁移旧版官方文心：${migrated.migrated.join('、')}` : '';
+    hud.toast(`已载入自定义配置（${keys.join('/')}），下一局起生效${notice}`);
+  });
+  // 云端同步地址：保存即拉取一次，持久化到本机
+  ov.querySelector('#cloudSave').addEventListener('click', async () => {
+    const url = ov.querySelector('#cloudUrlInput').value.trim();
+    if (!url) { setCloudMsg('请先填入云端地址。', true); return; }
+    setCloudMsg('正在同步…');
+    const proj = await fetchCloudConfig(url);
+    if (!proj) { setCloudMsg('拉取失败，请检查地址或网络。', true); return; }
+    if (!isRingProject(proj)) {
+      setCloudMsg('地图配置缺少三圈阶段门或路线映射，未保存该云端地址。', true);
+      return;
+    }
+    try { cloudProject = proj; cfg = composeProjects(); }
+    catch (err) { setCloudMsg('合并失败：' + err.message, true); return; }
+    refreshConfigBoundUi();
+    localStorage.setItem('feihua_cloud_config_url', url);
+    cloudConfigUrl = url; cloudConfigActive = true;
+    setCloudMsg('已同步并保存云端地址，所有玩家启动即生效。');
+    hud.toast('云端配置已同步');
+  });
+  ov.querySelector('#cloudClear').addEventListener('click', () => {
+    localStorage.removeItem('feihua_cloud_config_url');
+    cloudProject = null; cloudConfigUrl = ''; cloudConfigActive = false; cfg = composeProjects(); refreshConfigBoundUi();
+    ov.querySelector('#cloudUrlInput').value = '';
+    setCloudMsg('已清除云端同步地址。');
+  });
+  ov.addEventListener('click', e => { if (e.target === ov) modals.close(ov); });
+}
+
+function saveGame() {
+  if (!game || game.s.over) { hud.toast('当前没有进行中的对局'); return; }
+  const tutorial = game.s.tutorial === true;
+  const slot = tutorial ? RUN_SAVE_TUTORIAL_KEY : RUN_SAVE_MANUAL_KEY;   // 教学局写独立槽；正式局写手动槽，与自动槽分离
+  const r = saveRun(game, slot, { tutorial });
+  if (!r.ok) { hud.toast('存档失败（浏览器存储不可用）'); return; }
+  const t = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+  hud.toast(r.where === 'local'
+    ? `已存档 ✓（${t}）`
+    : '已暂存（本地存储不可用，关闭页面后将丢失）');
+}
+
+async function loadGame(opts = {}) {
+  const tutorial = opts.tutorial === true;
+  await ensureGameUi();          // 从主菜单直接“继续上局”时，棋盘/HUD 尚未构建，须先补齐再使用
+  const best = loadBestRun({ tutorial });
+  if (!best) { hud.toast(tutorial ? '没有可继续的教学局' : '没有可读取的存档'); return; }
+  if (best.obj.__corrupt) {
+    hud.toast('存档数据已损坏，无法读取');
+    if (confirm('检测到存档已损坏。是否清除该存档？')) clearRun(best.slot);
+    return;
+  }
+  if (best.obj.v > 10) { location.href = 'index.html'; return; }
+  const res = deserializeRun(best.obj, cfg);
+  if (!res.ok) {
+    hud.toast('存档无法读取：' + res.error);
+    if (confirm(`存档校验未通过（${res.error}）。是否清除该存档？`)) clearRun(best.slot);
+    return;
+  }
+  // 用存档重建一局，再覆盖运行时状态并重建派生引用
+  game = new Game(cfg, makeUi(), Math.random);
+  wireGameSaves(game);
+  game.onVictory = (nm, sc) => Leaderboard.submit(nm, sc).catch(() => {});   // 通关 → 提交云端排行榜
+  game.s = res.state;
+  // 教学局：图鉴静默随读档恢复；正式局保证清除静默（防止教学局异常退出后残留）。
+  setCodexSilent(!!(res.state && res.state.tutorial));
+  // 旧存档补齐：原存档没有 onboarding 字段时，按跨局完成局数决定开启，
+  // 已有关卡记录的旧档默认关闭（plan §4.1：外部统计变化不中途切换已有存档）。
+  // save.js 不可反向依赖 album（循环依赖禁忌），故此项判定放在读档路径而非存档层。
+  if (best.obj.state && !('onboarding' in best.obj.state)) {
+    game.s.onboarding = normalizeOnboardingState(game.s.onboarding);
+    game.s.onboarding.enabled = Album.loadStore().stats.games === 0;
+  }
+  modals.playerName = game.s.playerName || '';   // 续玩沿用存档中的名号
+  modals.game = game;                            // 文心升级：详情弹窗调用引擎 upgradeTalent
+  schoolEl.classList.remove('on');
+  resultEl.classList.remove('on');
+  albumUI.closeLoadout();
+  albumUI.closeAlbum();
+  const st = game.s;
+  const curCell = game.currentCell();
+  // routeIndex 是三圈位置的唯一真源；旧存档中遗留的 ringId 不得让棋盘回退到错误圈层。
+  if (cfg.board.layout === 'concentric_spiral') board.revealRouteState(st);
+  else {
+    board.setVisibleRing?.(st.ringId === 'inner' ? 'inner' : st.ringId === 'middle' ? 'middle' : 'outer');
+    board.setPiecePos(curCell ? curCell.id : st.pos);
+  }
+  board.clearHint();
+  board.cellEls.forEach(e => e.classList.remove('active'));
+  game.rehydrate();            // 重算羁绊等派生态（内部会 hud.render）
+  hud.render(st, game);
+  updateOnboardingBadge(st);
+  showMenuButton(true);
+  enableRoll();
+  hud.toast('已读取存档，继续科场之路');
+  for (const w of res.warnings.slice(0, 2)) hud.toast('⚠ ' + w);  // 配置变更导致的失效引用提示
+}
+
+/* ---------------------------------------------------- 结算屏 */
+function crossRunFeedback(sum) {
+  const cross = sum.crossRun || {};
+  const st = sum.state || {};
+  const school = st.school || {};
+  const mastery = cross.mastery || sum.mastery;
+  const unlocked = (sum.newUnlocks || []).map(card => `图鉴名篇「${card.name}」`).filter(Boolean);
+  const talentById = cfg.talentById || new Map();
+  const newTalents = (cross.newTalentIds || []).map(id => talentById.get(id)).filter(Boolean);
+  const levelUps = (cross.talentLevels || []).map(item => ({ ...item, talent: talentById.get(item.id) })).filter(item => item.talent);
+  const gained = [];
+  if (mastery) {
+    const mark = mastery.leveledUp ? ` · 已突破 Lv${mastery.after.level} ${Album.masteryLevelName(mastery.after.level)}` : '';
+    gained.push(`流派「${school.name || school.id}」熟练度 +${mastery.gained}（${Album.masterySummary(mastery.before)} → ${Album.masterySummary(mastery.after)}）${mark}`);
+  }
+  if (unlocked.length) gained.push(`新收录：${unlocked.join('、')}`);
+  if (newTalents.length) gained.push(`新收录文心：${newTalents.map(t => `「${t.name}」`).join('、')}`);
+  if (levelUps.length) gained.push(`文心历史最高：${levelUps.map(item => `「${item.talent.name}」Lv${item.before} → Lv${item.after}`).join('、')}`);
+  if (cross.reincarnate) gained.push(`传承火种已点亮：「${cross.reincarnate.talentName || cross.reincarnate.talentId}」Lv${cross.reincarnate.talentLevel}`);
+
+  const next = [];
+  if (mastery && school.attr) {
+    const flameGain = Number(cross.reincarnate && cross.reincarnate.attrs && cross.reincarnate.attrs[school.attr]) || 0;
+    const base = Number(cfg.attrs.initial && cfg.attrs.initial[school.attr]) || 0;
+    const entry = Number(cfg.attrs.schoolBonus) || 0;
+    const beforeValue = base + entry + (Math.max(1, Number(mastery.before.level) || 1) - 1) * Album.MASTERY_ATTR_PER_LEVEL + flameGain;
+    const afterValue = base + entry + (Math.max(1, Number(mastery.after.level) || 1) - 1) * Album.MASTERY_ATTR_PER_LEVEL + flameGain;
+    next.push(`再选「${school.name || school.id}」开局：${ATTR_NAMES[school.attr] || school.attr} ${beforeValue} → ${afterValue}`);
+    const mech = masteryMechanicChange(school, mastery.before.level, mastery.after.level);
+    if (mech) next.push(`同派机制：${mech}`);
+  }
+  for (const item of levelUps) {
+    const upgrade = cfg.talentUpgradeById && cfg.talentUpgradeById.get(item.id);
+    const held = { ...item.talent, effect: (upgrade && upgrade.levels || [])[item.after - 1]?.effect || item.talent.effect };
+    next.push(`下次再获「${item.talent.name}」：直接以 Lv${item.after} 生效（${talentEffectText(held)}）`);
+  }
+  if (cross.reincarnate && cross.reincarnate.attrs) {
+    const attrs = START_ATTR_KEYS.filter(key => Number(cross.reincarnate.attrs[key]) > 0)
+      .map(key => `${ATTR_NAMES[key]} +${cross.reincarnate.attrs[key]}`);
+    if (attrs.length) next.push(`传灯会在下一局开局额外带来：${attrs.join('、')}`);
+  }
+  const gainedHtml = gained.length ? gained.map(text => `<li>${esc(text)}</li>`).join('') : '<li>本局跨局记录已保存。</li>';
+  const nextHtml = next.length ? next.map(text => `<li>${esc(text)}</li>`).join('') : '<li>继续积累熟练度，即可在下一局获得开局强化。</li>';
+  return `
+    <section class="crossrun-feedback paper">
+      <div class="crossrun-title">跨局所得 <span>已永久保存</span></div>
+      <ul>${gainedHtml}</ul>
+    </section>
+    <section class="crossrun-feedback crossrun-next paper">
+      <div class="crossrun-title">下一局具体变化 <span>按当前记录预览</span></div>
+      <ul>${nextHtml}</ul>
+    </section>`;
+}
+
+async function showResult(sum) {
+  setScene('result');         // 科场结算：结算配乐
+  const isTutorialResult = !!(game && game.s && game.s.tutorial) || !!sum.tutorialRun;
+  // 先演「本局新解锁」，再落结算卷轴（教学局无新解锁，跳过动画）
+  if (!isTutorialResult) await albumUI.showNewUnlocks(sum.newUnlocks || []);
+
+  // 主角名号：有则显「「名」」，否则「你」
+  const pname = (game && game.s && game.s.playerName) || '';
+
+  // 流派熟练度：本局获得 + 是否升级
+  const mk = sum.mastery;
+  const masteryBlock = mk ? (() => {
+    const schId = sum.state && sum.state.school && sum.state.school.id;
+    const sch = (cfg.schools || []).find(x => x.id === schId);
+    const schName = sch ? sch.name : (schId || '');
+    const lvName = Album.masteryLevelName(mk.after.level);
+    const upmark = mk.leveledUp ? `<span style="color:var(--zhu);font-weight:bold"> 精进！→ Lv${mk.after.level} ${Album.masteryLevelName(mk.after.level)}</span>` : '';
+    return `<div class="result-mastery paper" style="margin-top:10px;padding:10px 14px;font-size:13px;letter-spacing:.1em">
+      <div style="font-size:14px;letter-spacing:.16em;color:var(--mo-2);margin-bottom:4px">流派造诣 · ${schName}</div>
+      <div>本局习得 <span style="color:var(--zhu);font-weight:bold">+${mk.gained}</span> 熟练度
+        <span style="color:var(--mo-3)">（${Album.masterySummary(mk.before)} → Lv${mk.after.level} ${lvName}）</span>${upmark}</div>
+    </div>`;
+  })() : '';
+
+  // 两列紧凑网格：六维一屏看全（Critic V3）。明细每维最多列 3 条，余者折为「其余 N 项」
+  const PARTS_SHOWN = 3;
+  const dims = sum.dims.map((d, i) => {
+    const ps = d.parts || [];
+    const head = ps.slice(0, PARTS_SHOWN)
+      .map(p => `<div><span>${esc(p.label)}</span><span>${p.value}</span></div>`).join('');
+    const restN = ps.length - PARTS_SHOWN;
+    const restV = ps.slice(PARTS_SHOWN).reduce((a, p) => a + (Number(p.value) || 0), 0);
+    const rest = restN > 0 ? `<div><span>其余 ${restN} 项</span><span>${restV}</span></div>` : '';
+    return `
+    <div class="dim-row on" style="animation-delay:${i * 0.07}s">
+      <div class="dh"><span class="nm">${esc(d.name)}</span><span class="sc">${d.score}</span></div>
+      <div class="parts">${head}${rest}</div>
+    </div>`;
+  }).join('');
+
+  const st = sum.state || {};
+  const b = st.battle || {};
+  const mini = [
+    `胜 ${b.win || 0}　平 ${b.draw || 0}　负 ${b.loss || 0}`,
+    `最高连胜 ${b.maxStreak || 0}`,
+    `奇遇 ${st.events ? st.events.total : 0} 次`,
+    `文心 ${st.passive ? st.passive.length : 0} 被动 / ${st.active ? st.active.length : 0} 主动`,
+    `用时 ${st.turn || 0} 回合`
+  ].map(t => `<span>${t}</span>`).join('');
+
+  const unlocks = (sum.newUnlocks || []).map(c => `
+    <div class="unlock-card pop-in">
+      <div class="uc-tag">图鉴点亮</div>
+      <div class="uc-name">${esc(c.name)}</div>
+      <div class="uc-reward">${esc(c.rewardDesc || '')}</div>
+    </div>`).join('');
+  const unlockBlock = unlocks
+    ? `<div class="result-unlocks paper"><div style="font-size:14px;letter-spacing:.16em;color:var(--zhu);margin-bottom:6px">本局新解锁</div>
+       <div class="unlock-row">${unlocks}</div></div>`
+    : '';
+  const scroll = sum.endScroll || null;
+  const chapterNames = { outer: '初章', middle: '行章', inner: '终章' };
+  const endScrollBlock = scroll ? `<article class="end-scroll paper" aria-labelledby="endScrollTitle">
+    <div class="end-scroll-heading">
+      <span class="end-scroll-kicker">本 局 行 卷</span>
+      <h2 id="endScrollTitle">《${esc(scroll.title || '此局成卷')}》</h2>
+      <span class="end-scroll-byline">${esc(scroll.byline || pname || '无名氏')} · 题</span>
+    </div>
+    <div class="end-scroll-lines">
+      ${(scroll.lines || []).map(line => `<p><span>${esc(chapterNames[line.chapter] || '章句')}</span>${esc(line.text)}</p>`).join('')}
+      ${scroll.endingLine ? `<p class="end-scroll-ending">${esc(scroll.endingLine)}</p>` : ''}
+    </div>
+    <div class="end-scroll-note"><b>卷 后 小 记</b><p>${esc(scroll.note || '')}</p></div>
+    <div class="end-scroll-seal" aria-label="印章：${esc(scroll.seal || '此卷已成')}">${esc(scroll.seal || '此卷已成')}</div>
+  </article>` : '';
+  const crossRunBlock = isTutorialResult ? '' : crossRunFeedback(sum);
+  const masteryBlockHtml = isTutorialResult ? '' : masteryBlock;
+  const unlockBlockHtml = isTutorialResult ? '' : unlockBlock;
+  const tutorialNote = isTutorialResult
+    ? `<div class="result-mastery paper" style="margin-top:10px;padding:10px 14px;font-size:13px;line-height:1.9">
+        <div style="font-size:14px;letter-spacing:.16em;color:var(--zhu);margin-bottom:4px">教 学 局 结 束</div>
+        <div>你已经走完一局入门演练：论战算分、文心运用与灵感管理都按真实规则跑了一遍。本局不计入图鉴、名篇、造诣或完成局数，也不占用正式存档——现在可以放心开一局正式科场了。</div>
+      </div>`
+    : '';
+
+  resultEl.innerHTML = `
+    <div class="result-wrap">
+      <div class="result-head">
+        <div class="grade-scroll paper">
+          <div class="gname">${esc(sum.grade.name)}</div>
+          <div class="gtotal">总评 ${sum.total}</div>
+          <div class="gcomment">${esc(sum.comment || '')}</div>
+          <div class="greward">${esc(sum.reasonText || '')}</div>
+          <div class="pname" style="font-size:13px;color:var(--mo-3);letter-spacing:.12em;margin-top:10px">${pname ? `主角 · ${esc(pname)}` : '主角 · 你'}</div>
+        </div>
+      </div>
+      <div class="result-body">
+        ${endScrollBlock}
+        <div class="result-radar paper">
+          <div style="font-size:15px;letter-spacing:.16em;color:var(--mo-2);margin-bottom:8px">六维才学</div>
+          ${radarSVG(st.attrs || {})}
+          <div class="mini-stats" style="margin-top:8px">${mini}</div>
+        </div>
+        <div class="result-dims paper">
+          <div style="font-size:16px;letter-spacing:.16em;margin-bottom:6px">六维评分</div>
+          <div class="dim-grid">${dims}</div>
+          ${unlockBlockHtml}
+          ${masteryBlockHtml}
+          ${tutorialNote}
+          ${crossRunBlock}
+        </div>
+      </div>
+      <div class="result-actions">
+        ${isTutorialResult ? '' : '<button class="btn btn-ink" data-shot>生成成绩图</button>'}
+        ${isTutorialResult ? '' : '<button class="btn btn-ink" data-album2>传世名篇</button>'}
+        <button class="btn btn-primary" data-again>${isTutorialResult ? '返回主菜单' : '再来一局'}</button>
+        ${isTutorialResult ? '<button class="btn btn-ink" data-again2>再练一局</button>' : ''}
+      </div>
+    </div>`;
+
+  resultEl.classList.add('on');
+  resultEl.querySelector('[data-again]').addEventListener('click', () => openMainMenu());
+  const again2 = resultEl.querySelector('[data-again2]');
+  if (again2) again2.addEventListener('click', () => { if (game && game.s && game.s.tutorial) endOnboardingTutorial(); openOnboardingHub(); });
+  resultEl.querySelector('[data-album2]')?.addEventListener('click', () =>
+    albumUI.openAlbum({ onBack: () => {} }));
+  resultEl.querySelector('[data-shot]')?.addEventListener('click', () => albumUI.openScoreCard(sum));
+}
+
+/* ------------------------------------------------------ 启动 */
+(async function () {
+  try {
+    cfg = await loadConfig();
+    // cloudBaseCfg 是不可变本地基线；每次云端/自定义工程覆盖都从它重建，禁止把多次覆盖叠加成未知地图。
+    cloudBaseCfg = cfg;
+    // 应用上次「载入自定义配置」留下的覆盖（本机持久，刷新仍生效）。
+    // 旧版本只按格子数量判断，可能留下“引擎进中圈、棋盘无法切圈”的半合法地图；现直接忽略并清除。
+    try {
+      const raw = null;
+      if (raw) {
+        const project = JSON.parse(raw);
+        if (isRingProject(project)) {
+          const migrated = migrateLegacyOfficialDiceTalents(project);
+          customProject = migrated.project;
+          cfg = composeProjects();
+          customConfigActive = true;
+          if (migrated.migrated.length) localStorage.setItem('feihua_custom_config', JSON.stringify(migrated.project));
+        }
+        else localStorage.removeItem('feihua_custom_config');
+      }
+    } catch (_) { localStorage.removeItem('feihua_custom_config'); }
+  } catch (e) {
+    document.body.innerHTML =
+      `<div style="color:#f6f0e2;font-family:var(--font-kai);padding:40px;line-height:1.9">
+       配置加载失败：${e.message}<br/>请用 <code>python -m http.server</code> 在本目录启动，
+       并确保 config/ 或 config-dev/ 下存在全部 11 个 json 文件。</div>`;
+    return;
+  }
+  boot();
+})();
+
+
+// Import old slots into separate legacy storage without modifying the originals.
+for (const storageName of ['localStorage','sessionStorage']) {
+  try {
+    const storage = globalThis[storageName];
+    for (const key of ['feihua_run_save','feihua_run_save_manual','feihua_run_save_tutorial']) {
+      const raw = storage.getItem(key);
+      if (!raw) continue;
+      const obj = JSON.parse(raw), target = 'feihua_legacy_v2_' + key;
+      const prior = JSON.parse(storage.getItem(target) || 'null');
+      if (Number(obj.v) <= 10 && (!prior || Number(obj.savedAt) > Number(prior.savedAt))) storage.setItem(target,raw);
+    }
+  } catch (_) {}
+}

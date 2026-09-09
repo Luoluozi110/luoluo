@@ -1,0 +1,48 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { createLocalServer } from './serve-playable.mjs';
+const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const server=createLocalServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));
+const base=`http://127.0.0.1:${server.address().port}`;
+const browser=await chromium.launch({channel:'msedge',headless:true});
+const errors=[];
+try {
+ const page=await browser.newPage();page.on('pageerror',e=>errors.push(e.message));
+ await page.route('https://raw.githubusercontent.com/**/feihua-content.json',r=>r.fulfill({contentType:'application/json',body:fs.readFileSync('feihua-content.json','utf8')}));
+ await page.goto(base+'/');await page.locator('[data-main-start]').click();
+ assert.ok(!(await page.locator('body').innerText()).includes('开局学力 +30'));
+ await page.locator('.school-card[data-id="bowen"]').click();
+ await page.getByRole('button',{name:'开始游戏',exact:true}).click();
+ await page.getByRole('button',{name:'就此开局',exact:true}).click();
+ await page.waitForFunction(()=>document.querySelector('#hud')?.textContent.includes('36'));
+ console.log('New game HUD:',(await page.locator('#hud').innerText()).slice(0,650));
+ const editor=await browser.newPage();editor.on('pageerror',e=>errors.push(e.message));
+ await editor.goto(base+'/feihua-editors/');await editor.waitForFunction(()=>window.TALENT?._ready&&window.SYNERGY?._ready);
+ const exported=await editor.evaluate(()=>Common.buildProject());
+ assert.equal(exported.numericVersion,3);assert.equal(exported._version,26);assert.equal(exported.synergies.length,74);
+ assert.equal(exported.talents.find(t=>t.id==='T040').effect.reward.value,20);
+ assert.equal(exported.talents.find(t=>t.id==='T032').effect.fillRatio,5000);
+ assert.equal(exported.synergies.find(s=>s.id==='S64').effects[0].when.inspirationRatioMin,5000);
+ console.log('Editor exports numericVersion=3, content=26, 74 synergies; reward units and bp preserved.');
+ const old=await browser.newPage();old.on('pageerror',e=>errors.push(e.message));
+ await old.goto(base+'/legacy/numeric-v2/index.html');await old.waitForSelector('[data-main-start]');
+ const fixture=await old.evaluate(async()=>{
+  const {loadConfig}=await import('./legacy/numeric-v2/js/engine/config.js');
+  const {Game}=await import('./legacy/numeric-v2/js/engine/game.js');
+  const {serializeRun}=await import('./legacy/numeric-v2/js/engine/save.js');
+  const cfg=await loadConfig();const ui=new Proxy({},{get:()=>()=>{}});
+  const g=new Game(cfg,ui,()=>.5);g.applyLoadout=()=>{};g.start('bowen',{tutorial:false});
+  g.s.attrs.shi=53;g.s.abilityState.study.progress.shi=1440;
+  const raw=JSON.stringify(serializeRun(g));localStorage.setItem('feihua_run_save',raw);return raw;
+ });
+ await old.route('https://raw.githubusercontent.com/**/feihua-content.json',r=>r.fulfill({contentType:'application/json',body:fs.readFileSync('feihua-content.json','utf8')}));
+ await old.goto(base+'/');await old.locator('[data-main-continue]').click();
+ await old.waitForURL('**/legacy/numeric-v2/index.html');await old.locator('[data-main-continue]').click();
+ await old.waitForFunction(()=>document.querySelector('#hud')?.textContent.includes('53'));
+ assert.equal(await old.evaluate(()=>localStorage.getItem('feihua_run_save')),fixture);
+ const archived=await old.evaluate(()=>JSON.parse(localStorage.getItem('feihua_legacy_v2_feihua_run_save')));
+ assert.equal(archived.v,10);assert.equal(archived.state.attrs.shi,53);
+ assert.equal(archived.state.abilityState.study.progress.shi,1440);
+ console.log('Legacy continuation preserves shi=53 and study=1440 in separate v10 slots.');
+ assert.deepEqual(errors,[]);console.log('Browser acceptance passed; no page errors.');
+} finally {await browser.close();await new Promise(r=>server.close(r));}

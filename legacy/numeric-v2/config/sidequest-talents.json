@@ -1,0 +1,855 @@
+{
+  "version": 1,
+  "offers": {
+    "jianghu": {
+      "守义": "T041",
+      "权变": "T042",
+      "common": "T043",
+      "active": "TA09"
+    },
+    "biansai": {
+      "守土": "T044",
+      "出奇": "T045",
+      "common": "T046",
+      "active": "TA10"
+    },
+    "qiuxian": {
+      "留世": "T048",
+      "忘机": "T047",
+      "common": "T049",
+      "active": "TA11"
+    }
+  },
+  "talents": [
+    {
+      "id": "T041",
+      "name": "抱柱之信",
+      "kind": "passive",
+      "source": "sidequest",
+      "routeId": "jianghu",
+      "axis": "守义",
+      "quality": "rare",
+      "text": "一诺既出，风雨不改。连续沿用上一场文体时作品得分提高；若上一场已经获胜，守诺之势更盛。",
+      "effect": {
+        "type": "battle_history_pct",
+        "condition": "repeat_style",
+        "value": 500,
+        "previousWinBonus": 300,
+        "stackGroup": "style_history"
+      }
+    },
+    {
+      "id": "T042",
+      "name": "相忘江湖",
+      "kind": "passive",
+      "source": "sidequest",
+      "routeId": "jianghu",
+      "axis": "权变",
+      "quality": "rare",
+      "text": "旧招已尽，便还彼此一片江湖。换用不同文体时得分提高；上一场未胜，转身之力更强。",
+      "effect": {
+        "type": "battle_history_pct",
+        "condition": "switch_style",
+        "value": 500,
+        "previousNonWinBonus": 300,
+        "stackGroup": "style_history"
+      }
+    },
+    {
+      "id": "T043",
+      "name": "风尘知己",
+      "kind": "passive",
+      "source": "sidequest",
+      "routeId": "jianghu",
+      "axis": "common",
+      "quality": "epic",
+      "text": "风尘满面，仍有人一眼认出你未说出口的招数。每场首次命中对手破绽时，作品得分 +4%，并恢复 1 灵感。",
+      "effect": {
+        "type": "weakness_reward",
+        "value": 400,
+        "reward": {
+          "type": "inspiration",
+          "value": 10,
+          "perMatch": false
+        }
+      }
+    },
+    {
+      "id": "TA09",
+      "name": "杯酒解剑",
+      "kind": "active",
+      "source": "sidequest",
+      "routeId": "jianghu",
+      "axis": "active",
+      "quality": "epic",
+      "cost": 30,
+      "text": "且把兵刃挂在楼外。支付灵感，封住对手本场招牌；你也要放下几分锋芒。",
+      "effect": {
+        "type": "seal_signature",
+        "penalty": -800
+      }
+    },
+    {
+      "id": "T044",
+      "name": "坚壁清野",
+      "kind": "passive",
+      "source": "sidequest",
+      "routeId": "biansai",
+      "axis": "守土",
+      "quality": "rare",
+      "text": "城中每一粒粮，都要留到真正需要的时候。本场不购买追加灵感骰，作品得分提高。",
+      "effect": {
+        "type": "dice_commitment",
+        "condition": "none_paid",
+        "value": 700
+      }
+    },
+    {
+      "id": "T045",
+      "name": "轻骑出塞",
+      "kind": "passive",
+      "source": "sidequest",
+      "routeId": "biansai",
+      "axis": "出奇",
+      "quality": "rare",
+      "text": "轻骑只争一线，不与大军纠缠。首枚追加骰少耗灵感；本场恰好购买一枚追加骰，得分提高。",
+      "effect": {
+        "type": "dice_commitment",
+        "condition": "exactly_one_paid",
+        "firstCostDiscount": 10,
+        "value": 700
+      }
+    },
+    {
+      "id": "T046",
+      "name": "孤烽照夜",
+      "kind": "passive",
+      "source": "sidequest",
+      "routeId": "biansai",
+      "axis": "common",
+      "quality": "epic",
+      "text": "城外没有援军，远处却还有一座烽燧未灭。上一场平或负时，下一场作品得分提高。",
+      "effect": {
+        "type": "battle_history_pct",
+        "condition": "previous_nonwin",
+        "value": 800,
+        "stackGroup": "result_history"
+      }
+    },
+    {
+      "id": "TA10",
+      "name": "背水列阵",
+      "kind": "active",
+      "source": "sidequest",
+      "routeId": "biansai",
+      "axis": "active",
+      "quality": "epic",
+      "cost": 30,
+      "text": "身后只有一水，再无回旋余地。首骰获得保底与得分加成，但本场不能追加灵感骰。",
+      "effect": {
+        "type": "dice_transform",
+        "mode": "first_floor",
+        "floor": 4,
+        "value": 300,
+        "noExtraDice": true
+      }
+    },
+    {
+      "id": "T047",
+      "name": "坐忘",
+      "kind": "passive",
+      "source": "sidequest",
+      "routeId": "qiuxian",
+      "axis": "忘机",
+      "quality": "rare",
+      "text": "堕肢体，黜聪明，离形去知。本场不发动主动文心，作品得分提高。",
+      "effect": {
+        "type": "restraint_pct",
+        "value": 700
+      }
+    },
+    {
+      "id": "T048",
+      "name": "庄周梦蝶",
+      "kind": "passive",
+      "source": "sidequest",
+      "routeId": "qiuxian",
+      "axis": "留世",
+      "quality": "rare",
+      "text": "不知周之梦为蝴蝶，还是蝴蝶之梦为周。骰组首尾同点时，作品得分提高。",
+      "effect": {
+        "type": "dice_pattern",
+        "pattern": "first_last_equal",
+        "minDice": 2,
+        "firstCostDiscount": 10,
+        "value": 1200
+      }
+    },
+    {
+      "id": "T049",
+      "name": "知白守黑",
+      "kind": "passive",
+      "source": "sidequest",
+      "routeId": "qiuxian",
+      "axis": "common",
+      "quality": "epic",
+      "text": "知其白，守其黑，为天下式。骰组同时留下低点与高点时，得分提高并恢复灵感。",
+      "effect": {
+        "type": "dice_pattern",
+        "pattern": "low_and_high",
+        "lowMax": 2,
+        "highMin": 5,
+        "value": 1200,
+        "reward": {
+          "type": "inspiration",
+          "value": 10,
+          "perMatch": false
+        }
+      }
+    },
+    {
+      "id": "TA11",
+      "name": "斩妄见真",
+      "kind": "active",
+      "source": "sidequest",
+      "routeId": "qiuxian",
+      "axis": "active",
+      "quality": "epic",
+      "cost": 30,
+      "text": "妄念不在幽暗处，恰藏在似是而非之间。将最低骰化为一、最高骰化为六，并令本场作品得分 +6%。",
+      "effect": {
+        "type": "dice_transform",
+        "mode": "polarize",
+        "minDice": 2,
+        "value": 600
+      }
+    }
+  ],
+  "upgrades": {
+    "T041": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        70,
+        110,
+        160
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "battle_history_pct",
+            "condition": "repeat_style",
+            "value": 500,
+            "previousWinBonus": 300,
+            "stackGroup": "style_history"
+          }
+        },
+        {
+          "effect": {
+            "type": "battle_history_pct",
+            "condition": "repeat_style",
+            "value": 600,
+            "previousWinBonus": 400,
+            "stackGroup": "style_history"
+          }
+        },
+        {
+          "effect": {
+            "type": "battle_history_pct",
+            "condition": "repeat_style",
+            "value": 700,
+            "previousWinBonus": 500,
+            "stackGroup": "style_history"
+          }
+        },
+        {
+          "effect": {
+            "type": "battle_history_pct",
+            "condition": "repeat_style",
+            "value": 800,
+            "previousWinBonus": 600,
+            "stackGroup": "style_history"
+          }
+        }
+      ]
+    },
+    "T042": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        70,
+        110,
+        160
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "battle_history_pct",
+            "condition": "switch_style",
+            "value": 500,
+            "previousNonWinBonus": 300,
+            "stackGroup": "style_history"
+          }
+        },
+        {
+          "effect": {
+            "type": "battle_history_pct",
+            "condition": "switch_style",
+            "value": 600,
+            "previousNonWinBonus": 400,
+            "stackGroup": "style_history"
+          }
+        },
+        {
+          "effect": {
+            "type": "battle_history_pct",
+            "condition": "switch_style",
+            "value": 700,
+            "previousNonWinBonus": 500,
+            "stackGroup": "style_history"
+          }
+        },
+        {
+          "effect": {
+            "type": "battle_history_pct",
+            "condition": "switch_style",
+            "value": 800,
+            "previousNonWinBonus": 600,
+            "stackGroup": "style_history"
+          }
+        }
+      ]
+    },
+    "T043": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        80,
+        120,
+        170,
+        230
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "weakness_reward",
+            "value": 400,
+            "reward": {
+              "type": "inspiration",
+              "value": 10,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "weakness_reward",
+            "value": 600,
+            "reward": {
+              "type": "inspiration",
+              "value": 10,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "weakness_reward",
+            "value": 800,
+            "reward": {
+              "type": "inspiration",
+              "value": 10,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "weakness_reward",
+            "value": 1000,
+            "reward": {
+              "type": "inspiration",
+              "value": 20,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "weakness_reward",
+            "value": 1200,
+            "reward": {
+              "type": "inspiration",
+              "value": 20,
+              "perMatch": false
+            }
+          }
+        }
+      ]
+    },
+    "TA09": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        80,
+        120,
+        170,
+        230
+      ],
+      "levels": [
+        {
+          "cost": 30,
+          "effect": {
+            "type": "seal_signature",
+            "penalty": -800
+          }
+        },
+        {
+          "cost": 30,
+          "effect": {
+            "type": "seal_signature",
+            "penalty": -600
+          }
+        },
+        {
+          "cost": 30,
+          "effect": {
+            "type": "seal_signature",
+            "penalty": -400
+          }
+        },
+        {
+          "cost": 30,
+          "effect": {
+            "type": "seal_signature",
+            "penalty": -200
+          }
+        },
+        {
+          "cost": 20,
+          "effect": {
+            "type": "seal_signature",
+            "penalty": 0
+          }
+        }
+      ]
+    },
+    "T044": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        70,
+        110,
+        160
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_commitment",
+            "condition": "none_paid",
+            "value": 700
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_commitment",
+            "condition": "none_paid",
+            "value": 900
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_commitment",
+            "condition": "none_paid",
+            "value": 1100
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_commitment",
+            "condition": "none_paid",
+            "value": 1300
+          }
+        }
+      ]
+    },
+    "T045": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        70,
+        110,
+        160
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_commitment",
+            "condition": "exactly_one_paid",
+            "firstCostDiscount": 10,
+            "value": 700
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_commitment",
+            "condition": "exactly_one_paid",
+            "firstCostDiscount": 10,
+            "value": 900
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_commitment",
+            "condition": "exactly_one_paid",
+            "firstCostDiscount": 20,
+            "value": 1100
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_commitment",
+            "condition": "exactly_one_paid",
+            "firstCostDiscount": 20,
+            "value": 1300
+          }
+        }
+      ]
+    },
+    "T046": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        80,
+        120,
+        170,
+        230
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "battle_history_pct",
+            "condition": "previous_nonwin",
+            "value": 800,
+            "stackGroup": "result_history"
+          }
+        },
+        {
+          "effect": {
+            "type": "battle_history_pct",
+            "condition": "previous_nonwin",
+            "value": 1000,
+            "stackGroup": "result_history"
+          }
+        },
+        {
+          "effect": {
+            "type": "battle_history_pct",
+            "condition": "previous_nonwin",
+            "value": 1200,
+            "stackGroup": "result_history"
+          }
+        },
+        {
+          "effect": {
+            "type": "battle_history_pct",
+            "condition": "previous_nonwin",
+            "value": 1400,
+            "stackGroup": "result_history"
+          }
+        },
+        {
+          "effect": {
+            "type": "battle_history_pct",
+            "condition": "previous_nonwin",
+            "value": 1600,
+            "stackGroup": "result_history"
+          }
+        }
+      ]
+    },
+    "TA10": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        80,
+        120,
+        170,
+        230
+      ],
+      "levels": [
+        {
+          "cost": 30,
+          "effect": {
+            "type": "dice_transform",
+            "mode": "first_floor",
+            "floor": 4,
+            "value": 300,
+            "noExtraDice": true
+          }
+        },
+        {
+          "cost": 30,
+          "effect": {
+            "type": "dice_transform",
+            "mode": "first_floor",
+            "floor": 4,
+            "value": 500,
+            "noExtraDice": true
+          }
+        },
+        {
+          "cost": 30,
+          "effect": {
+            "type": "dice_transform",
+            "mode": "first_floor",
+            "floor": 4,
+            "value": 700,
+            "noExtraDice": true
+          }
+        },
+        {
+          "cost": 30,
+          "effect": {
+            "type": "dice_transform",
+            "mode": "first_floor",
+            "floor": 5,
+            "value": 900,
+            "noExtraDice": true
+          }
+        },
+        {
+          "cost": 20,
+          "effect": {
+            "type": "dice_transform",
+            "mode": "first_floor",
+            "floor": 5,
+            "value": 1100,
+            "noExtraDice": true
+          }
+        }
+      ]
+    },
+    "T047": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        70,
+        110,
+        160
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "restraint_pct",
+            "value": 700
+          }
+        },
+        {
+          "effect": {
+            "type": "restraint_pct",
+            "value": 900
+          }
+        },
+        {
+          "effect": {
+            "type": "restraint_pct",
+            "value": 1100
+          }
+        },
+        {
+          "effect": {
+            "type": "restraint_pct",
+            "value": 1300
+          }
+        }
+      ]
+    },
+    "T048": {
+      "quality": "rare",
+      "maxLevel": 4,
+      "upCost": [
+        70,
+        110,
+        160
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "first_last_equal",
+            "minDice": 2,
+            "firstCostDiscount": 10,
+            "value": 1200
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "first_last_equal",
+            "minDice": 2,
+            "firstCostDiscount": 10,
+            "value": 1500
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "first_last_equal",
+            "minDice": 2,
+            "firstCostDiscount": 20,
+            "value": 1800
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "first_last_equal",
+            "minDice": 2,
+            "firstCostDiscount": 20,
+            "value": 2100
+          }
+        }
+      ]
+    },
+    "T049": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        80,
+        120,
+        170,
+        230
+      ],
+      "levels": [
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "low_and_high",
+            "lowMax": 2,
+            "highMin": 5,
+            "value": 1200,
+            "reward": {
+              "type": "inspiration",
+              "value": 10,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "low_and_high",
+            "lowMax": 2,
+            "highMin": 5,
+            "value": 1500,
+            "reward": {
+              "type": "inspiration",
+              "value": 10,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "low_and_high",
+            "lowMax": 2,
+            "highMin": 5,
+            "value": 1800,
+            "reward": {
+              "type": "inspiration",
+              "value": 10,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "low_and_high",
+            "lowMax": 2,
+            "highMin": 5,
+            "value": 2100,
+            "reward": {
+              "type": "inspiration",
+              "value": 20,
+              "perMatch": false
+            }
+          }
+        },
+        {
+          "effect": {
+            "type": "dice_pattern",
+            "pattern": "low_and_high",
+            "lowMax": 2,
+            "highMin": 5,
+            "value": 2400,
+            "reward": {
+              "type": "inspiration",
+              "value": 20,
+              "perMatch": false
+            }
+          }
+        }
+      ]
+    },
+    "TA11": {
+      "quality": "epic",
+      "maxLevel": 5,
+      "upCost": [
+        80,
+        120,
+        170,
+        230
+      ],
+      "levels": [
+        {
+          "cost": 30,
+          "effect": {
+            "type": "dice_transform",
+            "mode": "polarize",
+            "minDice": 2,
+            "value": 600
+          }
+        },
+        {
+          "cost": 30,
+          "effect": {
+            "type": "dice_transform",
+            "mode": "polarize",
+            "minDice": 2,
+            "value": 800
+          }
+        },
+        {
+          "cost": 30,
+          "effect": {
+            "type": "dice_transform",
+            "mode": "polarize",
+            "minDice": 2,
+            "value": 1000
+          }
+        },
+        {
+          "cost": 30,
+          "effect": {
+            "type": "dice_transform",
+            "mode": "polarize",
+            "minDice": 2,
+            "value": 1200
+          }
+        },
+        {
+          "cost": 20,
+          "effect": {
+            "type": "dice_transform",
+            "mode": "polarize",
+            "minDice": 2,
+            "value": 1500
+          }
+        }
+      ]
+    }
+  }
+}

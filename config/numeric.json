@@ -1,0 +1,20 @@
+{
+  "numericVersion": 3,
+  "ruleSetId": "small-integer-v2.1",
+  "units": {
+    "attribute": 1,
+    "inspiration": 1,
+    "insight": 1,
+    "study": 25,
+    "manuscript": 20,
+    "strategy": 10,
+    "battleScore": 1,
+    "bp": 10000
+  },
+  "experiments": {
+    "growthCarry": false,
+    "smoothManuscript": false,
+    "flatUpgradeDiscount": false,
+    "roundedDice": false
+  }
+}

@@ -21,7 +21,7 @@ import { setCodexSilent } from '../engine/codex.js?v=20260831firstrun1';
 // 音频模块统一使用同一 URL，确保静音、SFX 与配乐共享一个 AudioContext / Master 总线。
 import { initAudio, play, isMuted, setMuted } from './audio.js';
 import { setScene, setTension, setStage } from './music.js?v=20260831firstrun1';
-import { saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY, RUN_SAVE_TUTORIAL_KEY, normalizeOnboardingState } from '../engine/save.js?v=20260902endscroll1';
+import { archiveLegacyRunSlots, saveRun, loadRun, hasRun, clearRun, deserializeRun, loadBestRun, listRuns, RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY, RUN_SAVE_TUTORIAL_KEY, normalizeOnboardingState } from '../engine/save.js?v=20260902endscroll1';
 import { Leaderboard } from './leaderboard.js?v=20260831firstrun1';
 import { personalize } from './namefmt.js?v=20260831firstrun1';
 import { ContentTestUI } from './contentTest.js?v=20260831firstrun1';
@@ -238,7 +238,7 @@ function buildMainMenu() {
     <main class="main-menu-shell scroll-frame paper" aria-labelledby="mainMenuTitle">
       <div class="main-menu-brand" aria-hidden="true">文 心 棋</div>
       <h1 id="mainMenuTitle" class="main-menu-title title-ink">桃 花 入 墨 · 一 局 成 文</h1>
-      <p class="main-menu-lead">择文心，历科场；从一纸初心，行至终局成卷。</p>
+      <p class="main-menu-lead">择文心，历科场；从一纸初心，行至终局成卷。<br>小整数 v2.1 · 研修 75 成长 · 成稿 20/40 成页<br><a href="legacy/numeric-v2/index.html">旧局续玩（原规则与传承）</a></p>
 
       <nav class="main-menu-primary" aria-label="游戏主菜单">
         <button class="btn btn-primary main-menu-item" data-main-start>
@@ -613,6 +613,8 @@ async function openNameScreen(schoolId, loadout, opts = {}) {
 }
 
 async function startGame(schoolId, loadout, playerName, opts = {}) {
+  try { archiveLegacyRunSlots(); }
+  catch (_) { hud.toast('旧局备份空间不足，请先导出存档或释放浏览器存储后再开新局'); return; }
   const tutorial = opts.tutorial === true;
   await ensureGameUi();   // 保证棋盘/HUD 就绪，且基于已完成合并的云端配置构建
   schoolEl.classList.remove('on');
@@ -1235,6 +1237,7 @@ async function loadGame(opts = {}) {
     if (confirm('检测到存档已损坏。是否清除该存档？')) clearRun(best.slot);
     return;
   }
+  if (Number(best.obj.v) <= 10) { window.location.href = 'legacy/numeric-v2/index.html'; return; }
   const res = deserializeRun(best.obj, cfg);
   if (!res.ok) {
     hud.toast('存档无法读取：' + res.error);
@@ -1484,7 +1487,7 @@ async function showResult(sum) {
         }
         else localStorage.removeItem('feihua_custom_config');
       }
-    } catch (_) { localStorage.removeItem('feihua_custom_config'); }
+    } catch (_) { customProject = null; customConfigActive = false; }
   } catch (e) {
     document.body.innerHTML =
       `<div style="color:#f6f0e2;font-family:var(--font-kai);padding:40px;line-height:1.9">
@@ -1494,4 +1497,3 @@ async function showResult(sum) {
   }
   boot();
 })();
-

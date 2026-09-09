@@ -1,0 +1,20 @@
+{
+  "initial": 360,
+  "max": 540,
+  "pingCell": 20,
+  "zeCellInsp": 10,
+  "scenicCost": 80,
+  "battleCost": -20,
+  "battleCostLate": -20,
+  "battleLoseExtra": -20,
+  "battleLoseExtraLate": -30,
+  "quizWrong": -10,
+  "quizCorrectInsp": 10,
+  "lowWarning": 50,
+  "eventCellCost": -10,
+  "dicePct": 400,
+  "extraDiceCost": 50,
+  "extraDicePct": 600,
+  "maxExtraDice": 2,
+  "numericVersion": 2
+}

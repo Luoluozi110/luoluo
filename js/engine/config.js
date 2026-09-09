@@ -128,8 +128,8 @@ export function applyProjectOverride(baseCfg, project, options = {}) {
   CONTRACT.assertProject(project, { requireComplete: false, requireType: !!options.requireType });
   const baseNumericVersion = Number(baseCfg && baseCfg.numericVersion) || Number(baseCfg && baseCfg.attrs && baseCfg.attrs.numericVersion) || 1;
   const projectNumericVersion = Number(project.numericVersion) || 1;
-  if (baseNumericVersion >= 2 && projectNumericVersion < 2) {
-    throw new Error('云端工程仍是数值 v1，不能覆盖本地数值 v2 配置。请先用 v2 编辑器重新导出。');
+  if (baseNumericVersion !== projectNumericVersion) {
+    throw new Error(`数值版本不匹配（游戏 ${baseNumericVersion} / 工程 ${projectNumericVersion}），请使用同版本编辑器工程。`);
   }
   // 覆盖片段先各自归一化，再合并；避免给已归一化的本地层再次除以 10000。
   normalizeNumericRates(project);

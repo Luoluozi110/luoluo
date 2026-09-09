@@ -1,4 +1,4 @@
-/* 飞花棋游戏原始 NPC（config/npcs.json）。作为编辑器默认种子数据。由游戏配置同步生成，请勿手工改动 —— 在编辑器内管理后导出即可覆盖。 */
+// 自动生成：小整数 v2.1，与云端工程同源。
 window.GAME_NPCS = [
   {
     "id": "tongsheng",
@@ -15,12 +15,12 @@ window.GAME_NPCS = [
         "title": "蒙学童子",
         "style": "shi",
         "attrs": {
-          "shi": 110,
-          "ci": 50,
-          "lian": 40,
-          "bi": 50,
-          "xue": 50,
-          "si": 50
+          "shi": 11,
+          "ci": 5,
+          "lian": 4,
+          "bi": 5,
+          "xue": 5,
+          "si": 5
         },
         "mech": {
           "version": 1,
@@ -67,12 +67,12 @@ window.GAME_NPCS = [
         "title": "村塾学子",
         "style": "ci",
         "attrs": {
-          "shi": 50,
-          "ci": 110,
-          "lian": 40,
-          "bi": 50,
-          "xue": 40,
-          "si": 60
+          "shi": 5,
+          "ci": 11,
+          "lian": 4,
+          "bi": 5,
+          "xue": 4,
+          "si": 6
         },
         "mech": {
           "version": 1,
@@ -120,12 +120,12 @@ window.GAME_NPCS = [
         "title": "启蒙幼童",
         "style": "lian",
         "attrs": {
-          "shi": 50,
-          "ci": 40,
-          "lian": 110,
-          "bi": 40,
-          "xue": 50,
-          "si": 60
+          "shi": 5,
+          "ci": 4,
+          "lian": 11,
+          "bi": 4,
+          "xue": 5,
+          "si": 6
         },
         "mech": {
           "version": 1,
@@ -167,12 +167,12 @@ window.GAME_NPCS = [
         "title": "私塾蒙童",
         "style": "bi",
         "attrs": {
-          "shi": 50,
-          "ci": 50,
-          "lian": 40,
-          "bi": 110,
-          "xue": 40,
-          "si": 60
+          "shi": 5,
+          "ci": 5,
+          "lian": 4,
+          "bi": 11,
+          "xue": 4,
+          "si": 6
         },
         "mech": {
           "version": 1,
@@ -209,12 +209,12 @@ window.GAME_NPCS = [
         "title": "初学蒙生",
         "style": "xue",
         "attrs": {
-          "shi": 50,
-          "ci": 40,
-          "lian": 50,
-          "bi": 50,
-          "xue": 110,
-          "si": 50
+          "shi": 5,
+          "ci": 4,
+          "lian": 5,
+          "bi": 5,
+          "xue": 11,
+          "si": 5
         },
         "mech": {
           "version": 1,
@@ -255,12 +255,12 @@ window.GAME_NPCS = [
         "title": "开蒙学童",
         "style": "si",
         "attrs": {
-          "shi": 40,
-          "ci": 50,
-          "lian": 50,
-          "bi": 50,
-          "xue": 40,
-          "si": 120
+          "shi": 4,
+          "ci": 5,
+          "lian": 5,
+          "bi": 5,
+          "xue": 4,
+          "si": 12
         },
         "stageForcedWhen": {
           "primary": "si",
@@ -307,12 +307,12 @@ window.GAME_NPCS = [
         "style": "ci",
         "focusAttr": "xue",
         "attrs": {
-          "shi": 100,
-          "ci": 150,
-          "lian": 80,
-          "bi": 100,
-          "xue": 150,
-          "si": 130
+          "shi": 10,
+          "ci": 15,
+          "lian": 8,
+          "bi": 10,
+          "xue": 15,
+          "si": 13
         },
         "mech": {
           "version": 2,
@@ -347,12 +347,12 @@ window.GAME_NPCS = [
         "title": "枕月观云",
         "style": "si",
         "attrs": {
-          "shi": 50,
-          "ci": 50,
-          "lian": 50,
-          "bi": 50,
-          "xue": 50,
-          "si": 150
+          "shi": 5,
+          "ci": 5,
+          "lian": 5,
+          "bi": 5,
+          "xue": 5,
+          "si": 15
         },
         "mech": {
           "signature": {
@@ -412,12 +412,12 @@ window.GAME_NPCS = [
         "title": "庠序生员",
         "style": "shi",
         "attrs": {
-          "shi": 170,
-          "ci": 110,
-          "lian": 70,
-          "bi": 110,
-          "xue": 80,
-          "si": 90
+          "shi": 17,
+          "ci": 11,
+          "lian": 7,
+          "bi": 11,
+          "xue": 8,
+          "si": 9
         },
         "mech": {
           "version": 1,
@@ -454,12 +454,12 @@ window.GAME_NPCS = [
         "title": "县学秀才",
         "style": "ci",
         "attrs": {
-          "shi": 80,
-          "ci": 170,
-          "lian": 70,
-          "bi": 80,
-          "xue": 110,
-          "si": 120
+          "shi": 8,
+          "ci": 17,
+          "lian": 7,
+          "bi": 8,
+          "xue": 11,
+          "si": 12
         },
         "mech": {
           "version": 1,
@@ -500,12 +500,12 @@ window.GAME_NPCS = [
         "title": "儒学生员",
         "style": "lian",
         "attrs": {
-          "shi": 80,
-          "ci": 110,
-          "lian": 170,
-          "bi": 80,
-          "xue": 80,
-          "si": 90
+          "shi": 8,
+          "ci": 11,
+          "lian": 17,
+          "bi": 8,
+          "xue": 8,
+          "si": 9
         },
         "mech": {
           "version": 1,
@@ -546,12 +546,12 @@ window.GAME_NPCS = [
         "title": "府学秀才",
         "style": "bi",
         "attrs": {
-          "shi": 80,
-          "ci": 80,
-          "lian": 70,
-          "bi": 170,
-          "xue": 110,
-          "si": 120
+          "shi": 8,
+          "ci": 8,
+          "lian": 7,
+          "bi": 17,
+          "xue": 11,
+          "si": 12
         },
         "mech": {
           "version": 1,
@@ -592,12 +592,12 @@ window.GAME_NPCS = [
         "title": "廪膳生员",
         "style": "xue",
         "attrs": {
-          "shi": 110,
-          "ci": 80,
-          "lian": 80,
-          "bi": 80,
-          "xue": 170,
-          "si": 90
+          "shi": 11,
+          "ci": 8,
+          "lian": 8,
+          "bi": 8,
+          "xue": 17,
+          "si": 9
         },
         "mech": {
           "version": 1,
@@ -644,12 +644,12 @@ window.GAME_NPCS = [
         "title": "邑庠秀才",
         "style": "si",
         "attrs": {
-          "shi": 80,
-          "ci": 110,
-          "lian": 80,
-          "bi": 80,
-          "xue": 80,
-          "si": 180
+          "shi": 8,
+          "ci": 11,
+          "lian": 8,
+          "bi": 8,
+          "xue": 8,
+          "si": 18
         },
         "stageForcedWhen": {
           "primary": "si",
@@ -695,12 +695,12 @@ window.GAME_NPCS = [
         "style": "lian",
         "focusAttr": "bi",
         "attrs": {
-          "shi": 170,
-          "ci": 170,
-          "lian": 300,
-          "bi": 220,
-          "xue": 180,
-          "si": 190
+          "shi": 17,
+          "ci": 17,
+          "lian": 30,
+          "bi": 22,
+          "xue": 18,
+          "si": 19
         },
         "mech": {
           "version": 2,
@@ -738,12 +738,12 @@ window.GAME_NPCS = [
         "style": "ci",
         "focusAttr": "si",
         "attrs": {
-          "shi": 180,
-          "ci": 280,
-          "lian": 160,
-          "bi": 170,
-          "xue": 170,
-          "si": 210
+          "shi": 18,
+          "ci": 28,
+          "lian": 16,
+          "bi": 17,
+          "xue": 17,
+          "si": 21
         },
         "mech": {
           "version": 2,
@@ -799,12 +799,12 @@ window.GAME_NPCS = [
         "title": "乡试解元",
         "style": "shi",
         "attrs": {
-          "shi": 300,
-          "ci": 170,
-          "lian": 140,
-          "bi": 170,
-          "xue": 160,
-          "si": 160
+          "shi": 30,
+          "ci": 17,
+          "lian": 14,
+          "bi": 17,
+          "xue": 16,
+          "si": 16
         },
         "mech": {
           "version": 1,
@@ -847,12 +847,12 @@ window.GAME_NPCS = [
         "title": "公车举人",
         "style": "ci",
         "attrs": {
-          "shi": 160,
-          "ci": 300,
-          "lian": 140,
-          "bi": 160,
-          "xue": 170,
-          "si": 170
+          "shi": 16,
+          "ci": 30,
+          "lian": 14,
+          "bi": 16,
+          "xue": 17,
+          "si": 17
         },
         "mech": {
           "version": 1,
@@ -896,12 +896,12 @@ window.GAME_NPCS = [
         "title": "鹿鸣宴客",
         "style": "lian",
         "attrs": {
-          "shi": 160,
-          "ci": 170,
-          "lian": 300,
-          "bi": 140,
-          "xue": 160,
-          "si": 170
+          "shi": 16,
+          "ci": 17,
+          "lian": 30,
+          "bi": 14,
+          "xue": 16,
+          "si": 17
         },
         "mech": {
           "version": 1,
@@ -942,12 +942,12 @@ window.GAME_NPCS = [
         "title": "乙榜举人",
         "style": "bi",
         "attrs": {
-          "shi": 160,
-          "ci": 160,
-          "lian": 140,
-          "bi": 300,
-          "xue": 170,
-          "si": 170
+          "shi": 16,
+          "ci": 16,
+          "lian": 14,
+          "bi": 30,
+          "xue": 17,
+          "si": 17
         },
         "mech": {
           "version": 1,
@@ -984,12 +984,12 @@ window.GAME_NPCS = [
         "title": "孝廉举人",
         "style": "xue",
         "attrs": {
-          "shi": 170,
-          "ci": 160,
-          "lian": 160,
-          "bi": 150,
-          "xue": 300,
-          "si": 160
+          "shi": 17,
+          "ci": 16,
+          "lian": 16,
+          "bi": 15,
+          "xue": 30,
+          "si": 16
         },
         "stageForcedWhen": {
           "primary": "xue",
@@ -1037,12 +1037,12 @@ window.GAME_NPCS = [
         "title": "秋闱中式",
         "style": "si",
         "attrs": {
-          "shi": 160,
-          "ci": 170,
-          "lian": 160,
-          "bi": 150,
-          "xue": 140,
-          "si": 320
+          "shi": 16,
+          "ci": 17,
+          "lian": 16,
+          "bi": 15,
+          "xue": 14,
+          "si": 32
         },
         "mech": {
           "version": 1,
@@ -1090,12 +1090,12 @@ window.GAME_NPCS = [
         "style": "shi",
         "focusAttr": "si",
         "attrs": {
-          "shi": 240,
-          "ci": 220,
-          "lian": 210,
-          "bi": 230,
-          "xue": 220,
-          "si": 350
+          "shi": 24,
+          "ci": 22,
+          "lian": 21,
+          "bi": 23,
+          "xue": 22,
+          "si": 35
         },
         "mech": {
           "version": 2,
@@ -1130,12 +1130,12 @@ window.GAME_NPCS = [
         "style": "lian",
         "focusAttr": "lian",
         "attrs": {
-          "shi": 210,
-          "ci": 210,
-          "lian": 330,
-          "bi": 200,
-          "xue": 210,
-          "si": 240
+          "shi": 21,
+          "ci": 21,
+          "lian": 33,
+          "bi": 20,
+          "xue": 21,
+          "si": 24
         },
         "mech": {
           "signature": {
@@ -1198,12 +1198,12 @@ window.GAME_NPCS = [
         "title": "殿前进士",
         "style": "shi",
         "attrs": {
-          "shi": 370,
-          "ci": 210,
-          "lian": 190,
-          "bi": 210,
-          "xue": 210,
-          "si": 240
+          "shi": 37,
+          "ci": 21,
+          "lian": 19,
+          "bi": 21,
+          "xue": 21,
+          "si": 24
         },
         "mech": {
           "version": 1,
@@ -1248,12 +1248,12 @@ window.GAME_NPCS = [
         "title": "同进士出身",
         "style": "ci",
         "attrs": {
-          "shi": 220,
-          "ci": 370,
-          "lian": 190,
-          "bi": 210,
-          "xue": 210,
-          "si": 230
+          "shi": 22,
+          "ci": 37,
+          "lian": 19,
+          "bi": 21,
+          "xue": 21,
+          "si": 23
         },
         "mech": {
           "version": 1,
@@ -1295,12 +1295,12 @@ window.GAME_NPCS = [
         "title": "进士及第",
         "style": "lian",
         "attrs": {
-          "shi": 210,
-          "ci": 210,
-          "lian": 370,
-          "bi": 190,
-          "xue": 210,
-          "si": 240
+          "shi": 21,
+          "ci": 21,
+          "lian": 37,
+          "bi": 19,
+          "xue": 21,
+          "si": 24
         },
         "mech": {
           "version": 1,
@@ -1347,12 +1347,12 @@ window.GAME_NPCS = [
         "title": "翰林庶吉士",
         "style": "bi",
         "attrs": {
-          "shi": 210,
-          "ci": 210,
-          "lian": 190,
-          "bi": 370,
-          "xue": 210,
-          "si": 240
+          "shi": 21,
+          "ci": 21,
+          "lian": 19,
+          "bi": 37,
+          "xue": 21,
+          "si": 24
         },
         "mech": {
           "version": 1,
@@ -1389,12 +1389,12 @@ window.GAME_NPCS = [
         "title": "赐进士出身",
         "style": "xue",
         "attrs": {
-          "shi": 220,
-          "ci": 210,
-          "lian": 210,
-          "bi": 190,
-          "xue": 370,
-          "si": 230
+          "shi": 22,
+          "ci": 21,
+          "lian": 21,
+          "bi": 19,
+          "xue": 37,
+          "si": 23
         },
         "mech": {
           "version": 1,
@@ -1435,12 +1435,12 @@ window.GAME_NPCS = [
         "title": "甲科进士",
         "style": "si",
         "attrs": {
-          "shi": 210,
-          "ci": 220,
-          "lian": 210,
-          "bi": 190,
-          "xue": 210,
-          "si": 390
+          "shi": 21,
+          "ci": 22,
+          "lian": 21,
+          "bi": 19,
+          "xue": 21,
+          "si": 39
         },
         "stageForcedWhen": {
           "primary": "si",
@@ -1520,12 +1520,12 @@ window.GAME_NPCS = [
         "title": "礼部侍郎",
         "style": "shi",
         "attrs": {
-          "shi": 510,
-          "ci": 250,
-          "lian": 250,
-          "bi": 250,
-          "xue": 250,
-          "si": 300
+          "shi": 51,
+          "ci": 25,
+          "lian": 25,
+          "bi": 25,
+          "xue": 25,
+          "si": 30
         },
         "mech": {
           "version": 1,
@@ -1574,12 +1574,12 @@ window.GAME_NPCS = [
         "title": "翰林学士",
         "style": "ci",
         "attrs": {
-          "shi": 270,
-          "ci": 510,
-          "lian": 250,
-          "bi": 250,
-          "xue": 250,
-          "si": 280
+          "shi": 27,
+          "ci": 51,
+          "lian": 25,
+          "bi": 25,
+          "xue": 25,
+          "si": 28
         },
         "mech": {
           "version": 1,
@@ -1628,12 +1628,12 @@ window.GAME_NPCS = [
         "title": "国子监祭酒",
         "style": "bi",
         "attrs": {
-          "shi": 250,
-          "ci": 250,
-          "lian": 250,
-          "bi": 510,
-          "xue": 250,
-          "si": 300
+          "shi": 25,
+          "ci": 25,
+          "lian": 25,
+          "bi": 51,
+          "xue": 25,
+          "si": 30
         },
         "mech": {
           "version": 2,
@@ -1690,12 +1690,12 @@ window.GAME_NPCS = [
           ]
         },
         "attrs": {
-          "shi": 230,
-          "ci": 230,
-          "lian": 550,
-          "bi": 230,
-          "xue": 630,
-          "si": 260
+          "shi": 23,
+          "ci": 23,
+          "lian": 55,
+          "bi": 23,
+          "xue": 63,
+          "si": 26
         },
         "mech": {
           "signature": {
@@ -1749,12 +1749,12 @@ window.GAME_NPCS = [
         "title": "桃花仙人",
         "weight": 0,
         "attrs": {
-          "shi": 500,
-          "ci": 500,
-          "lian": 500,
-          "bi": 500,
-          "xue": 500,
-          "si": 500
+          "shi": 50,
+          "ci": 50,
+          "lian": 50,
+          "bi": 50,
+          "xue": 50,
+          "si": 50
         },
         "stageForcedWhen": {
           "primary": "bi",

@@ -21,8 +21,28 @@ import { SCALE, clampInt, legacyProgressToV2, legacyTenthsToV2 } from './numeric
 export const RUN_SAVE_KEY = 'feihua_run_save';               // 自动存档槽（每回合结束）
 export const RUN_SAVE_MANUAL_KEY = 'feihua_run_save_manual'; // 手动存档槽（菜单「保存当前进度」）
 export const RUN_SAVE_TUTORIAL_KEY = 'feihua_run_save_tutorial'; // 教学局存档槽（入门卷专用，与正式对局隔离）
-export const RUN_SAVE_VERSION = 10;  // v10：数值 v2（属性/灵感/心得十倍，连续进度千分整数）
+export const RUN_SAVE_VERSION = 11;  // v10：数值 v2（属性/灵感/心得十倍，连续进度千分整数）
 export const SAVE_WARN_BYTES = 3 * 1024 * 1024;              // 体积预警阈值 3MB
+
+/** 新局写入前，原样保留旧局到独立续玩槽，避免新旧规则争用同一存档。 */
+export function archiveLegacyRunSlots() {
+  for (const name of ['localStorage', 'sessionStorage']) {
+    let storage;
+    try { storage = globalThis[name]; } catch (_) { continue; }
+    if (!storage) continue;
+    for (const key of [RUN_SAVE_KEY, RUN_SAVE_MANUAL_KEY, RUN_SAVE_TUTORIAL_KEY]) {
+      const raw = storage.getItem(key);
+      if (!raw) continue;
+      let obj;
+      try { obj = JSON.parse(raw); } catch (_) { continue; }
+      if (!(Number(obj.v) <= 10)) continue;
+      const target = 'feihua_legacy_v2_' + key;
+      let prior = null;
+      try { prior = JSON.parse(storage.getItem(target) || 'null'); } catch (_) {}
+      if (!prior || Number(obj.savedAt) > Number(prior.savedAt)) storage.setItem(target, raw);
+    }
+  }
+}
 
 const LOG_MAX = 200;   // 超过则截断
 const LOG_KEEP = 150;  // 截断后保留最近条数
@@ -59,7 +79,7 @@ export function normalizeOnboardingState(raw) {
 
 /** 参与序列化的运行时状态白名单 */
 const STATE_KEYS = [
-  'school', 'playerName', 'attrs', 'inspiration', 'inspirationMax',
+  'numericVersion', 'school', 'playerName', 'attrs', 'inspiration', 'inspirationMax',
   'passive', 'active', 'track', 'pos', 'branchId', 'branchIndex',
   'lap', 'routeIndex', 'ringId', 'phaseGateSeen', 'turn', 'phase', 'plannedMoveDice', 'sky', 'nextBattlePct', 'battle', 'events',
   'quiz', 'choiceHistory', 'narrativeState', 'poetryState', 'seenEvents', 'usedQuestions', 'palaceWins', 'palaceDone',
@@ -357,7 +377,8 @@ export function validateRun(obj) {
  * 返回 { ok, state, warnings:[], error } —— 引用失效的字段会被过滤并记入 warnings。
  */
 export function deserializeRun(rawObj, cfg) {
-  const obj = migrateRun(rawObj);
+  if (rawObj && Number(rawObj.v) <= 10) return { ok: false, legacy: true, state: null, warnings: [], error: '旧局请使用旧版续玩入口，原始存档保持不变' };
+  const obj = rawObj;
   const chk = validateRun(obj);
   if (!chk.ok) return { ok: false, state: null, warnings: [], error: chk.error };
 
@@ -535,7 +556,7 @@ export function deserializeRun(rawObj, cfg) {
   const defaultPlan = planIds.includes(strategyCfg.defaultPlan) ? strategyCfg.defaultPlan : (planIds[0] || 'guard');
   ab.strategy = Object.assign({ charges: 0, chargeRemainder: 0, refillPhase: '', plan: defaultPlan, nextPlan: defaultPlan, freeUsed: false }, ab.strategy || {});
   ab.strategy.charges = clampInt(ab.strategy.charges, 0);
-  ab.strategy.chargeRemainder = clampInt(ab.strategy.chargeRemainder, 0, SCALE.progress - 1);
+  ab.strategy.chargeRemainder = clampInt(ab.strategy.chargeRemainder, 0, SCALE.strategy - 1);
   ab.strategy.plan = planIds.includes(ab.strategy.plan) ? ab.strategy.plan : defaultPlan;
   ab.strategy.nextPlan = planIds.includes(ab.strategy.nextPlan) ? ab.strategy.nextPlan : ab.strategy.plan;
   ab.strategy.freeUsed = !!ab.strategy.freeUsed;
@@ -692,4 +713,3 @@ export function clearRun(slot) {
     memorySlots.delete(s);
   }
 }
-

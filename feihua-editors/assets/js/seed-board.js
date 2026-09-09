@@ -1,4 +1,4 @@
-/* 飞花棋正式地图（config/board.json）。作为编辑器默认种子数据。由游戏配置同步生成，请勿手工改动。 */
+// 自动生成：小整数 v2.1，与云端工程同源。
 window.GAME_BOARD = {
   "version": 2,
   "layout": "concentric_spiral",

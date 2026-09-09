@@ -1,5 +1,5 @@
-/* 支线限定内容种子：路线 NPC 与文心统一由游戏配置同步。 */
-// 专属 NPC 不进入普通 NPC 池；这是第三幕/终局的独立配置块。window.GAME_SIDEQUEST_NPCS = {
+// 自动生成：小整数 v2.1，与云端工程同源。
+window.GAME_SIDEQUEST_NPCS = {
   "version": 1,
   "routes": {
     "jianghu": {
@@ -620,7 +620,7 @@ window.GAME_SIDEQUESTS = {
               "axis": "守义",
               "effect": {
                 "attrs": {
-                  "bi": 10
+                  "bi": 1
                 }
               }
             },
@@ -631,7 +631,7 @@ window.GAME_SIDEQUESTS = {
               "axis": "权变",
               "effect": {
                 "attrs": {
-                  "xue": 10
+                  "xue": 1
                 }
               }
             }
@@ -648,7 +648,7 @@ window.GAME_SIDEQUESTS = {
               "resultText": "你替故友受下众目，也把这一笔代价留给了自己。",
               "axis": "守义",
               "effect": {
-                "inspiration": -20,
+                "inspiration": -2,
                 "nextBattlePct": 1000
               }
             },
@@ -658,7 +658,7 @@ window.GAME_SIDEQUESTS = {
               "resultText": "你让义字之外的是非也见了光。",
               "axis": "权变",
               "effect": {
-                "inspiration": 20
+                "inspiration": 2
               }
             }
           ]
@@ -670,12 +670,12 @@ window.GAME_SIDEQUESTS = {
         "title": "江湖名士",
         "style": "shi",
         "attrs": {
-          "shi": 260,
-          "ci": 220,
-          "lian": 200,
-          "bi": 220,
-          "xue": 240,
-          "si": 230
+          "shi": 26,
+          "ci": 22,
+          "lian": 20,
+          "bi": 22,
+          "xue": 24,
+          "si": 23
         }
       }
     },
@@ -777,7 +777,7 @@ window.GAME_SIDEQUESTS = {
               "axis": "守土",
               "effect": {
                 "attrs": {
-                  "xue": 10
+                  "xue": 1
                 }
               }
             },
@@ -788,7 +788,7 @@ window.GAME_SIDEQUESTS = {
               "axis": "出奇",
               "effect": {
                 "attrs": {
-                  "bi": 10
+                  "bi": 1
                 }
               }
             }
@@ -805,7 +805,7 @@ window.GAME_SIDEQUESTS = {
               "resultText": "你把粮留在城中，也把这个决定的重量留在心里。",
               "axis": "守土",
               "effect": {
-                "inspiration": 20
+                "inspiration": 2
               }
             },
             {
@@ -814,7 +814,7 @@ window.GAME_SIDEQUESTS = {
               "resultText": "你让轻骑越过夜色，把希望押在速度与胆识上。",
               "axis": "出奇",
               "effect": {
-                "inspiration": -20,
+                "inspiration": -2,
                 "nextBattlePct": 1000
               }
             }
@@ -827,12 +827,12 @@ window.GAME_SIDEQUESTS = {
         "title": "行营判官",
         "style": "lian",
         "attrs": {
-          "shi": 230,
-          "ci": 200,
-          "lian": 270,
-          "bi": 240,
-          "xue": 250,
-          "si": 250
+          "shi": 23,
+          "ci": 20,
+          "lian": 27,
+          "bi": 24,
+          "xue": 25,
+          "si": 25
         }
       }
     },
@@ -935,7 +935,7 @@ window.GAME_SIDEQUESTS = {
               "axis": "留世",
               "effect": {
                 "attrs": {
-                  "bi": 10
+                  "bi": 1
                 }
               }
             },
@@ -946,7 +946,7 @@ window.GAME_SIDEQUESTS = {
               "axis": "忘机",
               "effect": {
                 "attrs": {
-                  "si": 10
+                  "si": 1
                 }
               }
             }
@@ -963,7 +963,7 @@ window.GAME_SIDEQUESTS = {
               "resultText": "你没有把痛苦当作污点，而把它带进了下一段路。",
               "axis": "留世",
               "effect": {
-                "inspiration": -20,
+                "inspiration": -2,
                 "nextBattlePct": 1000
               }
             },
@@ -973,7 +973,7 @@ window.GAME_SIDEQUESTS = {
               "resultText": "你借来片刻空明，也承认这不是最后的回答。",
               "axis": "忘机",
               "effect": {
-                "inspiration": 20
+                "inspiration": 2
               }
             }
           ]
@@ -985,25 +985,25 @@ window.GAME_SIDEQUESTS = {
         "title": "镜中客",
         "style": "ci",
         "attrs": {
-          "shi": 210,
-          "ci": 270,
-          "lian": 210,
-          "bi": 240,
-          "xue": 230,
-          "si": 270
+          "shi": 21,
+          "ci": 27,
+          "lian": 21,
+          "bi": 24,
+          "xue": 23,
+          "si": 27
         }
       }
     }
   ],
   "final": {
-    "carryCost": 20,
+    "carryCost": 2,
     "scorePctByMerit": {
       "1": 600,
       "2": 1000
     },
     "releaseInspirationByMerit": {
-      "1": 20,
-      "2": 40
+      "1": 2,
+      "2": 4
     }
   }
 };
@@ -1056,7 +1056,7 @@ window.GAME_SIDEQUEST_TALENTS = [
       "value": 400,
       "reward": {
         "type": "inspiration",
-        "value": 10,
+        "value": 1,
         "perMatch": false
       }
     }
@@ -1069,7 +1069,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "jianghu",
     "axis": "active",
     "quality": "epic",
-    "cost": 30,
+    "cost": 3,
     "text": "且把兵刃挂在楼外。支付灵感，封住对手本场招牌；你也要放下几分锋芒。",
     "effect": {
       "type": "seal_signature",
@@ -1103,7 +1103,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "effect": {
       "type": "dice_commitment",
       "condition": "exactly_one_paid",
-      "firstCostDiscount": 10,
+      "firstCostDiscount": 1,
       "value": 700
     }
   },
@@ -1131,7 +1131,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "biansai",
     "axis": "active",
     "quality": "epic",
-    "cost": 30,
+    "cost": 3,
     "text": "身后只有一水，再无回旋余地。首骰获得保底与得分加成，但本场不能追加灵感骰。",
     "effect": {
       "type": "dice_transform",
@@ -1168,7 +1168,7 @@ window.GAME_SIDEQUEST_TALENTS = [
       "type": "dice_pattern",
       "pattern": "first_last_equal",
       "minDice": 2,
-      "firstCostDiscount": 10,
+      "firstCostDiscount": 1,
       "value": 1200
     }
   },
@@ -1189,7 +1189,7 @@ window.GAME_SIDEQUEST_TALENTS = [
       "value": 1200,
       "reward": {
         "type": "inspiration",
-        "value": 10,
+        "value": 1,
         "perMatch": false
       }
     }
@@ -1202,7 +1202,7 @@ window.GAME_SIDEQUEST_TALENTS = [
     "routeId": "qiuxian",
     "axis": "active",
     "quality": "epic",
-    "cost": 30,
+    "cost": 3,
     "text": "妄念不在幽暗处，恰藏在似是而非之间。将最低骰化为一、最高骰化为六，并令本场作品得分 +6%。",
     "effect": {
       "type": "dice_transform",
@@ -1217,9 +1217,9 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      70,
-      110,
-      160
+      7,
+      11,
+      16
     ],
     "levels": [
       {
@@ -1264,9 +1264,9 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      70,
-      110,
-      160
+      7,
+      11,
+      16
     ],
     "levels": [
       {
@@ -1311,10 +1311,10 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      80,
-      120,
-      170,
-      230
+      8,
+      12,
+      17,
+      23
     ],
     "levels": [
       {
@@ -1323,7 +1323,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "value": 400,
           "reward": {
             "type": "inspiration",
-            "value": 10,
+            "value": 1,
             "perMatch": false
           }
         }
@@ -1334,7 +1334,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "value": 600,
           "reward": {
             "type": "inspiration",
-            "value": 10,
+            "value": 1,
             "perMatch": false
           }
         }
@@ -1345,7 +1345,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "value": 800,
           "reward": {
             "type": "inspiration",
-            "value": 10,
+            "value": 1,
             "perMatch": false
           }
         }
@@ -1356,7 +1356,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "value": 1000,
           "reward": {
             "type": "inspiration",
-            "value": 20,
+            "value": 2,
             "perMatch": false
           }
         }
@@ -1367,7 +1367,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "value": 1200,
           "reward": {
             "type": "inspiration",
-            "value": 20,
+            "value": 2,
             "perMatch": false
           }
         }
@@ -1378,42 +1378,42 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      80,
-      120,
-      170,
-      230
+      8,
+      12,
+      17,
+      23
     ],
     "levels": [
       {
-        "cost": 30,
+        "cost": 3,
         "effect": {
           "type": "seal_signature",
           "penalty": -800
         }
       },
       {
-        "cost": 30,
+        "cost": 3,
         "effect": {
           "type": "seal_signature",
           "penalty": -600
         }
       },
       {
-        "cost": 30,
+        "cost": 3,
         "effect": {
           "type": "seal_signature",
           "penalty": -400
         }
       },
       {
-        "cost": 30,
+        "cost": 3,
         "effect": {
           "type": "seal_signature",
           "penalty": -200
         }
       },
       {
-        "cost": 20,
+        "cost": 2,
         "effect": {
           "type": "seal_signature",
           "penalty": 0
@@ -1425,9 +1425,9 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      70,
-      110,
-      160
+      7,
+      11,
+      16
     ],
     "levels": [
       {
@@ -1464,16 +1464,16 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      70,
-      110,
-      160
+      7,
+      11,
+      16
     ],
     "levels": [
       {
         "effect": {
           "type": "dice_commitment",
           "condition": "exactly_one_paid",
-          "firstCostDiscount": 10,
+          "firstCostDiscount": 1,
           "value": 700
         }
       },
@@ -1481,7 +1481,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         "effect": {
           "type": "dice_commitment",
           "condition": "exactly_one_paid",
-          "firstCostDiscount": 10,
+          "firstCostDiscount": 1,
           "value": 900
         }
       },
@@ -1489,7 +1489,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         "effect": {
           "type": "dice_commitment",
           "condition": "exactly_one_paid",
-          "firstCostDiscount": 20,
+          "firstCostDiscount": 2,
           "value": 1100
         }
       },
@@ -1497,7 +1497,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         "effect": {
           "type": "dice_commitment",
           "condition": "exactly_one_paid",
-          "firstCostDiscount": 20,
+          "firstCostDiscount": 2,
           "value": 1300
         }
       }
@@ -1507,10 +1507,10 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      80,
-      120,
-      170,
-      230
+      8,
+      12,
+      17,
+      23
     ],
     "levels": [
       {
@@ -1559,14 +1559,14 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      80,
-      120,
-      170,
-      230
+      8,
+      12,
+      17,
+      23
     ],
     "levels": [
       {
-        "cost": 30,
+        "cost": 3,
         "effect": {
           "type": "dice_transform",
           "mode": "first_floor",
@@ -1576,7 +1576,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         }
       },
       {
-        "cost": 30,
+        "cost": 3,
         "effect": {
           "type": "dice_transform",
           "mode": "first_floor",
@@ -1586,7 +1586,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         }
       },
       {
-        "cost": 30,
+        "cost": 3,
         "effect": {
           "type": "dice_transform",
           "mode": "first_floor",
@@ -1596,7 +1596,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         }
       },
       {
-        "cost": 30,
+        "cost": 3,
         "effect": {
           "type": "dice_transform",
           "mode": "first_floor",
@@ -1606,7 +1606,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         }
       },
       {
-        "cost": 20,
+        "cost": 2,
         "effect": {
           "type": "dice_transform",
           "mode": "first_floor",
@@ -1621,9 +1621,9 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      70,
-      110,
-      160
+      7,
+      11,
+      16
     ],
     "levels": [
       {
@@ -1656,9 +1656,9 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "rare",
     "maxLevel": 4,
     "upCost": [
-      70,
-      110,
-      160
+      7,
+      11,
+      16
     ],
     "levels": [
       {
@@ -1666,7 +1666,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "type": "dice_pattern",
           "pattern": "first_last_equal",
           "minDice": 2,
-          "firstCostDiscount": 10,
+          "firstCostDiscount": 1,
           "value": 1200
         }
       },
@@ -1675,7 +1675,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "type": "dice_pattern",
           "pattern": "first_last_equal",
           "minDice": 2,
-          "firstCostDiscount": 10,
+          "firstCostDiscount": 1,
           "value": 1500
         }
       },
@@ -1684,7 +1684,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "type": "dice_pattern",
           "pattern": "first_last_equal",
           "minDice": 2,
-          "firstCostDiscount": 20,
+          "firstCostDiscount": 2,
           "value": 1800
         }
       },
@@ -1693,7 +1693,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "type": "dice_pattern",
           "pattern": "first_last_equal",
           "minDice": 2,
-          "firstCostDiscount": 20,
+          "firstCostDiscount": 2,
           "value": 2100
         }
       }
@@ -1703,10 +1703,10 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      80,
-      120,
-      170,
-      230
+      8,
+      12,
+      17,
+      23
     ],
     "levels": [
       {
@@ -1718,7 +1718,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "value": 1200,
           "reward": {
             "type": "inspiration",
-            "value": 10,
+            "value": 1,
             "perMatch": false
           }
         }
@@ -1732,7 +1732,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "value": 1500,
           "reward": {
             "type": "inspiration",
-            "value": 10,
+            "value": 1,
             "perMatch": false
           }
         }
@@ -1746,7 +1746,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "value": 1800,
           "reward": {
             "type": "inspiration",
-            "value": 10,
+            "value": 1,
             "perMatch": false
           }
         }
@@ -1760,7 +1760,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "value": 2100,
           "reward": {
             "type": "inspiration",
-            "value": 20,
+            "value": 2,
             "perMatch": false
           }
         }
@@ -1774,7 +1774,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
           "value": 2400,
           "reward": {
             "type": "inspiration",
-            "value": 20,
+            "value": 2,
             "perMatch": false
           }
         }
@@ -1785,14 +1785,14 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
     "quality": "epic",
     "maxLevel": 5,
     "upCost": [
-      80,
-      120,
-      170,
-      230
+      8,
+      12,
+      17,
+      23
     ],
     "levels": [
       {
-        "cost": 30,
+        "cost": 3,
         "effect": {
           "type": "dice_transform",
           "mode": "polarize",
@@ -1801,7 +1801,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         }
       },
       {
-        "cost": 30,
+        "cost": 3,
         "effect": {
           "type": "dice_transform",
           "mode": "polarize",
@@ -1810,7 +1810,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         }
       },
       {
-        "cost": 30,
+        "cost": 3,
         "effect": {
           "type": "dice_transform",
           "mode": "polarize",
@@ -1819,7 +1819,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         }
       },
       {
-        "cost": 30,
+        "cost": 3,
         "effect": {
           "type": "dice_transform",
           "mode": "polarize",
@@ -1828,7 +1828,7 @@ window.GAME_SIDEQUEST_TALENT_UPGRADE = {
         }
       },
       {
-        "cost": 20,
+        "cost": 2,
         "effect": {
           "type": "dice_transform",
           "mode": "polarize",

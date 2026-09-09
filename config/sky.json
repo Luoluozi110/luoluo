@@ -85,7 +85,7 @@
         "effect": {
           "type": "sky_strategy",
           "key": "battle_guard",
-          "value": 20
+          "value": 2
         }
       }
     ],
@@ -134,7 +134,7 @@
         "effect": {
           "type": "sky_strategy",
           "key": "ping_fragment",
-          "value": 1000
+          "value": 20
         }
       }
     ],

@@ -348,7 +348,7 @@ export class Modals {
         <div class="opt-list">${Object.entries(plans).map(([id, p]) => `<button class="opt" data-strategy-plan="${id}"><b>${a.strategy.nextPlan === id ? '✓ ' : ''}${esc(p.name || id)}</b><span>${esc(p.desc || '')}${a.strategy.plan === id ? ' · 当前生效' : ''}</span></button>`).join('')}</div>
         <h3>学力·研修位 ${a.study.focus.length}/${game.studySlots()}</h3>
         <div class="dianggu">当前研修：${a.study.focus.map(k => attrNames[k]).join('、')}。调整只在下阶段生效，既有进度会原样保留。</div>
-        <div class="opt-list">${attrs.map(k => `<button class="opt" data-focus="${k}"><b>${nextFocus.has(k) ? '✓ ' : ''}${attrNames[k]}</b><span>进度 ${Number(a.study.progress[k]) || 0}/${Number((game.abilityConfig().study || {}).progressNeed) || 3}${focus.has(k) ? ' · 当前在修' : ''}</span></button>`).join('')}</div>
+        <div class="opt-list">${attrs.map(k => `<button class="opt" data-focus="${k}"><b>${nextFocus.has(k) ? '✓ ' : ''}${attrNames[k]}</b><span>进度 ${Number(a.study.progress[k]) || 0}/${Number((game.abilityConfig().study || {}).progressNeed) || 75}${focus.has(k) ? ' · 当前在修' : ''}</span></button>`).join('')}</div>
         <h3>分配心得</h3><div class="opt-list">${attrs.map(k => `<button class="opt" data-insight="${k}" ${a.insight < game.insightCost(k) ? 'disabled' : ''}><b>${attrNames[k]} +1</b><span>消耗 ${game.insightCost(k)} 心得</span></button>`).join('')}</div>
         ${conversionBlock}
         ${inkHighlightsBlock}
@@ -1222,7 +1222,7 @@ export function talentEffectText(t) {
   const e = t.effect || {};
   const S = { shi: '诗', ci: '词', lian: '联', any: '任意' };
   switch (e.type) {
-    case 'on_win_bonus': return `${S[e.style] || e.style}战获胜，额外 +${e.value} ${ATTR_NAMES[e.style] || '对应属性'}`;
+    case 'on_win_bonus': return `${S[e.style] || e.style}战获胜，心得 +${e.value}`;
     case 'fixed_dice': return `本场灵感骰固定为 ${e.value} 分，不受运气左右`;
     case 'planned_dice': return `回合掷移动骰前可指定 1—${e.maxValue || 6} 格；本局每次使用消耗递增（首用 ${e.baseCost || 5}，每次 +${e.costStep || 2}）`;
     case 'dice_mult': return `本场普通灵感骰每点乘区 +${e.value}%（高风险高回报）`;
@@ -1240,7 +1240,7 @@ export function talentEffectText(t) {
       return `将 ${e.count || 1} 枚不高于 ${e.threshold || 2} 点的最低骰抬高 ${e.value || 1} 点`;
     case 'dice_pattern': {
       const pct = n => `${Math.round((Number(n) || 0) * 100)}%`;
-      let s = e.pattern === 'six' ? `${e.reward && e.reward.perMatch === false ? '本场首次出现最终六点骰时' : '每枚最终六点骰'}，得分 +${pct(e.value)}`
+      let s = e.pattern === 'six' ? `每枚最终六点骰，得分 +${pct(e.value)}`
         : e.pattern === 'distinct' ? `每多一种不同点数，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚追加少耗 ${e.firstCostDiscount} 灵感` : ''}`
         : e.pattern === 'all_distinct' ? `${e.minDice || 3} 枚骰点各不相同，得分 +${pct(e.value)}${e.firstCostDiscount ? `；首枚续掷少耗 ${e.firstCostDiscount} 灵感` : ''}`
         : e.pattern === 'low_then_high' ? `首骰 ≤${e.lowMax || 2} 后续骰 ≥${e.nextHighMin || 5}，得分 +${pct(e.value)}；低开时首枚续掷少耗 ${e.conditionalFirstCostDiscount || 0} 灵感`
@@ -1286,7 +1286,7 @@ export function talentEffectText(t) {
     case 'unlock_lian': return '解除联力 8 点门槛';
     case 'palace_pct': return `殿试每场得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'insp_on_win': return `每场论战取胜，灵感 +${e.value || 0}`;
-    case 'draw_bonus': return `平分秋色时，出战文体额外 +${e.value || 0}`;
+    case 'draw_bonus': return `平局时，心得 +${e.value || 0}`;
     case 'insp_on_talent': return `每获得一枚新文心，灵感 +${e.value || 0}`;
     case 'style_pct': return `以${S[e.style] || e.style}出战，得分 +${Math.round((e.value || 0) * 100)}%${e.singleDieBonus ? `；仅用一骰再 +${Math.round(e.singleDieBonus * 100)}%` : ''}`;
     case 'theme_pct': return `指定题材出战，得分 +${Math.round((e.value || 0) * 100)}%${e.reward ? `；触发后获得 ${e.reward.value || 0} ${e.reward.type || ''}` : ''}`;
@@ -1295,7 +1295,7 @@ export function talentEffectText(t) {
     case 'lucky_six': return `任一灵感骰掷出六点，本场得分 ×${e.mult || 0}`;
     case 'comeback': return `灵感 ≤${e.threshold || 0} 时，本场得分 +${Math.round((e.value || 0) * 100)}%`;
     case 'armory_pct': return `每拥有 ${e.step || 0} 枚文心，六维算分属性 +${Math.round((e.value || 0) * 100)}%${e.cap ? `（上限 ${Math.round(e.cap * 100)}%）` : ''}`;
-    case 'study_bonus': return `败/平研习补偿属性额外 +${e.value || 0}${e.nextBattlePct ? `；下一场得分 +${Math.round(e.nextBattlePct * 100)}%` : ''}`;
+    case 'study_bonus': return `败北或平局时，心得 +${e.value || 0}${e.nextBattlePct ? `；下一场得分 +${Math.round(e.nextBattlePct * 100)}%` : ''}`;
     case 'palace_insp': return `殿试每场开场，灵感 +${e.value || 0}${e.startValue ? `；入场先 +${e.startValue}` : ''}`;
     case 'start_insp': return `获得时，灵感一次性 +${e.value || 0}`;
     case 'insp_turn_regen': return `持有时，每回合开始恢复灵感 +${e.value || 0}${e.thresholdRatio ? `（低于上限 ${Math.round(e.thresholdRatio * 100)}% 时）` : ''}${e.onTalent ? `；新得文心时 +${e.onTalent}` : ''}`;
@@ -1378,4 +1378,3 @@ export function goldBurst(ov, n = 60) {
 }
 
 export { sleep };
-

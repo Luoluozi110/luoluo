@@ -2,7 +2,7 @@
 import { ATTR_KEYS } from './rules.js';
 import { NUMERIC_VERSION, legacyTenthsToV2 } from './numeric.js';
 
-export const REINCARNATE_KEY = 'feihua_reincarnate_v1';
+export const REINCARNATE_KEY = 'feihua_reincarnate_small_integer_v3';
 
 export const Reincarnate = {
   _mem: null,
@@ -21,11 +21,7 @@ export const Reincarnate = {
       }
     } catch (e) { /* sessionStorage 不可用 → 内存兜底 */ }
     record = record || this._mem;
-    if (record && Number(record.numericVersion) !== NUMERIC_VERSION) {
-      for (const key of ATTR_KEYS) if (record.attrs && key in record.attrs) record.attrs[key] = legacyTenthsToV2(record.attrs[key]);
-      record.numericVersion = NUMERIC_VERSION;
-      this._write(record);
-    }
+    if (record && Number(record.numericVersion) !== NUMERIC_VERSION) return null;
     return record;
   },
   _write(obj) {
@@ -54,7 +50,10 @@ export const Reincarnate = {
     const ratio = Number(t.effect.attrRatio) || 0;
     if (s.inspiration < threshold || ratio <= 0) return false;
     const attrs = {};
-    for (const k of ATTR_KEYS) attrs[k] = Math.floor((Number(s.attrs[k]) || 0) * ratio);
+    for (const k of ATTR_KEYS) {
+      const source = [...(s.passive || []), ...(s.active || [])].reduce((sum, x) => sum + (x.effect?.type === 'attr_flat' ? Number(x.effect.attrs?.[k]) || 0 : 0), 0);
+      attrs[k] = Math.floor(Math.max(0, (Number(s.attrs[k]) || 0) - source) * ratio);
+    }
     const talentLevel = Math.max(1, Math.floor(Number((s.talentLevels || {})[talentId]) || 1));
     // 传承不仅保留当前属性，也保留点灯者本身。否则下一局虽得到属性，
     // 却无法再次点灯，传承链会在一局后中断。

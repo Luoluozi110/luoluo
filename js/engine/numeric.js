@@ -6,13 +6,16 @@
  * 始终保留为整数，禁止写入二进制浮点小数。
  */
 
-export const NUMERIC_VERSION = 2;
+export const NUMERIC_VERSION = 3;
+export const RULE_SET_ID = 'small-integer-v2.1';
 export const SCALE = Object.freeze({
-  attribute: 10,
-  inspiration: 10,
-  insight: 10,
-  progress: 1000,
-  battleScore: 10,
+  attribute: 1,
+  inspiration: 1,
+  insight: 1,
+  study: 25,
+  manuscript: 20,
+  strategy: 10,
+  battleScore: 1,
   bp: 10000
 });
 
@@ -78,11 +81,11 @@ export function normalizeNumericRates(config) {
     for (const [key, value] of Object.entries(effect)) {
       if (key === 'reward' || key === 'fullReward') continue;
       if (Array.isArray(value)) {
-        if (key === 'tiers') value.forEach(tier => visitEffect({ type, ...tier }));
+        // tiers 在下方一次归一化，避免浅拷贝把同一嵌套奖励转换两次。
         continue;
       }
       if (!Number.isFinite(Number(value))) continue;
-      if ((RATE_TYPES.has(type) && RATE_KEYS.has(key)) || key === 'chance' || key === 'retention') effect[key] = fromBp(value);
+      if ((RATE_TYPES.has(type) && RATE_KEYS.has(key)) || (RATE_KEYS.has(key) && !['value', 'cap'].includes(key))) effect[key] = fromBp(value);
     }
     if (effect.reward && typeof effect.reward === 'object') visitEffect(effect.reward);
     if (effect.fullReward && typeof effect.fullReward === 'object') visitEffect(effect.fullReward);

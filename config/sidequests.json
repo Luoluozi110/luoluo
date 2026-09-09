@@ -100,7 +100,7 @@
               "axis": "守义",
               "effect": {
                 "attrs": {
-                  "bi": 10
+                  "bi": 1
                 }
               }
             },
@@ -111,7 +111,7 @@
               "axis": "权变",
               "effect": {
                 "attrs": {
-                  "xue": 10
+                  "xue": 1
                 }
               }
             }
@@ -128,7 +128,7 @@
               "resultText": "你替故友受下众目，也把这一笔代价留给了自己。",
               "axis": "守义",
               "effect": {
-                "inspiration": -20,
+                "inspiration": -2,
                 "nextBattlePct": 1000
               }
             },
@@ -138,7 +138,7 @@
               "resultText": "你让义字之外的是非也见了光。",
               "axis": "权变",
               "effect": {
-                "inspiration": 20
+                "inspiration": 2
               }
             }
           ]
@@ -150,12 +150,12 @@
         "title": "江湖名士",
         "style": "shi",
         "attrs": {
-          "shi": 260,
-          "ci": 220,
-          "lian": 200,
-          "bi": 220,
-          "xue": 240,
-          "si": 230
+          "shi": 26,
+          "ci": 22,
+          "lian": 20,
+          "bi": 22,
+          "xue": 24,
+          "si": 23
         }
       }
     },
@@ -257,7 +257,7 @@
               "axis": "守土",
               "effect": {
                 "attrs": {
-                  "xue": 10
+                  "xue": 1
                 }
               }
             },
@@ -268,7 +268,7 @@
               "axis": "出奇",
               "effect": {
                 "attrs": {
-                  "bi": 10
+                  "bi": 1
                 }
               }
             }
@@ -285,7 +285,7 @@
               "resultText": "你把粮留在城中，也把这个决定的重量留在心里。",
               "axis": "守土",
               "effect": {
-                "inspiration": 20
+                "inspiration": 2
               }
             },
             {
@@ -294,7 +294,7 @@
               "resultText": "你让轻骑越过夜色，把希望押在速度与胆识上。",
               "axis": "出奇",
               "effect": {
-                "inspiration": -20,
+                "inspiration": -2,
                 "nextBattlePct": 1000
               }
             }
@@ -307,12 +307,12 @@
         "title": "行营判官",
         "style": "lian",
         "attrs": {
-          "shi": 230,
-          "ci": 200,
-          "lian": 270,
-          "bi": 240,
-          "xue": 250,
-          "si": 250
+          "shi": 23,
+          "ci": 20,
+          "lian": 27,
+          "bi": 24,
+          "xue": 25,
+          "si": 25
         }
       }
     },
@@ -415,7 +415,7 @@
               "axis": "留世",
               "effect": {
                 "attrs": {
-                  "bi": 10
+                  "bi": 1
                 }
               }
             },
@@ -426,7 +426,7 @@
               "axis": "忘机",
               "effect": {
                 "attrs": {
-                  "si": 10
+                  "si": 1
                 }
               }
             }
@@ -443,7 +443,7 @@
               "resultText": "你没有把痛苦当作污点，而把它带进了下一段路。",
               "axis": "留世",
               "effect": {
-                "inspiration": -20,
+                "inspiration": -2,
                 "nextBattlePct": 1000
               }
             },
@@ -453,7 +453,7 @@
               "resultText": "你借来片刻空明，也承认这不是最后的回答。",
               "axis": "忘机",
               "effect": {
-                "inspiration": 20
+                "inspiration": 2
               }
             }
           ]
@@ -465,25 +465,25 @@
         "title": "镜中客",
         "style": "ci",
         "attrs": {
-          "shi": 210,
-          "ci": 270,
-          "lian": 210,
-          "bi": 240,
-          "xue": 230,
-          "si": 270
+          "shi": 21,
+          "ci": 27,
+          "lian": 21,
+          "bi": 24,
+          "xue": 23,
+          "si": 27
         }
       }
     }
   ],
   "final": {
-    "carryCost": 20,
+    "carryCost": 2,
     "scorePctByMerit": {
       "1": 600,
       "2": 1000
     },
     "releaseInspirationByMerit": {
-      "1": 20,
-      "2": 40
+      "1": 2,
+      "2": 4
     }
   }
 }

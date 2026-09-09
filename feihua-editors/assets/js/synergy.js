@@ -19,7 +19,7 @@
     style_pct: "指定文体得分加成",
     theme_pct: "指定题材得分加成",
     palace_pct: "殿试得分加成",
-    on_win_bonus: "以某体获胜时额外 +属性（呼应羁绊导向）",
+    on_win_bonus: "以某体获胜时额外 +心得（呼应羁绊导向）",
     dice_plus: "灵感骰 +N（创作波动更稳健）",
     dice_pattern: "骰组形态触发（六点/对子/递增/总点）",
     extra_dice_pct: "每枚追加骰得分加成",

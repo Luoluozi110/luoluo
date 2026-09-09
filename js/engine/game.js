@@ -68,7 +68,7 @@ export const INK_TAGS = Object.freeze(INK_AXES.flatMap(axis => [axis.left, axis.
 // 旧的编辑器工程可能尚未导出 talentConversion；以流派 ID 提供稳定默认值，
 // 同时允许 schools.json 用同名字段覆写数值或文案。
 const SCHOOL_TALENT_CONVERSION_DEFAULTS = Object.freeze({
-  bowen: { label: '穷览求心', resource: 'insight', cost: 80, chance: 0.45, maxAttempts: 2, perPhase: 1, desc: '消耗心得，融会所学以叩问文心。' },
+  bowen: { label: '穷览求心', resource: 'insight', cost: 8, chance: 0.45, maxAttempts: 2, perPhase: 1, desc: '消耗心得，融会所学以叩问文心。' },
   qishi: { label: '推演问心', resource: 'strategy', cost: 2, chance: 0.40, maxAttempts: 2, perPhase: 1, desc: '消耗构思，推演万象以觅得灵机。' },
   cizong_bi: { label: '焚稿悟心', resource: 'manuscript', cost: 3, chance: 0.50, maxAttempts: 2, perPhase: 1, desc: '消耗稿页，焚稿反思以淬炼文心。' }
 });
@@ -118,18 +118,18 @@ export class Game {
     const choice = this.ui.showBowenChoice ? await this.ui.showBowenChoice() : 'broad';
     if (choice === 'focus') {
       const key = R.CREATIVE_KEYS.slice().sort((a, b) => (s.attrs[a] || 0) - (s.attrs[b] || 0))[0];
-      this.addAttrs({ [key]: 30 }, { noSchoolGrowth: true, reason: '博闻·专攻一体' });
+      this.addAttrs({ [key]: 3 }, { noSchoolGrowth: true, reason: '博闻·专攻一体' });
       st.bowenFocus = key;
-      this.push(`博闻·专攻一体：${R.ATTR_NAMES[key]} +30${reason ? `（${reason}）` : ''}`);
+      this.push(`博闻·专攻一体：${R.ATTR_NAMES[key]} +3${reason ? `（${reason}）` : ''}`);
     } else if (choice === 'battle') {
-      this.addAttrs({ xue: 20 }, { noSchoolGrowth: true, reason: '博闻·以学驭战' });
-      this.addInspiration(20, '博闻·以学驭战');
+      this.addAttrs({ xue: 2 }, { noSchoolGrowth: true, reason: '博闻·以学驭战' });
+      this.addInspiration(2, '博闻·以学驭战');
       st.bowenBattleHint = true;
-      this.push(`博闻·以学驭战：学力 +20，灵感 +20`);
+      this.push(`博闻·以学驭战：学力 +2，灵感 +2`);
     } else {
-      this.addAttrs({ shi: 10, ci: 10, lian: 10 }, { noSchoolGrowth: true, reason: '博闻·兼收并蓄' });
+      this.addAttrs({ shi: 1, ci: 1, lian: 1 }, { noSchoolGrowth: true, reason: '博闻·兼收并蓄' });
       st.bowenBroad = true;
-      this.push(`博闻·兼收并蓄：三体各 +10${reason ? `（${reason}）` : ''}`);
+      this.push(`博闻·兼收并蓄：三体各 +1${reason ? `（${reason}）` : ''}`);
     }
     // 博闻 Lv5 宗师点睛：每次触发额外沉淀 +知识BonusGain 学力（厚积薄发）
     const bonusGain = Number(mech.knowledgeBonusGain) || 0;
@@ -165,18 +165,18 @@ export class Game {
     const mech = this.schoolMechanics(school);
     const albumPlus = Number(this.s && this.s.albumState && this.s.albumState.flags && this.s.albumState.flags.studySlotPlus) || 0;
     return Math.max(1, Math.min(Number(c.maxSlots) || 3,
-      (Number(c.baseSlots) || 1) + Math.floor((Number(attrs && attrs.xue) || 0) / (Number(c.slotPerXue) || 100)) + (Number(mech.studySlotsPlus) || 0) + albumPlus));
+      (Number(c.baseSlots) || 1) + Math.floor((Number(attrs && attrs.xue) || 0) / (Number(c.slotPerXue) || 10)) + (Number(mech.studySlotsPlus) || 0) + albumPlus));
   }
 
   insightCap(attrs = this.s && this.s.attrs) {
     const c = this.abilityConfig().study || {};
-    return Math.max(1, (Number(c.baseInsightCap) || 60)
-      + SCALE.insight * Math.floor((Number(attrs && attrs.xue) || 0) / (Number(c.insightCapPerXue) || 30)));
+    return Math.max(1, (Number(c.baseInsightCap) || 6)
+      + SCALE.insight * Math.floor((Number(attrs && attrs.xue) || 0) / (Number(c.insightCapPerXue) || 3)));
   }
 
   studyProgressRate(attrs = this.s && this.s.attrs) {
     const c = this.abilityConfig().study || {};
-    return Math.min(2000, Math.max(1000, 1000 + (Number(attrs && attrs.xue) || 0) * (Number(c.progressPerXue) || 4)));
+    return Math.min(50, Math.max(25, 25 + (Number(attrs && attrs.xue) || 0) * (Number(c.progressPerXue) || 1)));
   }
 
   strategyPlans() {
@@ -195,7 +195,7 @@ export class Game {
     const mech = this.schoolMechanics(school);
     const albumPlus = Number(this.s && this.s.albumState && this.s.albumState.flags && this.s.albumState.flags.strategyCapPlus) || 0;
     const raw = (Number(c.maxCharges) || 3)
-      + Math.floor((Number(attrs && attrs.si) || 0) / (Number(c.capPerSi) || 100))
+      + Math.floor((Number(attrs && attrs.si) || 0) / (Number(c.capPerSi) || 10))
       + (Number(mech.strategyMaxPlus) || 0) + albumPlus;
     return Math.max(1, Math.min(Number(c.maxCap) || 6, raw));
   }
@@ -203,21 +203,21 @@ export class Game {
   strategyIncome(attrs = this.s && this.s.attrs, school = this.s && this.s.school) {
     const c = this.abilityConfig().strategy || {};
     const mech = this.schoolMechanics(school);
-    const base = (Number(c.baseCharges) || 1) * SCALE.progress;
-    const fromSi = roundDiv((Number(attrs && attrs.si) || 0) * SCALE.progress, Number(c.chargePerSi) || 100);
-    return Math.max(SCALE.progress, base + fromSi + (Number(mech.strategyChargePlus) || 0) * SCALE.progress);
+    const base = (Number(c.baseCharges) || 1) * SCALE.strategy;
+    const fromSi = roundDiv((Number(attrs && attrs.si) || 0) * SCALE.strategy, Number(c.chargePerSi) || 10);
+    return Math.max(SCALE.strategy, base + fromSi + (Number(mech.strategyChargePlus) || 0) * SCALE.strategy);
   }
 
   manuscriptCap(attrs = this.s && this.s.attrs, school = this.s && this.s.school) {
     const c = this.abilityConfig().manuscript || {};
     const mech = this.schoolMechanics(school);
     return Math.max(1, Math.min(Number(c.maxCap) || 6,
-      (Number(c.baseCap) || 2) + Math.floor((Number(attrs && attrs.bi) || 0) / (Number(c.capPerBi) || 60)) + (Number(mech.manuscriptCapPlus) || 0)));
+      (Number(c.baseCap) || 2) + Math.floor((Number(attrs && attrs.bi) || 0) / (Number(c.capPerBi) || 6)) + (Number(mech.manuscriptCapPlus) || 0)));
   }
 
   manuscriptFragmentRate(attrs = this.s && this.s.attrs) {
     const c = this.abilityConfig().manuscript || {};
-    return Math.min(1500, Math.max(0, (Number(attrs && attrs.bi) || 0) * (Number(c.fragmentPerBi) || 5)));
+    return Math.min(30, Math.max(0, (Number(attrs && attrs.bi) || 0) * (Number(c.fragmentPerBi) || 1)));
   }
 
   abilityFeedback() {
@@ -228,9 +228,9 @@ export class Game {
     const xue = Number(attrs.xue) || 0;
     const si = Number(attrs.si) || 0;
     const bi = Number(attrs.bi) || 0;
-    const slotMilestones = Array.isArray(study.slotMilestones) ? study.slotMilestones.map(Number).filter(Number.isFinite) : [100, 200];
+    const slotMilestones = Array.isArray(study.slotMilestones) ? study.slotMilestones.map(Number).filter(Number.isFinite) : [10, 20];
     const nextSlot = slotMilestones.find(v => xue < v);
-    const nextCap = Math.floor(xue / (Number(study.insightCapPerXue) || 30) + 1) * (Number(study.insightCapPerXue) || 30);
+    const nextCap = Math.floor(xue / (Number(study.insightCapPerXue) || 3) + 1) * (Number(study.insightCapPerXue) || 3);
     const a = this.ensureAbilityState();
     return {
       studyRate: this.studyProgressRate(),
@@ -243,7 +243,7 @@ export class Game {
       strategyRemainder: Number(a && a.strategy && a.strategy.chargeRemainder) || 0,
       manuscriptFragmentRate: this.manuscriptFragmentRate(),
       manuscriptCap: this.manuscriptCap(),
-      nextManuscriptCapIn: Math.max(0, (Math.floor(bi / (Number(manuscript.capPerBi) || 60)) + 1) * (Number(manuscript.capPerBi) || 60) - bi),
+      nextManuscriptCapIn: Math.max(0, (Math.floor(bi / (Number(manuscript.capPerBi) || 6)) + 1) * (Number(manuscript.capPerBi) || 6) - bi),
       attrs: { xue, si, bi },
       config: { study, strategy, manuscript }
     };
@@ -294,7 +294,7 @@ export class Game {
     a.strategy.plan = planIds.includes(a.strategy.plan) ? a.strategy.plan : base.strategy.plan;
     a.strategy.nextPlan = planIds.includes(a.strategy.nextPlan) ? a.strategy.nextPlan : a.strategy.plan;
     a.strategy.charges = clampInt(a.strategy.charges, 0, this.strategyCap());
-    a.strategy.chargeRemainder = clampInt(a.strategy.chargeRemainder, 0, SCALE.progress - 1);
+    a.strategy.chargeRemainder = clampInt(a.strategy.chargeRemainder, 0, SCALE.strategy - 1);
     a.strategy.freeUsed = !!a.strategy.freeUsed;
     a.manuscript = Object.assign({}, base.manuscript, a.manuscript || {});
     a.manuscript.pages = clampInt(a.manuscript.pages, 0, this.manuscriptCap());
@@ -494,10 +494,10 @@ export class Game {
   }
 
   /** 研修进度的唯一推进入口；论战与创作抉择共用同一阈值和属性兑现规则。 */
-  gainStudyProgress(attr, amount = SCALE.progress, reason = '') {
+  gainStudyProgress(attr, amount = SCALE.study, reason = '') {
     if (!R.ATTR_KEYS.includes(attr)) return { attr, added: 0, progress: 0, need: 1, gained: 0 };
     const a = this.ensureAbilityState();
-    const need = Math.max(1, clampInt((this.abilityConfig().study || {}).progressNeed, SCALE.progress));
+    const need = Math.max(1, clampInt((this.abilityConfig().study || {}).progressNeed, 75));
     const added = Math.max(0, clampInt(amount, 0));
     const settlement = accumulateProgress(a.study.progress[attr], added, need);
     a.study.progress[attr] = settlement.remainder;
@@ -612,9 +612,9 @@ export class Game {
     const vals = R.CREATIVE_KEYS.map(k => Number(this.s.attrs[k]) || 0);
     const mean = vals.reduce((x, y) => x + y, 0) / vals.length;
     const value = Number(this.s.attrs[attr]) || 0;
-    if (R.CREATIVE_KEYS.includes(attr) && Math.max(...vals) - value >= (Number(c.catchupGap) || 60)) return Number(c.catchupCost) || 30;
-    if (R.CREATIVE_KEYS.includes(attr) && value - mean >= (Number(c.specialistGap) || 60)) return Number(c.specialistCost) || 50;
-    return Number(c.baseCost) || 40;
+    if (R.CREATIVE_KEYS.includes(attr) && Math.max(...vals) - value >= (Number(c.catchupGap) || 6)) return Number(c.catchupCost) || 3;
+    if (R.CREATIVE_KEYS.includes(attr) && value - mean >= (Number(c.specialistGap) || 6)) return Number(c.specialistCost) || 5;
+    return Number(c.baseCost) || 4;
   }
 
   spendInsight(attr) {
@@ -664,9 +664,9 @@ export class Game {
     a.strategy.plan = a.strategy.nextPlan;
     const albumStartBonus = Math.max(0, Number(this.s.albumState && this.s.albumState.flags && this.s.albumState.flags.strategyStartPlus) || 0);
     if (this.s.albumState && this.s.albumState.flags) this.s.albumState.flags.strategyStartPlus = 0;
-    const totalIncome = this.strategyIncome() + clampInt(a.strategy.chargeRemainder, 0) + albumStartBonus * SCALE.progress;
-    const wholeIncome = Math.floor(totalIncome / SCALE.progress);
-    a.strategy.chargeRemainder = totalIncome % SCALE.progress;
+    const totalIncome = this.strategyIncome() + clampInt(a.strategy.chargeRemainder, 0) + albumStartBonus * SCALE.strategy;
+    const wholeIncome = Math.floor(totalIncome / SCALE.strategy);
+    a.strategy.chargeRemainder = totalIncome % SCALE.strategy;
     a.strategy.charges = Math.min(this.strategyCap(), wholeIncome);
     a.strategy.freeUsed = false;
     a.study.focus = a.study.nextFocus.slice(0, this.studySlots());
@@ -703,7 +703,7 @@ export class Game {
     const value = Math.max(1, Number(dice) || 1);
     const p = this.strategyPlans().steady || {};
     const lowMax = Number(p.lowMax) || 3;
-    const fragmentGain = Math.max(0, Number(p.fragmentGain) || SCALE.progress);
+    const fragmentGain = Math.max(0, Number(p.fragmentGain) || SCALE.manuscript);
     if (planned || value > lowMax || !this.consumeStrategyPlan('steady', fragmentGain ? ` · 成稿进度 +${fragmentGain}` : '')) return value;
     const a = this.ensureAbilityState();
     a.manuscript.fragments += fragmentGain;
@@ -722,8 +722,8 @@ export class Game {
   }
 
   strategyLossAmount(loss, style) {
-    let reduce = style === 'lian' ? Number((this.styleConfig().lian || {}).lossInspirationReduce) || 10 : 0;
-    if (this.consumeStrategyPlan('guard')) reduce += Number((this.strategyPlans().guard || {}).lossReduce) || 20;
+    let reduce = style === 'lian' ? Number((this.styleConfig().lian || {}).lossInspirationReduce) || 1 : 0;
+    if (this.consumeStrategyPlan('guard')) reduce += Number((this.strategyPlans().guard || {}).lossReduce) || 2;
     return Math.min(0, Number(loss) + reduce);
   }
 
@@ -741,10 +741,10 @@ export class Game {
     if (action === 'polish') {
       a.manuscript.polish += 1;
       a.manuscript.firstPolishPhases[this.s.phase] = true;
-    } else if (action === 'publish') this.addInspiration(Number(c.publishInspiration) || 40, '稿本·刊行');
+    } else if (action === 'publish') this.addInspiration(Number(c.publishInspiration) || 4, '稿本·刊行');
     else if (action === 'volume') {
       a.manuscript.volumes += 1;
-      if ((Number(this.s.attrs.bi) || 0) >= (Number(c.volumeRefundBi) || 320)) {
+      if ((Number(this.s.attrs.bi) || 0) >= (Number(c.volumeRefundBi) || 32)) {
         a.manuscript.pages = Math.min(this.manuscriptCap(), a.manuscript.pages + (Number(c.volumeRefundPages) || 1));
       }
     }
@@ -835,7 +835,7 @@ export class Game {
     this._crossRunCodexBefore = Codex.loadCodex();
     const school = cfg.schools.find(s => s.id === schoolId) || cfg.schools[0];
     const attrs = { ...cfg.attrs.initial };
-    attrs[school.attr] = (attrs[school.attr] || 0) + (cfg.attrs.schoolBonus ?? 30);
+    attrs[school.attr] = (attrs[school.attr] || 0) + (cfg.attrs.schoolBonus ?? 3);
 
     // 流派熟练度：读该派跨局积累的等级，叠加主属性（每级 +MASTERY_ATTR_PER_LEVEL）
     const mastery = Album.loadStore().mastery || {};
@@ -862,6 +862,7 @@ export class Game {
     const playerName = (opts.name != null ? String(opts.name).trim().slice(0, 12) : '') || '';
 
     this.s = {
+      numericVersion: this.cfg.numericVersion,
       school,
       // 运行类型：tutorial=true 为入门卷教学局——强制开启教学提示、写独立存档槽、不提交跨局进度。
       tutorial: opts.tutorial === true,
@@ -929,7 +930,7 @@ export class Game {
     if (inheritedTalent && inheritedTalent.effect && inheritedTalent.effect.type === 'reincarnate') {
       this.grantTalent(inheritedTalent, { silent: true, startLevel: _inherit.talentLevel, inherited: true });
     }
-    this.push(`选择「${school.name}」，${R.ATTR_NAMES[school.attr]} +${cfg.attrs.schoolBonus ?? 30}`);
+    this.push(`选择「${school.name}」，${R.ATTR_NAMES[school.attr]} +${cfg.attrs.schoolBonus ?? 3}`);
     if (_masteryGain > 0) {
       this.push(`流派造诣·${Album.masteryLevelName(this.masteryLevel)}：${R.ATTR_NAMES[school.attr]} +${_masteryGain}`);
       if (this.ui && this.ui.toast) this.ui.toast(`◆ ${school.name}造诣 ${Album.masteryLevelName(this.masteryLevel)}，${R.ATTR_NAMES[school.attr]} +${_masteryGain}`);
@@ -1144,7 +1145,7 @@ export class Game {
 
   /* ------------------------------------------------------ 派生数据 */
   get lianUnlocked() {
-    return this.s.attrs.lian >= 80
+    return this.s.attrs.lian >= 8
       || this.s.passive.some(t => t.effect && t.effect.type === 'unlock_lian');
   }
 
@@ -1265,7 +1266,7 @@ export class Game {
     return gained;
   }
 
-  addSkyFragment(value = SCALE.progress, reason = '天象·雨中磨墨') {
+  addSkyFragment(value = SCALE.manuscript, reason = '天象·雨中磨墨') {
     const n = Math.max(0, clampInt(value, 0));
     if (!n) return 0;
     const a = this.ensureAbilityState();
@@ -1948,14 +1949,14 @@ export class Game {
       }
       return;
     }
-    this.addInspiration(this.cfg.inspiration.pingCell ?? 10, '平韵');
-    this.ui.toast(`${cell.name}——平韵格，灵感 +${this.cfg.inspiration.pingCell ?? 10}`);
+    this.addInspiration(this.cfg.inspiration.pingCell ?? 2, '平韵');
+    this.ui.toast(`${cell.name}——平韵格，灵感 +${this.cfg.inspiration.pingCell ?? 2}`);
   }
 
   async doZe(cell) {
-    const g = this.cfg.attrs.zeCellGain ?? 10;
+    const g = this.cfg.attrs.zeCellGain ?? 1;
     this.addAttrs({ bi: g, xue: g, si: g }, { reason: '仄韵格·基本功' });
-    const zc = this.cfg.inspiration.zeCellInsp ?? 10;
+    const zc = this.cfg.inspiration.zeCellInsp ?? 1;
     this.addInspiration(zc, '仄韵');
     this.ui.toast(`${cell.name}——仄韵格，基本功精进，灵感 +${zc}`);
   }
@@ -1986,7 +1987,7 @@ export class Game {
         s.quiz.right++;
         const key = ['shi', 'ci', 'lian'].includes(q.category) ? q.category : 'xue';
         const sky = this.skyActive('quiz_bonus');
-        const gain = (this.cfg.attrs.quizCorrectGain ?? 20) + (sky ? Number(sky.card.effect.value || 10) : 0);
+        const gain = (this.cfg.attrs.quizCorrectGain ?? 4) + (sky ? Number(sky.card.effect.value || 1) : 0);
         this.addAttrs({ [key]: gain }, { reason: '答对考题' });
         this.push(`答对「${q.id}」，${R.ATTR_NAMES[key]} +${gain}`);
         this.addInspiration(this.cfg.inspiration.quizCorrectInsp ?? 0, '答对'); // 核心技能↔燃料闭环
@@ -2455,7 +2456,7 @@ export class Game {
   /* ------------------------------------------------------ 名胜格 */
   // 停留时，可消耗灵感抽取三枚候选文心，或放弃本次抽签，承诺一条人生支线。
   async doScenic(cell) {
-    const cost = this.cfg.inspiration.scenicCost ?? 80;
+    const cost = this.cfg.inspiration.scenicCost ?? 8;
     const state = this.sideQuestState();
     const hasRoute = (this.sideQuestConfig().routes || []).length > 0;
     const action = await this.ui.askScenic(cell, cost, this.s.inspiration, { sideQuest: this.sideQuestJournal(), canStartSideQuest: hasRoute && !state.routeId });
@@ -2736,6 +2737,7 @@ export class Game {
         return pal ? (Number(pal.layers) || 0) : 0;
       })(),
       playerAttrs: this.effectiveAttrs(),
+      growthAttrs: { ...this.s.attrs },
       battleCoef: (this.cfg.attrs || {}).battleFormula || null,
       styleSystem: this.styleConfig(),
       lastStyle: (this.ensureAbilityState() || {}).lastStyle || null,
@@ -2757,14 +2759,14 @@ export class Game {
       // 供 UI 判词精确显示，避免文案与实际扣分不一致。
       projLoseInsp: (() => {
         const insp = this.cfg.inspiration || {};
-        const base = this.lateVal(insp.battleLoseExtra ?? -30, insp.battleLoseExtraLate);
+        const base = this.lateVal(insp.battleLoseExtra ?? -3, insp.battleLoseExtraLate);
         const mult = this.skyActive('battle_reward_mult') ? 2 : 1;
         return base * mult;
       })(),
       projLoseInspFor(style) {
         let loss = Number(this.projLoseInsp) || 0;
-        if (style === 'lian') loss = Math.min(0, loss + (Number((this.styleSystem.lian || {}).lossInspirationReduce) || 10));
-        if (g.strategyCanTrigger('guard')) loss = Math.min(0, loss + (Number((g.strategyPlans().guard || {}).lossReduce) || 20));
+        if (style === 'lian') loss = Math.min(0, loss + (Number((this.styleSystem.lian || {}).lossInspirationReduce) || 1));
+        if (g.strategyCanTrigger('guard')) loss = Math.min(0, loss + (Number((g.strategyPlans().guard || {}).lossReduce) || 2));
         return loss;
       },
 
@@ -2782,7 +2784,7 @@ export class Game {
       },
       styleScore(style) { return R.styleBaseScore(this.playerAttrs, style, this.battleCoef).total; },
       styleHint(style) {
-        if (style === 'lian' && !g.lianUnlocked) return '联力尚浅，先积淀对仗功底（需联力 ≥80）';
+        if (style === 'lian' && !g.lianUnlocked) return '联力尚浅，先积淀对仗功底（需联力 ≥8）';
         if (style === 'shi') return '一气：单骰高低分化；追加后恢复普通骰分';
         if (style === 'ci') return '叠阕：首骰保留本色；掷出 5、6 点即长调成阕，作品 +8%；首次追加少耗 1 灵感';
         return `对举：${this.lastStyle && this.lastStyle !== 'lian' ? '与上一场换体，作品 +8%' : '换体时得势；失利更能止损'}`;
@@ -2812,7 +2814,7 @@ export class Game {
         return this.extraDiceModifiers(extraCount).reduce((sum, mod) => sum + (Number(mod.value) || 0), 0);
       },
       extraDiceCost(style, extraIndex = 1, pips = []) {
-        const base = Number((g.cfg.inspiration || {}).extraDiceCost) || 50;
+        const base = Number((g.cfg.inspiration || {}).extraDiceCost) || 5;
         const activeEffects = this.usedActive.map(t => t.effect || {});
         // 兼容仍配置 firstExtraFree 的主动骰组文心；被动文心不改变续掷成本。
         if (extraIndex === 1 && activeEffects.some(ef => ef.type === 'dice_pattern' && ef.firstExtraFree)) return 0;
@@ -2839,13 +2841,13 @@ export class Game {
         }
         const a = g.ensureAbilityState();
         if (extraIndex === 1 && a.manuscript.polish > 0) discount += Number(g.abilityConfig().manuscript?.polishDiscount) || 0;
-        return Math.max(10, base - discount);
+        return Math.max(1, base - discount);
       },
       /** 当前战斗内主动文心成本；布局谋篇已移至地图移动骰，不在论战中显示。 */
       activeCost(id) {
         const t = this.activeTalents.find(x => x.id === id);
         if (!t) return 0;
-        return Math.max(10, Number(t.cost) || 10);
+        return Math.max(0, Number(t.cost ?? 1));
       },
       /** 使用论战主动文心；布局谋篇不属于论战阶段。 */
       useActive(id, plannedValue = 6) {
@@ -2876,6 +2878,7 @@ export class Game {
       },
       /** 创作时消耗灵感多掷一枚灵感骰：扣灵感并同步快照，供 UI 判断可否继续叠加 */
       spendInspiration(n, reason) {
+        if (!Number.isSafeInteger(n) || n < 0) return false;
         if (s.inspiration < n) return false;
         g.addInspiration(-n, reason);
         this.inspiration = s.inspiration;
@@ -3210,6 +3213,9 @@ export class Game {
         if (!this.synergyWhenMatches(ef, synCtx)) continue;
         const label = `羁绊·${sy.name}`;
         const triggerId = `synergy:${sy.id}:${ef.effectId || ef.type}`;
+        if (ef.reward && ((ef.type === 'style_pct' && (ef.style === style || ef.style === 'any')) || (ef.type === 'theme_pct' && ef.theme === session.theme))) {
+          talentTriggers.push({ id: triggerId, name: label, occurrence: 1, reward: ef.reward, resourceGroup: ef.resourceGroup });
+        }
         if (ef.type === 'dice_plus') dicePlus += Number(ef.value) || 0;
         else if (ef.type === 'crit' && this.rand() < (Number(ef.chance) || 0)) critMult = Math.max(critMult, Number(ef.mult) || 1);
         else if (ef.type === 'syn_pct') pct.push({ source: 'synergy', stackGroup: ef.stackGroup, stackMode: ef.stackMode, label, value: Number(ef.value) || 0 });
@@ -3229,7 +3235,7 @@ export class Game {
         else if (ef.type === 'style_switch_pct' && session.lastStyle && session.lastStyle !== style) {
           const value = Number(ef.value) || 0;
           if (value) pct.push({ source: 'synergy', stackGroup: ef.stackGroup, stackMode: ef.stackMode, label: `${label}·换体`, value });
-          talentTriggers.push({ id: triggerId, name: label, pattern: 'style_switch', occurrence: 1,
+          talentTriggers.push({ id: triggerId, name: label, pattern: 'style_switch', occurrence: 1, resourceGroup: ef.resourceGroup,
             reward: Number(ef.insight) > 0 ? { type: 'insight', value: Number(ef.insight), perMatch: false } : null });
         } else if (ef.type === 'manuscript_pct') {
           const pages = Number((this.ensureAbilityState().manuscript || {}).pages) || 0;
@@ -3272,17 +3278,16 @@ export class Game {
 
     // 同 stackGroup 可声明 max；默认加算。该归并点也让编辑器未来增加覆盖/取高无需改算分主流程。
     const grouped = new Map();
-    for (let i = pct.length - 1; i >= 0; i--) {
-      const x = pct[i];
-      if (x.source !== 'synergy' || !x.stackGroup || x.stackMode === 'add') continue;
-      // 同一旧 stackGroup 曾把不同触发机制互相取高而静默丢失；只在同一羁绊语义内归并。
-      const groupKey = x.stackGroup === 'synergy-resonance-v2' ? `${x.stackGroup}:${x.label}` : x.stackGroup;
-      const old = grouped.get(groupKey);
-      if (!old) grouped.set(groupKey, { index:i, value:x.value });
-      else if (x.stackMode === 'replace') pct.splice(i, 1);
-      else if (x.value > old.value) { pct.splice(old.index, 1); grouped.set(groupKey, { index:i, value:x.value }); }
-      else pct.splice(i, 1);
+    const groupKey = x => x.source === 'synergy' && x.stackGroup && x.stackMode !== 'add'
+      ? (x.stackGroup === 'synergy-resonance-v2' ? x.stackGroup + ':' + x.label : x.stackGroup) : null;
+    for (const x of pct) {
+      const key = groupKey(x);
+      if (!key) continue;
+      const previous = grouped.get(key);
+      if (!previous || x.stackMode === 'replace' || x.value >= previous.value) grouped.set(key, x);
     }
+    const selected = pct.filter(x => !groupKey(x) || grouped.get(groupKey(x)) === x);
+    pct.splice(0, pct.length, ...selected);
 
       // 成长型名篇的 score 修正与阶段章法一样属于公开、非交互的作品修正。
     const albumPct = this.albumScorePct(style, session.isPalace ? 'palace' : s.phase);
@@ -3300,7 +3305,7 @@ export class Game {
     const npcAttrs = session.npc.attrs;
     // 意图锁定：机制 NPC 用 createSession 锁定的意图文体/文风；普通 NPC 走旧规则
     const npcStyle = (session.intentLocked && session.intentLocked.style)
-      ? session.intentLocked.style : R.pickNpcStyle(npcAttrs, npcAttrs.lian >= 80, battleCoef);
+      ? session.intentLocked.style : R.pickNpcStyle(npcAttrs, npcAttrs.lian >= 8, battleCoef);
     const npcManner = (session.intentLocked && session.intentLocked.manner)
       ? session.intentLocked.manner : R.pickNpcManner(af.matrix, session.npcManners, session.theme);
     const npcAff = R.affinityValue(af.matrix, npcManner, session.theme);
@@ -3529,35 +3534,46 @@ export class Game {
     const phase = this.s.phase || 'child';
     const style = out.style;
     // 同一场的三功阈值与收入共用开战快照，避免先兑现研修再改变本场成稿档位。
-    const battleAttrs = { ...this.s.attrs };
+    const battleAttrs = session.growthAttrs || { ...this.s.attrs };
 
     // 通用心得：胜平负都能学习；每阶段首次使用某体再给轻量广度奖励。
-    let insight = out.result === 'lose' ? Number(growth.insightLose) || 20
-      : out.result === 'draw' ? Number(growth.insightDraw) || 30 : Number(growth.insightWin) || 30;
+    let insight = out.result === 'lose' ? Number(growth.insightLose) || 2
+      : out.result === 'draw' ? Number(growth.insightDraw) || 3 : Number(growth.insightWin) || 3;
     // 骰组文心的后续反馈与算分使用同一份 trigger 快照，避免结算阶段重新判断时
     // 因骰面变形、换体历史更新而出现“得分触发了、资源却没发”的割裂。
     const talentReward = { insight: 0, fragment: 0, page: 0, inspiration: 0 };
+    const rewardGroups = new Map();
     for (const tr of (out.talentTriggers || [])) {
       const reward = tr && tr.reward;
       if (!reward || !Object.prototype.hasOwnProperty.call(talentReward, reward.type)) continue;
       const times = reward.perMatch === false ? 1 : Math.max(1, Number(tr.occurrence) || 1);
-      talentReward[reward.type] += (Number(reward.value) || 0) * times;
+      const amount = (Number(reward.value) || 0) * times;
+      if (tr.resourceGroup) {
+        const key = reward.type + ':' + tr.resourceGroup;
+        const previous = rewardGroups.get(key) || 0;
+        talentReward[reward.type] += Math.max(0, amount - previous);
+        rewardGroups.set(key, Math.max(previous, amount));
+      } else talentReward[reward.type] += amount;
     }
     insight += talentReward.insight;
     for (const t of (session.passiveTalents || this.s.passive || [])) {
       const ef = t.effect || {};
       if (out.result === 'win' && ef.type === 'on_win_bonus' && (ef.style === style || ef.style === 'any')) insight += Number(ef.value) || 0;
-      if (out.result !== 'win' && ef.type === 'study_bonus') insight += Number(ef.value) || 0;
+      if (out.result !== 'win' && ef.type === 'study_bonus') {
+        insight += Number(ef.value) || 0;
+        this.s.nextBattlePct = Math.max(Number(this.s.nextBattlePct) || 0, Number(ef.nextBattlePct) || 0);
+      }
       if (out.result === 'draw' && ef.type === 'draw_bonus') insight += Number(ef.value) || 0;
     }
-    if (out.result === 'win') for (const sy of this.synergySet()) for (const ef of (sy.effects || [])) {
-      if (ef.type === 'on_win_bonus' && (ef.style === style || ef.style === 'any')) insight += Number(ef.value) || 0;
+    for (const sy of this.synergySet()) for (const ef of (sy.effects || [])) {
+      if (out.result !== 'win' && ef.type === 'study_bonus') { insight += Number(ef.value) || 0; this.s.nextBattlePct = Math.max(Number(this.s.nextBattlePct) || 0, Number(ef.nextBattlePct) || 0); }
+      if (out.result === 'win' && ef.type === 'on_win_bonus' && (ef.style === style || ef.style === 'any')) insight += Number(ef.value) || 0;
     }
-    if (out.upset) insight += Number(growth.insightUpset) || 10;
+    if (out.upset) insight += Number(growth.insightUpset) || 1;
     const used = a.phaseStyles[phase] || (a.phaseStyles[phase] = []);
     if (!used.includes(style)) {
       used.push(style);
-      insight += Number(growth.firstStylePerPhase) || 10;
+      insight += Number(growth.firstStylePerPhase) || 1;
     }
     if (style === 'shi' && out.result === 'win' && (out.dicePips || []).length === 1) {
       insight += Number((styleCfg.shi || {}).singleDieInsight) || 0;
@@ -3567,12 +3583,15 @@ export class Game {
       insight += Number(mech.differentStyleInsight) || 0;
       a.phaseStyles[`${phase}:bowen`] = ['done'];
     }
-    const insightGot = this.gainInsight(insight, '论战体悟');
+    const insightBefore = a.insight;
+    const insightCap = this.insightCap(battleAttrs);
+    a.insight = Math.min(insightCap, insightBefore + Math.max(0, Math.floor(insight)));
+    const insightGot = a.insight - insightBefore;
 
     // 实战熟练与联体追赶；3 进度默认转化为 1 点属性。
     let practice = 1;
     const creative = R.CREATIVE_KEYS.map(k => Number(battleAttrs[k]) || 0);
-    if (style === 'lian' && Math.max(...creative) - (Number(battleAttrs.lian) || 0) >= (Number((styleCfg.lian || {}).catchupGap) || 40)) {
+    if (style === 'lian' && Math.max(...creative) - (Number(battleAttrs.lian) || 0) >= (Number((styleCfg.lian || {}).catchupGap) || 4)) {
       practice += Number((styleCfg.lian || {}).practiceBonus) || 1;
     }
     a.familiarity[style] = (Number(a.familiarity[style]) || 0) + practice;
@@ -3601,15 +3620,15 @@ export class Game {
     const mc = ac.manuscript || {};
     let pages = out.result === 'win' ? ((out.dicePips || []).length === 1 ? 2 : 1) : out.result === 'draw' ? 1 : 0;
     a.manuscript.fragments += this.manuscriptFragmentRate(battleAttrs) + talentReward.fragment;
-    if (out.result === 'lose') a.manuscript.fragments += SCALE.progress;
-    const fragmentNeed = (Number(battleAttrs.bi) || 0) >= (Number(mc.fragmentFastBi) || 160) ? SCALE.progress : (Number(mc.fragmentNeed) || 2000);
+    if (out.result === 'lose') a.manuscript.fragments += SCALE.manuscript;
+    const fragmentNeed = (Number(battleAttrs.bi) || 0) >= (Number(mc.fragmentFastBi) || 16) ? SCALE.manuscript : (Number(mc.fragmentNeed) || 40);
     const made = Math.floor(a.manuscript.fragments / Math.max(1, fragmentNeed));
     if (made > 0) {
       pages += made;
       a.manuscript.fragments -= made * fragmentNeed;
     }
     const firstFinished = pages > 0 && !a.manuscript.bonusPagePhases[phase];
-    if (firstFinished && (Number(battleAttrs.bi) || 0) >= (Number(mc.bonusPageBi) || 240)) pages += 1;
+    if (firstFinished && (Number(battleAttrs.bi) || 0) >= (Number(mc.bonusPageBi) || 24)) pages += 1;
     if (firstFinished) a.manuscript.bonusPagePhases[phase] = true;
     pages += talentReward.page;
     const cizongFirstNoExtra = mech.type === 'cizong_bi' && (out.dicePips || []).length === 1 && !a.manuscript.schoolPagePhases[phase];
@@ -3618,19 +3637,23 @@ export class Game {
       a.manuscript.schoolPagePhases[phase] = true;
     }
     const beforePages = a.manuscript.pages;
-    a.manuscript.pages = Math.min(this.manuscriptCap(), beforePages + pages);
+    a.manuscript.pages = Math.min(this.manuscriptCap(battleAttrs), beforePages + pages);
     const pageGot = a.manuscript.pages - beforePages;
+    session.resourceReceipt = {
+      insight: { nominal: insight, actual: insightGot, overflow: insight - insightGot },
+      pages: { nominal: pages, actual: pageGot, overflow: pages - pageGot }
+    };
 
     // 文体的战后资源兑现。
     if (style === 'ci' && out.result === 'draw' && (out.dicePips || []).length > 1) {
-      this.addInspiration(Number((styleCfg.ci || {}).drawRefund) || 10, '词·铺陈回环');
+      this.addInspiration(Number((styleCfg.ci || {}).drawRefund) || 1, '词·铺陈回环');
     }
     if (talentReward.inspiration > 0) this.addInspiration(talentReward.inspiration, '文心·骰组回响');
     if (session.usedPolish && a.manuscript.polish > 0) a.manuscript.polish -= 1;
     a.lastStyle = style;
     const rewardEcho = (talentReward.insight || talentReward.fragment || talentReward.page || talentReward.inspiration)
       ? `；文心回响：心得 +${talentReward.insight}、成稿进度 +${talentReward.fragment}、稿页 +${talentReward.page}、灵感 +${talentReward.inspiration}` : '';
-    this.push(`战后所得：心得 +${insightGot}，稿页 +${pageGot}，${R.STYLE_NAMES[style]}熟练 +${practice}，研修 +${studyGain}/位，成稿进度 +${this.manuscriptFragmentRate() + talentReward.fragment}${rewardEcho}`);
+    this.push(`战后所得：心得 +${insightGot}（应得 ${insight}，溢出 ${insight - insightGot}），稿页 +${pageGot}（应得 ${pages}，溢出 ${pages - pageGot}），${R.STYLE_NAMES[style]}熟练 +${practice}，研修 +${studyGain}/位，成稿进度 +${this.manuscriptFragmentRate(battleAttrs) + talentReward.fragment}${rewardEcho}`);
   }
 
   /** 应用战斗奖惩（UI 播完算分动画后调用） */
@@ -3745,7 +3768,7 @@ export class Game {
       }
       // 应势「避风收笔」：放弃本卡奖惩翻倍（skyActive 已生效），本窗口首次败北少损 2 点灵感
       const skyGuardChoice = this.consumeSkyKey('battle_guard');
-      if (skyGuardChoice && loss < 0) loss = Math.min(0, loss + (Number(skyGuardChoice.effect && skyGuardChoice.effect.value) || 20));
+      if (skyGuardChoice && loss < 0) loss = Math.min(0, loss + (Number(skyGuardChoice.effect && skyGuardChoice.effect.value) || 2));
       this.addInspiration(loss, '败北');
       /* 败中有得（Round 3 F1 降方差的关键）：
        * Round 2 的战斗是纯正反馈——胜者得属性、败者一无所获。于是「胜→变强→再胜」
@@ -3787,10 +3810,10 @@ export class Game {
           const phase = oc.phase || s.phase || 'child';
           if (ob.lossAidUsedByPhase[phase] !== true) {
             // 精确回补灵感 20：直接 addInspiration，不走任何正向倍率链（首败返还不受文心/流派放大）。
-            this.addInspiration(20, '师友点拨');
+            this.addInspiration(2, '师友点拨');
             ob.lossAidUsedByPhase[phase] = true;
-            session._lossAidGiven = 20;
-            this.push(`师友点拨：替你补回灵感 20，下一场先看对手公开破绽再应战`);
+            session._lossAidGiven = 2;
+            this.push(`师友点拨：替你补回灵感 2，下一场先看对手公开破绽再应战`);
           }
         }
       }
@@ -3806,17 +3829,6 @@ export class Game {
       } else {
         s.affStreak = { manner: m, n: 0 };
       }
-    }
-
-    // 文心「退笔成冢」：每场结算后灵感托底至下限（仅补足，不削弱惩罚，避免封笔螺旋）
-    let floor = 0;
-    for (const t of battlePassives) {
-      const ef = t.effect || {};
-      if (ef.type === 'insp_floor') floor = Math.max(floor, Number(ef.value) || 0);
-    }
-    if (floor > 0 && s.inspiration < floor) {
-      s.inspiration = Math.min(this.s.inspirationMax, floor);
-      this.push(`文心托底：「${session.npc.fullName || session.npc.name}」一役后灵感补足至 ${floor}`);
     }
 
     // ---- NPC 三机制：跨场状态维护 + 战后消费型招牌/破绽结算 ----
@@ -3888,16 +3900,27 @@ export class Game {
 
     // 限次战后恢复放在所有战斗/NPC机制资源结算之后，防止先托底再被文债扣穿。
     // 每局次数写入 talentState；灵感已满时不消耗触发次数。
+    const recoverySnapshot = s.inspiration;
+    const recoveries = new Map();
+    const candidates = [...battlePassives, ...this.synergySet().flatMap(sy => (sy.effects || []).map(ef => ({ id: `synergy:${sy.id}`, name: `羁绊·${sy.name}`, effect: ef })))];
+    for (const t of candidates) {
+      const ef = t.effect || {};
+      const used = Number(s.talentState?.triggers?.[t.id]) || 0;
+      if (ef.type !== 'insp_battle_recover' || recoverySnapshot > Number(ef.threshold || 0) || (ef.maxTriggers && used >= ef.maxTriggers)) continue;
+      const key = ef.resourceGroup || t.id;
+      if (!recoveries.has(key) || Number(ef.value) > Number(recoveries.get(key).effect.value)) recoveries.set(key, t);
+    }
+    for (const t of recoveries.values()) this.triggerTalentLimited(t, t.name);
+
+    // 文心「退笔成冢」：每场结算后灵感托底至下限（仅补足，不削弱惩罚，避免封笔螺旋）
+    let floor = 0;
     for (const t of battlePassives) {
       const ef = t.effect || {};
-      if (ef.type === 'insp_battle_recover' && s.inspiration <= (Number(ef.threshold) || 0)) {
-        this.triggerTalentLimited(t, `文心·${t.name}`);
-      }
+      if (ef.type === 'insp_floor') floor = Math.max(floor, Number(ef.value) || 0);
     }
-    for (const sy of this.synergySet()) for (const ef of (sy.effects || [])) {
-      if (ef.type === 'insp_battle_recover' && s.inspiration <= (Number(ef.threshold) || 0)) {
-        this.triggerTalentLimited({ id: `synergy:${sy.id}`, name: `羁绊·${sy.name}`, effect: ef }, `羁绊·${sy.name}`);
-      }
+    if (floor > 0 && s.inspiration < floor) {
+      s.inspiration = Math.min(this.s.inspirationMax, floor);
+      this.push(`文心托底：「${session.npc.fullName || session.npc.name}」一役后灵感补足至 ${floor}`);
     }
 
     if (schoolMech.type === 'cizong_bi' && Number(schoolMech.lightEventEvery) > 0 && out.result !== 'lose') await this.runCizongLightEvent();
@@ -4335,4 +4358,3 @@ function pickTopic(theme, af, rand) {
   const arr = TOPIC_WORDS[theme] || [af.themeNames[theme] || theme];
   return arr[Math.floor(rand() * arr.length)];
 }
-

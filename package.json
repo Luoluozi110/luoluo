@@ -8,10 +8,12 @@
     "editor:open": "node scripts/start-editor-bridge.mjs",
     "sync:question-seed": "node scripts/sync-editor-question-seed.mjs",
     "validate:config": "node scripts/validate-config.mjs",
-    "test": "npm run test:playable && npm run test:editors && npm run test:workspace && npm run test:multiplayer",
+    "test": "node --test tests/*.test.mjs",
     "test:playable": "node scripts/run-test-suite.mjs feihuaqi-playable tests/*.test.mjs",
     "test:editors": "node scripts/run-test-suite.mjs feihua-editors tests/*.mjs",
     "test:workspace": "node scripts/run-test-suite.mjs . tests/*.test.mjs",
-    "test:multiplayer": "node scripts/run-test-suite.mjs feihuaqi-multiplayer server/test-smoke.mjs"
+    "test:multiplayer": "node scripts/run-test-suite.mjs feihuaqi-multiplayer server/test-smoke.mjs",
+    "test:release": "node --test tests/small-integer-v3.test.mjs tests/editor-numeric-v2.test.mjs tests/mastery.test.mjs",
+    "sync:editor": "node scripts/sync-small-integer-editor.mjs"
   }
 }

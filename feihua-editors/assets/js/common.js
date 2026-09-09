@@ -91,7 +91,7 @@
 
   /* ---------------- 基础工具 ---------------- */
   const isObj = value => !!value && typeof value === "object" && !Array.isArray(value);
-  const NUMERIC_VERSION = 2;
+  const NUMERIC_VERSION = 3;
   const BP = 10000;
   const EFFECT_RATE_KEYS = new Set([
     'cap', 'chance', 'fraction', 'mult', 'penalty', 'ratio', 'retention',
@@ -102,7 +102,7 @@
     'midRate', 'highRate'
   ]);
   const EFFECT_RATE_TYPES = new Set([
-    'attr_pct', 'battle_history_pct', 'comeback', 'copy_affinity', 'crit', 'dice_commitment',
+    'armory_pct', 'attr_pct', 'battle_history_pct', 'comeback', 'copy_affinity', 'crit', 'dice_commitment',
     'dice_pattern', 'dice_transform', 'extra_dice_chain', 'extra_dice_pct', 'lucky_six',
     'manuscript_pct', 'next_battle_pct', 'palace_pct', 'restraint_pct', 'seal_signature',
     'streak_mult', 'streak_pct', 'style_pct', 'style_switch_pct', 'syn_pct', 'theme_pct',
@@ -205,7 +205,8 @@
     return project;
   }
   function numericProjectToEditor(project) {
-    return Number(project && project.numericVersion) >= NUMERIC_VERSION ? numericProjectTransform(project, false) : JSON.parse(JSON.stringify(project || {}));
+    if (Number(project && project.numericVersion) !== NUMERIC_VERSION) throw new Error('工程数值版本不兼容：请拉取小整数 v2.1 云端工程，旧工程请保留为备份');
+    return numericProjectTransform(project, false);
   }
   function numericProjectToStorage(project) { return numericProjectTransform(project, true); }
 
@@ -1014,6 +1015,7 @@ async function fetchCloudText(s, rawUrl) {
     const project = {
       _type: "feihua-content",
       numericVersion: NUMERIC_VERSION,
+      ruleSetId: "small-integer-v2.1",
       // 拉取以云端为唯一来源；不得让浏览器里更高的旧版本游标篡改云端版本。
       _version: exactVersion ? Math.max(CONTENT_VERSION, Number(version) || CONTENT_VERSION) : effectiveProjectVersion(version),
       questions: global.QB ? global.QB.exportObj() : [],
