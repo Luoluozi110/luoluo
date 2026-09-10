@@ -238,6 +238,7 @@ export class Game {
       insightCap: this.insightCap(),
       nextStudySlotIn: nextSlot == null ? 0 : Math.max(0, nextSlot - xue),
       nextInsightCapIn: Math.max(0, nextCap - xue),
+      strategyProgressNeed: SCALE.strategy,
       strategyIncome: this.strategyIncome(),
       strategyCap: this.strategyCap(),
       strategyRemainder: Number(a && a.strategy && a.strategy.chargeRemainder) || 0,

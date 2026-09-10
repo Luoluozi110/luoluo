@@ -17,6 +17,34 @@ function firstSentence(text) {
   return i >= 0 ? t.slice(0, i + 1) : t;
 }
 
+/** Input effects use the normalized runtime units supplied by config.js. */
+export function albumEffectSummary(effect) {
+  const styles = { shi: '诗', ci: '词', lian: '联' };
+  const phases = { child: '童生', scholar: '秀才', juren: '举人', jinshi: '进士', palace: '殿试', secret: '秘境' };
+  const conditions = [{ start: '开局时', score: '论战计分时', battle: '每场论战结算时', phase: '进入新阶段时', event: '奇遇结算时' }[effect.trigger] || effect.trigger];
+  if (effect.phase) conditions.push(`仅${phases[effect.phase] || effect.phase}阶段`);
+  if (effect.style) conditions.push(`使用${styles[effect.style] || effect.style}体`);
+  if (effect.result) conditions.push({ win: '获胜', draw: '平局', lose: '落败' }[effect.result] || effect.result);
+  const value = Number(effect.value) || 0;
+  const reward = effect.type === 'pct' ? `作品加成 +${Number((value * 100).toFixed(2))}%`
+    : `${{ inspiration: '灵感', inspirationMax: '灵感上限', insight: '心得', manuscript: '稿页', strategy: '构思', studySlot: '研修位', techniqueXp: '技法经验' }[effect.type] || effect.type} +${value}`;
+  const note = ['inspiration', 'insight', 'manuscript', 'strategy'].includes(effect.type) ? (effect.type === 'inspiration' ? '（基础收益，实际受流派与上限影响）' : '（受资源上限限制）')
+    : effect.type === 'studySlot' ? '（受研修位上限限制）' : effect.type === 'pct' ? '（不是最终总分同比增加）'
+    : effect.type === 'techniqueXp' ? '（用于技法进展，不直接增加战斗得分）' : '';
+  return `${conditions.filter(Boolean).join(' · ')}：${reward}${note}`;
+}
+
+export function albumBaseReward(card) {
+  const r = card.reward || {};
+  const attrs = { shi:'诗力', ci:'词力', lian:'联力', xue:'学力', si:'思力', bi:'笔力' };
+  if (r.type === 'attr') return `开局${attrs[r.attr] || r.attr} +${Number(r.value) || 0}`;
+  if (r.type === 'inspiration') return `开局灵感 +${Number(r.value) || 0}（不超过灵感上限）`;
+  if (r.type === 'inspirationMax') return `本局灵感上限 +${Number(r.value) || 0}`;
+  if (r.type === 'talent') return `开局获得文心「${r.name || r.talent}」${r.desc ? `：${r.desc}` : ''}`;
+  if (r.type === 'title') return `获得本局称号「${r.title}」（称号本身不提供属性加成）`;
+  return card.rewardDesc || '无基础数值奖励';
+}
+
 /** 六维评语：按最高维给一句 */
 const TOP_COMMENT = {
   wencai: '文采斐然，落笔生花',
@@ -68,7 +96,7 @@ export class AlbumUI {
           <button class="btn btn-ink btn-sm panel-back" data-back>返回改选流派</button>
           <div class="title-ink" style="font-size:32px;text-align:center">裝 配 名 篇</div>
           <div class="subtitle" style="text-align:center;margin-top:4px">
-            流派「${esc(o.schoolName || '—')}」已定　·　最多携带 ${Album.LOADOUT_MAX} 张传世名篇；名篇可成长、定路线，效果在对应事件中生效
+            流派「${esc(o.schoolName || '—')}」已定　·　最多携带 ${Album.LOADOUT_MAX} 张传世名篇；携带后才生效：基础奖励开局获得，分支效果按条件触发
           </div>
           <div class="lo-tip">已解锁 ${unlockedCount} / ${this.cards.length} 篇；未解锁者仅存剪影，达成条件后自现真容。</div>
         </div>
@@ -91,7 +119,7 @@ export class AlbumUI {
 
     this.loadoutEl.querySelectorAll('.album-card:not(.locked)').forEach(b =>
       b.addEventListener('click', e => {
-        if (e.target.closest('[data-branch]')) return;
+        if (e.target.closest('[data-branch], details, summary')) return;
         this._toggle(b.dataset.id, store);
       }));
     this.loadoutEl.querySelectorAll('[data-branch]').forEach(b =>
@@ -130,6 +158,7 @@ export class AlbumUI {
     const card = this.cards.find(c => c.id === id);
     const result = Album.chooseAlbumBranch(Album.loadStore(), card, branchId);
     if (!result.ok) { alert(result.reason); return; }
+    if (!window.confirm(`选择「${result.branch.name}」后，该名篇路线将跨局锁定，无法切换。确定选择？`)) return;
     Album.saveStore(result.store);
     this._renderLoadout(Album.loadStore());
     if (this.albumEl.classList.contains('on')) this._renderAlbum();
@@ -299,17 +328,22 @@ export class AlbumUI {
     const selectedBranch = branches.find(b => b.id === growth.branch);
     const branchTitle = growth.branchLocked
       ? `已定「${esc(selectedBranch?.name || growth.branch)}」${selectedBranch?.desc ? `：${esc(selectedBranch.desc)}` : ''}`
-      : '请选择一条';
-    const branchHtml = branches.length ? `<div class="ac-branches"><div class="ac-branch-title">成长路线：${branchTitle}</div>${branches.map(b => {
+      : '未选择（仅基础奖励生效）';
+    const branchHtml = branches.length ? `<div class="ac-branches"><p class="ac-route-rule">两条路线只选一条，选定后跨局锁定，无法切换。达到等级后，对应效果累计启用。</p><div class="ac-branch-title">成长路线：${branchTitle}</div>${branches.map(b => {
       const need = Number(b.minLevel) || 1;
       const active = growth.branch === b.id;
-      const disabled = growth.level < need || growth.branchLocked && !active;
+      const disabled = !opts.pick || growth.level < need || growth.branchLocked;
       return `<div class="ac-branch-item">
-        <button type="button" class="ac-branch ${active ? 'on' : ''}" data-branch="${esc(b.id)}" data-id="${esc(card.id)}" ${disabled ? 'disabled' : ''}>${esc(b.name)}${need > 1 ? ` · Lv${need}` : ''}</button>
-        ${b.desc ? `<div class="ac-branch-desc">${esc(b.desc)}</div>` : ''}
+        <button type="button" class="ac-branch ${active ? 'on' : ''}" data-branch="${esc(b.id)}" data-id="${esc(card.id)}" ${disabled ? 'disabled' : ''}>${esc(b.name)} · ${active ? '已选定' : growth.branchLocked ? '未选路线' : !opts.pick ? '装配时选择' : growth.level < need ? `需 Lv${need}` : '选择此路线'}</button>
+        <ol class="ac-effects">${(b.effects || []).map(effect => {
+          const level = Math.max(need, Number(effect.minLevel) || 1);
+          const status = growth.branchLocked && !active ? '未选路线，不生效' : growth.level < level ? `需 Lv${level}` : active ? '下局携带时可用' : '选择此路线后可用';
+          return `<li><div class="ac-effect-level">Lv${level} · ${status}</div><div>${esc(albumEffectSummary(effect))}</div></li>`;
+        }).join('')}</ol>
+        ${b.desc ? `<details><summary>路线意境</summary><div class="ac-branch-desc">${esc(b.desc)}</div></details>` : ''}
       </div>`;
     }).join('')}</div>` : '';
-    const growthHtml = `<div class="ac-growth">Lv${growth.level} ${esc(Album.albumLevelName(growth.level))} · XP ${growth.xp}${nextXp != null ? ` / ${nextXp}` : ' · 已满级'}</div>`;
+    const growthHtml = `<div class="ac-growth">Lv${growth.level} ${esc(Album.albumLevelName(growth.level))} · XP ${growth.xp}${nextXp != null ? ` / ${nextXp} · 再获 ${nextXp - growth.xp} 经验升级` : ' · 已满级'}</div><details class="ac-growth-help"><summary>如何成长与生效</summary><p>携带本篇完成一场非教学论战：胜 ${Album.albumXpGain(card,{result:'win'})}／平 ${Album.albumXpGain(card,{result:'draw'})}／负 ${Album.albumXpGain(card,{result:'lose'})} 经验${card.growth?.style ? `；使用${{shi:'诗',ci:'词',lian:'联'}[card.growth.style]}体另加 ${Number(card.growth.styleXp) || 1}` : ''}。经验跨局保留；本局效果按开局等级与路线确定，升级效果在下局携带时生效。</p></details>`;
 
     if (!unlocked) {
       return `<div class="album-card locked" data-id="${card.id}">
@@ -323,7 +357,7 @@ export class AlbumUI {
       ${on ? '<span class="ac-flag">已装配</span>' : ''}
       <div class="ac-name">${esc(card.name)}</div>
       ${growthHtml}
-      <div class="ac-reward">${esc(card.rewardDesc || '（无数值加成）')}</div>
+      <div class="ac-reward"><b>携带基础奖励：</b>${esc(albumBaseReward(card))}</div>
       <div class="ac-text">${esc(firstSentence(card.text))}</div>
       <div class="ac-cond done">${esc(Album.conditionText(card, store.stats))} ✓</div>
       ${branchHtml}

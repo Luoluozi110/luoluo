@@ -1,0 +1,252 @@
+{
+  "baseline": "Follow-up to e18230e: strategy progress and album explanations",
+  "mode": "Local production components with simulated midgame state; cloud JSON served from checkout",
+  "results": [
+    {
+      "width": 1440,
+      "height": 900,
+      "hud": {
+        "text": "三功修习\n心得 6/9\n构思 0/4\n稿页 3/4\n构思进度 4/10\n章法：留白养气",
+        "width": 222,
+        "height": 151,
+        "font": "13px",
+        "children": [
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          }
+        ]
+      },
+      "modal": {
+        "height": 790,
+        "scrollHeight": 803,
+        "closeVisible": true
+      }
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "hud": {
+        "text": "三功修习\n心得 6/9\n构思 0/4\n稿页 3/4\n构思进度 4/10\n章法：留白养气",
+        "width": 222,
+        "height": 151,
+        "font": "13px",
+        "children": [
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          }
+        ]
+      },
+      "modal": {
+        "height": 632,
+        "scrollHeight": 645,
+        "closeVisible": true
+      }
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "hud": {
+        "text": "三功修习\n心得 6/9\n构思 0/4\n稿页 3/4\n构思进度 4/10\n章法：留白养气",
+        "width": 222,
+        "height": 151,
+        "font": "13px",
+        "children": [
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          }
+        ]
+      },
+      "modal": {
+        "height": 899,
+        "scrollHeight": 912,
+        "closeVisible": true
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "hud": {
+        "text": "三功修习\n心得 6/9\n构思 0/4\n稿页 3/4\n构思进度 4/10\n章法：留白养气",
+        "width": 126,
+        "height": 151,
+        "font": "13px",
+        "children": [
+          {
+            "width": 106,
+            "height": 19.5
+          },
+          {
+            "width": 106,
+            "height": 19.5
+          },
+          {
+            "width": 106,
+            "height": 19.5
+          },
+          {
+            "width": 106,
+            "height": 19.5
+          },
+          {
+            "width": 106,
+            "height": 19.5
+          },
+          {
+            "width": 106,
+            "height": 19.5
+          }
+        ]
+      },
+      "modal": {
+        "height": 818,
+        "scrollHeight": 829,
+        "closeVisible": true
+      }
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "hud": {
+        "text": "三功修习\n心得 6/9\n构思 0/4\n稿页 3/4\n构思进度 4/10\n章法：留白养气",
+        "width": 222,
+        "height": 151,
+        "font": "13px",
+        "children": [
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          }
+        ]
+      },
+      "modal": {
+        "height": 370,
+        "scrollHeight": 383,
+        "closeVisible": true
+      }
+    },
+    {
+      "width": 720,
+      "height": 450,
+      "hud": {
+        "text": "三功修习\n心得 6/9\n构思 0/4\n稿页 3/4\n构思进度 4/10\n章法：留白养气",
+        "width": 222,
+        "height": 151,
+        "font": "13px",
+        "children": [
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          },
+          {
+            "width": 202,
+            "height": 19.5
+          }
+        ]
+      },
+      "modal": {
+        "height": 430,
+        "scrollHeight": 443,
+        "closeVisible": true
+      }
+    }
+  ]
+}

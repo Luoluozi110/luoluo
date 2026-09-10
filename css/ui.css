@@ -1916,3 +1916,22 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
 .dice-summary { font-size:14px; color:var(--mo-2); }
 .dice-help { font-size:15px; line-height:1.65; margin:8px 2px; color:var(--mo-2); }
 @media(max-width:420px) { .bt-panel .dice-actions { grid-template-columns:1fr; } }
+.strategy-progress { display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; font-size:13px; margin-top:8px; }
+.strategy-progress progress { width:90px; height:12px; accent-color:#476b69; }
+.strategy-progress > span:last-child { flex-basis:100%; }
+.ac-effects { margin:8px 0; padding-left:20px; text-align:left; font-size:14px; line-height:1.65; }
+.ac-effects li { padding:6px 0; border-bottom:1px solid rgba(90,74,52,.15); }
+.ac-effect-level { font-weight:bold; color:#704336; }
+.ac-route-rule,.ac-growth-help { font-size:13px; line-height:1.65; text-align:left; }
+.ac-growth-help summary,.ac-branch-item summary { min-height:32px; padding:6px 0; cursor:pointer; }
+.ac-branch { white-space:normal; line-height:1.5; min-height:44px; }
+.ac-branch:disabled { opacity:.8; }
+@media(max-width:600px) { .ac-effects { font-size:15px; } }
+.ac-branch,.ac-growth,.ac-branch-title { font-size:14px; }
+.ac-branch-desc { font-size:13px; }
+#loadout-screen .album-grid, #album-screen .album-grid { grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); align-items:start; }
+.lo-head .panel-back, .ab-head .panel-back { position:static; display:block; margin:0 0 10px auto; }
+@media(max-width:600px) {
+ #loadout-screen .album-grid, #album-screen .album-grid { grid-template-columns:1fr; }
+ .lo-head .subtitle { font-size:14px; line-height:1.6; }
+}
