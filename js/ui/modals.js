@@ -186,6 +186,27 @@ export class Modals {
     }
     return ov;
   }
+  enableDismissibleDialog(ov) {
+    const previous = document.activeElement;
+    ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+    ov.setAttribute('aria-label', ov.querySelector('h2, h3')?.textContent || '详情');
+    const controls = () => [...ov.querySelectorAll('button:not(:disabled), summary, [tabindex="0"]')].filter(e => e.getClientRects().length);
+    const onKey = e => {
+      if (this.layer.lastElementChild !== ov) return;
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); this.close(ov); }
+      if (e.key === 'Tab') {
+        const list = controls(), i = list.indexOf(document.activeElement);
+        if (!list.length) return;
+        if (i < 0 || (e.shiftKey && i === 0) || (!e.shiftKey && i === list.length - 1)) {
+          e.preventDefault(); list[e.shiftKey ? list.length - 1 : 0].focus();
+        }
+      }
+    };
+    ov.addEventListener('keydown', onKey);
+    ov._restoreFocus = () => { if (previous?.isConnected) previous.focus({ preventScroll: true }); };
+    controls()[0]?.focus({ preventScroll: true });
+  }
+
   close(ov) {
     if (!ov) return;
     if (ov._removeViewportListener) ov._removeViewportListener();
@@ -194,6 +215,7 @@ export class Modals {
     setTimeout(() => {
       if (ov._removeViewportListener) ov._removeViewportListener();
       ov.remove();
+      ov._restoreFocus?.();
     }, 210);
   }
 
@@ -314,7 +336,13 @@ export class Modals {
   showAbilityPanel(game) {
     const ov = this.open(`<div class="modal scroll-frame paper ability-panel" style="width:min(680px,calc(100vw - 24px))"></div>`);
     const box = ov.querySelector('.ability-panel');
+    let section = 'study';
+    const positions = {};
     const render = (notice = '') => {
+      const active = document.activeElement;
+      const focusKey = active && box.contains(active) ? ['focus','strategy-plan','insight','manuscript','section','close'].find(k => active.hasAttribute(`data-${k}`)) : null;
+      const focusValue = focusKey ? active.getAttribute(`data-${focusKey}`) : '';
+      const scroll = box.querySelector('.ability-body')?.scrollTop || 0;
       const a = game.ensureAbilityState();
       const mc = game.abilityConfig().manuscript || {};
       const tc = game.techniqueConfig();
@@ -338,28 +366,32 @@ export class Modals {
         <hr class="hr-ink"/><h3>流派·问心转化</h3>
         <div class="dianggu"><b>${esc(conversion.rule.label || '问心转化')}</b>：${esc(conversion.rule.desc || '以流派专属资源叩问文心。')}<br/>消耗 ${conversion.resourceName} ${conversion.cost}，${Math.round(conversion.chance * 100)}% 概率获得一次三选一机会；本局 ${conversion.record.attempts}/${conversion.maxAttempts} 次，本阶段 ${conversion.phaseUsed}/${conversion.phaseLimit} 次。</div>
         <div class="opt-list"><button class="opt" data-talent-conversion ${conversion.available ? '' : 'disabled'}><b>${esc(conversion.rule.label || '问心转化')}</b><span>${conversion.available ? `投入 ${conversion.resourceName} ${conversion.cost}，叩问文心` : esc(conversion.reason)}</span></button></div>` : '';
-      box.innerHTML = `<div class="mtitle"><h2>三功修习</h2><span class="mtag">成长 · 调度 · 沉淀</span></div>
-        ${notice ? `<div class="analysis">${esc(notice)}</div>` : ''}
-        <div class="dianggu"><b>心得 ${a.insight}/${fb.insightCap}</b>　构思 ${a.strategy.charges}/${fb.strategyCap}　稿页 ${a.manuscript.pages}/${fb.manuscriptCap}　成稿进度 ${fmt(a.manuscript.fragments)}</div>
-        <div class="dianggu" style="color:var(--mo-3)">学力管研修：安排属性成长方向，下一阶段生效。思力管章法：储存构思，按条件自动发动。笔力管稿本：积累稿页与残页，用于润色、刊行和定卷。</div>
-        <div class="dianggu" style="color:var(--mo-3)">学力：研修进度 +${fmt(fb.studyRate)}/场、${fb.studySlots} 个研修位　思力：构思进度 +${fmt(fb.strategyIncome)}/阶段、余量 ${fmt(fb.strategyRemainder)}　笔力：成稿进度 +${fmt(fb.manuscriptFragmentRate)}/战</div>
-        <hr class="hr-ink"/><h3>思力·行文章法</h3>
-        <div class="dianggu">当前：<b>${esc(currentPlan.name || '未定章法')}</b>。章法满足条件时自动发动，不中断回合；此处选择将在下阶段生效。</div>
-        <div class="opt-list">${Object.entries(plans).map(([id, p]) => `<button class="opt" data-strategy-plan="${id}"><b>${a.strategy.nextPlan === id ? '✓ ' : ''}${esc(p.name || id)}</b><span>${esc(p.desc || '')}${a.strategy.plan === id ? ' · 当前生效' : ''}</span></button>`).join('')}</div>
-        <h3>学力·研修位 ${a.study.focus.length}/${game.studySlots()}</h3>
-        <div class="dianggu">当前研修：${a.study.focus.map(k => attrNames[k]).join('、')}。调整只在下阶段生效，既有进度会原样保留。</div>
-        <div class="opt-list">${attrs.map(k => `<button class="opt" data-focus="${k}"><b>${nextFocus.has(k) ? '✓ ' : ''}${attrNames[k]}</b><span>进度 ${Number(a.study.progress[k]) || 0}/${Number((game.abilityConfig().study || {}).progressNeed) || 75}${focus.has(k) ? ' · 当前在修' : ''}</span></button>`).join('')}</div>
-        <h3>分配心得</h3><div class="opt-list">${attrs.map(k => `<button class="opt" data-insight="${k}" ${a.insight < game.insightCost(k) ? 'disabled' : ''}><b>${attrNames[k]} +1</b><span>消耗 ${game.insightCost(k)} 心得</span></button>`).join('')}</div>
-        ${conversionBlock}
-        ${inkHighlightsBlock}
-        ${latestMarks.length ? `<h3>墨痕·最近修习</h3><div class="dianggu">${latestMarks.map(mark => `「${esc(mark.optionText || mark.questionId)}」→ ${esc(attrNames[mark.target] || mark.target)}${mark.inkTags && mark.inkTags.length ? ` · ${esc(mark.inkTags.join('、'))}` : ''}`).join('<br/>')}</div>` : ''}
-        <h3>笔力·稿本</h3><div class="opt-list">
-          <button class="opt" data-manuscript="polish"><b>润色</b><span>下一场首次追加少耗 ${Number(mc.polishDiscount) || 2} 灵感</span></button>
-          <button class="opt" data-manuscript="publish"><b>刊行</b><span>恢复 ${Number(mc.publishInspiration) || 4} 灵感</span></button>
-          <button class="opt" data-manuscript="volume"><b>定卷</b><span>终局文采 +${Number(mc.volumeScore) || 60}（${a.manuscript.volumes}/${Number(mc.volumeCap) || 2}）</span></button>
-        </div>
-        <h3>技法筹备（方案 C）</h3><div class="dianggu">${['shi','ci','lian'].map(k => `${attrNames[k]}技法经验 ${Number(a.technique.xp[k]) || 0} · 阶 ${Number(a.technique.level[k]) || 0}/${(tc.thresholds || []).length}`).join('　')}</div>
-        <div class="btn-row"><button class="btn btn-primary" data-close>收卷</button></div>`;
+      const names = { study: '学力·成长', strategy: '思力·章法', manuscript: '笔力·稿本', records: '流派与记录' };
+      const manuscriptCards = ['polish', 'publish', 'volume'].map(action => {
+        const q = game.manuscriptQuote(action);
+        const name = { polish: '润色', publish: '刊行', volume: '定卷' }[action];
+        const effect = action === 'polish' ? `每份润色抵扣一场的首次追加骰，减免 ${Number(mc.polishDiscount) || 2} 灵感；未使用则保留。已备润色 ${a.manuscript.polish} 次。`
+          : action === 'publish' ? `灵感 ${game.s.inspiration} → ${game.s.inspiration + q.recovery}（基础恢复 ${Number(mc.publishInspiration) || 4}，预览已计入流派与上限）`
+          : `终局文采 +${Number(mc.volumeScore) || 60}；本局已定卷 ${a.manuscript.volumes}/${Number(mc.volumeCap) || 2}${Number(game.s.attrs.bi) >= (Number(mc.volumeRefundBi) || 32) ? `；完成后返还 ${Number(mc.volumeRefundPages) || 1} 稿页` : ''}`;
+        return `<div class="ability-action"><h3>${name}</h3><p>${effect}</p><button class="btn btn-primary" data-manuscript="${action}" ${q.ok ? '' : 'disabled'}>${name} · ${q.cost} 稿页</button>${q.reason ? `<p class="ability-reason">${esc(q.reason)}</p>` : ''}</div>`;
+      }).join('');
+      box.innerHTML = `<header class="ability-header"><div class="mtitle"><h2>三功修习</h2><button class="btn btn-ink" data-close>关闭</button></div>
+        <div class="ability-resources"><span>心得 <b>${a.insight}/${fb.insightCap}</b></span><span>构思 <b>${a.strategy.charges}/${fb.strategyCap}</b></span><span>稿页 <b>${a.manuscript.pages}/${fb.manuscriptCap}</b></span></div>
+        <nav class="ability-tabs" aria-label="修习分区">${Object.entries(names).map(([id, name]) => `<button data-section="${id}" aria-pressed="${section === id}">${name}</button>`).join('')}</nav><div class="ability-notice" role="status">${esc(notice)}</div></header>
+        <div class="ability-body" tabindex="-1">
+        ${section === 'study' ? `<h3>研修安排</h3><p><b>本阶段在修：</b>${a.study.focus.map(k => attrNames[k]).join('、')}</p><p><b>下阶段已安排 ${nextFocus.size}/${game.studySlots()} 项：</b>${[...nextFocus].map(k => attrNames[k]).join('、')}</p><p>选择后自动保存，下阶段生效；已有进度保留。</p>
+        <div class="ability-grid">${attrs.map(k => `<button class="opt" data-focus="${k}" aria-pressed="${nextFocus.has(k)}"><b>${attrNames[k]}${nextFocus.has(k) ? ' · 下阶段已选' : ''}</b><span>进度 ${Number(a.study.progress[k]) || 0}/${Number((game.abilityConfig().study || {}).progressNeed) || 75}${focus.has(k) ? ' · 本阶段在修' : ''}</span></button>`).join('')}</div>
+        <h3>分配心得 · 立即生效</h3><div class="ability-grid">${attrs.map(k => `<button class="opt" data-insight="${k}" ${a.insight < game.insightCost(k) ? 'disabled' : ''}><b>${attrNames[k]} ${game.s.attrs[k]} → ${game.s.attrs[k] + 1}</b><span>消耗 ${game.insightCost(k)} 心得${a.insight < game.insightCost(k) ? ` · 还差 ${game.insightCost(k) - a.insight}` : ''}</span></button>`).join('')}</div>
+        <details><summary>研修规则</summary><p>可安排 ${fb.studySlots} 个方向；每场论战结算时，当前方向获得 ${fmt(fb.studyRate)} 研修进度。满 ${Number((game.abilityConfig().study || {}).progressNeed) || 75} 进度，属性 +1。</p></details>` : ''}
+        ${section === 'strategy' ? `<h3>行文章法</h3><p><b>本阶段生效：</b>${esc(currentPlan.name || '未定章法')}</p><p><b>下阶段安排：</b>${esc(plans[a.strategy.nextPlan]?.name || currentPlan.name || '未定章法')}</p><p>选择后自动保存，下阶段生效。满足条件且构思足够时自动发动。</p><div class="opt-list">${Object.entries(plans).map(([id, p]) => `<button class="opt" data-strategy-plan="${id}" aria-pressed="${a.strategy.nextPlan === id}"><b>${esc(p.name || id)}${a.strategy.nextPlan === id ? ' · 下阶段已选' : ''}</b><span>${esc(p.desc || '')}${a.strategy.plan === id ? ' · 本阶段生效' : ''}</span></button>`).join('')}</div><details><summary>构思补充规则</summary><p>每阶段构思进度 +${fmt(fb.strategyIncome)}；当前换算余量 ${fmt(fb.strategyRemainder)}。阶段开始时按进度换算重新补充构思，最多 ${fb.strategyCap} 点；上阶段未用构思不累计。</p></details>` : ''}
+        ${section === 'manuscript' ? `<h3>稿本用途</h3><p><b>成稿进度 ${fmt(a.manuscript.fragments)}/${game.manuscriptProgressNeed()}</b> · 满额转成稿页，稿页最多 ${fb.manuscriptCap} 页。</p><p>当前基础成稿进度 +${fmt(fb.manuscriptFragmentRate)}/战；胜负奖励与文心效果另计。</p>${manuscriptCards}` : ''}
+        ${section === 'records' ? `${conversionBlock}${inkHighlightsBlock}${latestMarks.length ? `<h3>最近修习</h3><p>${latestMarks.map(mark => `「${esc(mark.optionText || mark.questionId)}」→ ${esc(attrNames[mark.target] || mark.target)}`).join('<br>')}</p>` : '<p>暂无修习记录。</p>'}${(tc.nodes || []).length ? `<details><summary>技法进展</summary><p>${['shi','ci','lian'].map(k => `${attrNames[k]}经验 ${Number(a.technique.xp[k]) || 0}`).join(' · ')}</p></details>` : ''}` : ''}
+        </div>`;
+      box.querySelector('.ability-body').scrollTop = scroll;
+      box.querySelectorAll('[data-section]').forEach(b => b.addEventListener('click', () => {
+        positions[section] = box.querySelector('.ability-body').scrollTop;
+        section = b.dataset.section; render(); box.querySelector('.ability-body').scrollTop = positions[section] || 0; box.querySelector(`[data-section="${section}"]`).focus({ preventScroll: true });
+      }));
       box.querySelectorAll('[data-focus]').forEach(b => b.addEventListener('click', () => {
         const ok = game.toggleStudyFocus(b.dataset.focus); render(ok ? '下阶段研修方向已更新。' : '至少保留一个方向，且不能超过研修位上限。');
       }));
@@ -368,18 +400,23 @@ export class Modals {
         render(ok ? '下阶段章法已更新；当前阶段仍按原章法执行。' : '章法不可用。');
       }));
       box.querySelectorAll('[data-insight]').forEach(b => b.addEventListener('click', () => {
-        const r = game.spendInsight(b.dataset.insight); render(r.ok ? '心得已经兑现。' : r.reason);
+        const key = b.dataset.insight; const r = game.spendInsight(key); render(r.ok ? `已消耗 ${r.cost} 心得，${attrNames[key]} +${r.gained}（现为 ${game.s.attrs[key]}）` : r.reason);
       }));
       box.querySelectorAll('[data-manuscript]').forEach(b => b.addEventListener('click', () => {
-        const r = game.spendManuscript(b.dataset.manuscript); render(r.ok ? '稿本已经付梓。' : r.reason);
+        const action = b.dataset.manuscript; const r = game.spendManuscript(action); render(r.ok ? `已${{polish:'润色',publish:'刊行',volume:'定卷'}[action]}：消耗 ${r.cost} 稿页${r.refunded ? `，返还 ${r.refunded} 页` : ''}${action === 'publish' ? `，恢复 ${r.recovered} 灵感` : ''}。` : r.reason);
       }));
       box.querySelector('[data-talent-conversion]')?.addEventListener('click', async () => {
         const r = await game.attemptSchoolTalentConversion();
         render(r.ok ? (r.reason || (r.talent ? `已收入「${r.talent.name}」。` : '问心转化已结算。')) : r.reason);
       });
       box.querySelector('[data-close]').addEventListener('click', () => this.close(ov));
+      if (focusKey) {
+        const target = [...box.querySelectorAll(`[data-${focusKey}]`)].find(e => e.getAttribute(`data-${focusKey}`) === focusValue);
+        (target && !target.disabled ? target : box.querySelector('.ability-body')).focus({ preventScroll: true });
+      }
     };
     render();
+    this.enableDismissibleDialog(ov);
   }
 
   /* ---------------------------------------------------- 奇遇格 */
@@ -585,9 +622,9 @@ export class Modals {
       const insp = this.game ? this.game.s.inspiration : Infinity;
       const isActive = current.kind === 'active';
       const kindLine = isActive
-        ? `主动文心　消耗灵感 ${current.cost != null ? current.cost : 1}`
-        : '被动文心　常驻生效';
-      const lvlLine = up ? `　·　${QLABEL[up.quality] || up.quality}　Lv ${level}/${max}` : '';
+        ? `主动文心　${current.effect?.type === 'planned_dice' ? '棋盘掷骰前使用' : '论战中使用'} · 基础消耗灵感 ${current.cost != null ? current.cost : 1}`
+        : `被动文心　${['attr_flat','start_insp','insp_max'].includes(current.effect?.type) ? '获得时生效' : '按效果条件自动生效'}`;
+      const lvlLine = up ? `　·　${QLABEL[up.quality] || up.quality}` : '';
       const synergyHtml = this._talentSynergyHtml(id);
 
       let nextHtml = '';
@@ -595,16 +632,17 @@ export class Modals {
       if (up && level < max) {
         const nextEntry = up.levels[level] || {};
         const nEff = JSON.parse(JSON.stringify(nextEntry.effect || current.effect || {}));
-        const nCost = up.upCost[level - 1];
-        const can = insp >= nCost;
+        const quote = this.game?.talentUpgradeQuote(id);
+        const nCost = quote?.cost ?? up.upCost[level - 1];
+        const can = quote ? quote.ok : insp >= nCost;
         const nextActiveCost = isActive && nextEntry.cost != null ? `　·　发动消耗 ${nextEntry.cost}` : '';
         nextHtml = `
           <div class="up-next">
-            <div class="up-next-h">下一级（Lv${level + 1}）· 升级消耗灵感 ${nCost}${nextActiveCost}</div>
+            <div class="up-next-h">下一级（Lv${level + 1}）· 升级消耗灵感 ${nCost}${quote && quote.baseCost !== nCost ? `（原价 ${quote.baseCost}，流派优惠）` : ''}${nextActiveCost}</div>
             <div class="efx up-next-efx">${talentEffectText({ ...current, effect: nEff, cost: nextEntry.cost ?? current.cost })}</div>
           </div>`;
         const disabled = can ? '' : 'disabled style="opacity:.45;cursor:not-allowed"';
-        const label = can ? `升级（消耗灵感 ${nCost}）` : `灵感不足（需 ${nCost}）`;
+        const label = can ? `升级至 Lv${level + 1} · ${nCost} 灵感` : `${quote?.reason || '灵感不足'}（需 ${nCost}）`;
         btnHtml = `
           <div class="btn-row">
             <button class="btn btn-primary" data-up="1" ${disabled}>${label}</button>
@@ -619,11 +657,10 @@ export class Modals {
           <div class="kind">${kindLine}${lvlLine}</div>
           <h3>${esc(current.name)}${up ? `　<span class="lvbadge">Lv ${level}/${max}</span>` : ''}</h3>
           <div class="efx">${talentEffectText(current)}</div>
-          ${synergyHtml}
           ${nextHtml}
-          <div class="dianggu">${esc(personalize(current.text || '', this.playerName))}</div>
-          <div class="dianggu" style="margin-top:10px;color:var(--mo-3)">升级只消耗灵感；主动文心需在论战中发动，被动文心会常驻生效。</div>
           ${btnHtml}
+          ${synergyHtml ? `<details><summary>文心联动</summary>${synergyHtml}</details>` : ''}
+          <details><summary>典故与说明</summary><div class="dianggu">${esc(personalize(current.text || '', this.playerName))}</div></details>
         </div>`;
     };
 
@@ -641,6 +678,7 @@ export class Modals {
           const card = ov.querySelector('.talent-card');
           if (card) card.outerHTML = render().trim();
           rebind();
+          (ov.querySelector('[data-up]:not(:disabled)') || ov.querySelector('[data-ok]'))?.focus({ preventScroll: true });
           const current = heldTalent();
           if (this.game.ui.toast) this.game.ui.toast(`「${current.name}」精进至 Lv${res.level}`);
         } else {
@@ -649,8 +687,9 @@ export class Modals {
       });
     };
     rebind();
+    this.enableDismissibleDialog(ov);
     return new Promise(resolve => {
-      // 仅「知道了」关闭弹窗；升级成功后保持打开以便连续升级
+      // 「知道了」或 Escape 关闭；升级成功后保持打开以便连续升级
       const obs = new MutationObserver(() => { if (!ov.isConnected) { obs.disconnect(); resolve(); } });
       obs.observe(this.layer, { childList: true });
     });

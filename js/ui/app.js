@@ -238,7 +238,7 @@ function buildMainMenu() {
     <main class="main-menu-shell scroll-frame paper" aria-labelledby="mainMenuTitle">
       <div class="main-menu-brand" aria-hidden="true">文 心 棋</div>
       <h1 id="mainMenuTitle" class="main-menu-title title-ink">桃 花 入 墨 · 一 局 成 文</h1>
-      <p class="main-menu-lead">择文心，历科场；从一纸初心，行至终局成卷。<br>小整数 v2.1 · 研修 75 成长 · 成稿 20/40 成页<br><a href="legacy/numeric-v2/index.html">旧局续玩（原规则与传承）</a></p>
+      <p class="main-menu-lead">择文心，历科场；从一纸初心，行至终局成卷。<br><a href="legacy/numeric-v2/index.html">旧局续玩（原规则与传承）</a></p>
 
       <nav class="main-menu-primary" aria-label="游戏主菜单">
         <button class="btn btn-primary main-menu-item" data-main-start>

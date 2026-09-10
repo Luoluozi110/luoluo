@@ -727,7 +727,7 @@ export class Game {
     return Math.min(0, Number(loss) + reduce);
   }
 
-  spendManuscript(action) {
+  manuscriptQuote(action) {
     const a = this.ensureAbilityState();
     const c = this.abilityConfig().manuscript || {};
     const mech = this.schoolMechanics();
@@ -735,8 +735,26 @@ export class Game {
     if (action === 'polish' && mech.type === 'cizong_bi' && !a.manuscript.firstPolishPhases[this.s.phase]) {
       cost = Math.max(1, cost - (Number(mech.firstPolishCostReduce) || 0));
     }
-    if (a.manuscript.pages < cost) return { ok: false, reason: `稿页不足（需 ${cost}）` };
-    if (action === 'volume' && a.manuscript.volumes >= (Number(c.volumeCap) || 2)) return { ok: false, reason: '成卷已达本局上限' };
+    const recovery = this.inspirationQuote(Number(c.publishInspiration) || 4, '稿本·刊行').actual;
+    const reason = !['polish', 'publish', 'volume'].includes(action) ? '未知稿本操作'
+      : action === 'volume' && a.manuscript.volumes >= (Number(c.volumeCap) || 2) ? '本局定卷已达上限'
+      : action === 'publish' && recovery === 0 ? '灵感已满，无需刊行'
+      : a.manuscript.pages < cost ? `稿页不足：还差 ${cost - a.manuscript.pages} 页` : '';
+    return { ok: !reason, reason, cost, recovery };
+  }
+
+  manuscriptProgressNeed(attrs = this.s.attrs) {
+    const c = this.abilityConfig().manuscript || {};
+    return (Number(attrs.bi) || 0) >= (Number(c.fragmentFastBi) || 16) ? SCALE.manuscript : (Number(c.fragmentNeed) || 40);
+  }
+
+  spendManuscript(action) {
+    const quote = this.manuscriptQuote(action);
+    if (!quote.ok) return quote;
+    const { cost } = quote;
+    const a = this.ensureAbilityState();
+    const c = this.abilityConfig().manuscript || {};
+    const before = { pages: a.manuscript.pages, inspiration: this.s.inspiration };
     a.manuscript.pages -= cost;
     if (action === 'polish') {
       a.manuscript.polish += 1;
@@ -751,7 +769,7 @@ export class Game {
     this.push(`稿本·${action === 'polish' ? '润色' : action === 'publish' ? '刊行' : '定卷'}：稿页 -${cost}`);
     this.ui.onState(this.s);
     this.onForceSave?.();
-    return { ok: true, cost };
+    return { ok: true, cost, refunded: a.manuscript.pages - before.pages + cost, recovered: this.s.inspiration - before.inspiration };
   }
 
   /** 流派专属资源 → 文心三选一机会；默认值保证旧云端工程也能使用该渠道。 */
@@ -1386,27 +1404,32 @@ export class Game {
     return out;
   }
 
+  inspirationQuote(v, reason) {
+    const mech = this.schoolMechanics();
+    const st = this.s.schoolState || {};
+    let amount = Number(v) || 0;
+    const isPositiveSource = amount > 0 && reason !== '开局' && !String(reason || '').startsWith('文心·') && !String(reason || '').startsWith('传承');
+    const accumulates = mech.type === 'qishi' && isPositiveSource;
+    let accumulator = clampInt(st.inspirationAccumulator, 0, SCALE.bp - 1);
+    if (accumulates) {
+      const total = accumulator + amount * toBp(mech.inspirationBonusRate);
+      amount += Math.floor(total / SCALE.bp);
+      accumulator = total % SCALE.bp;
+    }
+    const after = R.clamp(this.s.inspiration + amount, 0, this.s.inspirationMax);
+    return { after, actual: after - this.s.inspiration, accumulator, accumulates };
+  }
+
   addInspiration(v, reason) {
     if (!v) return 0;
-    const mech = this.schoolMechanics();
-    const st = this.s.schoolState || (this.s.schoolState = this.createSchoolState(this.s.school));
-    let amount = Number(v) || 0;
-    // 奇士只放大正向、非开局来源；负向和 start_insp 不进入累积器。
-    const isPositiveSource = amount > 0 && reason !== '开局' && !String(reason || '').startsWith('文心·') && !String(reason || '').startsWith('传承');
-    if (mech.type === 'qishi' && isPositiveSource) {
-      st.inspirationAccumulator = clampInt(st.inspirationAccumulator, 0, SCALE.bp - 1);
-      const total = st.inspirationAccumulator + amount * toBp(mech.inspirationBonusRate);
-      const whole = Math.floor(total / SCALE.bp);
-      if (whole > 0) {
-        amount += whole;
-      }
-      st.inspirationAccumulator = total % SCALE.bp;
+    const quote = this.inspirationQuote(v, reason);
+    if (quote.accumulates) {
+      const st = this.s.schoolState || (this.s.schoolState = this.createSchoolState(this.s.school));
+      st.inspirationAccumulator = quote.accumulator;
     }
-    const before = this.s.inspiration;
-    this.s.inspiration = R.clamp(before + amount, 0, this.s.inspirationMax);
-    const real = this.s.inspiration - before;
-    if (real) this.ui.floatInspiration(real, reason);
-    return real;
+    this.s.inspiration = quote.after;
+    if (quote.actual) this.ui.floatInspiration(quote.actual, reason);
+    return quote.actual;
   }
 
   /** 灵感上限变更：与灵感/属性同样给出实时反馈，并保证当前值不越界。 */
@@ -1519,7 +1542,7 @@ export class Game {
    * - 其余类型（骰面化用、骰组章法、相性与各 pct 等）效果在战斗中实时读取 t.effect，替换即生效。
    * 返回 { ok, level?, max?, cost?, reason? }。
    */
-  upgradeTalent(id) {
+  talentUpgradeQuote(id) {
     const s = this.s;
     const up = this.cfg.talentUpgradeById && this.cfg.talentUpgradeById.get(id);
     if (!up) return { ok: false, reason: '该文心暂不可升级' };
@@ -1537,6 +1560,18 @@ export class Game {
     const newEntry = up.levels[newLevel - 1];
     if (!newEntry) return { ok: false, reason: '升级数据缺失', level, max: up.maxLevel };
 
+    return { ok: true, cost, baseCost, level, max: up.maxLevel };
+  }
+
+  upgradeTalent(id) {
+    const quote = this.talentUpgradeQuote(id);
+    if (!quote.ok) return quote;
+    const { cost, level } = quote;
+    const s = this.s;
+    const up = this.cfg.talentUpgradeById.get(id);
+    const t = s.passive.find(x => x.id === id) || s.active.find(x => x.id === id);
+    const newLevel = level + 1;
+    const newEntry = up.levels[newLevel - 1];
     this.addInspiration(-cost, `升级·${t.name}`);   // 灵感不足已在上方拦截，此处必可扣
 
     const oldEffect = t.effect || {};
@@ -3621,7 +3656,7 @@ export class Game {
     let pages = out.result === 'win' ? ((out.dicePips || []).length === 1 ? 2 : 1) : out.result === 'draw' ? 1 : 0;
     a.manuscript.fragments += this.manuscriptFragmentRate(battleAttrs) + talentReward.fragment;
     if (out.result === 'lose') a.manuscript.fragments += SCALE.manuscript;
-    const fragmentNeed = (Number(battleAttrs.bi) || 0) >= (Number(mc.fragmentFastBi) || 16) ? SCALE.manuscript : (Number(mc.fragmentNeed) || 40);
+    const fragmentNeed = this.manuscriptProgressNeed(battleAttrs);
     const made = Math.floor(a.manuscript.fragments / Math.max(1, fragmentNeed));
     if (made > 0) {
       pages += made;

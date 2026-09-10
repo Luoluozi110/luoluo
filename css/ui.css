@@ -1854,3 +1854,65 @@ button.album-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px r
   .main-menu-item:first-child { grid-column: auto; }
   .main-menu-item { min-height: 62px; padding-inline: 12px; }
 }
+/* 修习：稳定的资源分组，正文与操作独立滚动。 */
+.school-progress { display:flex; flex-direction:column; align-items:stretch; gap:4px; font-size:13px; line-height:1.5; }
+.school-progress-name { white-space:nowrap; }
+.ability-panel { display:flex; flex-direction:column; padding:0 !important; overflow:hidden !important; font-size:15px; line-height:1.6; }
+.ability-header { flex:none; padding:18px 24px 12px; background:var(--paper, #f3eddc); border-bottom:1px solid rgba(90,74,52,.25); }
+.ability-header .mtitle { margin:0 0 10px; }
+.ability-header .mtitle h2 { margin:0; }
+.ability-resources { display:flex; flex-wrap:wrap; gap:8px 20px; }
+.ability-resources b { font-size:20px; }
+.ability-tabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; margin-top:12px; }
+.ability-tabs button { min-height:44px; padding:8px 4px; border:1px solid rgba(90,74,52,.35); border-radius:6px; background:#fffcf4; color:var(--mo); font:inherit; cursor:pointer; }
+.ability-tabs [aria-pressed="true"], .ability-panel .opt[aria-pressed="true"] { border:2px solid var(--zhu,#9d4339); background:#f5e6dc; }
+.ability-body { min-height:0; overflow:auto; padding:12px 24px 24px; scrollbar-gutter:stable; }
+.ability-body h3 { margin:16px 0 8px; }
+.ability-body p { margin:8px 0; }
+.ability-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.ability-panel .opt { display:flex; flex-direction:column; align-items:stretch; gap:4px; min-width:0; min-height:60px; margin:0; font-size:inherit; line-height:1.6; }
+.ability-panel .opt b { flex:none; white-space:normal; }
+.ability-panel .opt:hover { transform:none; }
+.ability-panel .btn { min-height:44px; white-space:normal; }
+.ability-action { padding:12px 16px; margin:12px 0; border:1px solid rgba(90,74,52,.3); border-radius:8px; background:rgba(255,252,244,.8); }
+.ability-action h3 { margin-top:0; }
+.ability-reason { color:#843b30; font-size:14px; }
+.ability-notice:not(:empty) { border-left:3px solid var(--zhu); padding:8px 12px; background:#f4e7d9; }
+.ability-panel details, .talent-card details { margin-top:16px; }
+.ability-panel summary, .talent-card summary { cursor:pointer; padding:10px 0; min-height:44px; }
+.ability-panel :focus-visible, .talent-detail :focus-visible { outline:3px solid #35616c; outline-offset:3px; }
+.ability-panel button:disabled { opacity:.65; cursor:not-allowed; }
+.talent-card .btn-row { position:sticky; bottom:0; padding:12px 0; background:#f3eddc; z-index:1; }
+@media(max-width:600px) {
+ .ability-panel { font-size:16px; }
+ .ability-header { padding:14px 16px 10px; }
+ .ability-header .mtitle { display:flex; flex-wrap:nowrap; }
+ .ability-header .mtitle h2 { font-size:22px; letter-spacing:.08em; }
+ .ability-header .btn { padding:8px 12px; }
+ .ability-resources { gap:4px 12px; font-size:14px; }
+ .ability-resources b { font-size:18px; }
+ .ability-tabs { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .ability-body { padding:10px 16px 20px; }
+ .ability-grid { grid-template-columns:1fr; }
+ .school-progress { font-size:13px; }
+}
+.ability-header .mtitle { display:flex; align-items:center; justify-content:space-between; }
+.ability-header .mtitle > .btn { margin-left:auto; }
+.ability-panel::before, .ability-panel::after { flex-shrink:0; }
+.ability-panel .ability-body { flex:1 1 auto; }
+@media (max-height:500px) {
+ .ability-header { padding-block:8px; }
+ .ability-header .mtitle { margin-bottom:4px; }
+ .ability-tabs { margin-top:6px; }
+ .ability-body { min-height:80px; }
+}
+@media(max-width:600px) {
+ .talent-card .btn-row { flex-direction:column; align-items:stretch; }
+ .talent-card .btn-row .btn { width:100%; min-height:44px; white-space:normal; }
+}
+.bt-panel .dice-actions { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr)); width:100%; gap:12px; }
+.bt-panel .dice-actions .pick { width:100%; min-width:0; min-height:80px; }
+.bt-panel .dice-actions .pn { font-size:18px; white-space:nowrap; letter-spacing:.04em; }
+.dice-summary { font-size:14px; color:var(--mo-2); }
+.dice-help { font-size:15px; line-height:1.65; margin:8px 2px; color:var(--mo-2); }
+@media(max-width:420px) { .bt-panel .dice-actions { grid-template-columns:1fr; } }

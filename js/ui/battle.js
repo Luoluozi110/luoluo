@@ -332,7 +332,7 @@ export class BattleStage {
         const preview = typeof session.previewDiceScore === 'function' ? session.previewDiceScore(style, pips) : { score: 0, pct: total * dicePct };
         const score = Number(preview.score) || 0;
         const pctLabel = preview.pct != null
-          ? `临场乘区 +${Math.round(Number(preview.pct) * 100)}%`
+          ? `临场加成 +${Math.round(Number(preview.pct) * 100)}%`
           : `临场发挥 ${score} 分`;
         const extraPct = typeof session.extraDicePct === 'function'
           ? session.extraDicePct(extraCount)
@@ -343,14 +343,14 @@ export class BattleStage {
         const polarizeCost = polarize && typeof session.activeCost === 'function' ? session.activeCost(polarize.id) : (polarize && polarize.cost);
         const canPolarize = polarize && pips.length >= Math.max(2, Number((polarize.effect || {}).minDice) || 2) && session.inspiration >= polarizeCost;
         const pipHtml = pips.map(n => `<span class="dice-pip">${'①②③④⑤⑥'[n - 1]}</span>`).join('');
-        const extraHint = extraPct > 0 ? ` · 作品乘区 +${Math.round(extraPct * 100)}%` : '';
-        panel.innerHTML = `<div class="ph">⑤ ${esc(session._stepDiceLabel || '掷灵感骰')}　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → ${pctLabel}${extraHint}${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
-          <div style="font-size:12px;line-height:1.7;color:var(--mo-3);margin:4px 2px 7px">当前骰点已经转为作品乘区；继续追加会消耗灵感，收笔则以当前骰数结算。${session._extraDiceChainNote ? `<br><span style="color:var(--zhu)">${session._extraDiceChainNote}</span>` : ''}${preview.pctDetail ? `<br><span style="color:var(--zhu)">${preview.pctDetail}</span>` : ''}</div>
+        const extraHint = extraPct > 0 ? ` · 作品加成 +${Math.round(extraPct * 100)}%` : '';
+        panel.innerHTML = `<div class="ph">⑤ ${esc(session._stepDiceLabel || '掷灵感骰')}　<span class="dice-summary">已掷 ${pips.length} 枚 · 共 ${total} 点 → ${pctLabel}${extraHint}${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
+          <div class="dice-help">收笔：不再消耗，以当前骰子结算。追加：消耗灵感，点数随机。${session._extraDiceChainNote ? `<br><span style="color:var(--zhu)">${session._extraDiceChainNote}</span>` : ''}${preview.pctDetail ? `<br><span style="color:var(--zhu)">${preview.pctDetail}</span>` : ''}</div>
           <div class="dice-pips">${pipHtml}</div>
-          <div class="pick-row">
+          <div class="pick-row dice-actions">
             ${canExtra
-              ? `<button class="pick" id="btExtra" data-sfx="none"><div class="pn">多掷一枚</div><div class="pv">消耗灵感 ${extraCost} · 增加一段临场发挥</div></button>`
-              : `<button class="pick" disabled><div class="pn">${hasFixed() ? '固定骰·不可叠' : '灵感不足'}</div></button>`}
+              ? `<button class="pick" id="btExtra" data-sfx="none"><div class="pn">追加1骰</div><div class="pv">消耗 ${extraCost} 灵感 · 使用后剩余 ${session.inspiration - extraCost}</div></button>`
+              : `<button class="pick" disabled><div class="pn">${hasFixed() ? '固定骰不可追加' : blocksExtra() ? '本场禁止追加' : extraCount >= extraCap ? '已达追加上限' : `灵感不足（需 ${extraCost}）`}</div></button>`}
             ${canPolarize ? `<button class="pick" id="btPolarize"><div class="pn">${esc(polarize.name)}</div><div class="pv">灵感 -${polarizeCost} · 化一最低骰与一最高骰</div></button>` : ''}
             <button class="pick" id="btConfirm"><div class="pn">收笔结算</div><div class="pv">以当前 ${pips.length} 枚骰子完成作品</div></button>
           </div>`;
@@ -385,9 +385,9 @@ export class BattleStage {
       const extraPctPerDie = typeof session.extraDicePct === 'function'
         ? session.extraDicePct(1)
         : (Number(this.cfg?.inspiration?.extraDicePct) || 0);
-      panel.innerHTML = `<div class="ph">⑤ ${esc(session._stepDiceLabel || '掷灵感骰')}　<span style="font-size:12px;color:var(--mo-3)">普通骰每点进入作品乘区 +${Math.round(dicePct * 100)}%；首次追加耗 ${firstCost} 灵感，额外作品乘区 +${Math.round(extraPctPerDie * 100)}%，最多可追加 ${extraCap} 枚　·　限时 ${this.seconds} 秒</span></div>
+      panel.innerHTML = `<div class="ph">⑤ ${esc(session._stepDiceLabel || '掷灵感骰')}　<span style="font-size:12px;color:var(--mo-3)">先免费掷1枚；之后可选择收笔，或消耗灵感追加（最多 ${extraCap} 枚）　·　限时 ${this.seconds} 秒</span></div>
         <div class="pick-row"><button class="pick battle-roll" id="btRoll" data-sfx="none"><div class="pn">掷 骰</div>
-        <div class="pv">听天由命，也听人事</div></button></div>`;
+        <div class="pv">免费掷1枚 · 然后决定是否追加</div></button></div><details><summary>追加与算分规则</summary><p>首次追加消耗 ${firstCost} 灵感，增加 ${Math.round(extraPctPerDie * 100)}% 作品加成。普通骰每点提供 ${Math.round(dicePct * 100)}% 加成；文心效果另计。加成属于算分中的对应部分，不代表最终总分同比增加。</p></details>`;
       panel.querySelector('#btRoll').addEventListener('click', () => doRoll(false));
       armTimer(() => doRoll(true));
     });
