@@ -1,0 +1,13 @@
+{
+  "file": "落墨听花-背景音乐小样.wav",
+  "bpm": 66,
+  "bars": 32,
+  "seconds": 116.36362811791383,
+  "sample_rate": 22050,
+  "channels": 2,
+  "peak_dbfs": -3.0980391997148637,
+  "rms_dbfs": -15.992498585618177,
+  "boundary_jump": 1.7408224371411716e-05,
+  "events": 140,
+  "clipping_samples": 0
+}

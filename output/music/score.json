@@ -1,0 +1,1129 @@
+{
+  "title": "落墨听花",
+  "bpm": 66,
+  "bars": 32,
+  "meter": "4/4",
+  "scale": "C D E G A",
+  "events": [
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 0,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "C4",
+      "beat": 2.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "bell",
+      "note": "C5",
+      "beat": 0,
+      "duration": 3,
+      "level": 0.035,
+      "pan": 0.35
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 4,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "G2",
+      "beat": 8,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "G3",
+      "beat": 10.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "qin",
+      "note": "E4",
+      "beat": 9,
+      "duration": 2,
+      "level": 0.1,
+      "pan": -0.15
+    },
+    {
+      "voice": "qin",
+      "note": "G4",
+      "beat": 10.5,
+      "duration": 1.5,
+      "level": 0.07,
+      "pan": 0.15
+    },
+    {
+      "voice": "qin",
+      "note": "A2",
+      "beat": 12,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 16,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "C4",
+      "beat": 18.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 16,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 17,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "A4",
+      "beat": 17.5,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 18.0,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "A2",
+      "beat": 20,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 20,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 21,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "C4",
+      "beat": 22,
+      "duration": 1.29,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "G2",
+      "beat": 24,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "G3",
+      "beat": 26.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 24,
+      "duration": 1.29,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 25.5,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 26.0,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 28,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "A3",
+      "beat": 28,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "C4",
+      "beat": 29,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 30,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 32,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "C4",
+      "beat": 34.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 32,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "A4",
+      "beat": 33,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "C5",
+      "beat": 34,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 36,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "A4",
+      "beat": 36,
+      "duration": 1.29,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 37.5,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 38.0,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "G2",
+      "beat": 40,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "G3",
+      "beat": 42.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 40,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 41,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 41.5,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 42.0,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "A2",
+      "beat": 44,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 44,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 45,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "C4",
+      "beat": 46,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 48,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "C4",
+      "beat": 50.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "qin",
+      "note": "A2",
+      "beat": 52,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "G2",
+      "beat": 56,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "G3",
+      "beat": 58.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "qin",
+      "note": "E4",
+      "beat": 57,
+      "duration": 2,
+      "level": 0.1,
+      "pan": -0.15
+    },
+    {
+      "voice": "qin",
+      "note": "G4",
+      "beat": 58.5,
+      "duration": 1.5,
+      "level": 0.07,
+      "pan": 0.15
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 60,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 64,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "C4",
+      "beat": 66.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "qin",
+      "note": "E4",
+      "beat": 65.5,
+      "duration": 1.8,
+      "level": 0.07,
+      "pan": -0.15
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 64,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 65,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "A4",
+      "beat": 65.5,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 66.0,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "bell",
+      "note": "C5",
+      "beat": 64,
+      "duration": 3,
+      "level": 0.035,
+      "pan": 0.35
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 68,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "D4",
+      "beat": 69.5,
+      "duration": 1.8,
+      "level": 0.07,
+      "pan": -0.15
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 68,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 69,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "C4",
+      "beat": 70,
+      "duration": 1.29,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "G2",
+      "beat": 72,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "G3",
+      "beat": 74.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "qin",
+      "note": "G3",
+      "beat": 73.5,
+      "duration": 1.8,
+      "level": 0.07,
+      "pan": -0.15
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 72,
+      "duration": 1.29,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 73.5,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 74.0,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "A2",
+      "beat": 76,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "C4",
+      "beat": 77.5,
+      "duration": 1.8,
+      "level": 0.07,
+      "pan": -0.15
+    },
+    {
+      "voice": "xiao",
+      "note": "A3",
+      "beat": 76,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "C4",
+      "beat": 77,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 78,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 80,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "C4",
+      "beat": 82.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "qin",
+      "note": "E4",
+      "beat": 81.5,
+      "duration": 1.8,
+      "level": 0.07,
+      "pan": -0.15
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 80,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "A4",
+      "beat": 81,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "C5",
+      "beat": 82,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "A2",
+      "beat": 84,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "D4",
+      "beat": 85.5,
+      "duration": 1.8,
+      "level": 0.07,
+      "pan": -0.15
+    },
+    {
+      "voice": "xiao",
+      "note": "A4",
+      "beat": 84,
+      "duration": 1.29,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 85.5,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 86.0,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "G2",
+      "beat": 88,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "G3",
+      "beat": 90.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "qin",
+      "note": "G3",
+      "beat": 89.5,
+      "duration": 1.8,
+      "level": 0.07,
+      "pan": -0.15
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 88,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 89,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 89.5,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 90.0,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 92,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "C4",
+      "beat": 93.5,
+      "duration": 1.8,
+      "level": 0.07,
+      "pan": -0.15
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 92,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 93,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "C4",
+      "beat": 94,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 96,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "C4",
+      "beat": 98.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 96,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 97,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "A4",
+      "beat": 97.5,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 98.0,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 100,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "D4",
+      "beat": 100,
+      "duration": 0.86,
+      "level": 0.12,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "E4",
+      "beat": 101,
+      "duration": 0.86,
+      "level": 0.12,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "C4",
+      "beat": 102,
+      "duration": 1.29,
+      "level": 0.12,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "G2",
+      "beat": 104,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "G3",
+      "beat": 106.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 104,
+      "duration": 1.29,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 105.5,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 106.0,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "A2",
+      "beat": 108,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "A3",
+      "beat": 108,
+      "duration": 0.86,
+      "level": 0.12,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "C4",
+      "beat": 109,
+      "duration": 0.86,
+      "level": 0.12,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "D4",
+      "beat": 110,
+      "duration": 0.86,
+      "level": 0.12,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 112,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "C4",
+      "beat": 114.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 112,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "A4",
+      "beat": 113,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "C5",
+      "beat": 114,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "A2",
+      "beat": 116,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "A4",
+      "beat": 116,
+      "duration": 1.29,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 117.5,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 118.0,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "G2",
+      "beat": 120,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "qin",
+      "note": "G3",
+      "beat": 122.5,
+      "duration": 2,
+      "level": 0.09,
+      "pan": 0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 120,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 121,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "G4",
+      "beat": 121.5,
+      "duration": 0.43,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 122.0,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "qin",
+      "note": "C3",
+      "beat": 124,
+      "duration": 3.6,
+      "level": 0.18,
+      "pan": -0.25
+    },
+    {
+      "voice": "xiao",
+      "note": "E4",
+      "beat": 124,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "D4",
+      "beat": 125,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    },
+    {
+      "voice": "xiao",
+      "note": "C4",
+      "beat": 126,
+      "duration": 0.86,
+      "level": 0.13,
+      "pan": 0.12
+    }
+  ]
+}
