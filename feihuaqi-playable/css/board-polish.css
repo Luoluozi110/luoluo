@@ -1,0 +1,129 @@
+/* 桃源书院 · 第一轮：静态材质、位置辨识、手机面板。
+   场景限定选择器使此层在原样式和省电档中保持一致。 */
+#scene#scene {
+  background:
+    radial-gradient(ellipse at 12% 14%, #f7f6edb3, transparent 46%),
+    radial-gradient(ellipse at 86% 80%, #e2eae3b3, transparent 48%),
+    linear-gradient(180deg, #a7bfbe, #d3dfd7 56%, #ecece0);
+}
+#scene::before { opacity: .07; }
+#scene::after {
+  background: radial-gradient(ellipse at 50% 45%, transparent 58%, #526e6c1c);
+}
+#scene .far-hills { opacity: .16; }
+#scene .island {
+  background:
+    radial-gradient(ellipse at 5% 65%, #a9c9b873, transparent 42%),
+    radial-gradient(ellipse at 92% 20%, #d5bf8d38, transparent 40%),
+    repeating-linear-gradient(94deg, #8a785307 0 1px, transparent 1px 5px),
+    linear-gradient(145deg, #f7f1df, #e4e6d3 62%, #d6dfcf);
+  border: 2px solid #9a8058;
+  box-shadow: 0 7px 0 #9e8969, 0 12px 0 #756750,
+    0 23px 32px #304e492e, inset 0 0 0 5px #efe3c6;
+}
+#scene .island::before {
+  inset: 16px;
+  border: 1px solid #bba578;
+  box-shadow: inset 0 0 0 3px #fff9e54d;
+}
+#scene .island::after { display: none; }
+#scene .island-inner {
+  background:
+    radial-gradient(ellipse at 50% 45%, #faf4e5 10%, #edf0dd99 54%, #c4d7c66b),
+    repeating-linear-gradient(4deg, #8a785306 0 1px, transparent 1px 5px);
+  border: 1px solid #b3bd9d70;
+  box-shadow: inset 0 0 38px #76978a17;
+}
+#scene .season-canopy { opacity: .32; }
+#scene .board-stage-shadow { opacity: .18; }
+#scene .world-halo { opacity: .6; box-shadow: none; }
+
+/* 季节通过浅底色识别；事件保留图标，圈层只用细边区分。 */
+#scene#scene .cell {
+  --tile-fill: #f6f1e3;
+  --tile-edge: #81988a;
+  background: linear-gradient(160deg, #fffdf2, var(--tile-fill));
+  border: 1px solid var(--tile-edge);
+  border-radius: 6px;
+  box-shadow: 0 2px 0 #7a837373, 0 4px 5px #344c4026, inset 0 1px 0 #ffffffb3;
+  color: #263e36;
+}
+#scene#scene .cell.season-spring { --tile-fill: #e0ead7; }
+#scene#scene .cell.season-summer { --tile-fill: #dceae3; }
+#scene#scene .cell.season-autumn { --tile-fill: #f0e3cb; }
+#scene#scene .cell.season-winter { --tile-fill: #e4e9e8; }
+#scene#scene .cell.ring-middle { --tile-edge: #ad915c; }
+#scene#scene .cell.ring-inner { --tile-edge: #b78993; }
+#scene#scene .cell .cname { color: #294139; opacity: 1; font-weight: 600; }
+#scene#scene .cell .glyph { width: 21px; height: 21px; flex-basis: 21px; }
+#scene#scene .cell.t-start, #scene#scene .cell.t-gate { --tile-fill: #efda9e; --tile-edge: #9f793c; }
+#scene#scene .cell.t-landmark { --tile-fill: #f2d7dc; --tile-edge: #b7838d; }
+#scene#scene .cell.t-branch_gate { --tile-fill: #efdfc8; --tile-edge: #ad8860; }
+#scene#scene .cell.ring-secret { --tile-fill: #edc8d8; --tile-edge: #96385f; }
+#scene#scene .cell.ring-secret .cname { color: #742848; }
+
+/* 当前位置不依赖短暂的 active 动画；空心提示与金色实线明确区分。 */
+#scene#scene .cell.current {
+  border-color: #906416;
+  background: linear-gradient(150deg, #fff5d3, #efd48d);
+  box-shadow: 0 3px 0 #9f7c40, 0 0 0 3px #fff5d9, 0 0 0 5px #b1873c;
+}
+#scene#scene .cell.current::before {
+  content: ''; position: absolute; inset: -9px;
+  border: 1px solid #b1873c99; border-radius: 12px; pointer-events: none;
+}
+#scene#scene .cell.hint { animation: none; }
+#scene#scene .cell.hint::after {
+  border: 2px dashed #486f68; box-shadow: none; border-radius: 10px;
+}
+#scene#scene .cell.active { filter: brightness(1.04); }
+html[data-quality="low"] #scene#scene .cell {
+  background: var(--tile-fill);
+  box-shadow: 0 2px 0 #7a837373;
+}
+html[data-quality="low"] #scene#scene .cell.current {
+  background: #efd48d;
+  box-shadow: 0 2px 0 #9f7c40, 0 0 0 3px #fff5d9, 0 0 0 5px #b1873c;
+}
+
+/* 手机保持紧凑摘要；主动展开时以有限高度查看，标题与收起按钮留在上方。 */
+@media (max-width: 600px) {
+  #hud #attrPanel { width: 166px; }
+  #hud #attrPanel .ph { align-items: center; gap: 5px; }
+  #hud #attrPanel .ph b { letter-spacing: .02em; white-space: nowrap; }
+  #hud #attrPanel .ph-left { gap: 3px; }
+  #hud #attrPanel .ph-right { gap: 3px; align-items: center; }
+  #hud #inspBar { left: calc(var(--safe-left) + 184px); padding: 6px; }
+  #hud #inspBar .ih { flex-wrap: wrap; gap: 3px; }
+  #hud #inspBar .ih-left { gap: 3px; }
+  #hud .pc-toggle { width: 36px; height: 36px; position: relative; }
+  #hud .pc-toggle::after { content: ''; position: absolute; inset: -4px; }
+  #hud #rightHudRail { top: calc(var(--safe-top) + 84px); }
+  #hud #talentBar { width: 176px; }
+  #hud #talentBar > .th { align-items: center; letter-spacing: .02em; }
+  #hud #talentBar .th-left { white-space: nowrap; gap: 3px; }
+  #hud #talentBar .th-right { gap: 4px; }
+  #hud #talCount { display: block; white-space: nowrap; letter-spacing: 0; }
+  #hud #attrPanel:not(.collapsed) .pc-body,
+  #hud #talentBar:not(.collapsed) .pc-body {
+    position: fixed; top: calc(var(--safe-top) + 176px);
+    left: calc(var(--safe-left) + 12px); right: calc(var(--safe-right) + 12px);
+    padding: 12px; border: 1px solid #ad9872; border-radius: 8px;
+    background: #f7f1e2; box-shadow: 0 8px 20px #304e4933;
+    z-index: 5;
+  }
+  #hud #attrPanel .pc-inner, #hud #talentBar .pc-inner {
+    max-height: min(36dvh, 310px); overflow-y: auto; overscroll-behavior: contain;
+  }
+  #hud #attrPanel.collapsed .pc-inner, #hud #talentBar.collapsed .pc-inner {
+    visibility: hidden;
+  }
+  #hud #attrPanel .radar-box { flex-direction: row; gap: 10px; }
+  #hud #attrPanel .attr-list { width: auto; }
+  #hud #attrPanel #radar { width: 110px; height: 106px; }
+}
+@media (max-width: 360px) {
+  #hud #attrPanel { width: 158px; padding-inline: 7px; }
+  #hud #inspBar { left: calc(var(--safe-left) + 176px); }
+  #hud #inspBar .pc-ico { display: none; }
+}

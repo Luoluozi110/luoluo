@@ -352,8 +352,9 @@ export class BoardView {
       if (footprint.width <= safeWidth && footprint.height <= safeHeight) lo = mid;
       else hi = mid;
     }
-    // 手机端保留原有 0.4 下限：宁可允许拖动查看边缘，也不把文字缩到不可辨。
-    return Math.max(0.4, Math.min(1.1, lo));
+    // 极窄屏和短横屏稍降下限，让当前格与四边路线留在初始视野内；仍可手势放大。
+    const minimum = width <= 360 || height <= 500 ? 0.3 : 0.4;
+    return Math.max(minimum, Math.min(1.1, lo));
   }
 
   fit() {
@@ -423,7 +424,8 @@ export class BoardView {
       this._fitOffset.y = axisOffset(base.top, base.bottom, safeTop, safeBottom);
 
       if (this.view.zoom === 1 && Number.isFinite(ratio) && Math.abs(1 - ratio) > .012 && pass < 2) {
-        const next = Math.max(0.4, Math.min(1.1, this.bscale * ratio));
+        const minimum = rootRect.width <= 360 || rootRect.height <= 500 ? 0.3 : 0.4;
+        const next = Math.max(minimum, Math.min(1.1, this.bscale * ratio));
         if (Math.abs(next - this.bscale) > .001) {
           this.bscale = next;
           this.applyView();
@@ -618,6 +620,9 @@ export class BoardView {
   }
 
   setPiecePos(cellId) {
+    const previousCell = this.cellEls.get(this._pieceCellId);
+    previousCell?.classList.remove('current');
+    previousCell?.removeAttribute('aria-current');
     const id = Number(cellId);
     this._pieceCellId = Number.isFinite(id) ? id : cellId;
     const p = this.coords.get(this._pieceCellId);
@@ -630,6 +635,9 @@ export class BoardView {
     // 尚未显现的圈层仍可作为真实路线位置，但不让棋子提前出现在黑幕上。
     const ring = this.cellRings.get(this._pieceCellId);
     const hidden = this.cfg.board.layout === 'concentric_spiral' && ring && ring !== this.visibleRing;
+    const currentCell = this.cellEls.get(this._pieceCellId);
+    currentCell?.classList.toggle('current', !hidden);
+    if (!hidden) currentCell?.setAttribute('aria-current', 'location');
     this.piece.style.opacity = hidden ? '0' : '';
     this.shadow.style.opacity = hidden ? '0' : '';
     // transform 定位：走合成器、零重排（整盘是缩放层，left/top 会触发整盘重排）
