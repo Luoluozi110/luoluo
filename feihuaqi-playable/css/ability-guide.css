@@ -1,0 +1,9 @@
+.ability-guide { margin: 8px 0 16px; padding: 12px; border: 1px solid var(--jin, #987536); border-radius: 8px; background: #f6eddb; color: #423629; font-size: 14px; line-height: 1.7; }
+.ability-guide summary { cursor: pointer; font-weight: 700; }
+.ability-guide section { margin-top: 12px; }
+.ability-guide p { margin: 4px 0 8px; }
+.ability-guide-jump { min-height: 44px; padding: 6px 12px; border: 1px solid #82612f; border-radius: 6px; background: #fffaf0; color: #69451f; font: inherit; cursor: pointer; }
+.ability-guide-jump:focus-visible, .ability-guide summary:focus-visible { outline: 3px solid #984533; outline-offset: 3px; }
+.ability-guide-arrow { grid-column: 1 / -1; flex-basis: 100%; margin: 8px 0; padding: 8px; color: #823b27; background: #fff1d5; font-size: 14px; line-height: 1.6; font-weight: 700; overflow-wrap: anywhere; }
+.ability-guide-target { outline: 3px solid #a34b30 !important; outline-offset: 2px; }
+@media (max-width: 480px) { .ability-guide { padding: 10px; } .ability-guide-jump { width: 100%; } }

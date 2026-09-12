@@ -5,6 +5,7 @@ import { LANDMARK_ART, EVENT_VIGNETTE, QUIZ_MARK } from './svg.js';
 import { createCountdown } from './timer.js';
 import { play } from './audio.js';
 import { personalize, normalizeName } from './namefmt.js';
+import { mountAbilityGuide } from './abilityGuide.js';
 
 const RARITY_CN = { common: '普通', rare: '稀有', legend: '传说' };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -326,6 +327,7 @@ export class Modals {
         </div>
         <h3>技法筹备（方案 C）</h3><div class="dianggu">${['shi','ci','lian'].map(k => `${attrNames[k]}技法经验 ${Number(a.technique.xp[k]) || 0} · 阶 ${Number(a.technique.level[k]) || 0}/${(tc.thresholds || []).length}`).join('　')}</div>
         <div class="btn-row"><button class="btn btn-primary" data-close>收卷</button></div>`;
+      mountAbilityGuide(box);
       box.querySelectorAll('[data-focus]').forEach(b => b.addEventListener('click', () => {
         const ok = game.toggleStudyFocus(b.dataset.focus); render(ok ? '下阶段研修方向已更新。' : '至少保留一个方向，且不能超过研修位上限。');
       }));
