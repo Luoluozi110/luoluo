@@ -85,7 +85,7 @@ export class BattleStage {
           `<div class="jt-card"><span class="jt-tag">${esc(h.tag)}</span>
              <span class="jt-title">${esc(h.title)}</span>
              <span class="jt-body">${esc(h.body)}</span></div>`).join('');
-        panel.insertAdjacentHTML('beforeend', `<div class="ph" style="margin-top:8px">硏 判 <span style="font-size:11px;color:var(--mo-3)">交手可明彼之长短</span></div>
+        panel.insertAdjacentHTML('beforeend', `<div class="ph" style="margin-top:8px">研 判 <span style="font-size:12px;color:var(--mo-3)">先看破绽条件，再决定文体、文风与用骰</span></div>
           <div class="jt-row">${card}</div>`);
       }
     }
@@ -277,6 +277,8 @@ export class BattleStage {
         panel.innerHTML = `<div class="ph">⑤ ${esc(session._stepDiceLabel || '掷灵感骰')}　<span style="font-size:12px;color:var(--mo-3)">已掷 ${pips.length} 枚 · 共 ${total} 点 → ${pctLabel}${extraHint}${hasFixed() ? '（固定灵感骰已用，追加无效）' : ''}</span></div>
           <div style="font-size:12px;line-height:1.7;color:var(--mo-3);margin:4px 2px 7px">当前骰点已经转为作品乘区；继续追加会消耗灵感，收笔则以当前骰数结算。${session._extraDiceChainNote ? `<br><span style="color:var(--zhu)">${session._extraDiceChainNote}</span>` : ''}${preview.pctDetail ? `<br><span style="color:var(--zhu)">${preview.pctDetail}</span>` : ''}</div>
           <div class="dice-pips">${pipHtml}</div>
+          <div class="dice-help">当前追加 ${extraCount} 枚 / 最多 ${extraCap} 枚。收笔后进入结算，不能再追加或更换文体、文风；倒计时结束会自动收笔。</div>
+          ${this.weaknessTip(session)}
           <div class="pick-row">
             ${canExtra
               ? `<button class="pick" id="btExtra" data-sfx="none"><div class="pn">多掷一枚</div><div class="pv">消耗灵感 ${extraCost} · 增加一段临场发挥</div></button>`
@@ -318,6 +320,7 @@ export class BattleStage {
       panel.innerHTML = `<div class="ph">⑤ ${esc(session._stepDiceLabel || '掷灵感骰')}　<span style="font-size:12px;color:var(--mo-3)">普通骰每点进入作品乘区 +${Math.round(dicePct * 100)}%；首次追加耗 ${firstCost} 灵感，额外作品乘区 +${Math.round(extraPctPerDie * 100)}%，最多可追加 ${extraCap} 枚　·　限时 ${this.seconds} 秒</span></div>
         <div class="pick-row"><button class="pick battle-roll" id="btRoll" data-sfx="none"><div class="pn">掷 骰</div>
         <div class="pv">听天由命，也听人事</div></button></div>`;
+      panel.insertAdjacentHTML('beforeend', this.weaknessTip(session));
       panel.querySelector('#btRoll').addEventListener('click', () => doRoll(false));
       armTimer(() => doRoll(true));
     });
@@ -334,7 +337,7 @@ export class BattleStage {
       return `${choice}<button class="at-btn ${used ? 'used' : ''}" data-t="${t.id}" ${used || !afford ? 'disabled' : ''}
         title="${esc(talentEffectText(t))}">${esc(t.name)}<span class="cost">灵感 -${cost}${repeatable ? '（递增）' : ''}</span></button>`;
     }).join('');
-    return `<div class="active-talents"><span class="lb">主动文心</span>${btns}</div>`;
+    return `<div class="active-talents"><span class="lb">主动文心</span>${btns}</div><div class="dice-help">点击文心即发动并消耗灵感；请在选定文体或文风前使用。若要触发「不使用主动文心」类破绽，本场不要发动。</div>`;
   }
 
   bindActive(panel, session) {
@@ -365,7 +368,7 @@ export class BattleStage {
   weaknessTip(session) {
     const mech = session.npc && session.npc.mech;
     if (!mech || !mech.weakness) return '';
-    const tip = weaknessHint(mech, { styleNames: STYLE_NAMES, mannerNames: session.mannerNames || {} });
+    const tip = weaknessHint(mech, { styleNames: STYLE_NAMES, mannerNames: session.mannerNames || {}, intentLocked: session.intentLocked });
     if (!tip) return '';
     return `<div class="jt-tip" style="margin:4px 2px 0"><span class="jt-tag">机</span>${esc(tip)}</div>`;
   }
