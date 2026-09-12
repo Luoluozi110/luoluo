@@ -65,6 +65,30 @@ export function intentTemplateName(template) {
   return INTENT_TEMPLATE_DISPLAY[template] || '打法';
 }
 
+/** 只解释公开的招牌规则，不披露本场未公开的文体、文风。 */
+export function signatureHint(mech, ctx = {}) {
+  const { main, weak } = signatureBlocks(mech);
+  const describe = s => {
+    if (!s?.template) return '';
+    const conditions = {
+      sig_style_mastery: `对手使用${ctx.styleNames?.[s.style] || '其擅长的文体'}时`,
+      sig_repeat_read: '你沿用上一场论战的文体时（没有上一场记录则不触发）',
+      sig_dice_response: '你追加至少 1 枚骰时',
+      sig_copycat: '你使用交手历史中惯用的文体时（无惯用文体记录不触发）',
+      sig_debt_drain: '本场常驻，额外灵感消耗在战后处理',
+      sig_steady_pressure: '本场常驻',
+      sig_manner_theme: `对手使用${(s.manners || []).map(m => ctx.mannerNames?.[m] || m).join('、') || '指定文风'}时`,
+      sig_palace_adapt: '本场常驻，效果随跨场适应层数变化',
+      sig_zeitgeist_surf: '有当朝风潮，且对手使用得势文风时',
+      sig_active_talent_tax: '你在本场使用主动文心时',
+      sig_dice_pattern_hunt: `最终骰组符合${PATTERN_NAMES[s.pattern] || '指定章法'}时`,
+      sig_declared_stance: '对手已公开锁定战策时'
+    };
+    return `「${s.name || '招牌'}」：${conditions[s.template] || '满足其招牌条件时'}生效。`;
+  };
+  return describe(main) + (weak ? `主招牌未触发时，再检查副招牌。${describe(weak)}` : '') + '命中破绽可压制招牌，实际效果见「机制结算」。';
+}
+
 /**
  * 研判卡文案。贴在战斗开场/遭遇阶段。
  * 尊重 intentLocked 的 styleDisclosed / mannerDisclosed：
@@ -106,21 +130,21 @@ export function intentHint(npc, intentLocked, ctx) {
       out.push({
         tag: '战策',
         title: `公开「${STANCE_NAMES[intentLocked.stance] || '定策'}」`,
-        body: '此策已在落笔前锁定；依其声势择相反章法，便能争得先机。'
+        body: '战策已锁定。本场如何反制，请看下方「所短」；不同战策要求的操作不同。'
       });
     }
     if (intentLocked.pattern) {
       out.push({
         tag: '审律',
         title: `专审${PATTERN_NAMES[intentLocked.pattern] || '骰组章法'}`,
-        body: '骰面将成何种章法，亦是本场可主动控制的取舍。'
+        body: '最终骰组符合这一条件时，对手可触发招牌。追加骰会改变骰组；请结合下方破绽决定是否追加。'
       });
     }
     if (intentLocked.watchesActive) {
       out.push({
         tag: '封心',
         title: '紧盯主动文心',
-        body: '主动发动可换来作品收益，却会让对手乘势问锋。'
+        body: '本场使用主动文心会触发对手的监视条件；是否发动，请同时权衡文心收益与下方破绽。'
       });
     }
   }
@@ -129,12 +153,12 @@ export function intentHint(npc, intentLocked, ctx) {
   out.push({
     tag: '所长',
     title: `成于「${sigName}」`,
-    body: '久练之下自成气象，需防其拿手好戏。'
+    body: signatureHint(mech, ctx)
   });
   out.push({
     tag: '所短',
     title: `露于「${weaName}」`,
-    body: '盛名之下必有可击之处，观其形迹自见破绽。'
+    body: weaknessHint(mech, { ...ctx, intentLocked }) || '暂无公开反制条件。'
   });
 
   return out;
@@ -169,44 +193,48 @@ function weaknessHintOne(w, ctx, styleNames, mannerNames, sigName, mech) {
         ? w.fullClose.map(s => styleNames[s]).filter(Boolean).join('、') : null;
       const npcS = w.npcStyle && styleNames[w.npcStyle];
       const pr = w.partialReduction;
-      if (full) return `临题有人言：「${weaName}」——若弃${npcS || '其所长'}体不用、改作${full}，其「${sigName}」或可尽废。`;
+      if (full) return `「${weaName}」：选${full}可关闭「${sigName}」。${pr?.style?.length ? `选${pr.style.map(s => styleNames[s] || s).join('、')}时，招牌保留 ${pctStr(pr.retention ?? 0.5)}。` : ''}`;
       if (pr && pr.style) return `临题有人言：「${weaName}」——绕开${npcS || ''}体、转作${pr.style.map(s => styleNames[s]).join('、')}，其「${sigName}」当见颓势。`;
       return `临题有人言：「${weaName}」——勿随其常用文体落笔，另辟蹊径或可制之。`;
     }
     case 'wea_switch_style':
-      return `临题有人言：「${weaName}」——此人善记旧章，若能当场换成与上场不同的文体，其「${sigName}」便无可凭依。`;
+      return `「${weaName}」：与上一场论战的文体不同，可关闭「${sigName}」。没有上一场文体记录时，不能靠换体关闭招牌。`;
     case 'wea_base_dice_only':
-      return `临题有人言：「${weaName}」——此人欺人心性，若以本分之骰对之、不事铺张，其「${sigName}」自会落空。`;
+      return `「${weaName}」：本场追加骰为 0 枚时，关闭「${sigName}」。免费掷完第一枚后，直接点「收笔结算」。`;
     case 'wea_style_manner_combo': {
       const sS = w.style && styleNames[w.style];
       const ms = (w.manners || []).map(m => mannerNames[m]).filter(Boolean).join('、');
-      const raw = Number(w.retention ?? 0.5);
+      const raw = Number(w.retention ?? 0);
       const pct = Math.round(Math.max(0, Math.min(1, raw)) * 100);
-      return `临题有人言：「${weaName}」——若以${sS || '某'}体并辅以${ms || '相性相合'}一路，其「${sigName}」最多可剩 ${pct}% 之威。`;
+      return `「${weaName}」：${!w.style || w.style === 'any' ? '文体不限，' : `选择${sS || w.style}体，且`}文风为${ms || '指定文风'}中的任一种，招牌保留 ${pct}%。`;
     }
     case 'wea_crushing_win':
-      return `临题有人言：「${weaName}」——此人恃才，须以大分数压服之，方能使「${sigName}」无从施展。`;
+      return `「${weaName}」：先赢得本场，且领先分数达到己方得分的 ${pctStr(w.threshold || 0)}，结算时关闭「${sigName}」${w.refund ? `并返还 ${w.refund} 灵感` : ''}。这是胜出后的判定，不能靠它先获得领先。`;
     case 'wea_harmonious_manner': {
       const ms = (w.manners || []).map(m => mannerNames[m]).filter(Boolean).join('、');
-      return `临题有人言：「${weaName}」——其文胜于势而词或涩，若以${ms || '相得题材之文风'}相济，可破其「${sigName}」。`;
+      return `「${weaName}」：选择${ms || '指定文风'}中的任一种，「${sigName}」保留 ${pctStr(w.retention ?? 0)}。`;
     }
     case 'wea_counter_intent':
-      return `临题有人言：「${weaName}」——既知其意在${intentHint({ mech }, { styleDisclosed: true, mannerDisclosed: false }, ctx)[0]?.title || '某处'}，公开反制之，「${sigName}」自衰。`;
+      return `「${weaName}」：文体和文风都与对手本场锁定意图一致时，招牌保留 ${pctStr(w.retention ?? 0)}。未公开的意图仍需自行判断。`;
     case 'wea_cross_battle_shift':
-      return `临题有人言：「${weaName}」——其计跨场而设，若本场改弦更张、与上场异辙，「${sigName}」之积威自减。`;
+      return `「${weaName}」：改变文体或文风任一项，可减少 ${Number(w.layerReduce) || 1} 层适应。普通论战对比上次与此人的交手；殿试对比上一场殿试。没有对应历史时不触发。`;
     case 'wea_go_against_zeitgeist':
-      return `临题有人言：「${weaName}」——不必盲从当朝得势文风；只要所选文风仍与题材相得，便能削弱「${sigName}」。`;
+      return `「${weaName}」：选择非当朝得势的文风，且题材相性至少为 ${w.minAffinity ?? 0}，招牌保留 ${pctStr(w.retention ?? 0)}。本局没有风潮时不触发。`;
     case 'wea_hold_active_talent':
-      return `临题有人言：「${weaName}」——此人专候主动文心起势；若本场藏锋不用，便不让「${sigName}」借题发挥。`;
+      return `「${weaName}」：本场不使用任何主动文心，招牌保留 ${pctStr(w.retention ?? 0)}。已发动的主动文心不能通过之后停用来撤销。`;
     case 'wea_limited_extra_dice':
-      return `临题有人言：「${weaName}」——将追加骰控制在 ${Number(w.maxExtraDice) || 0} 枚以内，勿令骰组繁复，便可避其「${sigName}」审视。`;
+      return `「${weaName}」：追加骰不超过 ${Number(w.maxExtraDice) || 0} 枚（不含首枚免费骰），招牌保留 ${pctStr(w.retention ?? 0)}。达到上限后点「收笔结算」。`;
     case 'wea_stance_counter': {
-      const stance = mech && mech.intent && mech.intent.stance;
+      const stance = ctx?.intentLocked?.stance || mech?.intent?.stance;
       const need = w.counter && w.counter[stance];
       const action = need === 'base_dice' ? '只用基础骰稳住篇章'
         : need === 'one_extra' ? '恰追加一枚灵感骰冲破其守势'
           : need === 'change_style' ? '换用与上场不同的文体'
-            : need === 'change_manner' ? '换用与上场不同的文风' : '依其公开战策变招';
+            : need === 'change_manner' ? '换用与上场不同的文风（须有交手历史）'
+              : need === 'no_active' ? '本场不使用主动文心'
+                : need === 'different_dice' ? '最终至少有两枚骰，且至少两枚点数不同'
+                  : need === 'low_and_high' ? '最终骰组同时含有不高于 2 点和不低于 5 点的骰'
+                    : '查看公开战策对应条件';
       return `临题有人言：「${weaName}」——对手已明示战策；可${action}，削弱「${sigName}」。`;
     }
     default:
@@ -240,8 +268,8 @@ export function settleLines(npc, mechOut, ctx) {
   // ① 招牌是否被摊薄（破绽先于招牌：retention<1 说明被针对）
   let retLabel = '';
   if (wea.hit) {
-    if (wea.shutdownLevel === 'full') retLabel = `「${sigName}」被尽数压制`;
-    else if (wea.shutdownLevel === 'partial') retLabel = `「${sigName}」至多发挥${pctStr(wea.retention)}`;
+    if (wea.retention === 0) retLabel = `「${sigName}」被尽数压制`;
+    else if (Number(wea.retention) < 1) retLabel = `「${sigName}」保留${pctStr(wea.retention)}效果`;
     else retLabel = `「${sigName}」见势而衰`;
   } else if (wea.hit === false && (tri.level === 'main' || tri.level === 'weak')) {
     retLabel = `「${sigName}」未遭针对，全力施展`;
