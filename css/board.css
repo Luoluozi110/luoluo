@@ -1,4 +1,5 @@
 /* board.css —— 镜头可切换棋盘（桌面默认 2.5D；?boardView=flat 显式关闭） */
+@import url('./board-polish.css?v=20260912board1');
 
 #scene {
   position: absolute; inset: 0;

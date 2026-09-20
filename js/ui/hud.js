@@ -176,9 +176,15 @@ export class Hud {
     this.el.attrToggle.addEventListener('click', () => this.togglePanel('attr'));
     this.el.talentToggle.addEventListener('click', () => this.togglePanel('talent'));
     this.el.inspToggle.addEventListener('click', () => this.togglePanel('insp'));
+    this.el.roll.addEventListener('click', () => {
+      if (window.matchMedia?.('(max-width: 900px)').matches) {
+        this._collapse = { attr: true, talent: true, insp: true };
+        this._applyCollapse();
+      }
+    });
     this.el.sideQuest.addEventListener('click', () => { if (this.onSideQuest) this.onSideQuest(); });
     this._collapse = this._loadCollapse();
-    this._bp = !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
+    this._bp = !!(window.matchMedia && window.matchMedia('(max-width: 900px)').matches);
     this._rollOn = true;        // 当前是否处于「可掷骰」的空闲回合
     this._planAvailable = false; // 是否拥有布局谋篇且尚未定策
     this._shortLandscapeApplied = false;
@@ -394,7 +400,9 @@ export class Hud {
 
   /** 面板收起/展开：移动端默认收起以露出棋盘；状态轻量持久化到 localStorage */
   _loadCollapse() {
-    const mobile = !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
+    const mobile = !!(window.matchMedia && window.matchMedia('(max-width: 900px)').matches);
+    // 手机和平板每次进入棋盘先露出路线，不继承桌面或上一局的展开面板。
+    if (mobile) return { attr: true, talent: true, insp: true };
     let saved = null;
     try { saved = JSON.parse(localStorage.getItem('feihua_panel_collapsed') || 'null'); } catch (_) {}
     return {
@@ -418,7 +426,11 @@ export class Hud {
   }
   togglePanel(key) {
     if (key !== 'attr' && key !== 'talent' && key !== 'insp') return;
-    this._collapse[key] = !this._collapse[key];
+    const opening = this._collapse[key];
+    if (window.matchMedia?.('(max-width: 900px)').matches) {
+      this._collapse = { attr: true, talent: true, insp: true };
+    }
+    this._collapse[key] = !opening;
     this._saveCollapse();
     this._applyCollapse();
     const map = { attr: this.el.attrToggle, talent: this.el.talentToggle, insp: this.el.inspToggle };
@@ -431,11 +443,11 @@ export class Hud {
     void toggle.offsetWidth;   // 强制回流以重启动画
     toggle.classList.add('bounce');
   }
-  /** 视口跨越 600px 阈值（横竖屏切换 / 缩放）时，恢复该模式的默认收起态 */
+  /** 视口跨越 900px 阈值（横竖屏切换 / 缩放）时，恢复该模式的默认收起态 */
   _onViewportChange() {
     if (this._vpTimer) clearTimeout(this._vpTimer);
     this._vpTimer = setTimeout(() => {
-      const mobile = !!(window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
+      const mobile = !!(window.matchMedia && window.matchMedia('(max-width: 900px)').matches);
       const shortLandscape = !!(window.matchMedia && window.matchMedia('(orientation: landscape) and (max-height: 500px)').matches);
       if (mobile === this._bp) {
         // 横屏短视口不改变玩家已保存偏好，但在初次进入时默认收起高密度 HUD。
