@@ -1,0 +1,37 @@
+/* 第三轮：局部、短促反馈；长期静态定位由第一轮 current 样式负责。 */
+#scene .board-ink-trace {
+  position: absolute; left: 10px; top: 14px; width: 9px; height: 15px;
+  border-radius: 65% 35% 55% 45%; background: #416c5c;
+  box-shadow: 13px 5px 0 -1px #416c5c; pointer-events: none;
+}
+#scene .board-landing-ripple {
+  position: absolute; inset: -6px; border-radius: 12px;
+  border: 2px solid #ba944c; pointer-events: none;
+}
+#scene .garden-shore::before {
+  animation: gardenWater 9s ease-in-out infinite;
+}
+#scene .garden-shore::after {
+  animation: gardenWaterOuter 12s ease-in-out infinite;
+}
+@keyframes gardenWater {
+  0%, 100% { transform: scale(.98); opacity: .35; }
+  50% { transform: scale(1.035); opacity: .7; }
+}
+@keyframes gardenWaterOuter {
+  0%, 100% { transform: rotate(-8deg) scale(.99); opacity: .3; }
+  50% { transform: rotate(-8deg) scale(1.025); opacity: .6; }
+}
+#scene[data-motion-paused="true"] .petal,
+#scene[data-motion-paused="true"] .garden-shore::before,
+#scene[data-motion-paused="true"] .garden-shore::after { animation-play-state: paused; }
+html[data-quality="low"] #scene .garden-shore::before,
+html[data-quality="low"] #scene .garden-shore::after { animation: none; }
+html[data-quality="low"] #scene .petal { display: none; }
+html[data-quality="low"] #scene #piece,
+html[data-quality="low"] #scene #pieceShadow { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  #scene .garden-shore::before, #scene .garden-shore::after { animation: none; }
+  #scene #piece, #scene #pieceShadow, #scene .cell { transition: none; }
+  #scene .board-ink-trace, #scene .board-landing-ripple { display: none; }
+}

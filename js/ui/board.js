@@ -3,6 +3,7 @@ import { glyph, cellGlyphKey, FAR_HILLS, ensureDefs } from './svg.js?v=20260831f
 import { getBudget } from './quality.js';
 import { play } from './audio.js';
 import { SEASON_ART, waypointArt, gardenBounds, waypointOffset } from './board-scenery.js?v=20260922garden2';
+import { BoardMotion } from './board-motion.js?v=20260922motion3';
 import {
   applyBoardViewMode,
   applyEffectiveBoardViewMode,
@@ -71,6 +72,7 @@ export class BoardView {
   constructor(cfg, root) {
     this.cfg = cfg;
     this.root = root;
+    this.motion = new BoardMotion(root);
     const search = typeof location !== 'undefined' ? location.search : '';
     let storedAngle = '';
     try { storedAngle = localStorage.getItem(VIEW_ANGLE_STORE_KEY) || ''; } catch (_) { /* ignore */ }
@@ -98,6 +100,7 @@ export class BoardView {
   }
 
   build() {
+    this.motion.clear();
     ensureDefs();   // 注入共享体积渐变/柔影（格子图标/名胜/徽记引用）
     this._waypointRects = [];
     const cfg = this.cfg;
@@ -292,6 +295,7 @@ export class BoardView {
 
   /** 分阶段显现：童生/秀才只见外圈，举人显现中圈，进士及殿试显现内圈。 */
   setVisibleRing(ringId = 'outer') {
+    this.motion.clear();
     if (this.cfg.board.layout !== 'concentric_spiral') {
       this._layoutGarden('outer');
       return;
@@ -328,8 +332,10 @@ export class BoardView {
   revealRouteState(state) {
     if (this.cfg.board.layout !== 'concentric_spiral') return;
     const ring = this.routeRingOf(state);
+    const changed = ring !== this.visibleRing;
     this.setVisibleRing(ring);
     this.setPiecePos(this.cellIdOf(state));
+    if (changed) this.motion.reveal([...this.cellEls.values()], this.cellEls.get(this._pieceCellId));
   }
 
   _boardSpan() {
@@ -609,16 +615,16 @@ export class BoardView {
     // 数量来自当前档位预算；系统要求减少动态效果时直接不生成（decorative）
     const reduced = window.matchMedia &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const n = reduced ? 0 : getBudget().petals;
+    const n = reduced || !this.motion.enabled ? 0 : Math.min(8, getBudget().petals);
     for (let i = 0; i < n; i++) {
       const p = document.createElement('div');
       p.className = 'petal';
       p.style.left = Math.random() * 100 + '%';
       p.style.setProperty('--dx', (Math.random() * 160 - 80) + 'px');
       p.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
-      p.style.animationDuration = (9 + Math.random() * 9) + 's';
+      p.style.animationDuration = (16 + Math.random() * 10) + 's';
       p.style.animationDelay = (-Math.random() * 14) + 's';
-      p.style.opacity = 0.35 + Math.random() * 0.45;
+      p.style.opacity = 0.2 + Math.random() * 0.2;
       const sc = 0.6 + Math.random() * 0.9;
       p.style.width = p.style.height = (10 * sc) + 'px';
       this.root.appendChild(p);
@@ -627,6 +633,7 @@ export class BoardView {
 
   /** 运行时切换档位：重建花瓣与地图贴图，CSS 覆盖部分由 data-quality 实时生效。 */
   applyQuality() {
+    this.motion.clear();
     this.root.querySelectorAll('.petal').forEach(p => p.remove());
     this.spawnPetals();
     this.applyMapTexture();
@@ -686,11 +693,9 @@ export class BoardView {
 
   async movePiece(state) {
     const id = this.cellIdOf(state);
+    const fromCell = this.cellEls.get(this._pieceCellId);
     play('move', { index: Number(state.routeIndex ?? state.pos) || 0 });
-    this.setPiecePos(id);
-    this.piece.classList.remove('hop');
-    void this.piece.offsetWidth;
-    this.piece.classList.add('hop');
+    if (this.setPiecePos(id)) this.motion.step(fromCell, this.piece.querySelector('.piece-body'));
     await sleep(150);
   }
 
@@ -702,13 +707,12 @@ export class BoardView {
     this.clearHint();
     this.setVisibleRing(hidden.id || 'secret');
     this.setPiecePos(Number(hidden.startCellId) || Number(cells[0].id));
+    this.motion.reveal([...this.cellEls.values()], this.cellEls.get(this._pieceCellId));
     await sleep(360);
     for (const [index, cell] of cells.slice(1).entries()) {
       play('move', { index, final: index === cells.length - 2 });
-      this.setPiecePos(cell.id);
-      this.piece.classList.remove('hop');
-      void this.piece.offsetWidth;
-      this.piece.classList.add('hop');
+      const fromCell = this.cellEls.get(this._pieceCellId);
+      if (this.setPiecePos(cell.id)) this.motion.step(fromCell, this.piece.querySelector('.piece-body'));
       await sleep(130);
     }
   }
@@ -719,7 +723,10 @@ export class BoardView {
       ? this.routeCellId(cell.routeIndex ?? cell.id)
       : cell.id;
     const el = this.cellEls.get(id);
-    if (el) el.classList.add('active');
+    if (el) {
+      el.classList.add('active');
+      this.motion.land(el);
+    }
   }
 
   /** 掷骰前提示 1–6 落点光圈 */
