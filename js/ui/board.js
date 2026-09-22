@@ -2,6 +2,7 @@
 import { glyph, cellGlyphKey, FAR_HILLS, ensureDefs } from './svg.js?v=20260831firstrun1';
 import { getBudget } from './quality.js';
 import { play } from './audio.js';
+import { SEASON_ART, waypointArt, gardenBounds, waypointOffset } from './board-scenery.js?v=20260922garden2';
 import {
   applyBoardViewMode,
   applyEffectiveBoardViewMode,
@@ -98,6 +99,7 @@ export class BoardView {
 
   build() {
     ensureDefs();   // 注入共享体积渐变/柔影（格子图标/名胜/徽记引用）
+    this._waypointRects = [];
     const cfg = this.cfg;
     const isSpiral = cfg.board.layout === 'concentric_spiral';
     const maxGrid = isSpiral ? Math.max(...(cfg.board.rings || []).map(r => Number(r.grid) || 0), GRID) : GRID;
@@ -149,11 +151,14 @@ export class BoardView {
       left: (PAD + 1.4) * UNIT + 'px', top: (PAD + 1.4) * UNIT + 'px',
       width: (baseGrid - 2.8) * UNIT + 'px', height: (baseGrid - 2.8) * UNIT + 'px'
     });
-    world.innerHTML = `<div class="world-halo"></div>
+    world.innerHTML = `<div class="garden-shore" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="world-halo"></div>
       <div class="world-art world-ground" data-art-version="peach-academy-island-v1" data-texture-tier="${mapTexture.tier}">
         ${mapPictureMarkup(mapTexture)}
       </div>
-      <div class="world-billboards" aria-hidden="true"></div>`;
+      <div class="world-billboards" aria-hidden="true"></div>
+      <div class="garden-seasons" aria-hidden="true">${Object.entries(SEASON_ART).map(([season, art]) =>
+        `<div class="garden-season garden-${season}">${art}</div>`).join('')}</div>`;
     board.appendChild(world);
 
     // 主环或三圈同心方环格子
@@ -260,6 +265,24 @@ export class BoardView {
     const glyphKey = cellGlyphKey(cell);
     el.dataset.cellIcon = glyphKey;
     el.innerHTML = `<div class="glyph">${glyph(glyphKey) || glyph(cell.type)}</div><div class="cname">${cell.name}</div>`;
+    const architecture = waypointArt(cell);
+    const bounds = gardenBounds(this.cfg.board, ringId);
+    if (architecture && ringId !== 'secret' && bounds.size >= 164) {
+      const offset = waypointOffset(col, row, bounds);
+      const rect = { x: p.x + offset.left, y: p.y + offset.top, ring: ringId };
+      const occupied = this._waypointRects.some(r => r.ring === ringId &&
+        Math.abs(r.x - rect.x) < 76 && Math.abs(r.y - rect.y) < 74);
+      if (!occupied) {
+        const decoration = document.createElement('span');
+        decoration.className = 'waypoint-art';
+        decoration.setAttribute('aria-hidden', 'true');
+        decoration.style.left = offset.left + 'px';
+        decoration.style.top = offset.top + 'px';
+        decoration.innerHTML = architecture;
+        el.appendChild(decoration);
+        this._waypointRects.push(rect);
+      }
+    }
     el.title = `${cell.id}｜${cell.name}`;
     board.appendChild(el);
     this.coords.set(cell.id, p);
@@ -269,9 +292,13 @@ export class BoardView {
 
   /** 分阶段显现：童生/秀才只见外圈，举人显现中圈，进士及殿试显现内圈。 */
   setVisibleRing(ringId = 'outer') {
-    if (this.cfg.board.layout !== 'concentric_spiral') return;
+    if (this.cfg.board.layout !== 'concentric_spiral') {
+      this._layoutGarden('outer');
+      return;
+    }
     const allowed = new Set(['outer', 'middle', 'inner', 'secret']);
     this.visibleRing = allowed.has(ringId) ? ringId : 'outer';
+    this._layoutGarden(this.visibleRing);
     this.root.classList.toggle('secret-final-on', this.visibleRing === 'secret');
     this.cellEls.forEach((el, id) => {
       const ring = this.cellRings.get(id);
@@ -281,6 +308,17 @@ export class BoardView {
     });
     // 阶段切换前棋子可能已走到尚未显现的路线，先隐去；切换后立即恢复。
     if (this._pieceCellId != null) this.setPiecePos(this._pieceCellId);
+  }
+
+  /** 景观随实际圈层收拢；秘密终局只收起装饰，不暴露隐藏路线。 */
+  _layoutGarden(ringId) {
+    this.root.dataset.sceneryRing = ringId;
+    const world = this.root.querySelector('.world-scene');
+    if (!world) return;
+    const bounds = gardenBounds(this.cfg.board, ringId === 'secret' ? 'inner' : ringId);
+    world.style.left = world.style.top = bounds.inset + 'px';
+    world.style.width = world.style.height = bounds.size + 'px';
+    world.classList.toggle('garden-small', bounds.size < 420);
   }
 
   /**
@@ -735,10 +773,10 @@ const DICE_PIPS = {
 const PIECE_SVG = `<svg viewBox="0 0 40 56" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="pcRobe" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#5b93b4"/><stop offset=".55" stop-color="#3f6f8f"/><stop offset="1" stop-color="#2c4f6c"/>
+      <stop offset="0" stop-color="#729b87"/><stop offset=".55" stop-color="#427465"/><stop offset="1" stop-color="#284e46"/>
     </linearGradient>
     <linearGradient id="pcRobe2" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#73abc9"/><stop offset="1" stop-color="#4a7e9e"/>
+      <stop offset="0" stop-color="#a8c5a6"/><stop offset="1" stop-color="#648e75"/>
     </linearGradient>
     <radialGradient id="pcFace" cx="42%" cy="34%" r="72%">
       <stop offset="0" stop-color="#fff0db"/><stop offset="1" stop-color="#f0c6a4"/>
@@ -747,8 +785,10 @@ const PIECE_SVG = `<svg viewBox="0 0 40 56" xmlns="http://www.w3.org/2000/svg">
       <stop offset="0" stop-color="#3a332b"/><stop offset="1" stop-color="#191512"/>
     </linearGradient>
   </defs>
-  <ellipse cx="20" cy="53" rx="13" ry="3.4" fill="rgba(0,0,0,.3)"/>
-  <path d="M9 52c0-11 4-17 11-17s11 6 11 17z" fill="url(#pcRobe)"/>
+  <ellipse cx="20" cy="53" rx="16" ry="3" fill="#40685a" opacity=".25"/>
+  <path d="M5 49v3c0 4 30 4 30 0v-3" fill="#789c86" class="ta-qing ta-1"/>
+  <ellipse cx="20" cy="49" rx="15" ry="4" fill="#e7ead2" class="ta-gold ta-1"/>
+  <path d="M9 51c0-10 4-16 11-16s11 6 11 16z" fill="url(#pcRobe)" class="ta-qing ta-1"/>
   <path d="M14 52c0-9 2-14 6-14s6 5 6 14z" fill="url(#pcRobe2)"/>
   <ellipse cx="12.6" cy="44" rx="3" ry="9" fill="#ffffff" opacity=".16"/>
   <path d="M20 35l-4 8 4 3 4-3z" fill="#f0f0e6"/>

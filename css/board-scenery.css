@@ -1,0 +1,52 @@
+/* 第二轮：浅滩与园景衔接、四季花木、关键节点与青衫玉座。 */
+#scene .season-canopy { display: none; }
+#scene .world-scene { isolation: isolate; }
+#scene .world-art { width: 78%; z-index: 2; }
+#scene .world-art img {
+  filter: saturate(.86) drop-shadow(0 5px 5px #315f5526);
+  /* 仅柔化最外缘，建筑与山石主体保留原图。 */
+  mask-image: radial-gradient(ellipse at 50% 51%, #000 56%, #000e6 65%, transparent 74%);
+}
+#scene .world-halo {
+  width: 82%; aspect-ratio: 1.12;
+  background: radial-gradient(ellipse, #a8cabc52 30%, #b9d5c738 58%, transparent 73%);
+  box-shadow: none; opacity: 1;
+}
+.garden-shore {
+  position: absolute; inset: 13% 10% 10%;
+  border-radius: 47% 53% 43% 57% / 55% 45% 55% 45%;
+  background: radial-gradient(ellipse at 50% 56%, #9cbeb361 25%, #c4d9c852 57%, #e5e7cf38 66%, transparent 72%);
+  pointer-events: none;
+}
+.garden-shore::before, .garden-shore::after {
+  content: ''; position: absolute; inset: 9% 3%;
+  border: 1px solid #8eafa12e;
+  border-radius: 46% 54% 43% 57% / 54% 46% 54% 46%;
+}
+.garden-shore::after { inset: 5% 0; border-color: #b8c6ab45; transform: rotate(-8deg); }
+.garden-shore i {
+  position: absolute; bottom: 10%; left: 25%; width: 18px; height: 9px;
+  border-radius: 60% 40%; background: #a1b4a47a; transform: rotate(-20deg);
+  box-shadow: 22px 8px 0 -1px #b6c1a982, 42px 12px 0 -2px #a8bba175;
+}
+.garden-shore i:nth-child(2) { left: auto; right: 7%; bottom: 36%; transform: rotate(-65deg); }
+.garden-shore i:nth-child(3) { left: 9%; bottom: 65%; transform: rotate(30deg); }
+.garden-seasons { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.garden-season { position: absolute; width: 120px; height: 90px; opacity: .85; }
+.garden-season svg { width: 100%; height: 100%; }
+.garden-spring { left: 12px; bottom: 7px; }
+.garden-summer { left: 12px; top: 7px; }
+.garden-autumn { right: 12px; top: 7px; }
+.garden-winter { right: 12px; bottom: 7px; }
+#scene[data-scenery-ring="secret"] .garden-seasons,
+#scene[data-scenery-ring="secret"] .garden-shore,
+.garden-small .garden-seasons { display: none; }
+#scene .waypoint-art {
+  position: absolute; display: block; width: 64px; height: 62px;
+  pointer-events: none; transform-origin: 50% 100%;
+}
+#scene .waypoint-art svg { display: block; width: 100%; height: 100%; overflow: visible; }
+#scene #piece { width: 46px; height: 64px; margin-left: -2px; margin-top: -14px; }
+html[data-quality="low"] #scene .world-art img { filter: none; }
+html[data-quality="low"] #scene .waypoint-art g { filter: none; }
+html[data-quality="low"] .garden-shore::after { display: none; }
