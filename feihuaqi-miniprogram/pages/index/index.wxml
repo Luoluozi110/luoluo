@@ -1,0 +1,21 @@
+<view class="menu">
+  <view class="menu__title">文心棋</view>
+  <view class="menu__sub">{{greeting}}</view>
+
+  <view class="menu__group">
+    <view class="fh-btn fh-btn--primary" bindtap="startGame">开始游戏</view>
+    <view class="fh-btn {{hasRun ? '' : 'fh-btn--disabled'}}" bindtap="continueGame">
+      继续游戏
+    </view>
+    <view class="fh-btn" data-key="tutorial" bindtap="openSub">入门卷</view>
+    <view class="fh-btn" data-key="settings" bindtap="openSub">设置</view>
+    <view class="fh-btn" bindtap="openRank">排行榜</view>
+  </view>
+
+  <view class="menu__links">
+    <text class="menu__link" data-key="codex" bindtap="openSub">传世名篇</text>
+    <text class="menu__link" data-key="album" bindtap="openSub">图鉴阁</text>
+  </view>
+
+  <view class="menu__hint" wx:if="{{!cloudReady}}">当前为离线模式，榜单与云存档暂不可用</view>
+</view>

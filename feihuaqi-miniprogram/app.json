@@ -1,0 +1,55 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/school/school",
+    "pages/loadout/loadout",
+    "pages/game/game",
+    "pages/rank/rank"
+  ],
+  "subpackages": [
+    {
+      "root": "pkg-codex",
+      "name": "codex",
+      "pages": [
+        "pages/album/album",
+        "pages/codex/codex"
+      ]
+    },
+    {
+      "root": "pkg-meta",
+      "name": "meta",
+      "pages": [
+        "pages/tutorial/tutorial",
+        "pages/settings/settings"
+      ]
+    },
+    {
+      "root": "pkg-side",
+      "name": "side",
+      "pages": [
+        "pages/sidequest/sidequest"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/index/index": {
+      "network": "wifi",
+      "packages": ["codex"]
+    },
+    "pages/game/game": {
+      "network": "all",
+      "packages": ["side"]
+    }
+  },
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#f3ece0",
+    "navigationBarTitleText": "文心棋",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f3ece0"
+  },
+  "renderer": "webview",
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json",
+  "style": "v2"
+}

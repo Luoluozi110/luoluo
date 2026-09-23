@@ -1,0 +1,9 @@
+{
+  "name": "getRank",
+  "version": "1.0.0",
+  "description": "排行榜分页读取",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

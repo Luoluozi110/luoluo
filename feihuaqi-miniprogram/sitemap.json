@@ -1,0 +1,23 @@
+{
+  "desc": "飞花棋搜索索引配置，决定哪些页面允许被微信搜一搜收录",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "pages/index/index",
+      "params": [],
+      "matching": "inclusive"
+    },
+    {
+      "action": "allow",
+      "page": "pages/rank/rank"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/game/game"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/loadout/loadout"
+    }
+  ]
+}

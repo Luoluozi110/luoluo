@@ -1,0 +1,152 @@
+{
+  "initial": {
+    "shi": 5,
+    "ci": 5,
+    "lian": 5,
+    "bi": 5,
+    "xue": 5,
+    "si": 5
+  },
+  "schoolBonus": 3,
+  "quizCorrectGain": 4,
+  "zeCellGain": 1,
+  "branchLandmarkGain": 5,
+  "battleWinGain": [
+    3,
+    5
+  ],
+  "battleDrawGain": {
+    "style": 1
+  },
+  "battleLoseGain": {
+    "style": 2
+  },
+  "battleFormula": {
+    "styleCommonMult": 7,
+    "styleSpecialtyMult": 3,
+    "basicMult": 4
+  },
+  "abilitySystem": {
+    "version": 4,
+    "growth": {
+      "familiarityNeed": 3,
+      "insightWin": 3,
+      "insightDraw": 3,
+      "insightLose": 2,
+      "insightUpset": 1,
+      "firstStylePerPhase": 1,
+      "baseCost": 4,
+      "catchupGap": 6,
+      "catchupCost": 3,
+      "specialistGap": 6,
+      "specialistCost": 5
+    },
+    "study": {
+      "baseInsightCap": 6,
+      "insightCapPerXue": 3,
+      "baseSlots": 1,
+      "slotPerXue": 10,
+      "maxSlots": 3,
+      "progressNeed": 75,
+      "progressPerXue": 1,
+      "slotMilestones": [
+        10,
+        20
+      ]
+    },
+    "strategy": {
+      "baseCharges": 1,
+      "maxCharges": 3,
+      "chargePerSi": 10,
+      "capPerSi": 10,
+      "maxCap": 6,
+      "defaultPlan": "guard",
+      "plans": {
+        "steady": {
+          "name": "徐行拾句",
+          "desc": "自然移动骰为1～3时，消耗1构思，成稿进度+20格",
+          "lowMax": 3,
+          "fragmentGain": 20
+        },
+        "guard": {
+          "name": "留白养气",
+          "desc": "论战失败时，消耗1构思，减少2点败北灵感损失",
+          "lossReduce": 2
+        },
+        "switch": {
+          "name": "换韵生新",
+          "desc": "文体不同于上一场时，消耗 1 构思，获得 6% 作品加成",
+          "scorePct": 600
+        }
+      }
+    },
+    "manuscript": {
+      "baseCap": 2,
+      "capPerBi": 6,
+      "maxCap": 8,
+      "fragmentPerBi": 1,
+      "fragmentNeed": 40,
+      "fragmentFastBi": 16,
+      "bonusPageBi": 24,
+      "polishCost": 2,
+      "polishDiscount": 2,
+      "publishCost": 3,
+      "publishInspiration": 4,
+      "volumeCost": 5,
+      "volumeScore": 60,
+      "volumeCap": 2,
+      "volumeRefundBi": 32,
+      "volumeRefundPages": 1
+    }
+  },
+  "styleSystem": {
+    "shi": {
+      "name": "一气",
+      "lowMax": 3,
+      "lowMult": 8500,
+      "highMin": 4,
+      "highMult": 12500,
+      "singleDieInsight": 1
+    },
+    "ci": {
+      "name": "叠阕",
+      "highMin": 5,
+      "highPct": 800,
+      "firstExtraDiscount": 1
+    },
+    "lian": {
+      "name": "对举",
+      "switchPct": 800,
+      "catchupGap": 4,
+      "practiceBonus": 1,
+      "lossInspirationReduce": 1
+    }
+  },
+  "techniqueSystem": {
+    "version": 1,
+    "thresholds": [
+      10,
+      18,
+      28
+    ],
+    "nodes": {
+      "shi": [],
+      "ci": [],
+      "lian": []
+    }
+  },
+  "talentDropRate": 2200,
+  "diminish": {
+    "soft": 34,
+    "hard": 48,
+    "midRate": 5000,
+    "highRate": 2500,
+    "minGain": 1
+  },
+  "winScale": {
+    "min": 4500,
+    "max": 10000,
+    "exp": 1
+  },
+  "numericVersion": 3
+}

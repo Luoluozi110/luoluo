@@ -1,0 +1,31 @@
+<view class="board-page">
+  <view class="hud">
+    <view class="hud__row">
+      <text class="hud__label">第 {{vm.lap}} 圈 · 第 {{vm.round}} 回合</text>
+      <text class="hud__insp">灵感 {{vm.inspiration}}</text>
+    </view>
+    <view class="hud__attrs">
+      <view class="hud__attr" wx:for="{{vm.attrs}}" wx:key="key">
+        <text class="hud__attr-label">{{item.label}}</text>
+        <text class="hud__attr-value">{{item.value}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="board">
+    <view
+      class="tile tile--{{item.k}} {{item.a ? 'tile--active' : ''}}"
+      wx:for="{{vm.tiles}}"
+      wx:key="i"
+    >{{item.i}}</view>
+  </view>
+
+  <view class="actions">
+    <view class="fh-btn fh-btn--primary {{busy ? 'fh-btn--disabled' : ''}}" bindtap="roll">
+      掷骰行进
+    </view>
+    <view class="fh-btn" bindtap="openMenu">菜单</view>
+  </view>
+
+  <view class="step-hint" wx:if="{{lastStep}}">上一掷：{{lastStep}} 点</view>
+</view>

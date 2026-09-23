@@ -1,0 +1,96 @@
+.board-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.hud {
+  padding: 20rpx 24rpx;
+  background: var(--fh-paper-raised);
+  border: 0.5px solid var(--fh-line);
+  border-radius: 16rpx;
+}
+
+.hud__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 26rpx;
+}
+
+.hud__insp {
+  color: var(--fh-seal);
+}
+
+.hud__attrs {
+  margin-top: 16rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.hud__attr {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+}
+
+.hud__attr-label {
+  font-size: 22rpx;
+  color: var(--fh-ink-soft);
+}
+
+.hud__attr-value {
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.board {
+  margin-top: 24rpx;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 8rpx;
+}
+
+.tile {
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20rpx;
+  border-radius: 8rpx;
+  background: rgba(92, 84, 72, 0.06);
+  color: var(--fh-ink-soft);
+}
+
+.tile--active {
+  background: var(--fh-seal);
+  color: #ffffff;
+}
+
+.tile--exam {
+  background: rgba(178, 58, 46, 0.12);
+}
+
+.tile--debate {
+  background: rgba(63, 109, 17, 0.12);
+}
+
+.actions {
+  margin-top: auto;
+  padding-top: 32rpx;
+  display: flex;
+  gap: 20rpx;
+}
+
+.actions .fh-btn {
+  flex: 1;
+}
+
+.step-hint {
+  margin-top: 16rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--fh-ink-soft);
+}

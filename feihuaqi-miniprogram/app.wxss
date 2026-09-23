@@ -1,0 +1,43 @@
+/* 全局样式：变量集中在 page 上，组件内通过 var() 取用 */
+page {
+  --fh-ink: #2c2c2a;
+  --fh-ink-soft: #5f5e5a;
+  --fh-paper: #f3ece0;
+  --fh-paper-raised: #fffdf7;
+  --fh-seal: #b23a2e;
+  --fh-line: rgba(92, 84, 72, 0.18);
+
+  background: var(--fh-paper);
+  color: var(--fh-ink);
+  font-family: -apple-system, "PingFang SC", "Noto Serif CJK SC", serif;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.fh-card {
+  background: var(--fh-paper-raised);
+  border: 0.5px solid var(--fh-line);
+  border-radius: 16rpx;
+}
+
+.fh-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88rpx;
+  padding: 0 32rpx;
+  border-radius: 12rpx;
+  border: 0.5px solid var(--fh-line);
+  background: var(--fh-paper-raised);
+  font-size: 30rpx;
+}
+
+.fh-btn--primary {
+  background: var(--fh-seal);
+  border-color: var(--fh-seal);
+  color: #ffffff;
+}
+
+.fh-btn--disabled {
+  opacity: 0.45;
+}
