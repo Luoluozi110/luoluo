@@ -1,4 +1,25 @@
-<view class="ph">
-  <view class="ph__title">选择流派</view>
-  <view class="ph__hint">页面待实装</view>
+<view class="school">
+  <view class="school__head">
+    <view class="school__title">选择流派</view>
+    <view class="school__sub">流派决定开局的文风根底与修习路数</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="school__loading">正在展开卷轴…</view>
+
+  <view wx:else class="school__list">
+    <view
+      wx:for="{{schools}}"
+      wx:key="id"
+      class="school__card fh-card"
+      data-id="{{item.id}}"
+      bindtap="choose"
+      hover-class="school__card--hover"
+    >
+      <view class="school__name">{{item.name}}</view>
+      <view wx:if="{{item.desc}}" class="school__desc">{{item.desc}}</view>
+      <view class="school__enter">择此入门 ›</view>
+    </view>
+  </view>
+
+  <view class="school__back fh-btn" bindtap="back">返回主菜单</view>
 </view>

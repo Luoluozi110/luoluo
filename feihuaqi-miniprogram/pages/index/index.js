@@ -1,8 +1,8 @@
 // 主菜单
 // 入口顺序固定：开始游戏 / 继续游戏 / 入门卷 / 设置 / 说明
 // 次级入口：传世名篇 · 图鉴阁 · 存档码 · 版本测试
-const storage = require('../../utils/storage');
-const cloudUtil = require('../../utils/cloud');
+import storage from '../../utils/storage.js';
+import { silent } from '../../utils/cloud.js';
 
 const SUBPKG = {
   album: '/pkg-codex/pages/album/album',
@@ -20,6 +20,7 @@ Page({
 
   onLoad() {
     this.refresh();
+    this.reportChannel();
   },
 
   onShow() {
@@ -51,8 +52,10 @@ Page({
   },
 
   continueGame() {
+    // 读档需要在存档里还原引擎的完整运行时状态（含 Series/Map 等派生结构），
+    // 第一周只做「选流派 → 对局 → 结算」单向闭环，这里先行告知而非静默失败。
     if (!this.data.hasRun) return;
-    wx.navigateTo({ url: '/pages/game/game?mode=continue' });
+    wx.showToast({ title: '读档将在下一阶段实装', icon: 'none' });
   },
 
   openRank() {
@@ -89,6 +92,6 @@ Page({
   // 首屏静默上报渠道，用于投放归因
   reportChannel() {
     const app = getApp();
-    cloudUtil.silent('trackChannel', { channel: app && app.globalData.channel });
+    silent('trackChannel', { channel: app && app.globalData.channel });
   },
 });

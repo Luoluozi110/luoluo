@@ -16,7 +16,8 @@ const mpRoot = resolve(here, '..');
 const h5Root = resolve(mpRoot, '..', 'feihuaqi-playable');
 
 // 主包判定标准：启动链路「主菜单 → 选流派 → 装配 → 对局 → 结算 → 榜单」读得到的配置。
-// 实测合计约 379KB，与引擎核心相加后主包仍有充裕余量。
+// 硬依据：config.js 的 FILES 为必需清单，缺失即抛错阻断启动，必须全在主包。
+// events 属必需；narrative 虽为可选，但承载终局成卷模板，结算链路依赖，同样进主包。
 const MAIN_PKG = [
   'schools',
   'talents',
@@ -26,6 +27,8 @@ const MAIN_PKG = [
   'npc-mechanics',
   'board',
   'questions',
+  'events',
+  'narrative',
   'grades',
   'attrs',
   'numeric',
@@ -37,7 +40,6 @@ const MAIN_PKG = [
 
 const SUB_PKG = {
   'pkg-codex': ['album'],
-  'pkg-meta': ['events', 'narrative'],
   'pkg-side': ['sidequests', 'sidequest-npcs', 'sidequest-talents'],
 };
 

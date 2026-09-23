@@ -1,0 +1,9 @@
+# Node 测试镜像：引擎与 utils 的 .mjs 副本，每次测试重新生成
+test/.tmp/
+test/.check/
+
+# 云函数依赖由开发者工具上传
+cloudfunctions/*/node_modules/
+
+node_modules/
+.DS_Store

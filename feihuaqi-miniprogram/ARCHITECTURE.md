@@ -198,44 +198,111 @@ H5 版榜单跑在 Supabase 上。要保持双端统一，**小程序前端不�
 
 | 周期 | 目标 | 验收标准 |
 |---|---|---|
-| 第 1 周 | 工程骨架 + 引擎接入 + 单一对局闭环 | 选流派 → 对局 → 结算跑通，无音乐无美术 |
-| 第 2 周 | UI 全量重写 + 云开发接入 | 六维 HUD、战斗台、榜单可用，openid 建档成功 |
+| 第 1 周 | 工程骨架 + 引擎接入 + 单一对局闭环 | **已达成**：选流派 → 对局 → 结算跑通，命令行自检 5/5 局走到结算 |
+| 第 2 周 | UI 全量重写 + 云开发接入 | 真实掷骰与答题交互、战斗台、榜单可用，openid 建档成功 |
 | 第 3 周 | 资源优化 + 分享裂变 + 性能调优 | 主包 < 2MB，首屏 < 1.5s，战绩卡可分享 |
 | 第 4 周 | 提审 + 灰度 | 类目与资质确认完毕，体验版无阻断问题 |
 
 ---
 
-## 十、工程骨架说明
+## 十、第一周闭环（已实装）
 
-已生成可直接导入微信开发者工具的骨架：
+### 10.1 引擎是怎么搬过来的
+
+引擎保留了 ES Module 语法，只做两件事：
+
+1. **剥离 import 路径上的 `?v=xxx` 缓存戳** —— 那是浏览器破缓存用的约定，小程序解析不了。
+   全工程仅 5 处，由 `scripts/build-engine.mjs` 自动处理。
+2. **配置改为编译期注入** —— 小程序没有 `fetch`，更不能运行时读包内文件。
+   脚本把 `config/*.json` 编译成 `engine/embed-config.js`（纯 ES Module），
+   取代了原设计里逐条 `require(JSON)` 的做法，避免 require 与 import 混用。
+   原 JSON 已在 `project.config.json` 里排除出包体，不重复占用配额。
+
+`config-loader.js` 仍保留，用于分包未来注册自己携带的配置。
+
+### 10.2 驱动模型
+
+引擎的循环只有两步，UI 完全被动：
+
+```
+game.start(schoolId, { loadout, name })  →  while (!over) await game.playTurn()  →  ui.showResult(summary)
+```
+
+玩家答题、选文心、走支线这类交互，全部通过 `ui` 回调实现。
+第一周把这些回调收敛进 `utils/ui-adapter.js`：一律转成事件交给 sink，只对真正需要返回值的回调做「自动应答」。
+
+其中最关键的是 **战斗**：不必先实现六步对决 UI，
+引擎的 `session` 自带 `resolve(style, manner, dice)`，适配器直接调用它就完成了一场论战。
+
+### 10.3 三条 setData 纪律（本次已落到实处）
+
+引擎每回合会触发几十次 UI 回调（提示、状态同步、飘字）。若逐条 `setData`，渲染线程会被打爆。
+现在页面只做两件事：
+
+- `result` 事件 → 提交结算
+- 其余事件 → 回合结束后随视图模型一次性提交
+
+`Game` 实例挂在 `this.game`，从不进入 `data`。
+
+### 10.4 验收方式
+
+不依赖真机，命令行即可验证闭环：
+
+```bash
+node scripts/sync-config.mjs      # 拆分配置
+node scripts/build-engine.mjs     # 搬运引擎 + 编译配置
+node test/check-syntax.mjs        # 全量语法核验（ESM 走 .mjs 镜像）
+node test/smoke-run.mjs 5         # 引擎自检：直接拼装 Game 跑 5 局
+node test/smoke-runtime.mjs       # 装配层自检：走页面实际调用的那一层
+```
+
+自检会真实加载即将进包的文件（生成 `.mjs` 镜像而非另写实现），因此验证结果与上线表现一致。
+实测结果：5 局全部走到结算，覆盖 `palace`（殿试已毕）与 `fengbi`（灵感封笔）两种结局。
+
+### 10.5 当前限制（第二周要补的）
+
+- **战斗是自动应答**：固定选最强文体 + 随机单骰，AI 偏弱，因此自动推演常以封笔收场。真实交互接入后会显著不同。
+- **读档未实装**：存档要还原引擎完整运行时状态，工作量独立，主菜单「继续游戏」暂提示即将开放。
+- **桌面级 UI 尚未重写**：当前是信息密度优先的简化版 HUD，六步对决、装配屏仍是后续工作。
+
+---
+
+## 十一、工程目录
 
 ```
 feihuaqi-miniprogram/
 ├── app.js                 全局状态 + localStorage 适配注入 + 静默登录
 ├── app.json               路由、分包、预下载规则
 ├── app.wxss               全局设计变量
-├── sitemap.json           搜一搜收录配置
-├── project.config.json    工程配置（记得改 appid）
-├── config/                主包配置（由同步脚本生成）
-├── pages/                 主包五个页面
+├── project.config.json    工程配置（记得改 appid；config/ scripts/ test/ 已排除出包）
+├── engine/                从 H5 搬来的纯逻辑引擎（13 个文件，已剥离缓存戳）
+│   └── embed-config.js    由 config/*.json 编译而来
+├── config/                构建中间产物，不进包
+├── pages/
+│   ├── index/             主菜单
+│   ├── school/            选流派（闭环起点）
+│   ├── game/              对局与结算（闭环终点）
+│   └── loadout, rank/     占位，待实装
 ├── pkg-codex|pkg-meta|pkg-side/
 ├── utils/
+│   ├── engine-runtime.js  引擎装配层：startGame / playTurn / project
+│   ├── ui-adapter.js      UI 回调 → 事件流的适配器
 │   ├── storage.js         localStorage 同步适配器
-│   ├── config-loader.js   配置注册表
-│   ├── cloud.js           云调用封装（含离线降级）
-│   └── engine-host.js     引擎桥接层，mock/engine 双模式
+│   ├── config-loader.js   分包配置注册表
+│   └── cloud.js           云调用封装（含离线降级）
 ├── cloudfunctions/        authLogin / submitScore / getRank / trackChannel
-└── scripts/sync-config.mjs  配置拆分同步脚本
+├── scripts/               sync-config.mjs / build-engine.mjs
+└── test/                  check-syntax / smoke-run / smoke-runtime / inspect-state
 ```
 
 ### 使用步骤
 
 1. 开发者工具导入该目录，把 `project.config.json` 里的 `appid` 换成真实 AppID。
 2. 开启云开发，创建第六节中的集合，上传四个云函数并配置环境变量。
-3. 引擎移植完成后，把 `utils/engine-host.js` 的 `MODE` 从 `'mock'` 切到 `'engine'`。
-4. 内容配置有更新时运行 `node scripts/sync-config.mjs` 重新拆分包体。
+3. 内容配置有更新时：`node scripts/sync-config.mjs && node scripts/build-engine.mjs`。
+4. 改动后跑一遍 `test/` 下的自检。
 
-### 骨架的当前状态
+### 体积现状
 
-`engine-host.js` 处于 `mock` 模式，用假数据驱动界面，**UI 可以先于引擎开发完成**。
-除主菜单与对局页外，其余页面均为占位，等待实装。
+主包约 0.9MB（引擎 788KB + 页面与工具约 100KB），距 2MB 红线充裕。
+`config/` 与 `scripts/`、`test/` 已在打包时排除。

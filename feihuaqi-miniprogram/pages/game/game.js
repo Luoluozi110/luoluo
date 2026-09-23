@@ -1,133 +1,118 @@
 // 对局页
 //
 // 本页是整个架构的性能关键，遵守三条铁律：
-// 1) 引擎实例挂在 this.engine，绝不放进 this.data —— 它不参与渲染，不该被序列化。
-// 2) 只有 project() 产出的视图模型才进 data，且尽量用路径做增量更新。
-// 3) 一次玩家操作只产生一次 setData，动画期间的中间态不上报。
+// 1) Game 实例挂在 this.game，绝不放进 data —— 它不参与渲染，不该被 setData 序列化。
+// 2) 只有 project() 产出的视图模型才进 data。
+// 3) 引擎的 UI 回调每回合会触发几十次（提示、状态、飘字），
+//    绝不能逐条 setData；只挑结算与提示这类真正要显示的，回合结束后一次性提交。
 
-const { createEngine, project } = require('../../utils/engine-host');
-const storage = require('../../utils/storage');
-const cloudUtil = require('../../utils/cloud');
+import { startGame, playTurn, project, projectSummary } from '../../utils/engine-runtime.js';
+import { silent } from '../../utils/cloud.js';
+
+const AUTO_MAX_TURNS = 400;
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 Page({
   data: {
     vm: null,
     busy: false,
-    lastStep: 0,
+    running: false,
+    summary: null,
+    toast: '',
   },
 
   onLoad(query) {
-    // 非响应式字段：引擎、脏标记、动画计时器
-    this.engine = createEngine({ seed: Date.now() % 1000 });
-    this.pending = false;
-    this.mode = query && query.mode === 'continue' ? 'continue' : 'new';
-
-    if (this.mode === 'continue') {
-      this.restore();
+    this.pendingToast = '';
+    const schoolId = query && query.schoolId ? decodeURIComponent(query.schoolId) : '';
+    try {
+      const { game } = startGame({
+        schoolId,
+        playerName: '试笔',
+        sink: (evt) => this.onEngineEvent(evt),
+      });
+      this.game = game;
+      this.setData({ vm: project(game) });
+    } catch (err) {
+      console.error('[game] 开局失败', err);
+      wx.showToast({ title: '开局失败', icon: 'none' });
     }
-    this.flush();
   },
 
   onUnload() {
-    this.persist();
+    this.game = null;
   },
 
-  onHide() {
-    // 用户切后台时落盘，防止对局丢失
-    this.persist();
+  onEngineEvent(evt) {
+    if (evt.type === 'result') {
+      const summary = projectSummary(evt.summary);
+      this.setData({ summary });
+      this.submitScore(evt.summary);
+    } else if (evt.type === 'toast') {
+      // 只保留最后一条提示，回合结束时随视图模型一起提交
+      if (evt.text) this.pendingToast = evt.text;
+    }
   },
 
-  // 把引擎状态投影进 data。全量刷新只在初始化与恢复存档时使用。
-  flush() {
-    this.setData({ vm: project(this.engine.state) });
-  },
-
-  // 增量更新：动作类交互只改动几个字段，避免整体重传 tiles
-  patch(fields) {
-    const payload = {};
-    Object.keys(fields).forEach((key) => {
-      payload['vm.' + key] = fields[key];
-    });
-    this.setData(payload);
-  },
-
-  roll() {
-    if (this.data.busy) return;
+  nextTurn() {
+    if (this.data.busy || !this.game) return Promise.resolve();
+    if (this.game.s && this.game.s.over) return Promise.resolve();
     this.setData({ busy: true });
+    return playTurn(this.game)
+      .catch((err) => console.error('[game] playTurn 失败', err))
+      .then(() => this.flush());
+  },
 
-    const step = this.engine.roll();
-    const vm = project(this.engine.state);
+  // 自动推演到结算。第一周用它验证闭环；后续逐步替换为「掷骰 → 选格 → 作答」的真实交互。
+  async autoRun() {
+    if (this.data.running || !this.game) return;
+    this.setData({ running: true, busy: true });
 
-    // 合并成一次 setData：棋盘落点 + 数值 + 阶段同时更新
-    this.setData(
-      {
-        vm,
-        lastStep: step,
-      },
-      () => {
-        // 渲染完成后再解除锁定，避免连点导致状态错乱
-        setTimeout(() => this.setData({ busy: false }), 320);
+    let turns = 0;
+    while (this.game && this.game.s && !this.game.s.over && turns < AUTO_MAX_TURNS) {
+      await playTurn(this.game).catch((err) => {
+        console.error('[game] playTurn 失败', err);
+      });
+      turns++;
+      // 每 5 回合刷新一次界面并让出线程，避免长任务把渲染线程饿死
+      if (turns % 5 === 0) {
+        this.setData({ vm: project(this.game) });
+        await sleep(0);
       }
-    );
-
-    this.persist();
-  },
-
-  persist() {
-    try {
-      storage.setItem(
-        'fhq_current_run',
-        JSON.stringify({
-          t: Date.now(),
-          s: this.engine.state,
-        })
-      );
-    } catch (err) {
-      console.error('[game] persist failed', err);
     }
+    this.flush();
+    this.setData({ running: false });
   },
 
-  restore() {
-    const raw = storage.getItem('fhq_current_run');
-    if (!raw) return;
-    try {
-      const parsed = JSON.parse(raw);
-      if (parsed && parsed.s) this.engine.state = parsed.s;
-    } catch (err) {
-      console.warn('[game] restore failed, start new run', err);
-    }
-  },
-
-  openMenu() {
-    wx.showActionSheet({
-      itemList: ['保存进度', '返回主菜单'],
-      success: (res) => {
-        if (res.tapIndex === 0) {
-          this.persist();
-          wx.showToast({ title: '已存档', icon: 'success' });
-        } else if (res.tapIndex === 1) {
-          this.persist();
-          wx.navigateBack();
-        }
-      },
-      fail: () => {},
+  flush() {
+    if (!this.game) return;
+    this.setData({
+      vm: project(this.game),
+      busy: false,
+      toast: this.pendingToast,
     });
+    this.pendingToast = '';
   },
 
-  // 结算后提交分数：静默通道，失败不影响本机体验
-  submitScore(result) {
+  submitScore(summary) {
+    if (!summary) return;
     const app = getApp();
-    cloudUtil.silent('submitScore', {
-      score: result.score,
-      grade: result.grade,
-      rounds: result.rounds,
-      channel: app && app.globalData.channel,
+    silent('submitScore', {
+      score: Number(summary.total) || 0,
+      grade: (summary.grade && summary.grade.id) || '',
+      rounds: Number(summary.state && summary.state.turn) || 0,
+      channel: app && app.globalData ? app.globalData.channel : 'direct',
     });
+  },
+
+  backToMenu() {
+    wx.navigateBack();
   },
 
   onShareAppMessage() {
+    const turn = this.data.vm ? this.data.vm.turn : 0;
     return {
-      title: `我在文心棋第 ${this.data.vm ? this.data.vm.round : 0} 回合，来比一比`,
+      title: `我在文心棋走到第 ${turn} 回合，来比一比`,
       path: '/pages/index/index?ch=ingame_share',
     };
   },

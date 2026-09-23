@@ -1,31 +1,61 @@
 <view class="board-page">
-  <view class="hud">
-    <view class="hud__row">
-      <text class="hud__label">第 {{vm.lap}} 圈 · 第 {{vm.round}} 回合</text>
-      <text class="hud__insp">灵感 {{vm.inspiration}}</text>
+  <view wx:if="{{!summary}}" class="hud">
+    <view class="hud__top">
+      <text class="hud__title">{{vm.schoolName}} · 第 {{vm.lap}} 圈</text>
+      <text class="hud__turn">回合 {{vm.turn}}</text>
     </view>
+
+    <view class="hud__insp">
+      <text class="hud__label">灵感</text>
+      <view class="hud__bar">
+        <view class="hud__bar-fill" style="width:{{vm.inspirationMax ? (vm.inspiration * 100 / vm.inspirationMax) : 0}}%"></view>
+      </view>
+      <text class="hud__num">{{vm.inspiration}}/{{vm.inspirationMax}}</text>
+    </view>
+
     <view class="hud__attrs">
-      <view class="hud__attr" wx:for="{{vm.attrs}}" wx:key="key">
-        <text class="hud__attr-label">{{item.label}}</text>
-        <text class="hud__attr-value">{{item.value}}</text>
+      <view class="attr" wx:for="{{vm.attrRows}}" wx:key="key">
+        <text class="attr__label">{{item.name}}</text>
+        <text class="attr__value">{{item.value}}</text>
       </view>
     </view>
-  </view>
 
-  <view class="board">
-    <view
-      class="tile tile--{{item.k}} {{item.a ? 'tile--active' : ''}}"
-      wx:for="{{vm.tiles}}"
-      wx:key="i"
-    >{{item.i}}</view>
-  </view>
-
-  <view class="actions">
-    <view class="fh-btn fh-btn--primary {{busy ? 'fh-btn--disabled' : ''}}" bindtap="roll">
-      掷骰行进
+    <view class="hud__meta">
+      <text>落点 {{vm.cellName}}</text>
+      <text>战绩 胜{{vm.battle.win}} 平{{vm.battle.draw}} 负{{vm.battle.loss}}</text>
     </view>
-    <view class="fh-btn" bindtap="openMenu">菜单</view>
   </view>
 
-  <view class="step-hint" wx:if="{{lastStep}}">上一掷：{{lastStep}} 点</view>
+  <scroll-view wx:if="{{!summary}}" class="log" scroll-y>
+    <view class="log__row" wx:for="{{vm.logRows}}" wx:key="index">
+      <text class="log__turn">{{item.turn}}</text>
+      <text class="log__text">{{item.text}}</text>
+    </view>
+  </scroll-view>
+
+  <view wx:if="{{toast}}" class="toast">{{toast}}</view>
+
+  <view wx:if="{{!summary}}" class="actions">
+    <view class="fh-btn" bindtap="nextTurn">{{busy ? '推演中…' : '下一步'}}</view>
+    <view class="fh-btn fh-btn--primary" bindtap="autoRun">{{running ? '推演中…' : '自动推演到结算'}}</view>
+    <view class="fh-btn" bindtap="backToMenu">返回</view>
+  </view>
+
+  <scroll-view wx:if="{{summary}}" class="result" scroll-y>
+    <view class="result__head">
+      <view class="result__title">{{summary.reasonText}}</view>
+      <view class="result__grade" wx:if="{{summary.grade}}">{{summary.grade.name}}</view>
+    </view>
+
+    <view class="result__total">总分 {{summary.total}}</view>
+
+    <view class="result__dim" wx:for="{{summary.sixDim}}" wx:key="key">
+      <text class="result__dim-name">{{item.name}}</text>
+      <text class="result__dim-score">{{item.score}}</text>
+    </view>
+
+    <view wx:if="{{summary.narrativeEpilogue}}" class="result__epilogue">{{summary.narrativeEpilogue}}</view>
+
+    <view class="fh-btn result__back" bindtap="backToMenu">返回主菜单</view>
+  </scroll-view>
 </view>
