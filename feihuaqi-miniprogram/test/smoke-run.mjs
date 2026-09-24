@@ -1,76 +1,91 @@
-// 排行榜读取
-// 榜单页会被高频访问，这里做两层设计：
-// 1) 正常走 leaderboard 集合排序分页
-// 2) 命中 topCache 集合时直接返回预热好的前 100 名，减少聚合开销
+// 无头自检：在 Node 里直接加载小程序工程内的引擎与 UI 适配器，跑完整一局。
 //
-// 用户昵称从 users 集合补齐，避免把昵称冗余写进榜单导致改名后不同步。
+// 这是第一周闭环的验收手段 —— 不必等真机，先用命令行确认
+// 「选流派 → 开局 → 逐回合推进 → 结算」这条链路真的能走完。
+//
+// 用法：node test/smoke-run.mjs [runs]
 
-const cloud = require('wx-server-sdk');
-cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
-const db = cloud.database();
+import { stage } from './_stage.mjs';
 
-const PAGE_SIZE = 20;
-const CACHE_LIMIT = 100;
+// staging 逻辑统一由 _stage.mjs 提供，避免两套镜像实现各写一份。
+const loader = await stage();
+const loadModule = (rel) => loader.load(rel);
 
-exports.main = async (event) => {
-  const page = Math.max(1, Number(event.page) || 1);
-  const openid = cloud.getWXContext().OPENID;
+async function runOnce(mods, opts) {
+  const { Game } = mods.game;
+  const { normalizeConfig } = mods.config;
+  const { RAW_CONFIG } = mods.embed;
+  const { createUiAdapter } = mods.adapter;
 
-  try {
-    if (page * PAGE_SIZE <= CACHE_LIMIT) {
-      const cached = await db.collection('topCache').doc('top100').get().catch(() => null);
-      if (cached && cached.data && Array.isArray(cached.data.list)) {
-        return {
-          code: 0,
-          list: cached.data.list.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-          me: await myRank(openid),
-          cached: true,
-        };
-      }
-    }
+  // normalizeConfig 会就地补派生结构，每次都要给干净副本，避免跨局污染
+  const cfg = normalizeConfig(JSON.parse(JSON.stringify(RAW_CONFIG)));
 
-    const res = await db
-      .collection('leaderboard')
-      .orderBy('score', 'desc')
-      .skip((page - 1) * PAGE_SIZE)
-      .limit(PAGE_SIZE)
-      .get();
+  const school = (cfg.schools || [])[opts.schoolIndex] || { id: null, name: '未知流派' };
+  if (!school.id) throw new Error('配置缺少流派，无法开局');
 
-    const openids = res.data.map((r) => r.openid);
-    const users = openids.length
-      ? await db.collection('users').where({ openid: db.command.in(openids) }).get()
-      : { data: [] };
-    const userMap = {};
-    users.data.forEach((u) => {
-      userMap[u.openid] = u;
-    });
+  const stats = { battles: 0, quizzes: 0, toasts: 0, states: 0, turns: 0, endReason: '', total: 0 };
+  let summary = null;
 
-    const list = res.data.map((r, idx) => ({
-      rank: (page - 1) * PAGE_SIZE + idx + 1,
-      openid: r.openid,
-      score: r.score,
-      grade: r.grade || '',
-      nickname: (userMap[r.openid] && userMap[r.openid].nickname) || '无名书生',
-      title: (userMap[r.openid] && userMap[r.openid].title) || '',
-    }));
+  // 本脚本的 sink 不返回 true，即全部走适配器的自动应答兜底，
+  // 因此它验的是「一个界面都没接时」链路是否仍能走完一局。
+  const ui = createUiAdapter({
+    sink(evt) {
+      if (evt.type === 'request') {
+        if (evt.key === 'battle') stats.battles++;
+        else if (evt.key === 'quiz') stats.quizzes++;
+      } else if (evt.type === 'toast') stats.toasts++;
+      else if (evt.type === 'state') stats.states++;
+      else if (evt.type === 'result') summary = evt.summary;
+    },
+  });
 
-    return { code: 0, list, me: await myRank(openid), cached: false };
-  } catch (err) {
-    console.error('[getRank] failed', err);
-    return { code: 500, message: '榜单读取失败', list: [] };
+  const game = new Game(cfg, ui, opts.rand || Math.random);
+  game.start(school.id, { loadout: [], name: opts.name || '试笔' });
+
+  let guard = 0;
+  const MAX_TURNS = 400; // 引擎自带 TURN_LIMIT=84，这里留足冗余防止异常死循环
+  while (game.s && !game.s.over && guard < MAX_TURNS) {
+    await game.playTurn();
+    guard++;
   }
-};
-
-async function myRank(openid) {
-  if (!openid) return null;
-  const better = await db
-    .collection('leaderboard')
-    .where({ score: db.command.gt(0) })
-    .orderBy('score', 'desc')
-    .get()
-    .catch(() => null);
-  if (!better) return null;
-  const idx = better.data.findIndex((r) => r.openid === openid);
-  if (idx === -1) return null;
-  return { rank: idx + 1, score: better.data[idx].score };
+  stats.turns = guard;
+  stats.endReason = (summary && summary.reason) || '(未结算)';
+  stats.total = (summary && summary.total) || 0;
+  stats.schoolName = school.name;
+  stats.summary = summary;
+  return stats;
 }
+
+async function main() {
+  const runs = Number(process.argv[2] || 3);
+
+  const mods = {
+    game: await loadModule('engine/game.js'),
+    config: await loadModule('engine/config.js'),
+    embed: await loadModule('engine/embed-config.js'),
+    adapter: await loadModule('utils/ui-adapter.js'),
+  };
+  console.log('模块加载成功\n');
+
+  let ok = 0;
+  for (let i = 0; i < runs; i++) {
+    try {
+      const r = await runOnce(mods, { schoolIndex: i % 3, name: `试笔${i + 1}` });
+      if (r.summary) ok++;
+      console.log(
+        `第 ${i + 1} 局：流派=${r.schoolName}  回合=${r.turns}  论战=${r.battles}  答题=${r.quizzes}  ` +
+          `结局=${r.endReason}  总分=${r.total}`
+      );
+    } catch (err) {
+      console.error(`第 ${i + 1} 局失败：`, err && err.stack ? err.stack.split('\n').slice(0, 6).join('\n') : err);
+    }
+  }
+
+  console.log(`\n${ok}/${runs} 局走完结算。${ok === runs ? '闭环通过。' : '存在未结算的对局，需排查。'}`);
+  if (ok !== runs) process.exit(1);
+}
+
+main().catch((err) => {
+  console.error('自检失败：', err);
+  process.exit(1);
+});

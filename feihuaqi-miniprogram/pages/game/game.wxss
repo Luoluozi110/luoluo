@@ -189,3 +189,123 @@
 .result__back {
   margin-top: 48rpx;
 }
+
+/* 对话框：引擎发问 → 玩家应答 */
+.dlg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 48rpx 32rpx;
+  box-sizing: border-box;
+  background: var(--fh-paper);
+  overflow-y: auto;
+}
+
+.dlg__panel {
+  background: var(--fh-paper-raised);
+  border: 0.5px solid var(--fh-line);
+  border-radius: 20rpx;
+  padding: 36rpx 32rpx 40rpx;
+}
+
+.dlg__title {
+  font-size: 38rpx;
+  font-weight: 500;
+}
+
+.dlg__scenario {
+  margin-top: 12rpx;
+  font-size: 25rpx;
+  color: var(--fh-ink-soft);
+  line-height: 1.7;
+}
+
+.dlg__stem {
+  margin-top: 24rpx;
+  font-size: 31rpx;
+  line-height: 1.8;
+}
+
+.dlg__hint {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+  color: var(--fh-ink-soft);
+}
+
+.dlg__opt {
+  margin-top: 20rpx;
+  padding: 22rpx 24rpx;
+  border: 0.5px solid var(--fh-line);
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.dlg__opt--on {
+  border-color: var(--fh-seal);
+  background: rgba(178, 58, 46, 0.06);
+}
+
+.dlg__opt--off {
+  opacity: 0.45;
+}
+
+.dlg__opt-desc {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: var(--fh-ink-soft);
+}
+
+.dlg__confirm {
+  margin-top: 36rpx;
+}
+
+.dlg__row {
+  margin-top: 20rpx;
+  display: flex;
+  gap: 16rpx;
+}
+
+.dlg__btn {
+  flex: 1;
+  min-height: 84rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.5px solid var(--fh-line);
+  border-radius: 12rpx;
+  font-size: 28rpx;
+}
+
+.dlg__pips {
+  margin-top: 24rpx;
+  display: flex;
+  gap: 16rpx;
+}
+
+.dlg__pip {
+  width: 84rpx;
+  height: 84rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.5px solid var(--fh-seal);
+  border-radius: 12rpx;
+  font-size: 36rpx;
+  color: var(--fh-seal);
+}
+
+.dlg__score {
+  margin-top: 20rpx;
+  font-size: 28rpx;
+}
+
+.dlg__verdict {
+  margin-top: 24rpx;
+  font-size: 60rpx;
+  font-weight: 500;
+  color: var(--fh-seal);
+}

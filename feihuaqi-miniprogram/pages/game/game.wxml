@@ -35,10 +35,136 @@
 
   <view wx:if="{{toast}}" class="toast">{{toast}}</view>
 
-  <view wx:if="{{!summary}}" class="actions">
-    <view class="fh-btn" bindtap="nextTurn">{{busy ? '推演中…' : '下一步'}}</view>
-    <view class="fh-btn fh-btn--primary" bindtap="autoRun">{{running ? '推演中…' : '自动推演到结算'}}</view>
+  <view wx:if="{{!summary && !dialog}}" class="actions">
+    <view class="fh-btn fh-btn--primary" bindtap="nextTurn">{{busy ? '推演中…' : '下一步'}}</view>
+    <view class="fh-btn" bindtap="autoRun">{{running ? '推演中…' : '自动推演到结算'}}</view>
     <view class="fh-btn" bindtap="backToMenu">返回</view>
+  </view>
+
+  <!-- 对话框：引擎发问 → 玩家应答 → Promise 兑现 -->
+  <view wx:if="{{dialog}}" class="dlg">
+    <view class="dlg__panel">
+      <!-- 答题 -->
+      <block wx:if="{{dialog.key === 'quiz'}}">
+        <view class="dlg__title">{{dialog.view.type === 'choice' ? '创作抉择' : '知识考课'}}</view>
+        <view wx:if="{{dialog.view.scenario}}" class="dlg__scenario">{{dialog.view.scenario}}</view>
+        <view class="dlg__stem">{{dialog.view.stem}}</view>
+        <view
+          class="dlg__opt {{dialog.selected === item.index ? 'dlg__opt--on' : ''}}"
+          wx:for="{{dialog.view.options}}"
+          wx:key="index"
+          data-index="{{item.index}}"
+          bindtap="selectOption"
+        >{{item.text}}</view>
+        <view class="dlg__confirm fh-btn fh-btn--primary" bindtap="confirmDialog">落笔作答</view>
+      </block>
+
+      <!-- 奇遇 -->
+      <block wx:elif="{{dialog.key === 'event'}}">
+        <view class="dlg__title">{{dialog.view.name}}</view>
+        <view wx:if="{{dialog.view.text}}" class="dlg__scenario">{{dialog.view.text}}</view>
+        <view
+          class="dlg__opt {{dialog.selected === item.index ? 'dlg__opt--on' : ''}}"
+          wx:for="{{dialog.view.options}}"
+          wx:key="index"
+          data-index="{{item.index}}"
+          bindtap="selectOption"
+        >
+          <text>{{item.text}}</text>
+          <text wx:if="{{item.desc}}" class="dlg__opt-desc">{{item.desc}}</text>
+        </view>
+        <view class="dlg__confirm fh-btn fh-btn--primary" bindtap="confirmDialog">就此决定</view>
+      </block>
+
+      <!-- 天象 -->
+      <block wx:elif="{{dialog.key === 'sky'}}">
+        <view class="dlg__title">{{dialog.view.name}}</view>
+        <view class="dlg__scenario">{{dialog.view.desc}}</view>
+        <view class="dlg__confirm fh-btn fh-btn--primary" bindtap="confirmDialog">记下了</view>
+      </block>
+
+      <!-- 博闻抉择 -->
+      <block wx:elif="{{dialog.key === 'bowen'}}">
+        <view class="dlg__title">博闻抉择</view>
+        <view class="dlg__scenario">所积所学，可作何种取舍？</view>
+        <view class="dlg__opt {{dialog.selected === 0 ? 'dlg__opt--on' : ''}}" data-index="0" bindtap="selectOption">专攻一体</view>
+        <view class="dlg__opt {{dialog.selected === 1 ? 'dlg__opt--on' : ''}}" data-index="1" bindtap="selectOption">以学驭战</view>
+        <view class="dlg__opt {{dialog.selected === 2 ? 'dlg__opt--on' : ''}}" data-index="2" bindtap="selectOption">兼收并蓄</view>
+        <view class="dlg__confirm fh-btn fh-btn--primary" bindtap="confirmDialog">依此而行</view>
+      </block>
+
+      <!-- 文心替换 -->
+      <block wx:elif="{{dialog.key === 'replaceTalent'}}">
+        <view class="dlg__title">新得文心 · {{dialog.view.incoming.name}}</view>
+        <view wx:if="{{dialog.view.incoming.desc}}" class="dlg__scenario">{{dialog.view.incoming.desc}}</view>
+        <view class="dlg__hint">文心已满，选择要替换的一枚（不选则放弃新文心）</view>
+        <view
+          class="dlg__opt {{dialog.selected === item.index ? 'dlg__opt--on' : ''}}"
+          wx:for="{{dialog.view.owned}}"
+          wx:key="index"
+          data-index="{{item.index}}"
+          bindtap="selectOption"
+        >{{item.name}}</view>
+        <view class="dlg__confirm fh-btn fh-btn--primary" bindtap="confirmDialog">定夺</view>
+      </block>
+
+      <!-- 战斗台 -->
+      <block wx:elif="{{dialog.key === 'battle'}}">
+        <view class="dlg__title">{{dialog.view.label}}</view>
+        <view class="dlg__scenario">{{dialog.view.npcName}} · {{dialog.view.topic}}</view>
+
+        <block wx:if="{{dialog.step === 'encounter'}}">
+          <view class="dlg__hint">挥毫论道：审题 → 选文体 → 选风格 → 掷灵感骰 → 算分对决</view>
+          <view class="dlg__confirm fh-btn fh-btn--primary" bindtap="battleNext">入场</view>
+        </block>
+
+        <block wx:elif="{{dialog.step === 'style'}}">
+          <view class="dlg__hint">选择出战文体</view>
+          <view
+            class="dlg__opt {{!item.usable ? 'dlg__opt--off' : ''}}"
+            wx:for="{{dialog.view.styles}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            bindtap="pickStyle"
+          >
+            <text>{{item.name}} · {{item.score}}</text>
+            <text class="dlg__opt-desc">{{item.hint}}</text>
+          </view>
+        </block>
+
+        <block wx:elif="{{dialog.step === 'manner'}}">
+          <view class="dlg__hint">选择文风（相性越高越得势）</view>
+          <view
+            class="dlg__opt"
+            wx:for="{{dialog.view.manners}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            bindtap="pickManner"
+          >
+            <text>{{item.name}} · 相性 {{item.affinity}}</text>
+          </view>
+        </block>
+
+        <block wx:elif="{{dialog.step === 'dice'}}">
+          <view class="dlg__hint">掷灵感骰（可追加，追加消耗灵感 {{dialog.extraCost}}）</view>
+          <view class="dlg__pips">
+            <text class="dlg__pip" wx:for="{{dialog.pips}}" wx:key="index">{{item}}</text>
+          </view>
+          <view class="dlg__score">骰面得分 {{dialog.diceScore}}</view>
+          <view class="dlg__row">
+            <view class="dlg__btn" bindtap="rollDice">掷骰</view>
+            <view class="dlg__btn" bindtap="extraDice">追加一骰</view>
+          </view>
+          <view class="dlg__confirm fh-btn fh-btn--primary" bindtap="finishBattle">收笔</view>
+        </block>
+
+        <block wx:elif="{{dialog.step === 'result'}}">
+          <view class="dlg__verdict">{{dialog.result.resultText}}</view>
+          <view class="dlg__score">我方 {{dialog.result.self}} · 对手 {{dialog.result.opp}}</view>
+          <view class="dlg__confirm fh-btn fh-btn--primary" bindtap="confirmDialog">收卷</view>
+        </block>
+      </block>
+    </view>
   </view>
 
   <scroll-view wx:if="{{summary}}" class="result" scroll-y>
