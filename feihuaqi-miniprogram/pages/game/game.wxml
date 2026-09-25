@@ -164,6 +164,91 @@
           <view class="dlg__confirm fh-btn fh-btn--primary" bindtap="confirmDialog">收卷</view>
         </block>
       </block>
+
+      <!-- 名胜：访胜抽签 / 入世另行 / 行路凝心 / 手记 / 离开 -->
+      <block wx:elif="{{dialog.key === 'scenic'}}">
+        <view class="dlg__title">{{dialog.view.cellName}}</view>
+        <view class="dlg__scenario">于此驻足，可作何选？</view>
+        <view class="dlg__opt" data-action="draw" bindtap="pickScenicAction">
+          <text>访胜抽签 · 耗灵感 {{dialog.view.cost}}</text>
+          <text class="dlg__opt-desc">当前灵感 {{dialog.view.inspiration}}{{dialog.view.enough ? '' : '（不足）'}}</text>
+        </view>
+        <view wx:if="{{dialog.view.canStartSideQuest}}" class="dlg__opt" data-action="sidequest" bindtap="pickScenicAction">
+          <text>入世另行</text>
+          <text class="dlg__opt-desc">踏上一条名胜支线</text>
+        </view>
+        <view class="dlg__opt" data-action="talent" bindtap="pickScenicAction">
+          <text>行路凝心</text>
+          <text class="dlg__opt-desc">以行旅所得换取文心</text>
+        </view>
+        <view wx:if="{{dialog.view.hasJournal}}" class="dlg__opt" data-action="journal" bindtap="pickScenicAction">
+          <text>翻看手记</text>
+        </view>
+        <view class="dlg__opt" data-action="leave" bindtap="pickScenicAction">
+          <text>览胜片刻，继续前行</text>
+        </view>
+      </block>
+
+      <!-- 三心择一 -->
+      <block wx:elif="{{dialog.key === 'scenicTalent'}}">
+        <view class="dlg__title">{{dialog.view.title}}</view>
+        <view wx:if="{{dialog.view.intro}}" class="dlg__scenario">{{dialog.view.intro}}</view>
+        <view wx:if="{{dialog.view.costText}}" class="dlg__hint">{{dialog.view.costText}}</view>
+        <view
+          class="dlg__opt {{dialog.selected === item.index ? 'dlg__opt--on' : ''}}"
+          wx:for="{{dialog.view.candidates}}"
+          wx:key="index"
+          data-index="{{item.index}}"
+          bindtap="selectOption"
+        >
+          <text>{{item.name}}</text>
+          <text wx:if="{{item.desc}}" class="dlg__opt-desc">{{item.desc}}</text>
+        </view>
+        <view class="dlg__confirm fh-btn fh-btn--primary" bindtap="confirmDialog">收入囊中</view>
+      </block>
+
+      <!-- 晋阶：科考阶段推进，为本章择一开卷句 -->
+      <block wx:elif="{{dialog.key === 'stageChange'}}">
+        <view class="dlg__title">晋阶 · {{dialog.view.phaseName}}</view>
+        <view wx:if="{{dialog.view.tactics.length}}" class="dlg__scenario">
+          <text wx:for="{{dialog.view.tactics}}" wx:key="index">{{item.text}}　</text>
+        </view>
+        <block wx:if="{{dialog.view.chapter}}">
+          <view class="dlg__hint">为本章择一开卷句</view>
+          <view
+            class="dlg__opt {{dialog.pickedLine === item.id ? 'dlg__opt--on' : ''}}"
+            wx:for="{{dialog.view.chapter.candidates}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            bindtap="pickLine"
+          >
+            <text>{{item.text}}</text>
+            <text wx:if="{{item.motif}}" class="dlg__opt-desc">{{item.motif}}</text>
+          </view>
+        </block>
+        <view class="dlg__confirm fh-btn fh-btn--primary" bindtap="confirmDialog">继续前行</view>
+      </block>
+
+      <!-- 殿试开场 -->
+      <block wx:elif="{{dialog.key === 'palaceIntro'}}">
+        <view class="dlg__title">殿试开场</view>
+        <view class="dlg__scenario">
+          <text wx:for="{{dialog.view.names}}" wx:key="index">{{item}}　</text>
+        </view>
+        <block wx:if="{{dialog.view.chapter}}">
+          <view class="dlg__hint">为殿试择一开卷句</view>
+          <view
+            class="dlg__opt {{dialog.pickedLine === item.id ? 'dlg__opt--on' : ''}}"
+            wx:for="{{dialog.view.chapter.candidates}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            bindtap="pickLine"
+          >
+            <text>{{item.text}}</text>
+          </view>
+        </block>
+        <view class="dlg__confirm fh-btn fh-btn--primary" bindtap="confirmDialog">入殿应题</view>
+      </block>
     </view>
   </view>
 

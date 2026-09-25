@@ -16,7 +16,18 @@ import { silent } from '../../utils/cloud.js';
 const AUTO_MAX_TURNS = 400;
 
 // 已实现真实界面的对话框；其余交给自动应答兜底
-const HANDLED = ['quiz', 'battle', 'event', 'sky', 'bowen', 'replaceTalent'];
+const HANDLED = [
+  'quiz',
+  'battle',
+  'event',
+  'sky',
+  'bowen',
+  'replaceTalent',
+  'scenic',
+  'scenicTalent',
+  'stageChange',
+  'palaceIntro',
+];
 
 // 战斗台六步：遭遇 → 审题 → 选文体 → 选风格 → 掷灵感骰 → 算分对决
 const BATTLE_STEP = {
@@ -95,6 +106,7 @@ Page({
       step: evt.key === 'battle' ? BATTLE_STEP.ENCOUNTER : 'main',
       view: evt.view,
       selected: -1,
+      pickedLine: '',
       pips: [],
       diceScore: 0,
       extraCost: 0,
@@ -130,7 +142,30 @@ Page({
       this.resolveDialog(dialog.selected >= 0 ? dialog.selected : null);
     } else if (key === 'battle') {
       this.resolveDialog(this.battleOut);
+    } else if (key === 'scenicTalent') {
+      // -1 表示放弃收取
+      this.resolveDialog(dialog.selected >= 0 ? dialog.selected : -1);
+    } else if (key === 'stageChange' || key === 'palaceIntro') {
+      // 章末开卷句：未选则用草稿里的默认句
+      const draft = dialog.view && dialog.view.chapter;
+      const id = dialog.pickedLine || (draft && draft.selectedId) || undefined;
+      this.resolveDialog(id);
     }
+  },
+
+  // 章节开卷句：点选候选
+  pickLine(e) {
+    this.setData({ 'dialog.pickedLine': String(e.currentTarget.dataset.id || '') });
+  },
+
+  /**
+   * 名胜去向。引擎接受：'draw'（访胜抽签）| 'sidequest' | 'talent' | 'journal' | false（离开）
+   * 点哪个就直接兑现，不必再确认——这一步本身就是一次选择。
+   */
+  pickScenicAction(e) {
+    const action = e.currentTarget.dataset.action;
+    if (action === 'leave') return this.resolveDialog(false);
+    this.resolveDialog(action);
   },
 
   resolveDialog(value) {

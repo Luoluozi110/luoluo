@@ -113,6 +113,89 @@ function projectTalentChoice(talent, list) {
   };
 }
 
+// 科考阶段的中文名，用于弹窗标题
+const PHASE_NAMES = {
+  child: '童生',
+  xiucai: '秀才',
+  juren: '举人',
+  jinshi: '进士',
+  palace: '殿试',
+  lap1: '初试',
+  lap2: '会试',
+  secret: '桃源',
+};
+
+// 章末「开卷句」候选：{ chapter, selectedId, candidates:[{id,text,motif,tone}] }
+function projectChapterDraft(draft) {
+  if (!draft || !Array.isArray(draft.candidates)) return null;
+  return {
+    chapter: draft.chapter || '',
+    selectedId: draft.selectedId || '',
+    candidates: draft.candidates.map((line) => ({
+      id: line.id,
+      text: line.text,
+      motif: line.motif || '',
+      tone: line.tone || '',
+    })),
+  };
+}
+
+function projectStageChange(gate, state) {
+  const phase = (state && state.phase) || (gate && gate.phase) || '';
+  const raw = gate && gate.chapterTactics;
+  const tacticList = Array.isArray(raw) ? raw : Array.isArray(raw && raw.list) ? raw.list : [];
+  return {
+    phase,
+    phaseName: PHASE_NAMES[phase] || phase,
+    inkSummary: (gate && gate.inkSummary) || null,
+    tactics: tacticList.map((t) => (typeof t === 'string' ? { text: t } : { text: t.text || t.name || '' })),
+    hasRelations: !!(gate && gate.relations),
+    chapter: projectChapterDraft(gate && gate.chapterDraft),
+  };
+}
+
+function projectScenic(cell, cost, curInsp, meta) {
+  const journal = meta && meta.sideQuest;
+  const cur = Number(curInsp) || 0;
+  const need = Number(cost) || 0;
+  return {
+    cellName: (cell && cell.name) || '名胜',
+    cost: need,
+    inspiration: cur,
+    enough: cur >= need,
+    canStartSideQuest: !!(meta && meta.canStartSideQuest),
+    hasJournal: !!journal,
+    sideQuestStage: (journal && journal.stage) || '',
+  };
+}
+
+function projectScenicTalent(candidates, meta) {
+  return {
+    title: (meta && meta.title) || '三心择一',
+    intro: (meta && meta.intro) || '',
+    costText: (meta && meta.costText) || '',
+    cancelText: (meta && meta.cancelText) || '暂不收取',
+    candidates: (candidates || []).map((t, i) => ({
+      index: i,
+      id: t.id,
+      name: t.name,
+      desc: t.desc || '',
+    })),
+  };
+}
+
+function projectPalaceIntro(themes, names, inkSummary, questions, echoes, sideQuestFinal, draft) {
+  return {
+    themes: themes || [],
+    names: names || [],
+    inkSummary: inkSummary || null,
+    questionCount: Array.isArray(questions) ? questions.length : 0,
+    echoCount: Array.isArray(echoes) ? echoes.length : 0,
+    hasSideQuestFinal: !!sideQuestFinal,
+    chapter: projectChapterDraft(draft),
+  };
+}
+
 /**
  * @param {object} options
  * @param {(evt:object)=>boolean|void} options.sink 事件出口。
@@ -203,12 +286,20 @@ export function createUiAdapter(options = {}) {
       );
     },
 
-    async askScenic(_cell, _cost, _curInsp, _meta) {
-      return request('scenic', null, null, auto.scenic);
+    // 返回 true/'draw'（访胜抽签）| 'sidequest' | 'talent' | 'journal' | false（离开）
+    // 引擎兼容布尔返回：true 等同 'draw'
+    async askScenic(cell, cost, curInsp, meta) {
+      return request('scenic', projectScenic(cell, cost, curInsp, meta), cell, auto.scenic);
     },
 
-    async chooseScenicTalent(candidates) {
-      return request('scenicTalent', null, candidates, () => auto.scenicTalent(candidates));
+    // 返回候选索引；-1 表示放弃
+    async chooseScenicTalent(candidates, meta) {
+      return request(
+        'scenicTalent',
+        projectScenicTalent(candidates, meta),
+        candidates,
+        () => auto.scenicTalent(candidates)
+      );
     },
 
     async chooseSideQuest(routes) {
@@ -219,18 +310,20 @@ export function createUiAdapter(options = {}) {
       return request('sideQuestFinal', null, meta, auto.sideQuestFinal);
     },
 
+    // 返回所选「开卷句」id；返回空值则用该章的默认句
     async showStageChange(gate, state) {
-      return request('stageChange', { gate }, state, auto.stageChange);
+      return request('stageChange', projectStageChange(gate, state), gate, auto.stageChange);
     },
 
     async showPlannedMovePrompt(gameRef) {
       return request('plannedMove', null, gameRef, auto.plannedMove);
     },
 
+    // 殿试开场：返回所选章末句 id（same 契约）
     async showPalaceIntro(themes, names, inkSummary, questions, echoes, sideQuestFinal, draft) {
       return request(
         'palaceIntro',
-        { themes, names, inkSummary, hasFinal: !!sideQuestFinal },
+        projectPalaceIntro(themes, names, inkSummary, questions, echoes, sideQuestFinal, draft),
         draft,
         auto.palaceIntro
       );

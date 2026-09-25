@@ -17,7 +17,18 @@ if (!schools.length) {
   process.exit(1);
 }
 
-const stats = { taken: 0, fallback: 0, quiz: 0, battle: 0, event: 0, other: {} };
+const stats = {
+  taken: 0,
+  fallback: 0,
+  quiz: 0,
+  battle: 0,
+  event: 0,
+  scenic: 0,
+  scenicTalent: 0,
+  stageChange: 0,
+  palaceIntro: 0,
+  other: {},
+};
 let summary = null;
 
 /** 模拟页面：接管 request，按人类玩家的方式给出应答 */
@@ -80,8 +91,37 @@ function onEvent(evt) {
       return true;
     }
 
+    case 'scenic': {
+      stats.scenic++;
+      // 灵感够就抽签（顺带覆盖 scenicTalent 与文心替换），否则离开
+      evt.resolve(view.enough ? 'draw' : false);
+      return true;
+    }
+
+    case 'scenicTalent': {
+      stats.scenicTalent++;
+      const list = view.candidates || [];
+      evt.resolve(list.length ? 0 : -1);
+      return true;
+    }
+
+    case 'stageChange': {
+      stats.stageChange++;
+      // 选第一句开卷句；若没有候选则交回引擎用默认句
+      const draft = view.chapter;
+      evt.resolve(draft && draft.candidates.length ? draft.candidates[0].id : undefined);
+      return true;
+    }
+
+    case 'palaceIntro': {
+      stats.palaceIntro++;
+      const draft = view.chapter;
+      evt.resolve(draft && draft.candidates.length ? draft.candidates[0].id : undefined);
+      return true;
+    }
+
     default: {
-      // 尚未实装的界面：不接管，由适配器自动应答兜底
+      // 仍未实装的界面：不接管，由适配器自动应答兜底
       stats.other[evt.key] = (stats.other[evt.key] || 0) + 1;
       stats.fallback++;
       return false;
@@ -108,8 +148,11 @@ console.log('交互自检结果：');
 console.log(`  回合=${vm.turn}  结局=${px ? px.reasonText : '(无)'}  总分=${px ? px.total : '(无)'}`);
 console.log(`  战绩=胜${vm.battle.win} 平${vm.battle.draw} 负${vm.battle.loss}`);
 console.log(`  玩家决策总数=${stats.taken}（其中兜底 ${stats.fallback}）`);
-console.log(`  答题=${stats.quiz}  论战=${stats.battle}  奇遇=${stats.event}`);
-console.log(`  未实装而走兜底的界面：${JSON.stringify(stats.other)}`);
+console.log(
+  `  答题=${stats.quiz}  论战=${stats.battle}  奇遇=${stats.event}  名胜=${stats.scenic}` +
+    `  三心择一=${stats.scenicTalent}  晋阶=${stats.stageChange}  殿试开场=${stats.palaceIntro}`
+);
+console.log(`  仍未实装而走兜底的界面：${JSON.stringify(stats.other)}`);
 
 const ok = !!px && px.total > 0 && stats.taken > 0;
 console.log(`\n${ok ? '真实交互通道通过：玩家决策全部由页面接管并驱动引擎。' : '通道未走通，需排查。'}`);
