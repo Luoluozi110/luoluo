@@ -15,9 +15,12 @@ const here = dirname(fileURLToPath(import.meta.url));
 const mpRoot = resolve(here, '..');
 const h5Root = resolve(mpRoot, '..', 'feihuaqi-playable');
 
-// 主包判定标准：启动链路「主菜单 → 选流派 → 装配 → 对局 → 结算 → 榜单」读得到的配置。
-// 硬依据：config.js 的 FILES 为必需清单，缺失即抛错阻断启动，必须全在主包。
-// events 属必需；narrative 虽为可选，但承载终局成卷模板，结算链路依赖，同样进主包。
+// 主包判定标准必须同时满足两条，缺一不可：
+//  ① 启动链路「主菜单 → 选流派 → 装配 → 对局 → 结算 → 榜单」读得到；
+//  ② **对局运行中读得到** —— 这一条最初被漏判：
+//     album 在结算时用于判定图鉴解锁与隐藏终圈资格，sidequests 在名胜格读取，
+//     两者都落在主包对局的执行路径上；放进分包会导致支线无法开启、图鉴恒为空。
+//     合计约 82KB，并入后主包仍远低于 2MB 红线。
 const MAIN_PKG = [
   'schools',
   'talents',
@@ -36,12 +39,15 @@ const MAIN_PKG = [
   'affinity',
   'sky',
   'leaderboard',
+  'album',
+  'sidequests',
+  'sidequest-npcs',
+  'sidequest-talents',
 ];
 
-const SUB_PKG = {
-  'pkg-codex': ['album'],
-  'pkg-side': ['sidequests', 'sidequest-npcs', 'sidequest-talents'],
-};
+// 暂无分包配置：图鉴与支线内容都已并入主包。
+// 分包随后只承载页面（图鉴阁、传世名篇、入门卷、设置），不携带配置。
+const SUB_PKG = {};
 
 // 明确不打进包体的配置：
 // cloud.json 是编辑器云端同步配置，content-test 相关校验走本地工具链
@@ -83,9 +89,10 @@ function main() {
   }
   const fromDir = join(h5Root, 'config');
 
-  // 先清空既有产物，避免配置改动归属后旧文件残留在错误的包里
+  // 先清空既有产物，避免配置归属调整后旧文件残留在错误的位置。
+  // 分包目录这里显式列出：它们已不再由 SUB_PKG 驱动，但历史文件仍需清理。
   cleanConfigDir(join(mpRoot, 'config'));
-  Object.keys(SUB_PKG).forEach((pkg) => cleanConfigDir(join(mpRoot, pkg, 'config')));
+  ['pkg-codex', 'pkg-meta', 'pkg-side'].forEach((pkg) => cleanConfigDir(join(mpRoot, pkg, 'config')));
 
   console.log('同步主包配置：');
   MAIN_PKG.forEach((name) => {
