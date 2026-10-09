@@ -5,5 +5,9 @@ test/.check/
 # 云函数依赖由开发者工具上传
 cloudfunctions/*/node_modules/
 
+# 开发者工具自动生成的本机私有配置（覆盖 project.config.json 同名字段），
+# 每人环境不同，不应进版本库 —— 它曾导致本地编译误判文件未使用。
+project.private.config.json
+
 node_modules/
 .DS_Store
