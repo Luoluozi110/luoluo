@@ -11,7 +11,9 @@
 // 未实装的对话框返回 false，由适配器回退自动应答，链路不会卡死。
 
 import { startGame, playTurn, project, projectSummary } from '../../utils/engine-runtime.js';
+import { getLoadoutCards } from '../../utils/album-state.js';
 import { silent } from '../../utils/cloud.js';
+import storage from '../../utils/storage.js';
 
 const AUTO_MAX_TURNS = 400;
 
@@ -48,6 +50,7 @@ Page({
     summary: null,
     toast: '',
     dialog: null,
+    loadoutNames: [],
   },
 
   onLoad(query) {
@@ -59,14 +62,27 @@ Page({
     this.battleManner = '';
 
     const schoolId = query && query.schoolId ? decodeURIComponent(query.schoolId) : '';
+    const playerName =
+      (query && query.name ? decodeURIComponent(query.name) : '') || storage.getItem('playerName') || '';
+
+    // 装配的名篇从存档读取（loadout 页写入 store.loadout），
+    // 引擎要求的是 card 对象而非 id，由 album-state 做映射。
+    let loadout = [];
+    try {
+      loadout = getLoadoutCards();
+    } catch (err) {
+      console.warn('[game] 读取名篇装配失败，以空装配开局', err);
+    }
+
     try {
       const { game } = startGame({
         schoolId,
-        playerName: '试笔',
+        playerName,
+        loadout,
         sink: (evt) => this.onEngineEvent(evt),
       });
       this.game = game;
-      this.setData({ vm: project(game) });
+      this.setData({ vm: project(game), loadoutNames: loadout.map((c) => c.name) });
     } catch (err) {
       console.error('[game] 开局失败', err);
       wx.showToast({ title: '开局失败', icon: 'none' });

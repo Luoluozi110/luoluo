@@ -14,10 +14,11 @@ Page({
     this.setData({ schools, loading: false });
   },
 
+  // 开局链：选流派 → 装配名篇与起名 → 对局
   choose(e) {
     const id = e.currentTarget.dataset.id;
     if (!id) return;
-    wx.navigateTo({ url: `/pages/game/game?schoolId=${encodeURIComponent(id)}` });
+    wx.navigateTo({ url: `/pages/loadout/loadout?schoolId=${encodeURIComponent(id)}` });
   },
 
   back() {

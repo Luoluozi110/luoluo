@@ -1,4 +1,73 @@
-<view class="ph">
-  <view class="ph__title">文心装配</view>
-  <view class="ph__hint">页面待实装</view>
+<view class="lo">
+  <view class="lo__head">
+    <view class="lo__title">装配名篇</view>
+    <view class="lo__sub">流派「{{schoolName}}」已定 · 最多携带 {{max}} 张传世名篇</view>
+    <view class="lo__count">已选 <text class="lo__num">{{selectedCount}}</text> / {{max}} · 已解锁 {{unlockedCount}} / {{totalCount}}</view>
+  </view>
+
+  <view wx:if="{{unlockedCount === 0}}" class="lo__empty">
+    尚无解锁的传世名篇。名篇由跨局战绩解锁——下面是每一张的来历，先挑一个方向去闯。
+  </view>
+
+  <view class="lo__list">
+    <view
+      class="card {{item.unlocked ? '' : 'card--locked'}} {{item.chosen ? 'card--chosen' : ''}}"
+      wx:for="{{cards}}"
+      wx:key="id"
+    >
+      <view class="card__head" data-id="{{item.id}}" bindtap="toggleCard">
+        <view class="card__left">
+          <view class="card__name">{{item.name}}</view>
+          <view class="card__reward">
+            {{item.unlocked ? item.rewardDesc : item.unlockText}}
+          </view>
+        </view>
+        <view class="card__state">
+          <text wx:if="{{item.chosen}}" class="card__tag">随行</text>
+          <text wx:elif="{{item.unlocked}}" class="card__tag card__tag--idle">{{item.level > 0 ? item.levelName : '未启程'}}</text>
+          <text wx:else class="card__tag card__tag--lock">未解锁</text>
+        </view>
+      </view>
+
+      <view class="card__more" data-id="{{item.id}}" bindtap="toggleDetail">
+        {{expandedId === item.id ? '收起' : '详情'}}
+      </view>
+
+      <block wx:if="{{expandedId === item.id}}">
+        <view wx:if="{{item.text}}" class="card__text">{{item.text}}</view>
+
+        <view wx:if="{{item.unlocked}}" class="card__branch">
+          <view class="card__branch-title">成长路线{{item.branchLocked ? '（已定型）' : ''}}</view>
+          <view
+            class="branch {{item.branch === sub.id ? 'branch--on' : ''}} {{sub.reachable ? '' : 'branch--off'}}"
+            wx:for="{{item.branches}}"
+            wx:for-item="sub"
+            wx:key="id"
+            data-id="{{item.id}}"
+            data-branch="{{sub.id}}"
+            bindtap="pickBranch"
+          >
+            <view class="branch__name">{{sub.name}}<text wx:if="{{!sub.reachable}}" class="branch__need"> · 需 Lv{{sub.minLevel}}</text></view>
+            <view class="branch__desc">{{sub.desc}}</view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="lo__name">
+    <view class="lo__name-label">为自己起个名号</view>
+    <input
+      class="lo__name-input"
+      value="{{playerName}}"
+      placeholder="留空则以「无名氏」开局"
+      maxlength="12"
+      bindinput="onNameInput"
+    />
+  </view>
+
+  <view class="lo__actions">
+    <view class="fh-btn" bindtap="back">返回选流派</view>
+    <view class="fh-btn fh-btn--primary" bindtap="start">就此开卷</view>
+  </view>
 </view>
