@@ -77,33 +77,47 @@ if (typeof globalThis.localStorage === 'undefined') {
 
 ## 四、包体规划
 
-### 4.1 实测划分结果
+### 4.1 划分标准：两条判据，缺一不可
 
-配置同步脚本 `scripts/sync-config.mjs` 已按「启动链路是否读得到」自动拆分，实测：
+判断一份配置归属时，必须同时问两个问题：
+
+1. **启动链路是否读得到？** 主菜单 → 选流派 → 装配 → 对局 → 结算 → 榜单。
+2. **对局运行中是否读得到？**
+
+第二条曾经被漏判，代价很直接：`album` 在结算时用于判定图鉴解锁与隐藏终圈资格、
+`sidequests` 在名胜格被读取，二者都落在**主包对局的执行路径**上。
+它们当时被划进分包，结果是**「入世另行」按钮点不动、图鉴永远为空**，而代码不报任何错。
+
+修正后全部配置都在主包，实测：
 
 | 归属 | 内容 | 体积 |
 |---|---|---|
-| **主包** | schools / talents / talent-upgrade / synergies / npcs / npc-mechanics / board / questions / grades / attrs / numeric / inspiration / affinity / sky / leaderboard | **378.8KB** |
-| pkg-codex | album | 32.9KB |
-| pkg-meta | events / narrative | 63.0KB |
-| pkg-side | sidequests / sidequest-npcs / sidequest-talents | 49.4KB |
-| 排除 | cloud（编辑器同步配置） | — |
+| **主包** | schools / talents / talent-upgrade / synergies / npcs / npc-mechanics / board / questions / events / narrative / grades / attrs / numeric / inspiration / affinity / sky / leaderboard / album / sidequests / sidequest-npcs / sidequest-talents | **524.1KB** |
+| 排除 | cloud（编辑器云端同步配置，运行时不需要） | 0.4KB |
 
 主包页面：主菜单、选流派、装配、对局、排行榜。
-主包预算：配置 378.8KB + 引擎核心约 400KB + 页面代码约 150KB ≈ **930KB，距 2MB 红线有充分余量**。
+引擎读到的实际条目：图鉴 12 张、支线 3 条、支线文心 12 枚、题库 87 道、奇遇 62 则、文心 61 枚、羁绊 74 组。
 
-### 4.2 分包与预下载
+> 这类「配置在包里但引擎读到空」的故障不会抛错，只会让玩法静默失效，
+> 因此 `test/check-config.mjs` 专门守这一关——它断言 `album` 与 `sidequests.routes` 非空。
 
-已在 `app.json` 配置：进入主菜单时预下载 `pkg-codex`（wifi 环境），进入对局时预下载 `pkg-side`。
-同时开启 `lazyCodeLoading: "requiredComponents"`，按需注入页面代码，降低启动耗时。
+### 4.2 分包现状
 
-### 4.3 一条硬规则
+分包目前**只承载页面**（图鉴阁、传世名篇、入门卷、设置），不再携带配置。
+`app.json` 里保留预下载规则，并开启 `lazyCodeLoading: "requiredComponents"` 降低启动耗时。
 
-**主包不能 `require` 分包内的文件。** 分包必须在自己的入口页 `onLoad` 里注册它携带的配置：
+### 4.3 若日后要把配置移回分包
+
+**主包不能 `require` 分包内的文件。** 正确的做法是在分包入口页注册它携带的配置，
+再由引擎运行时合并：
 
 ```js
-configLoader.register('album', require('../../config/album.json'));
+// 分包页面 onLoad
+import { register } from '../../utils/config-loader.js';
+register('someConfig', rawConfigFromSubpackage);
 ```
+
+注意这只解决「进分包后可用」，**对局中随时要读的配置不能这样做**——玩家不一定进过那个分包。
 
 ---
 
@@ -330,8 +344,8 @@ node test/smoke-interactive.mjs   # 模拟玩家接管每个决策，走完整�
 
 实测三局，玩家决策分别为 38 / 49 / 40 次，**兜底均为 0**。
 
-> 注意：支线内容（`sidequests` 等配置）目前在 `pkg-side` 分包，主包的 `embed-config.js` 未包含它们，
-> 因此「入世另行」按钮虽已具备，实际入口仍受配置限制——分包配置加载是后续工作。
+> 更新（同日）：支线与图鉴配置已并入主包，「入世另行」现在可以真正开启支线。
+> 详见第四节 4.1 的判据说明。
 
 ---
 
@@ -339,11 +353,11 @@ node test/smoke-interactive.mjs   # 模拟玩家接管每个决策，走完整�
 
 按对上线的影响排序：
 
-1. **分包配置加载**：图鉴（`album`）与支线（`sidequests`）配置在分包，需在分包入口注册后再合并进 cfg。
-2. **装配屏**：正式开局链是「选流派 → 文心配置 → 名号 → 开局」，目前跳过了装配与名号。
-3. **读档**：需要还原引擎完整运行时状态。
-4. **云开发联调**：`authLogin` / `submitScore` 尚未在真机验证。
-5. **排行榜页**：`rank` 仍是占位。
+1. **装配屏**：正式开局链是「选流派 → 文心配置 → 名号 → 开局」，目前跳过了装配与名号。
+2. **读档**：需要还原引擎完整运行时状态。
+3. **云开发联调**：`authLogin` / `submitScore` 尚未在真机验证。
+4. **排行榜页**：`rank` 仍是占位。
+5. **图鉴阁 / 入门卷 / 设置**：分包页面仍是占位。
 
 ---
 
@@ -384,5 +398,9 @@ feihuaqi-miniprogram/
 
 ### 体积现状
 
-主包约 0.9MB（引擎 788KB + 页面与工具约 100KB），距 2MB 红线充裕。
-`config/` 与 `scripts/`、`test/` 已在打包时排除。
+主包约 **1.0MB**（engine 836KB 含编译后的配置 348KB + 页面 88KB + utils 44KB），距 2MB 红线仍有充裕余量。
+`config/`（构建中间产物）、`scripts/`、`test/` 已在打包时排除，不占包体。
+
+> 引擎已占用主包的大头。若后续接近红线，优先考虑：
+> 拆 `game.js`（241KB 单体）中的低频逻辑、把 `scripts/` 生成的调试代码排除、
+> 以及评估 `config-contract.js`（36KB 仅内容作者使用）是否可完全移出。
