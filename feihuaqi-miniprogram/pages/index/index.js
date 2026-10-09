@@ -1,7 +1,7 @@
 // 主菜单
 // 入口顺序固定：开始游戏 / 继续游戏 / 入门卷 / 设置 / 说明
 // 次级入口：传世名篇 · 图鉴阁 · 存档码 · 版本测试
-import storage from '../../utils/storage.js';
+import { hasSavedRun } from '../../utils/engine-runtime.js';
 import { silent } from '../../utils/cloud.js';
 
 const SUBPKG = {
@@ -29,10 +29,11 @@ Page({
   },
 
   refresh() {
-    const hasRun = !!storage.getItem('fhq_current_run');
+    // 直接问引擎的存档模块，不再自己维护一套标记 —— 两边口径不一致就会出现
+    // 「按钮亮着却读不到档」这类问题。
     const app = getApp();
     this.setData({
-      hasRun,
+      hasRun: hasSavedRun(),
       greeting: this.buildGreeting(),
       cloudReady: !!(app && app.globalData.cloudReady),
     });
@@ -52,10 +53,11 @@ Page({
   },
 
   continueGame() {
-    // 读档需要在存档里还原引擎的完整运行时状态（含 Series/Map 等派生结构），
-    // 第一周只做「选流派 → 对局 → 结算」单向闭环，这里先行告知而非静默失败。
-    if (!this.data.hasRun) return;
-    wx.showToast({ title: '读档将在下一阶段实装', icon: 'none' });
+    if (!this.data.hasRun) {
+      wx.showToast({ title: '暂无进行中的对局', icon: 'none' });
+      return;
+    }
+    wx.navigateTo({ url: '/pages/game/game?mode=continue' });
   },
 
   openRank() {

@@ -10,7 +10,15 @@
 // 本页渲染对话框、玩家操作后调用 evt.resolve(value)，引擎才继续。
 // 未实装的对话框返回 false，由适配器回退自动应答，链路不会卡死。
 
-import { startGame, playTurn, project, projectSummary } from '../../utils/engine-runtime.js';
+import {
+  startGame,
+  resumeGame,
+  clearSavedRun,
+  saveCurrentRun,
+  playTurn,
+  project,
+  projectSummary,
+} from '../../utils/engine-runtime.js';
 import { getLoadoutCards } from '../../utils/album-state.js';
 import { silent } from '../../utils/cloud.js';
 import storage from '../../utils/storage.js';
@@ -51,6 +59,7 @@ Page({
     toast: '',
     dialog: null,
     loadoutNames: [],
+    resumed: false,
   },
 
   onLoad(query) {
@@ -60,6 +69,22 @@ Page({
     this.battleOut = null;
     this.battleStyle = '';
     this.battleManner = '';
+
+    const sink = (evt) => this.onEngineEvent(evt);
+    const wantContinue = !!(query && query.mode === 'continue');
+
+    if (wantContinue) {
+      const resumed = resumeGame({ sink });
+      if (resumed.ok) {
+        this.game = resumed.game;
+        this.setData({ vm: project(resumed.game), resumed: true });
+        wx.showToast({ title: `已续读第 ${resumed.turn} 回合`, icon: 'none' });
+        return;
+      }
+      // 续读失败就退回新局，但要让玩家知道发生了什么
+      wx.showToast({ title: resumed.error || '存档无法读取', icon: 'none' });
+      clearSavedRun();
+    }
 
     const schoolId = query && query.schoolId ? decodeURIComponent(query.schoolId) : '';
     const playerName =
@@ -74,13 +99,11 @@ Page({
       console.warn('[game] 读取名篇装配失败，以空装配开局', err);
     }
 
+    // 开新局前清掉上一局的自动存档，避免「新局进行中却能读到旧局」的错乱
+    clearSavedRun();
+
     try {
-      const { game } = startGame({
-        schoolId,
-        playerName,
-        loadout,
-        sink: (evt) => this.onEngineEvent(evt),
-      });
+      const { game } = startGame({ schoolId, playerName, loadout, sink });
       this.game = game;
       this.setData({ vm: project(game), loadoutNames: loadout.map((c) => c.name) });
     } catch (err) {
@@ -100,8 +123,10 @@ Page({
   onEngineEvent(evt) {
     if (evt.type === 'request') return this.onRequest(evt);
     if (evt.type === 'result') {
-      this.setData({ summary: projectSummary(evt.summary), dialog: null });
+      this.setData({ summary: projectSummary(evt.summary), dialog: null, resumed: false });
       this.submitScore(evt.summary);
+      // 对局已结束，自动存档不再有续玩价值；留着反而会让「继续游戏」指向一局终局
+      clearSavedRun();
     } else if (evt.type === 'toast') {
       if (evt.text) this.pendingToast = evt.text;
     }
@@ -317,6 +342,9 @@ Page({
       toast: this.pendingToast,
     });
     this.pendingToast = '';
+    // 回合是天然的存档点。引擎已在关键节点调 onForceSave，这里再兜一次，
+    // 保证「下一步」之后的状态一定落过盘。
+    saveCurrentRun(this.game);
   },
 
   submitScore(summary) {
