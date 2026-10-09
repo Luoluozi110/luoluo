@@ -12,7 +12,27 @@ const db = cloud.database();
 const PAGE_SIZE = 20;
 const CACHE_LIMIT = 100;
 
-exports.main = async (event) => {
+// 集合缺失时补建再重试，避免联调卡在「忘了建集合」
+const COLLECTIONS = ['users', 'runs', 'leaderboard', 'channelDaily', 'channelVisits'];
+
+function isMissingCollection(err) {
+  if (!err) return false;
+  return err.errCode === -502005 || /collection not exists/i.test(String(err.message || ''));
+}
+
+async function ensureCollections() {
+  for (const name of COLLECTIONS) {
+    try {
+      await db.createCollection(name);
+    } catch (e) {
+      /* 已存在，忽略 */
+    }
+  }
+}
+
+exports.main = async (event) => run(event, false);
+
+async function run(event, retried) {
   const page = Math.max(1, Number(event.page) || 1);
   const openid = cloud.getWXContext().OPENID;
 
@@ -56,21 +76,34 @@ exports.main = async (event) => {
 
     return { code: 0, list, me: await myRank(openid), cached: false };
   } catch (err) {
+    if (!retried && isMissingCollection(err)) {
+      await ensureCollections();
+      return run(event, true);
+    }
     console.error('[getRank] failed', err);
     return { code: 500, message: '榜单读取失败', list: [] };
   }
-};
+}
 
+/**
+ * 自己的名次。
+ *
+ * 这里刻意不用「拉全表再 findIndex」——云开发单次 get 有条数上限，
+ * 榜单一大就会截断，名次随之算错，而且每次请求都做一次全表扫描。
+ * 改成两步轻量查询：先取自己的分数，再数比它高的人有几个。
+ */
 async function myRank(openid) {
   if (!openid) return null;
-  const better = await db
+  const mine = await db.collection('leaderboard').where({ openid }).limit(1).get().catch(() => null);
+  if (!mine || !mine.data.length) return null;
+
+  const score = Number(mine.data[0].score) || 0;
+  const higher = await db
     .collection('leaderboard')
-    .where({ score: db.command.gt(0) })
-    .orderBy('score', 'desc')
-    .get()
+    .where({ score: db.command.gt(score) })
+    .count()
     .catch(() => null);
-  if (!better) return null;
-  const idx = better.data.findIndex((r) => r.openid === openid);
-  if (idx === -1) return null;
-  return { rank: idx + 1, score: better.data[idx].score };
+
+  const higherCount = (higher && Number(higher.total)) || 0;
+  return { rank: higherCount + 1, score };
 }

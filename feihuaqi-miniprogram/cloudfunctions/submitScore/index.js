@@ -17,7 +17,25 @@ const MAX_SCORE = 999999;
 const MIN_DURATION_MS = 30 * 1000; // 单局最短时长，按实际玩法校准
 const MIN_INTERVAL_MS = 10 * 1000; // 两次提交最小间隔
 
-exports.main = async (event) => {
+// 云开发不会自动创建集合，首次写入不存在的集合会抛 -502005；补建一次再重试。
+const COLLECTIONS = ['users', 'runs', 'leaderboard', 'channelDaily', 'channelVisits'];
+
+function isMissingCollection(err) {
+  if (!err) return false;
+  return err.errCode === -502005 || /collection not exists/i.test(String(err.message || ''));
+}
+
+async function ensureCollections() {
+  for (const name of COLLECTIONS) {
+    try {
+      await db.createCollection(name);
+    } catch (e) {
+      /* 已存在或并发创建，忽略 */
+    }
+  }
+}
+
+async function handle(event) {
   const wxContext = cloud.getWXContext();
   const openid = wxContext.OPENID;
   if (!openid) return { code: 401, message: '未登录' };
@@ -137,3 +155,21 @@ async function syncToSupabase(payload) {
     req.end();
   });
 }
+
+exports.main = async (event) => {
+  try {
+    return await handle(event);
+  } catch (err) {
+    if (isMissingCollection(err)) {
+      await ensureCollections();
+      try {
+        return await handle(event);
+      } catch (retryErr) {
+        console.error('[submitScore] 补建集合后重试仍失败', retryErr);
+        return { code: 500, message: '提交失败' };
+      }
+    }
+    console.error('[submitScore] failed', err);
+    return { code: 500, message: '提交失败' };
+  }
+};

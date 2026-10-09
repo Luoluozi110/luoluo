@@ -1,4 +1,6 @@
 {
-  "navigationBarTitleText": "排行榜",
+  "navigationBarTitleText": "文榜",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f3ece0",
   "usingComponents": {}
 }

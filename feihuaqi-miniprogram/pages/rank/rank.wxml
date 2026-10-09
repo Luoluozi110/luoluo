@@ -1,4 +1,39 @@
-<view class="ph">
-  <view class="ph__title">排行榜</view>
-  <view class="ph__hint">页面待实装</view>
+<view class="rk">
+  <view class="rk__head">
+    <view class="rk__title">文榜</view>
+    <view class="rk__sub">按单局总分排序 · 每人只记最好成绩</view>
+  </view>
+
+  <!-- 自己的名次 -->
+  <view wx:if="{{me}}" class="mine">
+    <text class="mine__rank">第 {{me.rank}} 名</text>
+    <text class="mine__score">{{me.score}} 分</text>
+  </view>
+
+  <!-- 离线态：云不可用也要给出有用信息 -->
+  <view wx:if="{{offline}}" class="offline">
+    <view class="offline__title">{{errorText}}</view>
+    <view wx:if="{{myLocalBest}}" class="offline__best">本机最佳成绩 {{myLocalBest}} 分</view>
+    <view class="offline__hint">榜单需联网，单机玩法不受影响。</view>
+    <view class="fh-btn offline__retry" bindtap="retry">重试</view>
+  </view>
+
+  <view wx:elif="{{loading && !list.length}}" class="rk__loading">正在张榜…</view>
+
+  <view wx:elif="{{!list.length}}" class="rk__empty">榜上尚无名姓，可取一局头名。</view>
+
+  <view wx:else class="rk__list">
+    <view class="row {{me && item.openid === me.openid ? 'row--me' : ''}}" wx:for="{{list}}" wx:key="openid">
+      <text class="row__rank">{{item.rank}}</text>
+      <view class="row__who">
+        <text class="row__name">{{item.nickname}}</text>
+        <text wx:if="{{item.grade}}" class="row__grade">{{item.grade}}</text>
+      </view>
+      <text class="row__score">{{item.score}}</text>
+    </view>
+    <view wx:if="{{loading}}" class="rk__more">加载中…</view>
+    <view wx:elif="{{finished}}" class="rk__more">已到底</view>
+  </view>
+
+  <view class="fh-btn rk__back" bindtap="back">返回</view>
 </view>
